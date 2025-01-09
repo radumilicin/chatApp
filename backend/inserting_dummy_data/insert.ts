@@ -159,7 +159,6 @@ async function insertContacts() {
         console.error('Error:', err);
       }
     }  
-
 }
 
 await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
