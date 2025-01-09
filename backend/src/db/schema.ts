@@ -17,7 +17,7 @@ export const users = pgTable('users', {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
-  id: serial('id').primaryKey(),
-  contact_id: integer('contact_id').notNull().unique(),
+  id: serial('id'),
+  contact_id: integer('contact_id').notNull().references(() => users.id),
   message: json('message')
 });
