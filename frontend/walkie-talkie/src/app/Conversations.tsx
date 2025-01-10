@@ -8,10 +8,10 @@ export default function Conversations( props : any) {
     const [currentSearch, setCurrSearch] = useState('');
 
     return (
-        <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#5CB2AF] rounded-2xl border-white border-2">
+        <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-2xl border-white border-2">
             {/* search bar here */}
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch}></SearchBar>
-            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts}></Contacts>
+            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images}></Contacts>
         </div>
     );
 }
@@ -38,22 +38,58 @@ export function SearchBar( props : any ) {
 
 export function Contacts( props: any) {
 
+    let curr_user = 1
+
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1
     // and here we extract its contacts and the messages that happen most recently are shown first
 
+    function getNameWithUserId(contact: any) {
+        const user = props.users.find((user) => user.id === contact.contact_id);
+        return user ? user.username : "";
+    }
+     
+    function getLastMessage(contact : any) {
+        let msgs = contact.message
+        if(msgs === "{}") return ""
+        else return ""
+        // else {
+        //     return contact.message["messages"][contact.message["messages"].length() - 1]
+        // }
+    }
 
-    // if I want to put 8 I need 80% of space with 10% height for each
-    // if I want to put 7 I need 84% with 12% height each
+    function getImage(contact: any) {
+        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
-            {/* here contacts are ordered either by the recency of when we sent or received a message */}
             <div className="relative top-0 left-0 h-full w-full flex flex-col">
-                { props.contacts.forEach(element => {
-                    <div className="relative h-[12%] w-full"> </div>
-                })
-
-                }
+                {props.contacts.map((element: any, idx: number) => (
+                    <div
+                        key={idx}
+                        className="relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2"
+                        onClick={() => {}}
+                    >
+                        <div className="flex w-[10%] justify-center items-center">
+                            {/* Use base64 data for image */}
+                            <img
+                                src={`data:image/jpg;base64,${getImage(element).data}`}
+                                className="h-[75%] w-[75%]"
+                                alt="Profile"
+                            />
+                        </div>
+                        <div className="flex basis-[9/10]">
+                            <div className="flex h-[50%] w-full items-center">
+                                <div className="indent-[20px]">{getNameWithUserId(element)}</div>
+                            </div>
+                            <div className="flex h-[50%] w-full items-center">
+                                {getLastMessage(element)}
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

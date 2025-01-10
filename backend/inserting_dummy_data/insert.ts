@@ -106,7 +106,6 @@ async function insertUsers() {
         console.error('Error:', err);
       }
     }
-    
 }
 
 // await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
@@ -161,7 +160,7 @@ async function insertContacts() {
     }  
 }
 
-await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 
 // await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 async function insertImages() {
@@ -179,6 +178,8 @@ async function insertImages() {
                 resolve(answer);
             });
         });    
+
+        console.log("curr dir: " + process.cwd())
 
         let imageBuffer = fs.readFileSync(image_path);
         

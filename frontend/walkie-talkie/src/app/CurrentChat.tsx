@@ -9,7 +9,7 @@ export default function CurrentChat( props: any ) {
                 <div className="relative left-0 flex basis-[90%] h-full">
                     <input className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white"></input>
                 </div>
-                <div className="relative left-0 flex basis-[10%] justify-center items-center">
+                <div className="relative left-0 flex basis-[10%] items-center right-2">
                     <img src="/send.png" className="max-h-[50%]"></img>
                 </div>
             </div>
