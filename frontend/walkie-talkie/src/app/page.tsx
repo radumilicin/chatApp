@@ -10,6 +10,7 @@ export default function Home() {
   const [users, updateUsers] = useState([]);  // Change state to an array instead of object
   const [contacts, updateContacts] = useState([]);
   const [images, updateImages] = useState([]);
+  const [pressed, setPressed] = useState(null) // this is the id of the user 
 
   // change this when authentication will be a thing 
   let user = 1
@@ -58,8 +59,8 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full bg-[#3B7E9B]">
       <div className="relative left-0 top-0 w-full h-full flex flex-row">
-        <Conversations users={users} contacts={contacts} images={images}></Conversations>
-        <CurrentChat users={users} contacts={contacts} images={images}></CurrentChat>
+        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed}></Conversations>
+        <CurrentChat users={users} contacts={contacts} images={images} contact={pressed}></CurrentChat>
       </div>
     </div>
   );

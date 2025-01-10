@@ -7,11 +7,16 @@ export default function Conversations( props : any) {
     
     const [currentSearch, setCurrSearch] = useState('');
 
+    function getUserWithId(contact: any) {
+        const user = props.users.find((user) => user.id === contact.contact_id);
+        return user ? user : {};
+    }
+
     return (
         <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-2xl border-white border-2">
             {/* search bar here */}
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch}></SearchBar>
-            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images}></Contacts>
+            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images} setPressed={props.setPressed}></Contacts>
         </div>
     );
 }
@@ -69,8 +74,8 @@ export function Contacts( props: any) {
                 {props.contacts.map((element: any, idx: number) => (
                     <div
                         key={idx}
-                        className="relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2"
-                        onClick={() => {}}
+                        className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
+                        onClick={() => {props.setPressed(element);}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
