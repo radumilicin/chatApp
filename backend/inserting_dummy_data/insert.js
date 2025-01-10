@@ -3,7 +3,7 @@ const { Pool } = pkg;
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import readline from 'readline';
-console.log(process.env);
+import fs from "fs";
 // Create an interface for reading input from stdin and writing output to stdout
 const rl = readline.createInterface({
     input: process.stdin,
@@ -135,4 +135,45 @@ async function insertContacts() {
         }
     }
 }
-await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+async function insertImages() {
+    try {
+        // Ask to what user we are adding the image
+        var user_id = await new Promise((resolve) => {
+            rl.question("Enter user_id: ", (answer) => {
+                resolve(answer);
+            });
+        });
+        // Ask for image path
+        var image_path = await new Promise((resolve) => {
+            rl.question("Enter image_path: ", (answer) => {
+                resolve(answer);
+            });
+        });
+        console.log("curr dir: " + process.cwd());
+        let imageBuffer = fs.readFileSync(image_path);
+        console.log("imageBuffer" + imageBuffer);
+        const base64Image = imageBuffer.toString("base64");
+        console.log("base64Image" + base64Image);
+        // Create a client from the pool
+        const client = await pool.connect();
+        try {
+            // Insert the user into the "users" table
+            await client.query('INSERT INTO images (user_id, image_name, data) VALUES ($1, $2, $3)', [user_id, image_path, base64Image]);
+            console.log(`Image ${image_path} has been added to user ${user_id} inserted successfully.`);
+        }
+        catch (err) {
+            console.error('Error inserting images:', err);
+        }
+        finally {
+            // Release the client back to the pool
+            client.release();
+        }
+        // Decrement the number of users left to add
+    }
+    catch (err) {
+        console.error('Error:', err);
+    }
+}
+await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
