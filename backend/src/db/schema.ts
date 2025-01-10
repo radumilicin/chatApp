@@ -5,8 +5,16 @@ import {
   varchar,
   integer,
   timestamp,
-  json
+  json,
 } from "drizzle-orm/pg-core";
+
+
+export const images = pgTable("images", {
+  id: serial("id").primaryKey(),
+  id_user: integer("user_id").notNull().references(() => users.id),
+  image_name: text("image_name").notNull(), // To keep track of the image name
+  data: text("data").notNull(), // Base64-encoded image data
+});
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const users = pgTable('users', {
@@ -19,5 +27,5 @@ export const users = pgTable('users', {
 export const contacts = pgTable('contacts', {
   id: serial('id'),
   contact_id: integer('contact_id').notNull().references(() => users.id),
-  message: json('message')
+  message: json('message').default({})
 });

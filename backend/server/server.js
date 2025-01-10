@@ -21,6 +21,15 @@ const pool = new pg.Pool({
 // Middleware to parse JSON
 app.use(express.json());
 
+app.get('/users', async (req,res) => {
+    try{
+        const users = await pool.query("SELECT * from users;");
+        res.send(users.rows)
+    } catch (err) {
+        res.status(500).send('Database error')
+    }
+});
+
 app.get('/contacts', async (req, res) => {
     const user_id = parseInt(req.query.user); // Extract user_id query parameter
 
@@ -46,14 +55,35 @@ app.get('/contacts', async (req, res) => {
     }
 });
 
-app.get('/users', async (req,res) => {
-    try{
-        const users = await pool.query("SELECT * from users;");
-        res.send(users.rows)
-    } catch (err) {
-        res.status(500).send('Database error')
+app.get('/sendImage', async (req, res) => {
+    const user_id = parseInt(req.query.user); // Extract user_id query parameter
+    const image_name = parseInt(req.query.image_name); // Extract user_id query parameter
+
+    console.log("user_id = " + user_id)
+    console.log("image name = " + image_name)
+
+    // Check if user_id query parameter is provided
+    if (!user_id || !image_name) {
+        return res.status(404).send("You did not specify a user_id or an image_name");
     }
-});
+
+    try {
+        console.log("before image query")
+
+        // Fetch contacts for the specified user_id
+        const image = await pool.query("SELECT * FROM images WHERE id = $1 AND image_name = $2;", [user_id, image_name]);
+        
+        // Log the fetched contacts
+        console.log(image.rows);
+
+        // Send the contacts as the response
+        res.status(200).send(image.rows);
+    } catch (err) {
+        console.error("Error querying database:", err);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
 
 app.listen(PORT, (error) =>{
     if(!error)
