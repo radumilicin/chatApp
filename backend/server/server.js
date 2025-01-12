@@ -2,13 +2,17 @@ import express from 'express';
 import pg from 'pg';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { WebSocketServer } from 'ws'
+
 dotenv.config();
 
-console.log("password = " + process.env.DATABASE_PSWD)
+// console.log("password = " + process.env.DATABASE_PSWD)
+const wss = new WebSocketServer({ port: 8080 });
 
 const app = express();
 app.use(cors())
 const PORT = 3002;
+
 
 // Database configuration
 const pool = new pg.Pool({
@@ -43,7 +47,7 @@ app.get('/contacts', async (req, res) => {
 
     try {
         // Fetch contacts for the specified user_id
-        const contacts = await pool.query("SELECT * FROM contacts WHERE id = $1;", [user_id]);
+        const contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
         
         // Log the fetched contacts
         console.log(contacts.rows);
@@ -84,6 +88,66 @@ app.get('/images', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 })
+
+const clients = new Map(); // Maps user_id => WebSocket
+
+wss.on('connection', (ws) => {
+  console.log('New client connected');
+
+  const userId = getUserIdFromReq(req); // Extract user ID
+  clients.set(userId, ws); // Associate user with their WebSocket
+
+  // Handle incoming messages
+  ws.on('message', async (message) => {
+    try {
+      console.log(`Received message: ${message}`);
+      const parsedMessage = JSON.parse(message);
+
+      // Ensure the message has the required fields
+      const { sender_id, recipient_id, text, timestamp } = parsedMessage;
+      if (!sender_id || !recipient_id || !text || !timestamp) {
+        ws.send(JSON.stringify({ error: 'Invalid message format' }));
+        return;
+      }
+
+      // Get recipient's WebSocket
+      const recipientWs = clients.get(recipient_id);
+
+      // Send the message to the intended recipient
+      if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+        recipientWs.send(JSON.stringify({ senderId, content })); // Send message
+      } else {
+        console.log(`Recipient ${recipientId} is not online.`);
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      // Save the message to the database
+      const messageJson = { sender_id, recipient_id, text, timestamp };
+      await pool.query(
+        `UPDATE contacts
+         SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+         WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
+        [JSON.stringify(messageJson), sender_id, recipient_id]
+      );
+      /////////////////////////////////////////////////////////////////////////
+
+      // Acknowledge receipt
+      ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+
+      // Optionally broadcast to other clients
+      broadcast(wss, ws, parsedMessage);
+
+    } catch (err) {
+      console.error('Error handling message:', err);
+      ws.send(JSON.stringify({ error: 'Internal server error' }));
+    }
+  });
+
+  // Handle client disconnection
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
 
 
 app.listen(PORT, (error) =>{

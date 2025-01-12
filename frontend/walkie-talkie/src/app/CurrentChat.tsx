@@ -1,6 +1,27 @@
-
+import { useEffect, useRef, useState } from 'react';
+import useWebSocket from './webSocket';
 
 export default function CurrentChat( props: any ) {
+
+    const { messages, isConnected, sendMessage } = useWebSocket('ws://localhost:8080');
+    const [text, setText] = useState('');
+    const prevMessages = useRef(messages)
+
+    const handleSendMessage = (contact_id) => {
+        if (text.trim() === '') return;
+
+        const message = {
+            sender_id: props.curr_user, // Replace with dynamic user ID
+            contact_id: contact_id, // Replace with dynamic recipient ID
+            text: text,
+            timestamp: new Date().toISOString(),
+        };
+
+        sendMessage(message);
+        setText(''); // Clear input
+    };
+
+
 
     function getImage(contact: any) {
         const image = props.images.find((image: any) => image.user_id === contact.contact_id);
@@ -22,9 +43,13 @@ export default function CurrentChat( props: any ) {
                     {props.contact !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(props.contact).username}</div>}
                 </div>
             </div>
+            <div className="absolute left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-row border-2 border-black">
+                
+            </div>
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="relative left-0 flex basis-[90%] h-full">
-                    <input className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white"></input>
+                    <input type="text" value={text} onChange={(e) => {setText(e.target.value)}}className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white" 
+                        onSubmit={() => {handleSendMessage(props.contact_id)}}></input>
                 </div>
                 <div className="relative left-0 flex basis-[10%] items-center right-2">
                     <img src="/send.png" className="max-h-[50%]"></img>

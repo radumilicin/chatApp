@@ -59,8 +59,8 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full bg-[#3B7E9B]">
       <div className="relative left-0 top-0 w-full h-full flex flex-row">
-        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed}></Conversations>
-        <CurrentChat users={users} contacts={contacts} images={images} contact={pressed}></CurrentChat>
+        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user}></Conversations>
+        <CurrentChat users={users} contacts={contacts} images={images} contact={pressed} curr_user={user}></CurrentChat>
       </div>
     </div>
   );
