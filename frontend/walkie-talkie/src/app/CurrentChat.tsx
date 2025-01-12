@@ -27,23 +27,24 @@ export default function CurrentChat( props: any ) {
         if (text.trim() === '') return;
 
         const message = {
-            sender_id: props.curr_user, // Replace with dynamic user ID
-            contact_id: contact.current.contact_id, // Replace with dynamic recipient ID
-            text: text,
+            user_id: props.curr_user, // Replace with dynamic user ID
+            recipient_id: props.contact.contact_id, // Replace with dynamic recipient ID
+            message: text,
             timestamp: new Date().toISOString(),
         };
 
         sendMessage(message);
+        updateAllMessages([...allMessages, message])
         setText(''); // Clear input
     };
 
     function getImage(contact: any) {
-        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
+        const image = props.images.find((image: any) => image.user_id === props.contact.contact_id);
         return image || { data: "" }; // Ensure we return a fallback value
     }
 
     function getUser(contact: any) {
-        const user = props.users.find((user: any) => user.id === contact.contact_id);
+        const user = props.users.find((user: any) => user.id === props.contact.contact_id);
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
@@ -71,7 +72,7 @@ export default function CurrentChat( props: any ) {
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="relative left-0 flex basis-[90%] h-full">
                     <input type="text" value={text} onChange={(e) => {setText(e.target.value)}}className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white" 
-                        onSubmit={() => {handleSendMessage()}}></input>
+                        onKeyDown={(e) => { if(e.key === "Enter") {handleSendMessage(); setText("")}}}></input>
                 </div>
                 <div className="relative left-0 flex basis-[10%] items-center right-2">
                     <img src="/send.png" className="max-h-[50%]"></img>
