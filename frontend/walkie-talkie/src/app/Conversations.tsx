@@ -81,7 +81,7 @@ export function Contacts( props: any) {
                             {/* Use base64 data for image */}
                             <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-[75%] w-[75%]"
+                                className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"
                             />
                         </div>

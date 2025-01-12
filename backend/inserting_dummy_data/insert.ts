@@ -5,8 +5,6 @@ import 'dotenv/config'
 import readline from 'readline';
 import fs from "fs";
 
-// console.log(process.env.DATABASE_PSWD)
-
 
 // Create an interface for reading input from stdin and writing output to stdout
 const rl = readline.createInterface({
@@ -212,59 +210,5 @@ async function insertImages() {
     } 
 }
 
-// await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
-
-// pass curr_user as param
-async function insertMessages(curr_user : number) {
-    try {
-        // Ask to what user we are adding the image
-        var user_id : string = await new Promise((resolve) => {
-            rl.question("Enter user_id sender: ", (answer) => {
-                resolve(answer);
-            });
-        });
-
-        // Ask for image path
-        var recipient_id : string = await new Promise((resolve) => {
-            rl.question("Enter user_id_recipient: ", (answer) => {
-                resolve(answer);
-            });
-        });    
-
-        var message : string = await new Promise((resolve) => {
-            rl.question("Enter message: ", (answer) => {
-                resolve(answer);
-            });
-        });    
-
-        var timestamp = new Date(Date.now()).toLocaleString("en-GB");
-
-        var messageJson = {"user_id": user_id, "recipient_id": recipient_id, "message": message, "timestamp": timestamp}
-
-        // Create a client from the pool
-        const client = await pool.connect();
-        try {
-            // {[]}
-            // Insert the user into the "users" table
-            await client.query(`UPDATE contacts
-                                SET message = COALESCE(message, '[]'::jsonb) || jsonb_build_array($1::jsonb)
-                                WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
-                                [JSON.stringify(messageJson), parseInt(user_id), parseInt(recipient_id)]);
-            console.log(`Message has been added to contacts.`);
-        }
-        catch (err) {
-            console.error('Error updating messages:', err);
-        }
-        finally {
-            // Release the client back to the pool
-            client.release();
-        }
-        // Decrement the number of users left to add
-    }
-    catch (err) {
-        console.error('Error:', err);
-    } 
-}
-
-await insertMessages(1).catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 
