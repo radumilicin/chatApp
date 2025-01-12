@@ -1,5 +1,5 @@
 {
-  "id": "b738e471-3a84-4e82-a3ee-4fd4b3dc4362",
+  "id": "d5fc567a-4af8-4256-84d7-7ebec309300b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -22,10 +22,10 @@
         },
         "message": {
           "name": "message",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{}'::json"
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {},
@@ -122,10 +122,30 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "profile_pic_id": {
+          "name": "profile_pic_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_profile_pic_id_images_id_fk": {
+          "name": "users_profile_pic_id_images_id_fk",
+          "tableFrom": "users",
+          "tableTo": "images",
+          "columnsFrom": [
+            "profile_pic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_username_unique": {

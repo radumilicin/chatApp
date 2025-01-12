@@ -22,7 +22,6 @@ export default function CurrentChat( props: any ) {
                     {props.contact !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(props.contact).username}</div>}
                 </div>
             </div>
-        
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="relative left-0 flex basis-[90%] h-full">
                     <input className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white"></input>
