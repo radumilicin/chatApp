@@ -11,6 +11,7 @@ export default function Home() {
   const [contacts, updateContacts] = useState([]);
   const [images, updateImages] = useState([]);
   const [pressed, setPressed] = useState(null) // this is the id of the user 
+  const [curr_contact, setCurrContact] = useState(null)
 
   // change this when authentication will be a thing 
   let user = 1
@@ -59,8 +60,8 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full bg-[#3B7E9B]">
       <div className="relative left-0 top-0 w-full h-full flex flex-row">
-        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user}></Conversations>
-        <CurrentChat users={users} contacts={contacts} images={images} contact={pressed} curr_user={user}></CurrentChat>
+        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} setCurrContact={setCurrContact}></Conversations>
+        <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user}></CurrentChat>
       </div>
     </div>
   );

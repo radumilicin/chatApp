@@ -16,7 +16,7 @@ export default function Conversations( props : any) {
         <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-2xl border-white border-2">
             {/* search bar here */}
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch}></SearchBar>
-            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images} setPressed={props.setPressed}></Contacts>
+            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
         </div>
     );
 }
@@ -75,7 +75,7 @@ export function Contacts( props: any) {
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
-                        onClick={() => {props.setPressed(element);}}
+                        onClick={() => {props.setPressed(element); props.setCurrContact(element);}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
