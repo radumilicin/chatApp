@@ -5,7 +5,7 @@ import 'dotenv/config'
 import readline from 'readline';
 import fs from "fs";
 
-console.log(process.env.DATABASE_PSWD)
+// console.log(process.env.DATABASE_PSWD)
 
 
 // Create an interface for reading input from stdin and writing output to stdout
@@ -241,18 +241,13 @@ async function insertMessages(curr_user : number) {
 
         var messageJson = {"user_id": user_id, "recipient_id": recipient_id, "message": message, "timestamp": timestamp}
 
-
         // Create a client from the pool
         const client = await pool.connect();
         try {
             // {[]}
             // Insert the user into the "users" table
             await client.query(`UPDATE contacts
-                                SET message = jsonb_set(
-                                    COALESCE(message, '[]'::jsonb),  -- Ensure it starts as an empty array if null
-                                    '{0}',  -- This represents the root array (the first element)
-                                    COALESCE(message, '[]'::jsonb) || $1::jsonb  -- Append the new message
-                                )
+                                SET message = COALESCE(message, '[]'::jsonb) || jsonb_build_array($1::jsonb)
                                 WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
                                 [JSON.stringify(messageJson), parseInt(user_id), parseInt(recipient_id)]);
             console.log(`Message has been added to contacts.`);
