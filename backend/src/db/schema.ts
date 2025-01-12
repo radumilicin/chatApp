@@ -6,6 +6,7 @@ import {
   integer,
   timestamp,
   json,
+  jsonb
 } from "drizzle-orm/pg-core";
 
 
@@ -21,11 +22,12 @@ export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: varchar('username', { length: 50 }).notNull().unique(),
   password_hash: text('password_hash').notNull(),
+  profile_pic_id: integer("profile_pic_id").references(() => images.id)
 });
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
   id: serial('id'),
   contact_id: integer('contact_id').notNull().references(() => users.id),
-  message: json('message').default({})
+  message: jsonb('message').default({})
 });
