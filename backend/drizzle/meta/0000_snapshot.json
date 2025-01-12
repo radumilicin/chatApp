@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "id": "d5fc567a-4af8-4256-84d7-7ebec309300b",
+=======
+  "id": "0de1683a-ed4c-4e77-85c2-7ea13e739f45",
+>>>>>>> working_on_messages
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
