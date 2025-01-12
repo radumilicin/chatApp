@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 dotenv.config();
 
+console.log("password = " + process.env.DATABASE_PSWD)
 
 const app = express();
 app.use(cors())
