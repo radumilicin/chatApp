@@ -29,5 +29,5 @@ export const users = pgTable('users', {
 export const contacts = pgTable('contacts', {
   id: serial('id'),
   contact_id: integer('contact_id').notNull().references(() => users.id),
-  message: jsonb('message').default({})
+  message: jsonb('message').default([])
 });

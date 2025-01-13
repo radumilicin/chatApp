@@ -3,6 +3,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { WebSocketServer } from 'ws'
+import url from 'url'
 
 dotenv.config();
 
@@ -50,7 +51,7 @@ app.get('/contacts', async (req, res) => {
         const contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
         
         // Log the fetched contacts
-        console.log(contacts.rows);
+        // console.log(contacts.rows);
 
         // Send the contacts as the response
         res.status(200).send(contacts.rows);
@@ -79,7 +80,7 @@ app.get('/images', async (req, res) => {
         const images = await pool.query("SELECT * FROM images;");
         
         // Log the fetched contacts
-        console.log(images.rows);
+        // console.log(images.rows);
 
         // Send the contacts as the response
         res.status(200).send(images.rows);
@@ -96,7 +97,8 @@ wss.on('connection', (ws, req) => {
 
 //   var body = req.query.json()
 
-  const userId = req.url.userId; // Extract user ID
+  const queryObject = url.parse(req.url, true).query; // Parses URL and extracts query parameters
+  const userId = queryObject.userId; // Extract user ID
   console.log("userId = " + userId)
   clients.set(userId, ws); // Associate user with their WebSocket
 

@@ -3,7 +3,7 @@ import useWebSocket from './webSocket';
 
 export default function CurrentChat( props: any ) {
 
-    const { messages, isConnected, sendMessage } = useWebSocket('ws://localhost:8080');
+    const { messages, isConnected, sendMessage } = useWebSocket(`ws://localhost:8080?userId=${props.curr_user}`);
     const [text, setText] = useState('');
     const prevMessages = useRef(messages)
     const [allMessages, updateAllMessages] = useState([])
@@ -34,7 +34,11 @@ export default function CurrentChat( props: any ) {
         };
 
         sendMessage(message);
-        updateAllMessages([...allMessages, message])
+        if(allMessages.length === 0) updateAllMessages([message])    
+        else {
+            console.log("allMessages" + JSON.stringify(allMessages))
+            updateAllMessages([...allMessages, message])
+        }
         setText(''); // Clear input
     };
 
@@ -64,9 +68,9 @@ export default function CurrentChat( props: any ) {
                     props.curr_user === message.user_id ? 'bg-green-400 text-white' : 'bg-blue-500 text-white'
                 }`}
                 style={{
-                    marginLeft: props.curr_user === message.user_id ? 'auto' : 'unset',
-                    marginRight: props.curr_user === message.user_id ? 'unset' : 'auto',
-                }}>{message.message}</div>
+                alignSelf: props.curr_user === String(message.user_id) ? 'flex-end' : 'flex-start',
+                }}>
+                    {message.message}</div>
                 )})}
             </div>
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">

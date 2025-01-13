@@ -50,11 +50,11 @@ export default function Home() {
 
     fetchImages()
 
-    console.log("images = " + images)
+    // console.log("images = " + images)
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
 
   useEffect(() => {
-    console.log("images = " + JSON.stringify(images))
+    // console.log("images = " + JSON.stringify(images))
   }, [images])
 
   return (

@@ -210,5 +210,55 @@ async function insertImages() {
     } 
 }
 
-await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 
+
+
+async function insertMessageContacts() {
+  try{
+        // Ask to what user we are adding the image
+        var user_id : number = parseInt(await new Promise((resolve) => {
+            rl.question("Enter user_id: ", (answer) => {
+                resolve(answer);
+            });
+        }));
+
+        // Ask for image path
+        var contact_id : number = parseInt(await new Promise((resolve) => {
+            rl.question("Enter contact_id: ", (answer) => {
+                resolve(answer);
+            });
+        }));
+
+        // Ask for image path
+        var message : string = await new Promise((resolve) => {
+            rl.question("Enter message: ", (answer) => {
+                resolve(answer);
+            });
+        });
+
+        var timestamp = new Date().toISOString();
+        
+        const messageJson = { user_id, contact_id, message, timestamp };
+        
+        const client = await pool.connect();
+        try {
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+            WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
+            [JSON.stringify(messageJson), user_id, contact_id]
+          );
+        } catch(err) {
+          console.error(err)
+        }
+        finally {
+          client.release()
+        }
+  }
+  catch(err) {
+    console.error(err)
+  }
+}
+
+await insertMessageContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
