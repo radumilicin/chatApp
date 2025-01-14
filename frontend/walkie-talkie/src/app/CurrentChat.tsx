@@ -71,6 +71,15 @@ export default function CurrentChat( props: any ) {
             if(props.contact !== null) console.log("is this triggering? Contact = " + props.contact.contact_id)
             const currMessages = [...allMessages]
             const messagesNotYetReceived = messages.slice(messages.length - prevMessages.current.length, messages.length)
+            
+            var ls = []
+            // const initial_length = messagesNotYetReceived.length
+            for(var i = messagesNotYetReceived.length - 1 ; i > -1 ; i--){
+                if(messagesNotYetReceived[i].hasOwnProperty('message') && messagesNotYetReceived[i].hasOwnProperty('status')) {
+                   messagesNotYetReceived.splice(i, 1)
+                }
+            }
+
             updateAllMessages([...currMessages, ...messagesNotYetReceived])
             prevMessages.current = allMessages
 
