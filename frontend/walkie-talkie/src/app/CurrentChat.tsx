@@ -122,17 +122,24 @@ export default function CurrentChat( props: any ) {
                 </div>
             </div>
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 border-2 border-black overflow-scroll">
-                {allMessages.length > 0 && allMessages.map((message, idx) => {
-                    console.log("message =" + message)
-                    return (
-                    Object.keys(message.message).length > 0 && <div key={idx} className={`inline-block mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black ${
-                    props.curr_user === message.user_id ? 'bg-green-400 text-white ml-0' : 'bg-blue-500 text-white mr-0'
-                }`}
-                style={{
-                alignSelf: props.curr_user === String(message.user_id) ? 'flex' : 'flex-start',
-                }}>
-                    {message.message}</div>
-                )})}
+                {allMessages.length > 0 &&
+                    allMessages.map((message, idx) => {
+                        console.log("message =", message);
+                        return (
+                            Object.keys(message.message).length > 0 && (
+                                <div
+                                    key={idx}
+                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black ${
+                                        String(props.curr_user) === String(message.user_id)
+                                            ? 'bg-green-400 text-white mr-auto'
+                                            : 'bg-blue-500 text-white ml-auto'
+                                    }`}
+                                >
+                                    {message.message}
+                                </div>
+                            )
+                        );
+                    })}
             </div>
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="relative left-0 flex basis-[90%] h-full">
