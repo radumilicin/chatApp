@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-export default function useWebSocket (url) {
-    const [messages, setMessages] = useState([]); // Store received messages
+export default function useWebSocket (url, setMessages) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
 
@@ -44,5 +43,5 @@ export default function useWebSocket (url) {
     }
   };
 
-  return { messages, isConnected, sendMessage };
+  return { isConnected, sendMessage };
 };

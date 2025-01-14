@@ -75,7 +75,7 @@ export function Contacts( props: any) {
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
-                        onClick={() => {props.setPressed(element); props.setCurrContact(element);}}
+                        onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}

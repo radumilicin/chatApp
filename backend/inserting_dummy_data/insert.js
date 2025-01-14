@@ -180,17 +180,17 @@ async function insertImages() {
 async function insertMessageContacts() {
     try {
         // Ask to what user we are adding the image
-        var user_id = await new Promise((resolve) => {
+        var user_id = parseInt(await new Promise((resolve) => {
             rl.question("Enter user_id: ", (answer) => {
                 resolve(answer);
             });
-        });
+        }));
         // Ask for image path
-        var contact_id = await new Promise((resolve) => {
+        var contact_id = parseInt(await new Promise((resolve) => {
             rl.question("Enter contact_id: ", (answer) => {
                 resolve(answer);
             });
-        });
+        }));
         // Ask for image path
         var message = await new Promise((resolve) => {
             rl.question("Enter message: ", (answer) => {

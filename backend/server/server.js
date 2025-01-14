@@ -38,8 +38,16 @@ app.get('/users', async (req,res) => {
 
 app.get('/contacts', async (req, res) => {      
     const user_id = parseInt(req.query.user); // Extract user_id query parameter
+    var contact_id = null
+    if (req.query.contact_id) {
+      const parsedContactId = parseInt(req.query.contact_id, 10);
+      if (!isNaN(parsedContactId)) {
+        contact_id = parsedContactId;
+      }
+    }
 
     console.log("user_id = " + user_id)
+    console.log("contact_id = " + contact_id)
 
     // Check if user_id query parameter is provided
     if (!user_id) {
@@ -47,8 +55,23 @@ app.get('/contacts', async (req, res) => {
     }
 
     try {
-        // Fetch contacts for the specified user_id
-        const contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+      // Fetch contacts for the specified user_id
+      var contacts = null
+
+      console.log("before if?")
+
+      if(contact_id !== null) {
+        console.log("before query")
+        contacts = await pool.query("SELECT * FROM contacts WHERE (id = $1 AND contact_id = $2);", [user_id, contact_id]);
+        console.log("contacts = " + JSON.stringify(contacts))
+      }
+      else {
+        console.log("in else")
+        contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+        console.log("Contact id not specified")        
+      }
+    
+      console.log("rows = " + JSON.stringify(contacts.rows))
         
         // Log the fetched contacts
         // console.log(contacts.rows);

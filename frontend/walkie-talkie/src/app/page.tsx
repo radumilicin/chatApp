@@ -50,6 +50,8 @@ export default function Home() {
 
     fetchImages()
 
+    console.log(JSON.stringify(contacts))
+
     // console.log("images = " + images)
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
 

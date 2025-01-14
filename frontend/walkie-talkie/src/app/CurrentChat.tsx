@@ -3,23 +3,79 @@ import useWebSocket from './webSocket';
 
 export default function CurrentChat( props: any ) {
 
-    const { messages, isConnected, sendMessage } = useWebSocket(`ws://localhost:8080?userId=${props.curr_user}`);
+    const [ messages, setMessages] = useState([]); // Store received messages
+    const { isConnected, sendMessage } = useWebSocket(`ws://localhost:8080?userId=${props.curr_user}`, setMessages);
     const [text, setText] = useState('');
     const prevMessages = useRef(messages)
     const [allMessages, updateAllMessages] = useState([])
-    const [contact, setContact] = useState(null)
+    const allMessagesPrev = useRef(allMessages)
+    const contact = useRef(null)
 
-    // gets all messages already existing in the DB
+    async function updateList(allMessages, newMessages: any[]){
+        var elems = []
+        for (const elem of newMessages) {
+            // Assuming `message` is the unique key in each element
+            if (!allMessages.some((msg) => msg.timestamp === elem.timestamp)) {
+                console.log("new message: " + JSON.stringify(elem.message))
+                elems.push(elem);
+            }
+        }
+        updateAllMessages((prev) => {
+            const updatedMessages = [...prev, ...elems];
+            allMessagesPrev.current = updatedMessages; // Update the reference
+            return updatedMessages;
+        });
+        setMessages([]);
+    }
+
+    //gets all messages already existing in the DB
     useEffect(() => {
-        setContact(props.contact)
-        if(props.contact !== null)
-            updateAllMessages(props.contact.message)
+        // if(props.contact !== null){
+        if(props.contact !== contact.current){
+            console.log("NEW CONTACT = " + props.contact.contact_id)
+            const emptyMessages = async () => {
+                updateAllMessages(() => [])
+                console.log("messages after emptying = " + JSON.stringify(allMessages))
+            }
+            emptyMessages()
+            prevMessages.current = []
+
+            console.log("props.contact in if = " + props.contact.contact_id)
+            const fetchMessages = async () => {
+                const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
+                // console.log("response = " + JSON.stringify(response))
+                const result = await response.json();
+                console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                await updateList(allMessages, result[0]?.message)
+                console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+            };
+            fetchMessages()
+
+            const updateContactAndMessages = async () => {
+                // setContact(props.contact)
+                setMessages([])
+            }
+            updateContactAndMessages()
+
+            console.log("props.contact = " + props.contact)
+        }
+        contact.current = props.contact
+        // }
+
+        // if(props.contact !== null)
+        //     updateAllMessages(props.contact.message)
     }, [props.contact])
 
     useEffect(() => {
-        const currMessages = [...allMessages]
-        const messagesNotYetReceived = messages.slice(messages.length - prevMessages.current.length, messages.length)
-        updateAllMessages([...currMessages, ...messagesNotYetReceived])
+        if(props.contact === contact.current) {  // this only happens when the contact user stays the same
+            if(props.contact !== null) console.log("is this triggering? Contact = " + props.contact.contact_id)
+            const currMessages = [...allMessages]
+            const messagesNotYetReceived = messages.slice(messages.length - prevMessages.current.length, messages.length)
+            updateAllMessages([...currMessages, ...messagesNotYetReceived])
+            prevMessages.current = allMessages
+
+            console.log("allMessages in messages = " + JSON.stringify(allMessages))
+        }
     }, [messages])
 
 
@@ -34,7 +90,10 @@ export default function CurrentChat( props: any ) {
         };
 
         sendMessage(message);
-        if(allMessages.length === 0) updateAllMessages([message])    
+        if(allMessages.length === 0) {
+            console.log("why is this triggering now?")
+            updateAllMessages([message])    
+        }
         else {
             console.log("allMessages" + JSON.stringify(allMessages))
             updateAllMessages([...allMessages, message])
@@ -56,19 +115,21 @@ export default function CurrentChat( props: any ) {
         <div className="relative top-[10%] left-[10%] w-[50%] h-[80%] rounded-lg bg-[#7DD8C3] border-white border-[3px]">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-white border-b-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
-                    {contact !== null && <img src={`data:image/jpg;base64,${getImage(contact).data}`} className="max-h-[60%] rounded-full"></img>}
+                    {contact.current !== null && <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img>}
                 </div>
                 <div className="flex w-[85%] h-[100%] items-center">
-                    {contact !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact).username}</div>}
+                    {contact.current !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact.current).username}</div>}
                 </div>
             </div>
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 border-2 border-black overflow-scroll">
-                {allMessages.length > 0 && allMessages.map((message, idx) => {return (
-                    Object.keys(message).length > 0 && <div key={idx} className={`inline-block mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black ${
-                    props.curr_user === message.user_id ? 'bg-green-400 text-white' : 'bg-blue-500 text-white'
+                {allMessages.length > 0 && allMessages.map((message, idx) => {
+                    console.log("message =" + message)
+                    return (
+                    Object.keys(message.message).length > 0 && <div key={idx} className={`inline-block mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black ${
+                    props.curr_user === message.user_id ? 'bg-green-400 text-white ml-0' : 'bg-blue-500 text-white mr-0'
                 }`}
                 style={{
-                alignSelf: props.curr_user === String(message.user_id) ? 'flex-end' : 'flex-start',
+                alignSelf: props.curr_user === String(message.user_id) ? 'flex' : 'flex-start',
                 }}>
                     {message.message}</div>
                 )})}
