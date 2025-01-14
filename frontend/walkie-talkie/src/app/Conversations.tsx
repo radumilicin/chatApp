@@ -6,6 +6,7 @@ import React, {useState} from 'react';
 export default function Conversations( props : any) {
     
     const [currentSearch, setCurrSearch] = useState('');
+    const [filteredContacts, setFilteredContacts] = useState([]);
 
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -16,7 +17,7 @@ export default function Conversations( props : any) {
         <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-2xl border-white border-2">
             {/* search bar here */}
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch}></SearchBar>
-            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
+            <Contacts currentSearch={currentSearch} users={props.users} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
         </div>
     );
 }
@@ -30,7 +31,7 @@ export function SearchBar( props : any ) {
                     <img className='absolute max-w-[50px] max-h-[50px] w-[50%] h-[50%]' src="/search.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto" 
+                    <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-3xl" 
                         value={props.currentSearch}
                         onChange={(e) => props.setCurrSearch(e.target.value)} // Update `currentSearch`
                     >
@@ -54,13 +55,10 @@ export function Contacts( props: any) {
         return user ? user.username : "";
     }
      
-    function getLastMessage(contact : any) {
-        let msgs = contact.message
-        if(msgs === "{}") return ""
-        else return ""
-        // else {
-        //     return contact.message["messages"][contact.message["messages"].length() - 1]
-        // }
+    function getLastMessage(contact : any, idx: number) {
+        let last_msg = contact.message.message
+        console.log(`this is the ${idx}th contact in the list`)
+        return last_msg
     }
 
     function getImage(contact: any) {
@@ -70,8 +68,9 @@ export function Contacts( props: any) {
 
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
-            <div className="relative top-0 left-0 h-full w-full flex flex-col">
+            <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 {props.contacts.map((element: any, idx: number) => (
+                    element.id === props.curr_user ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
@@ -85,15 +84,15 @@ export function Contacts( props: any) {
                                 alt="Profile"
                             />
                         </div>
-                        <div className="flex basis-[9/10]">
+                        <div className="flex basis-[9/10] flex-col">
                             <div className="flex h-[50%] w-full items-center">
-                                <div className="indent-[20px]">{getNameWithUserId(element)}</div>
+                                <div className="indent-[20px] text-2xl">{getNameWithUserId(element)}</div>
                             </div>
-                            <div className="flex h-[50%] w-full items-center">
-                                {getLastMessage(element)}
+                            <div className="indent-[20px] flex h-[50%] w-full items-center text-xl text-black font-medium">
+                                {getLastMessage(element, idx)}
                             </div>
                         </div>
-                    </div>
+                    </div> : <></>
                 ))}
             </div>
         </div>

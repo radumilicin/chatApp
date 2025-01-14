@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full bg-[#3B7E9B]">
       <div className="relative left-0 top-0 w-full h-full flex flex-row">
-        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} setCurrContact={setCurrContact}></Conversations>
+        <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}></Conversations>
         <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user}></CurrentChat>
       </div>
     </div>

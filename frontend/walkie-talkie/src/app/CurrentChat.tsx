@@ -130,7 +130,7 @@ export default function CurrentChat( props: any ) {
                     {contact.current !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact.current).username}</div>}
                 </div>
             </div>
-            <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 border-2 border-black overflow-scroll">
+            <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 border-2 overflow-scroll">
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
                         console.log("message =", message);
@@ -152,11 +152,13 @@ export default function CurrentChat( props: any ) {
             </div>
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="relative left-0 flex basis-[90%] h-full">
-                    <input type="text" value={text} onChange={(e) => {setText(e.target.value)}}className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white" 
+                    <input type="text" value={text} onChange={(e) => {setText(e.target.value)}}className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white text-3xl" 
                         onKeyDown={(e) => { if(e.key === "Enter") {handleSendMessage(); setText("")}}}></input>
                 </div>
-                <div className="relative left-0 flex basis-[10%] items-center right-2">
-                    <img src="/send.png" className="max-h-[50%]"></img>
+                <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center " >
+                    <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl mr-8 w-full hover:bg-slate-500" onClick={() => {handleSendMessage(); setText("")}}>
+                        <img src="/send.png" className="h-[80%] max-w-[80%]"></img>
+                    </div>
                 </div>
             </div>
         </div>
