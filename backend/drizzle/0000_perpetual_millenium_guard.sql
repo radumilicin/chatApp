@@ -1,9 +1,10 @@
 CREATE TABLE "contacts" (
 	"id" serial NOT NULL,
 	"contact_id" integer NOT NULL,
-	"message" jsonb DEFAULT '{}'::jsonb
+	"message" jsonb DEFAULT '[]'::jsonb
 );
---> statement-breakpoint
+
+-- --> statement-breakpoint
 -- CREATE TABLE "images" (
 -- 	"id" serial PRIMARY KEY NOT NULL,
 -- 	"user_id" integer NOT NULL,
@@ -18,7 +19,6 @@ CREATE TABLE "contacts" (
 -- 	"profile_pic_id" integer,
 -- 	CONSTRAINT "users_username_unique" UNIQUE("username")
 -- );
-
 --> statement-breakpoint
 ALTER TABLE "contacts" ADD CONSTRAINT "contacts_contact_id_users_id_fk" FOREIGN KEY ("contact_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 -- ALTER TABLE "images" ADD CONSTRAINT "images_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

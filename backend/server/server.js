@@ -3,6 +3,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { WebSocketServer } from 'ws'
+import url from 'url'
 
 dotenv.config();
 
@@ -35,10 +36,18 @@ app.get('/users', async (req,res) => {
     }
 });
 
-app.get('/contacts', async (req, res) => {
+app.get('/contacts', async (req, res) => {      
     const user_id = parseInt(req.query.user); // Extract user_id query parameter
+    var contact_id = null
+    if (req.query.contact_id) {
+      const parsedContactId = parseInt(req.query.contact_id, 10);
+      if (!isNaN(parsedContactId)) {
+        contact_id = parsedContactId;
+      }
+    }
 
     console.log("user_id = " + user_id)
+    console.log("contact_id = " + contact_id)
 
     // Check if user_id query parameter is provided
     if (!user_id) {
@@ -46,11 +55,26 @@ app.get('/contacts', async (req, res) => {
     }
 
     try {
-        // Fetch contacts for the specified user_id
-        const contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+      // Fetch contacts for the specified user_id
+      var contacts = null
+
+      console.log("before if?")
+
+      if(contact_id !== null) {
+        console.log("before query")
+        contacts = await pool.query("SELECT * FROM contacts WHERE (id = $1 AND contact_id = $2);", [user_id, contact_id]);
+        console.log("contacts = " + JSON.stringify(contacts))
+      }
+      else {
+        console.log("in else")
+        contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+        console.log("Contact id not specified")        
+      }
+    
+      console.log("rows = " + JSON.stringify(contacts.rows))
         
         // Log the fetched contacts
-        console.log(contacts.rows);
+        // console.log(contacts.rows);
 
         // Send the contacts as the response
         res.status(200).send(contacts.rows);
@@ -79,7 +103,7 @@ app.get('/images', async (req, res) => {
         const images = await pool.query("SELECT * FROM images;");
         
         // Log the fetched contacts
-        console.log(images.rows);
+        // console.log(images.rows);
 
         // Send the contacts as the response
         res.status(200).send(images.rows);
@@ -91,21 +115,26 @@ app.get('/images', async (req, res) => {
 
 const clients = new Map(); // Maps user_id => WebSocket
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   console.log('New client connected');
 
-  const userId = getUserIdFromReq(req); // Extract user ID
+//   var body = req.query.json()
+
+  const queryObject = url.parse(req.url, true).query; // Parses URL and extracts query parameters
+  const userId = queryObject.userId; // Extract user ID
+  console.log("userId = " + userId)
   clients.set(userId, ws); // Associate user with their WebSocket
 
   // Handle incoming messages
-  ws.on('message', async (message) => {
+  ws.on('message', async (msg) => {
     try {
-      console.log(`Received message: ${message}`);
-      const parsedMessage = JSON.parse(message);
+      const parsedMessage = JSON.parse(msg);
+      console.log(`Received message: ${JSON.stringify(parsedMessage)}`);
 
       // Ensure the message has the required fields
-      const { sender_id, recipient_id, text, timestamp } = parsedMessage;
-      if (!sender_id || !recipient_id || !text || !timestamp) {
+      const { user_id, recipient_id, message, timestamp } = parsedMessage;
+      console.log("user_id: " + user_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
+      if (!user_id || !recipient_id || !message || !timestamp) {
         ws.send(JSON.stringify({ error: 'Invalid message format' }));
         return;
       }
@@ -117,17 +146,17 @@ wss.on('connection', (ws) => {
       if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
         recipientWs.send(JSON.stringify({ senderId, content })); // Send message
       } else {
-        console.log(`Recipient ${recipientId} is not online.`);
+        console.log(`Recipient ${recipient_id} is not online.`);
       }
 
       /////////////////////////////////////////////////////////////////////////
       // Save the message to the database
-      const messageJson = { sender_id, recipient_id, text, timestamp };
+      const messageJson = { user_id, recipient_id, message, timestamp };
       await pool.query(
         `UPDATE contacts
          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
          WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
-        [JSON.stringify(messageJson), sender_id, recipient_id]
+        [JSON.stringify(messageJson), user_id, recipient_id]
       );
       /////////////////////////////////////////////////////////////////////////
 
@@ -135,7 +164,7 @@ wss.on('connection', (ws) => {
       ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
 
       // Optionally broadcast to other clients
-      broadcast(wss, ws, parsedMessage);
+    //   broadcast(wss, ws, parsedMessage);
 
     } catch (err) {
       console.error('Error handling message:', err);

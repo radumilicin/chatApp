@@ -1,41 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-export default function useWebSocket (url) {
-    const [messages, setMessages] = useState([]); // Store received messages
+export default function useWebSocket (url, setMessages) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
 
+    useEffect(() => {
+        // Initialize WebSocket
+        ws.current = new WebSocket(url);
 
-  useEffect(() => {
-    // Initialize WebSocket
-    ws.current = new WebSocket(url);
+        ws.current.onopen = () => {
+            console.log('WebSocket connected');
+            setIsConnected(true);
+        };
 
-    ws.current.onopen = () => {
-      console.log('WebSocket connected');
-      setIsConnected(true);
-    };
+        ws.current.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            console.log('Message received:', message);
+            setMessages((prev) => [...prev, message]);
+        };
 
-    ws.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      console.log('Message received:', message);
-      setMessages((prev) => [...prev, message]);
-    };
+        ws.current.onclose = () => {
+            console.log('WebSocket disconnected');
+            setIsConnected(false);
+        };
 
-    ws.current.onclose = () => {
-      console.log('WebSocket disconnected');
-      setIsConnected(false);
-    };
+        ws.current.onerror = (error) => {
+           console.error('WebSocket error:', error);
+        };
 
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    // Cleanup on unmount
-    return () => {
-      ws.current.close();
-    };
-  }, [url]);
+        // Cleanup on unmount
+        return () => {
+            ws.current.close();
+        };
+    }, [url]);
 
   const sendMessage = (message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -45,5 +43,5 @@ export default function useWebSocket (url) {
     }
   };
 
-  return { messages, isConnected, sendMessage };
+  return { isConnected, sendMessage };
 };
