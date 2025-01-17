@@ -126,19 +126,21 @@ wss.on('connection', (ws, req) => {
   clients.set(userId, ws); // Associate user with their WebSocket
 
   // Handle incoming messages
-  ws.on('message', async (msg) => {
+  ws.on('message', async (MSG) => {
     try {
-      const parsedMessage = JSON.parse(msg);
-      console.log(`Received message: ${JSON.stringify(parsedMessage)}`);
+      console.log("in try")
+      const parsedMessage = JSON.parse(MSG);
+      // console.log(`Received message: ${JSON.stringify(parsedMessage)}`);
 
       // Ensure the message has the required fields
-      const { user_id, recipient_id, message, timestamp } = parsedMessage;
-      console.log("user_id: " + user_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
+      var { user_id, recipient_id, message, timestamp } = parsedMessage;
+      // console.log("user_id: " + user_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
       if (!user_id || !recipient_id || !message || !timestamp) {
         ws.send(JSON.stringify({ error: 'Invalid message format' }));
         return;
       }
 
+      console.log("before recipient web socket")
       // Get recipient's WebSocket
       const recipientWs = clients.get(recipient_id);
 
@@ -147,6 +149,36 @@ wss.on('connection', (ws, req) => {
         recipientWs.send(JSON.stringify({ senderId, content })); // Send message
       } else {
         console.log(`Recipient ${recipient_id} is not online.`);
+      }
+
+      let msg = message
+      let imgBytes = null
+
+      console.log("before testing image in server")
+
+      // to see if it's an image or not
+      const isBase64 = (str) => {
+      try {
+        return btoa(atob(str)) === str; // If the string can be re-encoded to base64, it's valid
+      } catch (err) {
+        return false; // It's not valid base64
+      }
+    };
+
+      // Try decoding the image, but only if it's a valid base64 string
+      if (isBase64(message)) {
+        try {
+          console.log("trying to decode image?");
+          imgBytes = atob(message); // Decode base64
+          message = {
+            "image_id": Math.floor(Math.random() * 10000000) + 5
+          };
+          console.log("decoding ok");
+        } catch (err) {
+          console.error("Error decoding image:", err);
+        }
+      } else {
+        console.log("Message is not a valid base64 string");
       }
 
       /////////////////////////////////////////////////////////////////////////
@@ -158,6 +190,10 @@ wss.on('connection', (ws, req) => {
          WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
         [JSON.stringify(messageJson), user_id, recipient_id]
       );
+      if(imgBytes !== null) {
+        await pool.query('INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
+          [message.image_id, user_id, recipient_id, '', msg]);
+      }
       /////////////////////////////////////////////////////////////////////////
 
       // Acknowledge receipt
