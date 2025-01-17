@@ -5,7 +5,7 @@ import 'dotenv/config'
 import readline from 'readline';
 import fs from "fs";
 
-
+console.log("aa")
 // Create an interface for reading input from stdin and writing output to stdout
 const rl = readline.createInterface({
   input: process.stdin,

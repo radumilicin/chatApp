@@ -13,6 +13,7 @@ import {
 export const images = pgTable("images", {
   id: serial("id").primaryKey(),
   id_user: integer("user_id").notNull().references(() => users.id),
+  contact_id: integer("contact_id").references(() => users.id),
   image_name: text("image_name").notNull(), // To keep track of the image name
   data: text("data").notNull(), // Base64-encoded image data
 });

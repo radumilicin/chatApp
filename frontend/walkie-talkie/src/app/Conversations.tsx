@@ -63,6 +63,8 @@ export function Contacts( props: any) {
 
     let curr_user = 1
 
+    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1
     // and here we extract its contacts and the messages that happen most recently are shown first
@@ -132,7 +134,7 @@ export function Contacts( props: any) {
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[80%]">
                                     <div className="indent-[20px] flex h-full w-full items-center text-sm text-gray-600 font-medium">
-                                        {getLastMessage(element, idx).message}
+                                        {(getLastMessage(element, idx).message).hasOwnProperty("image_id") ? "Image" : getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}

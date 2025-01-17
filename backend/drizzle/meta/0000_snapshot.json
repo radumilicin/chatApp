@@ -1,5 +1,5 @@
 {
-  "id": "24fe723b-c250-420f-9561-2768dd5d0f4d",
+  "id": "e0b70c91-5b5a-43d7-84ea-ee315c27d98e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -66,6 +66,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "contact_id": {
+          "name": "contact_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "image_name": {
           "name": "image_name",
           "type": "text",
@@ -87,6 +93,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "images_contact_id_users_id_fk": {
+          "name": "images_contact_id_users_id_fk",
+          "tableFrom": "images",
+          "tableTo": "users",
+          "columnsFrom": [
+            "contact_id"
           ],
           "columnsTo": [
             "id"

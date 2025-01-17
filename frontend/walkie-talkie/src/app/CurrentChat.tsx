@@ -90,7 +90,7 @@ export default function CurrentChat( props: any ) {
 
 
     const handleSendMessage = (msg) => {
-        if (text.trim() === '') return;
+        if (msg.trim() === '') return;
 
         const message = {
             user_id: props.curr_user, // Replace with dynamic user ID
@@ -121,6 +121,15 @@ export default function CurrentChat( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
+    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+
+    const findImageBasedOnId = (message: any) => {
+        console.log("message = " + JSON.stringify(message))
+        const image = props.images.find((img) => { return img.id === message.image_id})
+        console.log("image =" + JSON.stringify(image))
+        return image
+    }
+
     return (
         <div className="relative top-[10%] left-[10%] w-[50%] h-[80%] rounded-lg bg-[#7DD8C3] border-[3px]">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row">
@@ -147,7 +156,7 @@ export default function CurrentChat( props: any ) {
                                 >
                                     {/* Message Text */}
                                     <div className="w-[80%] break-words px-3">
-                                        {message.message}                 
+                                        {message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : message.message}
                                     </div>
                                     {/* Timestamp */}
                                     <div
@@ -169,28 +178,53 @@ export default function CurrentChat( props: any ) {
                     <div className="relative flex items-center justify-center w-full h-full">
                         <img
                             src="/attach1.png"
-                            className="h-[70%] rounded-2xl hover:bg-slate-500 cursor-pointer"
+                            className="h-[70%] rounded-2xl hover:bg-slate-500 cursor-pointer z-0"
                             alt="Upload"
+                            // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
                         />
-                        {/* Hidden Input for File Upload */}
-                        <input
-                            type="file"
-                            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                        <input 
+                            type="file" accept="image/*"
+                            className="absolute top-0 left-0 w-full z-10 h-full opacity-0 cursor-pointer"
+                            // onClick={(event) => {
+                            //     event.preventDefault();
+                            // }}
                             onChange={(event) => {
+                                console.log("File input triggered");
                                 const file = event.target.files[0];
                                 if (file) {
-                                    // Convert the file to Base64
+                                    console.log("File selected:", file.name);
                                     const reader = new FileReader();
+                                    console.log("FileReader created");
                                     reader.onload = (e) => {
-                                        const base64Image = e.target.result; // Base64 string
-                                        console.log("Base64 Image:", base64Image);
-                                        // POST request using fetch inside useEffect React hook
-                                        handleSendMessage(base64Image)
+                                        console.log("File loaded");
+                                        let base64Image = e.target.result as string;
+                                        const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+                                        if (base64Regex.test(base64Image)) {
+                                            // Remove the data URL prefix
+                                            base64Image = base64Image.replace(base64Regex, '');
+                                        }
+
+                                        console.log("Base64 Image (stripped):", base64Image);
+                                        
+                                        // Send the base64 image
+                                        handleSendMessage(base64Image);
                                     };
-                                    reader.onerror = (error) => {
-                                        console.error("Error converting to Base64:", error);
-                                    };
+                                    reader.onerror = (error) => console.error("Error reading file:", error);
+                                    reader.readAsDataURL(file);
+                                    console.log("Started reading file");
+                                } else {
+                                    console.log("No file selected");
                                 }
+                                // Reset the file input to allow re-selection
+                                event.target.value = '';
+                                // event.preventDefault(); // Prevent any default behavior that might be causing issues
+                                // const file = event.target.files[0];
+                                // if (file) {
+                                //     console.log("File selected:", file.name);
+                                // } else {
+                                //     console.log("No file selected");
+                                // }
+                                // event.target.value = ''; // Reset
                             }}
                         />
                     </div>
