@@ -156,7 +156,9 @@ export default function CurrentChat( props: any ) {
                                 >
                                     {/* Message Text */}
                                     <div className="w-[80%] break-words px-3">
-                                        {message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : message.message}
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                          isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                        message.message}
                                     </div>
                                     {/* Timestamp */}
                                     <div
@@ -217,14 +219,6 @@ export default function CurrentChat( props: any ) {
                                 }
                                 // Reset the file input to allow re-selection
                                 event.target.value = '';
-                                // event.preventDefault(); // Prevent any default behavior that might be causing issues
-                                // const file = event.target.files[0];
-                                // if (file) {
-                                //     console.log("File selected:", file.name);
-                                // } else {
-                                //     console.log("No file selected");
-                                // }
-                                // event.target.value = ''; // Reset
                             }}
                         />
                     </div>
