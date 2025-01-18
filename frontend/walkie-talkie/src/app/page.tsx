@@ -18,38 +18,42 @@ export default function Home() {
 
   // change this when authentication will be a thing 
   let user = 1
+  
   let image_path = "./images/userProfile2.jpg"
 
-  // gets the users
-  useEffect(() => {
-
-    // Function to fetch data
-    const fetchData = async () => {
+  const fetchData = async () => {
       const response = await fetch('http://localhost:3002/users'); // Replace with your API endpoint
       const result = await response.json();
       updateUsers(result);
       console.log(result);
     };
 
-    fetchData()
-
-    console.log("user = " + user)
-    
-    const fetchData2 = async () => {
+  const fetchData2 = async () => {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // Replace with your API endpoint
       const result = await response.json();
       updateContacts(result);
       console.log(result);
     };
 
-    fetchData2()
-
-    const fetchImages = async () => {
+  const fetchImages = async () => {
       const response = await fetch(`http://localhost:3002/images`); // Replace with your API endpoint
       const result = await response.json();
       updateImages(result);
       console.log(result);
     };
+  
+
+  // gets the users
+  useEffect(() => {
+
+    // Function to fetch data
+
+
+    fetchData()
+
+    console.log("user = " + user)
+
+    fetchData2()
 
     fetchImages()
 
@@ -67,8 +71,7 @@ export default function Home() {
       <div className="relative left-0 top-0 w-full h-full flex flex-row">
         <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
         {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}></Conversations> 
-                                  : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile}></ProfileSettings>
-        
+                                  : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} fetchData2={fetchData2} fetchImages={fetchImages}></ProfileSettings>
         }
         <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user}></CurrentChat>
       </div>

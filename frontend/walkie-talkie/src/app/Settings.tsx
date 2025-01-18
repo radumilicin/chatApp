@@ -16,14 +16,20 @@ export default function OptionsBar(props){
 
 export function Settings(props) {
 
+    const [imageData, setImageData] = useState({'data' : ""}) 
+
     // type user is either current or other (0,1)
     function getProfileImage() {
         const user = props.users.find((user) => {
             return user.id === props.curr_user
         })
-        const image = props.images.find((image: any) => image.id === user.image_id);
+        const image = props.images.find((image: any) => image.id === user.profile_pic_id);
         return image || { data: "" }; // Ensure we return a fallback value
     }
+
+    useEffect(() => {
+        setImageData(getProfileImage())
+    }, [props.users, props.images])
 
     return (
         <div className="relative flex flex-col h-[50%] rounded-bl-2xl w-full">
@@ -31,8 +37,8 @@ export function Settings(props) {
                 <img src="./whiteCog.png" className="flex w-[70%] h-[70%] hover:bg-gray-500" onClick={() => {}}></img>
             </div>
             <div className="w-full h-[20%] top-[60%] hover:rounded-bl-xl hover:bg-gray-500 relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(true)}}>
-                {getProfileImage().data !== "" ? <img src={`data:image/jpg;base64,${getProfileImage().data}`} className="flex w-[70%] h-[70%] hover:bg-gray-500" onClick={() => {}}></img>
-                                               : <img src="./profilePic2.png" className="flex w-[70%] h-[70%] hover:bg-gray-500"></img>
+                {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-[70%] h-[70%] hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
+                                               : <img src="./profilePic2.png" className="flex w-[70%] h-[70%] hover:bg-gray-500 rounded-full"></img>
                 }
             </div>
         </div>
