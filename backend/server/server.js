@@ -284,6 +284,25 @@ app.post('/changeUsername', async (req, res) => {
   }
 })
 
+app.post('/changeAbout', async (req, res) => {
+
+  const { id, new_about } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+
+  if(id !== null && new_about !== null) {
+    try {
+      await pool.query(`UPDATE users SET about = $2 WHERE id = $1`, [id, new_about])
+      
+      res.sendStatus(200)
+    } catch(err) {
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
+
+
 app.listen(PORT, (error) =>{
     if(!error)
         console.log("Server is Successfully Running, and App is listening on port "+ PORT)
