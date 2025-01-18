@@ -31,7 +31,7 @@ export default function Conversations( props : any) {
     }
 
     return (
-        <div className="relative left-[5%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-2xl border-white border-2">
+        <div className="relative left-[8%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
             {/* search bar here */}
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>
             <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
@@ -99,6 +99,19 @@ export function Contacts( props: any) {
         return image || { data: "" }; // Ensure we return a fallback value
     }
 
+    // type user is either current or other (0,1)
+    function getProfileImage(contact: any, type_user : number) {
+        const user = props.users.find((user) => {
+            if(type_user === 0){
+                return user.id === props.curr_user
+            } else {
+                return contact.contact_id === user.id
+            }
+        })
+        const image = props.images.find((image: any) => image.id === user.image_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
@@ -111,11 +124,15 @@ export function Contacts( props: any) {
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
-                            <img
+                            {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"
-                            />
+                            /> : getProfileImage(element, 1).data !== "" ? <img
+                                src={`data:image/jpg;base64,${getImage(element).data}`}
+                                className="h-[75%] w-[75%] rounded-full"
+                                alt="Profile"></img> : 
+                                <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
                         </div>
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[50%] w-full items-center flex-row">
