@@ -266,6 +266,23 @@ app.post('/putProfilePic', async (req, res) => {
 
 });
 
+app.post('/changeUsername', async (req, res) => {
+
+  const { id, new_username } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+
+  if(id !== null && new_username !== null) {
+    try {
+      await pool.query(`UPDATE users SET username = $2 WHERE id = $1`, [id, new_username])
+      
+      res.sendStatus(200)
+    } catch(err) {
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
 
 app.listen(PORT, (error) =>{
     if(!error)

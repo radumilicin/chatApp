@@ -4,6 +4,8 @@ export default function ProfileSettings(props) {
 
     const [hoveredProfilePic, setHoverProfilePic] = useState(false)
     const [currImageData, setCurrImageData] = useState({'data' : ""})
+    const [username, setUsername] = useState('');
+    const [stateUsername, setStateUsername] = useState('fixed')
 
     // type user is either current or other (0,1)
     function getProfileImage() {
@@ -49,9 +51,32 @@ export default function ProfileSettings(props) {
         }
     }
 
+    async function changeUsername(new_username) {
+        const msg = {
+            id: props.curr_user,
+            new_username: new_username,
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(msg)
+        };
+        console.log("Before sending POST request to server to change profile pic")
+        const response = await fetch(`http://localhost:3002/changeUsername`, requestOptions)
+        if(response.status === 200){
+            await props.fetchData()
+
+            // update images here 
+            // const response2 = await fetch(`http://localhost:3002/putProfilePic?user=${props.curr_user}`)
+        }
+    }
+
+
     useEffect(() => {
         console.log("users after profile pic change = " + JSON.stringify(props.users))
         setCurrImageData(getProfileImage())
+        setUsername(getCurrUser().username)
     }, [props.users, props.images])
 
     useEffect(() => {
@@ -106,9 +131,22 @@ export default function ProfileSettings(props) {
             </div>
             <div className="relative flex flex-col top-[0%] left-[15%] w-[70%] h-[30%] justify-center text-black">
                 <p className="text-green-600 h-[10%] text-lg font-semibold">Your name</p>
-                <div className="relative w-full h-[20%] flex flex-row items-center">
-                    <p className="flex flex-row w-[50%] h-full items-center text-md font-medium">{getCurrUser().username}</p>
-                    <div className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400">
+                <div className="relative top-[10%] w-full h-[20%] flex flex-row items-center">
+                    {
+                     stateUsername === "fixed" ? <p className="flex flex-row w-[50%] h-full items-center text-md font-medium">{getCurrUser().username}</p> 
+                                               : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
+                                                        value={username} onChange={(e) => {
+                                                            setUsername(e.target.value)
+                                                        }}    
+                                                        onKeyDown={(e) => {
+                                                            if(e.key === "Enter"){
+                                                                changeUsername(username)
+                                                                setStateUsername("fixed")
+                                                            }
+                                                        }}></input>
+                                               
+                    }
+                    <div className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400" onClick={() => {setStateUsername("input")}}>
                         <img src="./edit2.png" className="w-[40%] h-[50%]"></img>
                     </div>
                 </div>

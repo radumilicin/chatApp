@@ -44,7 +44,7 @@ export function SearchBar( props : any ) {
     return (
         <div className="absolute left-[2%] top-[2%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50">
             <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                <div className='relative left-0 top-0 w-[10%] h-full flex flex-col justify-center items-center'>
+                <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
                     <img className='absolute max-w-[50px] max-h-[50px] w-[50%] h-[50%]' src="/search.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
