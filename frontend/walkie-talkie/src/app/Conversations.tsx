@@ -31,18 +31,34 @@ export default function Conversations( props : any) {
     }
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
+        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
             {/* search bar here */}
+            <OtherOptions></OtherOptions>
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>
             <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
         </div>
     );
 }
 
+export function OtherOptions (props) {
+    return (
+        <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-col">
+            <div className="relative left-[78%] w-[20%] h-full flex flex-row items-center">
+                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center">
+                    <img src="./newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                </div>
+                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center">
+                    <img src="./menu3.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                </div>
+            </div>
+        </div>
+    ); 
+}
+
 export function SearchBar( props : any ) {
 
     return (
-        <div className="absolute left-[2%] top-[2%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50">
+        <div className="absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50">
             <div className="relative top-0 left-0 h-full w-full flex flex-row">
                 <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
                     <img className='absolute max-w-[50px] max-h-[50px] w-[50%] h-[50%]' src="/search.png"></img>

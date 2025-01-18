@@ -102,7 +102,7 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[10%] h-[80%] bg-[#7DD8C3] rounded-r-xl border-white border-2 flex flex-col">
+        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2 flex flex-col">
             <div className="relative flex flex-row top-[5%] left-[15%] w-[70%] h-[45%] bg-gray-700 justify-center items-center hover:opacity-50 rounded-full" 
                 onMouseEnter={() => {setHoverProfilePic(true)}} onMouseLeave={() => {setHoverProfilePic(false)}}>
                 {currImageData.data !== "" ? <img src={`data:image/jpeg;base64,${currImageData.data}`} className="h-[70%] w-[70%] z-0 rounded-full" />

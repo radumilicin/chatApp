@@ -3,7 +3,7 @@ import react, {useState, useEffect} from 'react';
 
 export default function OptionsBar(props){
     return (    
-        <div className="absolute left-[3%] top-[10%] w-[5%] h-[80%] bg-gray-800 rounded-l-xl flex flex-col"> 
+        <div className="absolute left-[3%] top-[5%] w-[5%] h-[90%] bg-gray-800 rounded-l-xl flex flex-col"> 
             <div className="relative flex flex-col h-[50%] w-full">
                 <div className="w-full top-0 h-[20%] hover:bg-gray-500 hover:rounded-tl-xl relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(false)}}>
                     <img src="./messageIcon2.png" className="flex w-[100%] h-[100%] hover:bg-gray-500 hover:rounded-full"></img>
