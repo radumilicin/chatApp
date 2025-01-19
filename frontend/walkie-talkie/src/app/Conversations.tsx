@@ -1,12 +1,16 @@
 'use client'
 
 import Image from 'next/image'
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
 export default function Conversations( props : any) {
     
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);
+    const [menuPress, setMenuPress] = useState(false)
+    const [newChatPress, setNewChatPress] = useState(false)
+    const [newGroupPress, setNewGroupPress] = useState(false)
+    const [logOut, setLogOut] = useState(false)
 
     useEffect(() => {
         if(props.contacts !== null) {
@@ -33,10 +37,45 @@ export default function Conversations( props : any) {
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
             {/* search bar here */}
-            <OtherOptions></OtherOptions>
+            <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress}></OtherOptions>
+            <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut}></MenuDropdown>
             <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>
             <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>
         </div>
+    );
+}
+
+export function MenuDropdown (props) {
+
+    const divRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Event listener for clicks
+        const handleClickOutside = (event) => {
+            console.log("divRef.current:", divRef.current);
+            console.log("event.target:", event.target);
+            if (divRef.current && !divRef.current.contains(event.target)) {
+                props.onOutsideClick(false) // set menu press to false
+                console.log("outside press")
+            }
+        };
+
+        // listens if the whole document was clicked and if it is then see if it was then
+        // check if the click happened outside
+        // Attach event listener to the document
+        document.addEventListener("mousedown", handleClickOutside);
+
+        // Cleanup function to remove the listener
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [props.onOutsideClick]);
+
+    return (
+        (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" >
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setNewGroupPress(true); props.setMenuPress(false);}}>New Group</div>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setLogOut(true); props.setMenuPress(false);}}>Log out</div>
+        </div>)
     );
 }
 
@@ -44,10 +83,10 @@ export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-col">
             <div className="relative left-[78%] w-[20%] h-full flex flex-row items-center">
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center">
+                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
                     <img src="./newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center">
+                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
                     <img src="./menu3.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
             </div>
