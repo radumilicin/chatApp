@@ -3,7 +3,7 @@ CREATE TABLE "contacts" (
 	"sender_id" integer,
 	"is_group" boolean,
 	"members" jsonb DEFAULT '[]'::jsonb,
-	"contact_id" integer NOT NULL,
+	"contact_id" integer,
 	"message" jsonb DEFAULT '[]'::jsonb
 );
 --> statement-breakpoint

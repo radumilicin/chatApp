@@ -34,6 +34,6 @@ export const contacts = pgTable('contacts', {
   sender_id: integer('sender_id').references(() => users.id), // this and contact_id are empty if group is true
   group: boolean('is_group'),                          // assign true to this if the contact is a group 
   group_members: jsonb('members').default([]),                // this and sender_id are empty if group is true
-  contact_id: integer('contact_id').notNull().references(() => users.id),
+  contact_id: integer('contact_id').references(() => users.id),
   message: jsonb('message').default([])
 });

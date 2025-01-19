@@ -259,4 +259,4 @@ async function insertMessageContacts() {
   }
 }
 
-await insertMessageContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertMessageContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done

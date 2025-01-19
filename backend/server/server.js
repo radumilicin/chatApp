@@ -302,23 +302,32 @@ app.post('/changeAbout', async (req, res) => {
   }
 })
 
-app.post('/createGroup', async (req,res) => {
+app.post('/createGroup', async (req, res) => {
+  const { users } = req.body;
 
-  const {users} = req.body;
-
-  if(users !== null) {
+  if (users !== null && Array.isArray(users)) {
     try {
+      const rdm = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
+      
+      console.log("Before inserting group into contacts");
 
-      let rdm = Math.floor(Math.random() * 10000000) + 5
-      await pool.query("INSERT INTO contacts (id, ) VALUES ($1, $2, $3)", [rdm])
+      // Insert the group into the "contacts" table
+      await pool.query(
+        "INSERT INTO contacts (id, is_group, members) VALUES ($1, $2, $3)",
+        [rdm, true, JSON.stringify(users)] // Serialize users array to JSON
+      );
 
-    } catch(err) {
-
+      console.log("After inserting group into contacts");
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Error inserting into the database:", err.message);
+      res.sendStatus(500);
     }
+  } else {
+    console.error("Invalid or missing 'users' array");
+    res.status(400).send({ error: "Invalid 'users' array" });
   }
-
-})
-
+});
 
 app.listen(PORT, (error) =>{
     if(!error)

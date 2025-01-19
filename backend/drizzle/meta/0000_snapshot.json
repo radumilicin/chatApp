@@ -1,5 +1,5 @@
 {
-  "id": "03b97064-1624-4ae8-89ef-a841de4eac13",
+  "id": "ea343bc2-e175-4d40-9c72-3319f21dd2d8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -37,7 +37,7 @@
           "name": "contact_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "message": {
           "name": "message",

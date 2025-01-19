@@ -43,7 +43,7 @@ export default function Conversations( props : any) {
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
             {newGroupPress && <GroupMaking setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} 
-                removeContactFromGroup={removeContactFromGroup}></GroupMaking>}
+                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user}></GroupMaking>}
             {newGroupPress && <Contacts2 users={props.users} contacts={props.contacts} filteredContacts={filteredContacts} 
                 curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
                 setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
@@ -304,21 +304,32 @@ export function GroupMaking(props) {
     }, [props.contactsInNewGroup])
 
     async function createGroup() {
-        const curr_user = props.find((usr) => props.curr_user === usr.id )
+        console.log("In create group")
+        const curr_user = props.users.find((usr) => props.curr_user === usr.id )
+
+        let ids = []
+        for(let i = 0; i < props.contactsInNewGroup.length ; i++){
+            ids.push(props.contactsInNewGroup[i].contact_id)
+        }
 
         let users = {
-            "users": [...props.contactsInNewGroup, curr_user]
+            "users": [...ids, curr_user.id]
         }
+        console.log("ids in new group: " + JSON.stringify(users))
 
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(users)
         };
-
         
 
-        await fetch('http://localhost:3002/createGroup', requestOptions)
+        try {
+            await fetch('http://localhost:3002/createGroup', requestOptions)
+            console.log("Group created successfully")
+        } catch(err) {
+            console.error("Group creation failed")
+        }
     }
 
     return (
@@ -353,7 +364,7 @@ export function GroupMaking(props) {
                     <img
                         src="./arrowimg2.png"
                         className="h-[60%] flex items-center hover:bg-gray-500"
-                        onClick={() => {  /* create a group */ }}
+                        onClick={() => { createGroup(); props.setContactsInNewGroup([])}}
                     ></img>
                 </div>
             </div>
