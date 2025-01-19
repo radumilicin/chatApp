@@ -6,6 +6,7 @@ import {
   integer,
   timestamp,
   json,
+  boolean,
   jsonb
 } from "drizzle-orm/pg-core";
 
@@ -29,7 +30,10 @@ export const users = pgTable('users', {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
-  id: serial('id'),
-  contact_id: integer('contact_id').notNull().references(() => users.id),
+  id: serial('id').primaryKey(),
+  sender_id: integer('sender_id').references(() => users.id), // this and contact_id are empty if group is true
+  group: boolean('is_group'),                          // assign true to this if the contact is a group 
+  group_members: jsonb('members').default([]),                // this and sender_id are empty if group is true
+  contact_id: integer('contact_id').references(() => users.id),
   message: jsonb('message').default([])
 });

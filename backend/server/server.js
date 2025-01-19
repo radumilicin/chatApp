@@ -64,12 +64,12 @@ app.get('/contacts', async (req, res) => {
 
       if(contact_id !== null) {
         console.log("before query")
-        contacts = await pool.query("SELECT * FROM contacts WHERE (id = $1 AND contact_id = $2);", [user_id, contact_id]);
+        contacts = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2);", [user_id, contact_id]);
         console.log("contacts = " + JSON.stringify(contacts))
       }
       else {
         console.log("in else")
-        contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+        contacts = await pool.query("SELECT * FROM contacts WHERE sender_id = $1 OR contact_id = $1;", [user_id]);
         console.log("Contact id not specified")        
       }
     
@@ -189,7 +189,7 @@ wss.on('connection', (ws, req) => {
       await pool.query(
         `UPDATE contacts
          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-         WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
+         WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
         [JSON.stringify(messageJson), user_id, recipient_id]
       );
       if(imgBytes !== null) {
@@ -302,6 +302,32 @@ app.post('/changeAbout', async (req, res) => {
   }
 })
 
+app.post('/createGroup', async (req, res) => {
+  const { users } = req.body;
+
+  if (users !== null && Array.isArray(users)) {
+    try {
+      const rdm = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
+      
+      console.log("Before inserting group into contacts");
+
+      // Insert the group into the "contacts" table
+      await pool.query(
+        "INSERT INTO contacts (id, is_group, members) VALUES ($1, $2, $3)",
+        [rdm, true, JSON.stringify(users)] // Serialize users array to JSON
+      );
+
+      console.log("After inserting group into contacts");
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Error inserting into the database:", err.message);
+      res.sendStatus(500);
+    }
+  } else {
+    console.error("Invalid or missing 'users' array");
+    res.status(400).send({ error: "Invalid 'users' array" });
+  }
+});
 
 app.listen(PORT, (error) =>{
     if(!error)

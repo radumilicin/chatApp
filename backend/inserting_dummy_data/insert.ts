@@ -141,8 +141,8 @@ async function insertContacts() {
         try {
           // Insert the user into the "users" table
           await client.query(
-            'INSERT INTO contacts (id, contact_id) VALUES ($1, $2)',
-            [id, contact_id]
+            'INSERT INTO contacts (sender_id, is_group, contact_id) VALUES ($1, $2, $3)',
+            [id, false, contact_id]
           );
           console.log(`Contact (${id},${contact_id}) inserted successfully.`);
         } catch (err) {
@@ -210,7 +210,7 @@ async function insertImages() {
     } 
 }
 
-await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 
 async function insertMessageContacts() {
   try{

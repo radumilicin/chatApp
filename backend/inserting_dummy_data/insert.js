@@ -118,7 +118,7 @@ async function insertContacts() {
             const client = await pool.connect();
             try {
                 // Insert the user into the "users" table
-                await client.query('INSERT INTO contacts (id, contact_id) VALUES ($1, $2)', [id, contact_id]);
+                await client.query('INSERT INTO contacts (sender_id, is_group, contact_id) VALUES ($1, $2, $3)', [id, false, contact_id]);
                 console.log(`Contact (${id},${contact_id}) inserted successfully.`);
             }
             catch (err) {
@@ -136,7 +136,7 @@ async function insertContacts() {
         }
     }
 }
-// await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 // await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 async function insertImages() {
     try {
@@ -177,7 +177,7 @@ async function insertImages() {
         console.error('Error:', err);
     }
 }
-await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertImages().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 async function insertMessageContacts() {
     try {
         // Ask to what user we are adding the image
