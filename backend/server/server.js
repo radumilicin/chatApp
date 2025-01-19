@@ -12,6 +12,8 @@ const wss = new WebSocketServer({ port: 8080 });
 
 const app = express();
 app.use(cors())
+app.use(express.json({ limit: '10mb' })); // Adjust limit
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 const PORT = 3002;
 
 
@@ -71,7 +73,7 @@ app.get('/contacts', async (req, res) => {
         console.log("Contact id not specified")        
       }
     
-      console.log("rows = " + JSON.stringify(contacts.rows))
+      // console.log("rows = " + JSON.stringify(contacts.rows))
         
         // Log the fetched contacts
         // console.log(contacts.rows);
@@ -213,6 +215,92 @@ wss.on('connection', (ws, req) => {
     console.log('Client disconnected');
   });
 });
+
+// update 2 tables. for user 
+app.post('/putProfilePic', async (req, res) => {
+  
+  // export const images = pgTable("images", {
+  //   id: serial("id").primaryKey(),
+  //   id_user: integer("user_id").notNull().references(() => users.id),
+  //   contact_id: integer("contact_id").references(() => users.id),
+  //   image_name: text("image_name").notNull(), // To keep track of the image name
+  //   data: text("data").notNull(), // Base64-encoded image data
+  // });
+
+  // // Define the "users" table with columns "id", "username", and "password_hash"
+  // export const users = pgTable('users', {
+  //   id: serial('id').primaryKey(),
+  //   username: varchar('username', { length: 50 }).notNull().unique(),
+  //   password_hash: text('password_hash').notNull(),
+  //   profile_pic_id: integer("profile_pic_id").references(() => images.id)
+  // });
+
+
+
+  // STEPS:
+
+  // 1. get the data from the request
+  // 2. update the tables (users + images)
+  // 3. PROFIT
+
+  console.log("Beginning of request to change profile picture")
+  const { id, data_img, profile_pic_id } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+  // console.log("id of the user trying to change profile picture: " + body.id)
+
+  if(id !== null && profile_pic_id !== null) {
+    try {
+      console.log("before inserting to images")
+      await pool.query(`INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)`, [profile_pic_id, id, '', data_img]);
+      
+      console.log("before updating user profile pic")
+      await pool.query(`UPDATE users SET profile_pic_id = $2 WHERE id = $1`, [id, profile_pic_id])
+
+      res.status(200).send("Profile picture changed")
+    } catch(error) {
+      res.status(500).send("Server error. Image not put in the database.")
+    }
+  } else {
+    res.status(400).send("Bad request. The request doesn't contain an image embedded.")
+  }
+
+});
+
+app.post('/changeUsername', async (req, res) => {
+
+  const { id, new_username } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+
+  if(id !== null && new_username !== null) {
+    try {
+      await pool.query(`UPDATE users SET username = $2 WHERE id = $1`, [id, new_username])
+      
+      res.sendStatus(200)
+    } catch(err) {
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
+
+app.post('/changeAbout', async (req, res) => {
+
+  const { id, new_about } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+
+  if(id !== null && new_about !== null) {
+    try {
+      await pool.query(`UPDATE users SET about = $2 WHERE id = $1`, [id, new_about])
+      
+      res.sendStatus(200)
+    } catch(err) {
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
 
 
 app.listen(PORT, (error) =>{
