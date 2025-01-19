@@ -12,6 +12,7 @@ export default function Conversations( props : any) {
     const [newGroupPress, setNewGroupPress] = useState(false)
     const [logOut, setLogOut] = useState(false)
     const [pressed2, setPressed2] = useState(false) // this is for selecting contacts for groups
+    const [contactsInNewGroup, setContactsInNewGroup] = useState([])
 
     useEffect(() => {
         if(props.contacts !== null) {
@@ -35,10 +36,17 @@ export default function Conversations( props : any) {
         }))
     }
 
+    async function removeContactFromGroup(contact) {
+        setContactsInNewGroup(contactsInNewGroup.filter((elem) => ( contact.contact_id !== elem.contact_id )))
+    }
+
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
-            {newGroupPress && <GroupMaking setNewGroupPress={setNewGroupPress}></GroupMaking>}
-            {newGroupPress && <Contacts2 users={props.users} contacts={props.contacts} filteredContacts={filteredContacts} curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={props.setPressed2}></Contacts2>}
+            {newGroupPress && <GroupMaking setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} 
+                removeContactFromGroup={removeContactFromGroup}></GroupMaking>}
+            {newGroupPress && <Contacts2 users={props.users} contacts={props.contacts} filteredContacts={filteredContacts} 
+                curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
+                setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>}
@@ -283,15 +291,38 @@ export function GroupMaking(props) {
 
     const [usernameSearch, setUsernameSearch] = useState('')
 
+    
+    function getNameWithUserId(contact: any) {
+        const user = props.users.find((user) => user.id === contact.contact_id);
+        return user ? user.username : "";
+    }    
+
+    useEffect(() => {
+        console.log("contacts in new group changed " + JSON.stringify(props.contactsInNewGroup))
+
+    }, [props.contactsInNewGroup])
+
     return (
-        <div className="absolute left-0 top-0 w-full h-[15%]">
-            <div className="relative flex flex-row h-[55%] w-full">
+        <div className="absolute left-0 top-0 w-full h-[20%]">
+            <div className="relative flex flex-row h-[40%] w-full">
                 <div className="relative flex flex-col justify-center items-center left-2 w-[15%] top-[15%] h-[70%] text-xl font-semibold text-black hover:bg-slate-500 rounded-md p-2" onClick={() => {props.setNewGroupPress(false)}}>
                     <img src="./xicon.png" className="w-[60%] h-full"></img> 
                 </div> 
                 <div className="flex w-[20%] h-full text-xl font-semibold flex-col justify-center items-center text-black font-sans">Group</div>
             </div>
-            <div className="relative top-[10%] flex flex-row left-[5%] w-[75%] h-[35%] border-b-2 border-gray-500 z-20">
+            <div className="relative left-0 top-0 h-[30%]">
+                <div className="relative grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center h-full left-[5%] w-[70%] overflow-y-scroll scrollbar-hide">
+                    {props.contactsInNewGroup.map((contact) => ( 
+                        <div className="text-md bg-blue-500 w-full h-[50px] object-contain flex flex-row items-center rounded-full">
+                            <div className="relative w-[80%] h-full flex flex-row justify-left items-center indent-[20px]">{getNameWithUserId(contact)}</div>
+                            <div className="relative w-[20%] h-full flex flex-row items-center">
+                                <img src="./xicon.png" className="w-6 h-6" onClick={() => {props.removeContactFromGroup(contact)}}></img>    
+                            </div> 
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className="relative top-[10%] flex flex-row left-[5%] w-[75%] h-[20%] border-b-2 border-gray-500 z-20">
                 <input placeholder="Search name" value={usernameSearch} className="left-[5%] w-[90%] h-full outline-none bg-transparent overflow-x-auto" 
                     onChange={(e) => {setUsernameSearch(e.target.value)}}></input>
             </div>
@@ -357,14 +388,14 @@ export function Contacts2( props: any) {
     }
 
     return (
-        <div className="absolute left-0 top-[16%] w-full h-[84%]">
+        <div className="absolute left-0 top-[22%] w-full h-[76%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
-                    element.id === props.curr_user ?
+                    (element.id === props.curr_user && !props.contactsInNewGroup.includes(element)) ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-gray-700 border-t-[1px]`}
-                        onClick={() => {props.setPressed2(element); }}// here add to the list of contacts console.log("clicked")}}
+                        onClick={() => {props.setPressed2(element); props.setContactsInNewGroup([...props.contactsInNewGroup, element])}}// here add to the list of contacts console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
