@@ -64,12 +64,12 @@ app.get('/contacts', async (req, res) => {
 
       if(contact_id !== null) {
         console.log("before query")
-        contacts = await pool.query("SELECT * FROM contacts WHERE (id = $1 AND contact_id = $2);", [user_id, contact_id]);
+        contacts = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2);", [user_id, contact_id]);
         console.log("contacts = " + JSON.stringify(contacts))
       }
       else {
         console.log("in else")
-        contacts = await pool.query("SELECT * FROM contacts WHERE id = $1 OR contact_id = $1;", [user_id]);
+        contacts = await pool.query("SELECT * FROM contacts WHERE sender_id = $1 OR contact_id = $1;", [user_id]);
         console.log("Contact id not specified")        
       }
     
@@ -189,7 +189,7 @@ wss.on('connection', (ws, req) => {
       await pool.query(
         `UPDATE contacts
          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-         WHERE (id = $2 AND contact_id = $3) OR (id = $3 AND contact_id = $2)`,
+         WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
         [JSON.stringify(messageJson), user_id, recipient_id]
       );
       if(imgBytes !== null) {
@@ -300,6 +300,23 @@ app.post('/changeAbout', async (req, res) => {
   } else {
     res.sendStatus(400)
   }
+})
+
+app.post('/createGroup', async (req,res) => {
+
+  const {users} = req.body;
+
+  if(users !== null) {
+    try {
+
+      let rdm = Math.floor(Math.random() * 10000000) + 5
+      await pool.query("INSERT INTO contacts (id, ) VALUES ($1, $2, $3)", [rdm])
+
+    } catch(err) {
+
+    }
+  }
+
 })
 
 

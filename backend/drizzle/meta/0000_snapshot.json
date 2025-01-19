@@ -1,5 +1,5 @@
 {
-  "id": "e0b70c91-5b5a-43d7-84ea-ee315c27d98e",
+  "id": "03b97064-1624-4ae8-89ef-a841de4eac13",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -11,8 +11,27 @@
         "id": {
           "name": "id",
           "type": "serial",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
+        },
+        "sender_id": {
+          "name": "sender_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_group": {
+          "name": "is_group",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "members": {
+          "name": "members",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
         },
         "contact_id": {
           "name": "contact_id",
@@ -30,6 +49,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "contacts_sender_id_users_id_fk": {
+          "name": "contacts_sender_id_users_id_fk",
+          "tableFrom": "contacts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "sender_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "contacts_contact_id_users_id_fk": {
           "name": "contacts_contact_id_users_id_fk",
           "tableFrom": "contacts",
@@ -145,6 +177,12 @@
         "profile_pic_id": {
           "name": "profile_pic_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about": {
+          "name": "about",
+          "type": "varchar(250)",
           "primaryKey": false,
           "notNull": false
         }

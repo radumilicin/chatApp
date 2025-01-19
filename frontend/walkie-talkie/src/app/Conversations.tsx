@@ -142,6 +142,7 @@ export function Contacts( props: any) {
      
     function getLastMessage(contact : any, idx: number) {
         let lenMsgs = contact.message.length
+        if(contact.message.length === 0) return {"message" : "", "timestamp": "T     .", "curr_user": contact.sender_id, "recipient_id": contact.recipient_id}
         let last_msg = contact.message[lenMsgs - 1]
         console.log(`this is the ${idx}th contact in the list with the message = ${last_msg.message}`)
         return last_msg
@@ -149,6 +150,7 @@ export function Contacts( props: any) {
 
     function getUnreadMessages(contact: any, idx: number) {
         let lenMsgs = contact.message.length
+        if(contact.message.length === 0) return 0
         let last_msg = contact.message[lenMsgs - 1]
         let cnt_unread = 0
         if(last_msg.recipient_id === curr_user) {
@@ -182,7 +184,7 @@ export function Contacts( props: any) {
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
-                    element.id === props.curr_user ?
+                    element.sender_id === props.curr_user ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-gray-700 border-t-[1px]`}
@@ -209,7 +211,7 @@ export function Contacts( props: any) {
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
                                     <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
-                                        {element.message[0] !== null && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx)}
+                                        {element.recipient_id === curr_user && getUnreadMessages(element, idx)}
                                     </div> 
                                 </div>
                             </div>
@@ -234,7 +236,7 @@ export function Contacts( props: any) {
                         </div>
                     </div> : <></>))}
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
-                    element.id === props.curr_user ?
+                    element.sender_id === props.curr_user ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
@@ -257,7 +259,7 @@ export function Contacts( props: any) {
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
                                     <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
-                                        {element.message[0] !== null && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx)}
+                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx)}
                                     </div> 
                                 </div>
                             </div>
@@ -290,7 +292,6 @@ export function Contacts( props: any) {
 export function GroupMaking(props) {
 
     const [usernameSearch, setUsernameSearch] = useState('')
-
     
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -302,6 +303,24 @@ export function GroupMaking(props) {
 
     }, [props.contactsInNewGroup])
 
+    async function createGroup() {
+        const curr_user = props.find((usr) => props.curr_user === usr.id )
+
+        let users = {
+            "users": [...props.contactsInNewGroup, curr_user]
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(users)
+        };
+
+        
+
+        await fetch('http://localhost:3002/createGroup', requestOptions)
+    }
+
     return (
         <div className="absolute left-0 top-0 w-full h-[20%]">
             <div className="relative flex flex-row h-[40%] w-full">
@@ -310,18 +329,35 @@ export function GroupMaking(props) {
                 </div> 
                 <div className="flex w-[20%] h-full text-xl font-semibold flex-col justify-center items-center text-black font-sans">Group</div>
             </div>
-            <div className="relative left-0 top-0 h-[30%]">
-                <div className="relative grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center h-full left-[5%] w-[70%] overflow-y-scroll scrollbar-hide">
-                    {props.contactsInNewGroup.map((contact) => ( 
-                        <div className="text-md bg-blue-500 w-full h-[50px] object-contain flex flex-row items-center rounded-full">
-                            <div className="relative w-[80%] h-full flex flex-row justify-left items-center indent-[20px]">{getNameWithUserId(contact)}</div>
-                            <div className="relative w-[20%] h-full flex flex-row items-center">
-                                <img src="./xicon.png" className="w-6 h-6" onClick={() => {props.removeContactFromGroup(contact)}}></img>    
-                            </div> 
+            <div className="relative left-0 top-0 h-[30%] flex flex-row justify-center items-center">
+                {/* First child div */}
+                <div className="relative left-[5%] grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center h-full w-[70%] overflow-y-scroll scrollbar-hide">
+                    {props.contactsInNewGroup.map((contact) => (
+                        <div className="relative text-md bg-blue-500 w-full h-[50px] flex flex-row items-center rounded-full">
+                            <div className="relative w-[80%] h-full flex flex-row items-center pl-5">{getNameWithUserId(contact)}</div>
+                            <div className="relative w-[20%] h-full flex flex-row items-center justify-center">
+                                <img
+                                    src="./xicon.png"
+                                    className="w-6 h-6"
+                                    onClick={() => {
+                                        props.removeContactFromGroup(contact);
+                                    }}
+                                ></img>
+                            </div>
                         </div>
                     ))}
                 </div>
+
+                {/* Second child div */}
+                <div className="relative flex flex-row justify-center w-[25%] h-full">
+                    <img
+                        src="./arrowimg2.png"
+                        className="h-[60%] flex items-center hover:bg-gray-500"
+                        onClick={() => {  /* create a group */ }}
+                    ></img>
+                </div>
             </div>
+
             <div className="relative top-[10%] flex flex-row left-[5%] w-[75%] h-[20%] border-b-2 border-gray-500 z-20">
                 <input placeholder="Search name" value={usernameSearch} className="left-[5%] w-[90%] h-full outline-none bg-transparent overflow-x-auto" 
                     onChange={(e) => {setUsernameSearch(e.target.value)}}></input>
@@ -391,7 +427,7 @@ export function Contacts2( props: any) {
         <div className="absolute left-0 top-[22%] w-full h-[76%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
-                    (element.id === props.curr_user && !props.contactsInNewGroup.includes(element)) ?
+                    (element.sender_id === props.curr_user && !props.contactsInNewGroup.includes(element)) ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-gray-700 border-t-[1px]`}
@@ -418,7 +454,7 @@ export function Contacts2( props: any) {
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
                                     <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full text-sm">
-                                        {element.message[0] !== null && element.message[0].recipient_id === curr_user && getUser(element).about}
+                                        {element.recipient_id === curr_user && getUser(element).about}
                                     </div> 
                                 </div>
                             </div>
@@ -438,7 +474,7 @@ export function Contacts2( props: any) {
                         </div>
                     </div> : <></>))}
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
-                    element.id === props.curr_user ?
+                    element.sender_id === props.curr_user ?
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-slate-400 bg-opacity-50 flex flex-row border-y-black border-2`}
