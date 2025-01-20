@@ -159,8 +159,8 @@ async function insertContacts() {
       }
     }  
 }
-
-// await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+ 
+await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 
 // await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 async function insertImages() {

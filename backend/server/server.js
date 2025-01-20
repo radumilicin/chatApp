@@ -69,7 +69,7 @@ app.get('/contacts', async (req, res) => {
       }
       else {
         console.log("in else")
-        contacts = await pool.query("SELECT * FROM contacts WHERE sender_id = $1 OR contact_id = $1;", [user_id]);
+        contacts = await pool.query("SELECT * FROM contacts WHERE sender_id = $1 OR contact_id = $1 OR (is_group = TRUE AND members @> $2::jsonb);", [user_id, JSON.stringify([user_id])]);
         console.log("Contact id not specified")        
       }
     
