@@ -166,10 +166,11 @@ wss.on('connection', (ws, req) => {
       /////////////////////////////////////////////////
       //  This is where the group broadcast is done  //
       /////////////////////////////////////////////////
+      // console.log("parsedMessage = " + JSON.stringify(parsedMessage))
 
       if(parsedMessage.hasOwnProperty("group_id")){
-      
-        const {sender_id, recipient_ids, group_id, message, timestamp} = parsedMessage;
+        console.log("trying to insert the message in the group")
+        var {sender_id, recipient_ids, group_id, message, timestamp} = parsedMessage;
       
         if (!sender_id || !recipient_ids || !group_id || !message || !timestamp) {
           ws.send(JSON.stringify({ error: 'Invalid message format' }));
@@ -224,18 +225,19 @@ wss.on('connection', (ws, req) => {
           await pool.query(
             `UPDATE contacts
             SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-            WHERE (group_id = $2)`,
+            WHERE (id = $2)`,
             [JSON.stringify(messageJson), group_id]
           );
+          console.log("After appending message to DB")
           if(imgBytes !== null) {
-            await pool.query('INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
-              [message.image_id, user_id, recipient_id, '', msg]);
+            await pool.query('INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)', 
+              [message.image_id, sender_id, '', msg]);
           }
           /////////////////////////////////////////////////////////////////////////
 
           // Acknowledge receipt
           ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
-
+          console.log("done inserting image in group")
           // Optionally broadcast to other clients
         //   broadcast(wss, ws, parsedMessage);
 
@@ -252,6 +254,11 @@ wss.on('connection', (ws, req) => {
       //////////////////////////////////////////////////
       //    This is where the 1 on 1 convo is done    //
       //////////////////////////////////////////////////
+
+      console.log("before 1 on 1 insertion in DB")
+
+      // if(parsedMessage)
+      // console.log("parsedMessage = " + JSON.stringify(parsedMessage))
 
       // Ensure the message has the required fields
       var { sender_id, recipient_id, message, timestamp } = parsedMessage;
@@ -312,13 +319,14 @@ wss.on('connection', (ws, req) => {
         [JSON.stringify(messageJson), sender_id, recipient_id]
       );
       if(imgBytes !== null) {
-        await pool.query('INSERT INTO images (id, sender_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
-          [message.image_id, sender_id, recipient_id, '', msg]);
+        await pool.query('INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)', 
+          [message.image_id, sender_id, '', msg]);
       }
       /////////////////////////////////////////////////////////////////////////
 
       // Acknowledge receipt
       ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+      console.log("Success sent")
 
       // Optionally broadcast to other clients
     //   broadcast(wss, ws, parsedMessage);
