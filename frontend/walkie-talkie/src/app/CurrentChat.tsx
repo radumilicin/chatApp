@@ -43,12 +43,24 @@ export default function CurrentChat( props: any ) {
 
             console.log("props.contact in if = " + props.contact.contact_id)
             const fetchMessages = async () => {
-                const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
-                // console.log("response = " + JSON.stringify(response))
-                const result = await response.json();
-                console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
-                await updateList(allMessages, result[0]?.message)
-                console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                console.log("is contact a group? " + JSON.stringify(props.contact_is_group))
+                if(props.contact.is_group === false) {
+                    const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
+                    // console.log("response = " + JSON.stringify(response))
+                    const result = await response.json();
+                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                    await updateList(allMessages, result[0]?.message)
+                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+
+                } else {
+
+                    const response = await fetch(`http://localhost:3002/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
+                    // console.log("response = " + JSON.stringify(response))
+                    const result = await response.json();
+                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                    await updateList(allMessages, result[0]?.message)
+                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                }
             };
             fetchMessages()
 
@@ -112,8 +124,13 @@ export default function CurrentChat( props: any ) {
     };
 
     function getImage(contact: any) {
-        const image = props.images.find((image: any) => image.user_id === props.contact.contact_id);
-        return image || { data: "" }; // Ensure we return a fallback value
+        if(contact.is_group === false) {
+            const image = props.images.find((image: any) => image.user_id === props.contact.contact_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        } else {
+            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        }
     }
 
     function getUser(contact: any) {
@@ -134,7 +151,15 @@ export default function CurrentChat( props: any ) {
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row">
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
-                    {contact.current !== null && <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img>}
+                    {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
+                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
+                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> :
+                     (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
+                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
+                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                    }
                 </div>
                 <div className="flex w-[85%] h-[100%] items-center">
                     {contact.current !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact.current).username}</div>}
@@ -150,8 +175,8 @@ export default function CurrentChat( props: any ) {
                                     key={idx}
                                     className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-row ${
                                         String(props.curr_user) === String(message.user_id)
-                                            ? 'bg-green-400 text-white mr-auto'
-                                            : 'bg-blue-500 text-white ml-auto'
+                                            ? 'bg-green-400 text-white ml-auto'
+                                            : 'bg-blue-500 text-white mr-auto'
                                     }`}
                                 >
                                     {/* Message Text */}

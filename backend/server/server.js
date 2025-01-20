@@ -86,6 +86,35 @@ app.get('/contacts', async (req, res) => {
     }
 });
 
+app.get('/contactsGroup', async (req, res) => {      
+    var group_id = null;
+    if (req.query.group_id) {
+      group_id = parseInt(req.query.group_id, 10);
+    }
+
+    console.log("group_id = " + group_id)
+
+    // Check if user_id query parameter is provided
+    if (!group_id) {
+      return res.status(404).send("You did not specify a group_id");
+    }
+
+    try {
+      // Fetch contacts for the specified user_id
+      var contacts = null
+
+      console.log("before query")
+      contacts = await pool.query("SELECT * FROM contacts WHERE id = $1;", [group_id]);
+      console.log("contacts = " + JSON.stringify(contacts))
+      
+      // Send the contacts as the response
+      res.status(200).send(contacts.rows);
+    } catch (err) {
+      console.error("Error querying database:", err);
+      res.status(500).send("Internal Server Error");
+    }
+});
+
 app.get('/images', async (req, res) => {
     // const user_id = parseInt(req.query.user); // Extract user_id query parameter
     // const image_name = req.query.image_name; // Extract user_id query parameter
