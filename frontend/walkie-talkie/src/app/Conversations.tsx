@@ -253,7 +253,7 @@ export function Contacts( props: any) {
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
                                     <div className="flex h-full w-full flex-row items-center text-sm text-gray-600 font-medium">
-                                        {getLastMessage(element, idx).user_id === curr_user
+                                        {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                         }
@@ -302,7 +302,7 @@ export function Contacts( props: any) {
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[20%]">
                                             <div className="flex h-full w-full flex-row items-center text-sm text-gray-600 font-medium">
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).user_id === curr_user
+                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
                                                 }
@@ -353,7 +353,7 @@ export function Contacts( props: any) {
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
                                     <div className="flex h-full w-full flex-row items-center text-sm text-gray-600 font-medium">
-                                        {getLastMessage(element, idx).user_id === curr_user
+                                        {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                         }

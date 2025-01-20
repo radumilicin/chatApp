@@ -29,6 +29,7 @@ export default function CurrentChat( props: any ) {
         setMessages([]);
     }
 
+
     //gets all messages already existing in the DB
     useEffect(() => {
         // if(props.contact !== null){
@@ -43,12 +44,24 @@ export default function CurrentChat( props: any ) {
 
             console.log("props.contact in if = " + props.contact.contact_id)
             const fetchMessages = async () => {
-                const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
-                // console.log("response = " + JSON.stringify(response))
-                const result = await response.json();
-                console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
-                await updateList(allMessages, result[0]?.message)
-                console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                console.log("is contact a group? " + JSON.stringify(props.contact_is_group))
+                if(props.contact.is_group === false) {
+                    const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
+                    // console.log("response = " + JSON.stringify(response))
+                    const result = await response.json();
+                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                    await updateList(allMessages, result[0]?.message)
+                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+
+                } else {
+
+                    const response = await fetch(`http://localhost:3002/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
+                    // console.log("response = " + JSON.stringify(response))
+                    const result = await response.json();
+                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                    await updateList(allMessages, result[0]?.message)
+                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                }
             };
             fetchMessages()
 
@@ -93,7 +106,7 @@ export default function CurrentChat( props: any ) {
         if (msg.trim() === '') return;
 
         const message = {
-            user_id: props.curr_user, // Replace with dynamic user ID
+            sender_id: props.curr_user, // Replace with dynamic user ID
             recipient_id: props.contact.contact_id, // Replace with dynamic recipient ID
             message: msg,
             timestamp: new Date().toISOString(),
@@ -111,9 +124,42 @@ export default function CurrentChat( props: any ) {
         setText(''); // Clear input
     };
 
+    const handleSendMessage2 = (msg) => {
+        if (msg.trim() === '') return;
+
+        var recipient_ids = []
+        for(let i = 0; i < props.contact.members.length ; i++) {
+            if(props.contact.members[i] !== props.curr_user) recipient_ids.push(props.contact.members[i])
+        }
+
+        const message = {
+            sender_id: props.curr_user, // Replace with dynamic user ID
+            recipient_ids: recipient_ids, // Replace with dynamic recipient ID
+            group_id: props.contact.id,
+            message: msg,
+            timestamp: new Date().toISOString(),
+        };
+
+        sendMessage(message);
+        if(allMessages.length === 0) {
+            console.log("why is this triggering now?")
+            updateAllMessages([message])    
+        }
+        else {
+            console.log("allMessages" + JSON.stringify(allMessages))
+            updateAllMessages([...allMessages, message])
+        }
+        setText(''); // Clear input
+    };
+
     function getImage(contact: any) {
-        const image = props.images.find((image: any) => image.user_id === props.contact.contact_id);
-        return image || { data: "" }; // Ensure we return a fallback value
+        if(contact.is_group === false) {
+            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        } else {
+            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        }
     }
 
     function getUser(contact: any) {
@@ -121,9 +167,16 @@ export default function CurrentChat( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
+    // get user from ID
+    function getUserFromId(idUser: any) {
+        const user = props.users.find((user: any) => user.id === idUser);
+        return user || { data: "" }; // Ensure we return a fallback value
+    }
+
+
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
-    const findImageBasedOnId = (message: any) => {
+    const findImageBasedOnID = (message: any) => {
         console.log("message = " + JSON.stringify(message))
         const image = props.images.find((img) => { return img.id === message.image_id})
         console.log("image =" + JSON.stringify(image))
@@ -132,9 +185,17 @@ export default function CurrentChat( props: any ) {
 
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
-            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row">
+            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row" onClick={() => {}}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
-                    {contact.current !== null && <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img>}
+                    {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
+                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
+                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> :
+                     (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
+                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
+                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                    }
                 </div>
                 <div className="flex w-[85%] h-[100%] items-center">
                     {contact.current !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact.current).username}</div>}
@@ -145,32 +206,64 @@ export default function CurrentChat( props: any ) {
                     allMessages.map((message, idx) => {
                         console.log("message =", message);
                         return (
-                            Object.keys(message.message).length > 0 && (
+                            (message.hasOwnProperty('recipient_id') && Object.keys(message.message).length > 0) ? (
                                 <div
                                     key={idx}
-                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-row ${
-                                        String(props.curr_user) === String(message.user_id)
-                                            ? 'bg-green-400 text-white mr-auto'
-                                            : 'bg-blue-500 text-white ml-auto'
+                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                        String(props.curr_user) === String(message.sender_id)
+                                            ? 'bg-green-500 text-white ml-auto bg-opacity-80'
+                                            : 'bg-gray-500 text-white mr-auto'
                                     }`}
                                 >
-                                    {/* Message Text */}
-                                    <div className="w-[80%] break-words px-3">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                          isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                        message.message}
+                                    <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                    <div className="relative flex w-full h-[1/2]">
+                                        <div className="w-[80%] break-words">
+                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                            message.message}
+                                        </div>
+                                        {/* Timestamp */}
+                                        <div
+                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
+                                            // style={{
+                                            //     marginBottom: '4px', // Small margin from the bottom
+                                            // }}
+                                        >
+                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                        </div>
                                     </div>
-                                    {/* Timestamp */}
-                                    <div
-                                        className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
-                                        // style={{
-                                        //     marginBottom: '4px', // Small margin from the bottom
-                                        // }}
-                                    >
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+
+                                    {/* Message Text */}
+                                </div>
+                            ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
+                                <div
+                                    key={idx}
+                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                        String(props.curr_user) === String(message.sender_id)
+                                            ? 'bg-green-500 text-white ml-auto bg-opacity-80'
+                                            : 'bg-blue-500 text-white mr-auto'
+                                    }`}
+                                >
+                                    <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                    <div className="relative flex w-full h-[1/2]">
+                                        {/* Message Text */}
+                                        <div className="w-[80%] break-words px-3">
+                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                            message.message}
+                                        </div>
+                                        {/* Timestamp */}
+                                        <div
+                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
+                                            // style={{
+                                            //     marginBottom: '4px', // Small margin from the bottom
+                                            // }}
+                                        >
+                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                        </div>
                                     </div>
                                 </div>
-                            )
+                            ) : <></>
                         );
                     })}
             </div>
@@ -209,6 +302,7 @@ export default function CurrentChat( props: any ) {
                                         console.log("Base64 Image (stripped):", base64Image);
                                         
                                         // Send the base64 image
+                                        if(props.contact.is_group === true) handleSendMessage2(base64Image)
                                         handleSendMessage(base64Image);
                                     };
                                     reader.onerror = (error) => console.error("Error reading file:", error);
@@ -225,7 +319,11 @@ export default function CurrentChat( props: any ) {
                 </div>
                 <div className="relative left-0 flex basis-[80%] h-full">
                     <input type="text" value={text} onChange={(e) => {setText(e.target.value)}}className="absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white text-xl" 
-                        onKeyDown={(e) => { if(e.key === "Enter") {handleSendMessage(text); setText("")}}}></input>
+                        onKeyDown={(e) => { 
+                            if(e.key === "Enter") {
+                                if(props.contact.is_group === true) handleSendMessage2(text)
+                                else handleSendMessage(text); 
+                                setText("")}}}></input>
                 </div>
                 <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center " >
                     <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl mr-2 w-full hover:bg-slate-500" onClick={() => {handleSendMessage(text); setText("")}}>
