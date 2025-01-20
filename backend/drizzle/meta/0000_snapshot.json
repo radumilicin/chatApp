@@ -1,5 +1,5 @@
 {
-  "id": "ea343bc2-e175-4d40-9c72-3319f21dd2d8",
+  "id": "67758e51-b026-4cde-bf5a-a6d7378b3c97",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -45,6 +45,26 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'[]'::jsonb"
+        },
+        "group_name": {
+          "name": "group_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "group_pic_id": {
+          "name": "group_pic_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "admins": {
+          "name": "admins",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
         }
       },
       "indexes": {},
@@ -68,6 +88,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "contact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "contacts_group_pic_id_images_id_fk": {
+          "name": "contacts_group_pic_id_images_id_fk",
+          "tableFrom": "contacts",
+          "tableTo": "images",
+          "columnsFrom": [
+            "group_pic_id"
           ],
           "columnsTo": [
             "id"
