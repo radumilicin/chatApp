@@ -163,10 +163,100 @@ wss.on('connection', (ws, req) => {
       const parsedMessage = JSON.parse(MSG);
       // console.log(`Received message: ${JSON.stringify(parsedMessage)}`);
 
+      /////////////////////////////////////////////////
+      //  This is where the group broadcast is done  //
+      /////////////////////////////////////////////////
+
+      if(parsedMessage.hasOwnProperty("group_id")){
+      
+        const {sender_id, recipient_ids, group_id, message, timestamp} = parsedMessage;
+      
+        if (!sender_id || !recipient_ids || !group_id || !message || !timestamp) {
+          ws.send(JSON.stringify({ error: 'Invalid message format' }));
+          return;
+        }
+      
+        console.log("before recipient web socket")
+        // Get recipient's WebSocket
+        const recipientWs = clients.get(recipient_ids);
+
+        // Send the message to the intended recipient
+        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+          recipientWs.send(JSON.stringify({ senderId, content })); // Send message
+        } else {
+          console.log(`Recipient ${recipient_id} is not online.`);
+        }
+
+        let msg = message
+        let imgBytes = null
+
+        console.log("before testing image in server")
+
+        // to see if it's an image or not
+        const isBase64 = (str) => {
+          try {
+            return btoa(atob(str)) === str; // If the string can be re-encoded to base64, it's valid
+          } catch (err) {
+            return false; // It's not valid base64
+          }
+        };
+
+        try{
+          // Try decoding the image, but only if it's a valid base64 string
+          if (isBase64(message)) {
+            try {
+              console.log("trying to decode image?");
+              imgBytes = atob(message); // Decode base64
+              message = {
+                "image_id": Math.floor(Math.random() * 10000000) + 5
+              };
+              console.log("decoding ok");
+            } catch (err) {
+              console.error("Error decoding image:", err);
+            }
+          } else {
+            console.log("Message is not a valid base64 string");
+          }
+
+          /////////////////////////////////////////////////////////////////////////
+          // Save the message to the database
+          const messageJson = { sender_id, recipient_ids, group_id, message, timestamp };
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+            WHERE (group_id = $2)`,
+            [JSON.stringify(messageJson), group_id]
+          );
+          if(imgBytes !== null) {
+            await pool.query('INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
+              [message.image_id, user_id, recipient_id, '', msg]);
+          }
+          /////////////////////////////////////////////////////////////////////////
+
+          // Acknowledge receipt
+          ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+
+          // Optionally broadcast to other clients
+        //   broadcast(wss, ws, parsedMessage);
+
+        } catch (err) {
+          console.error('Error handling message:', err);
+          ws.send(JSON.stringify({ error: 'Internal server error' }));
+        }      
+      }
+
+      /////////////////////////
+      // END GROUP BROADCAST
+      /////////////////////////////////////////////////
+
+      //////////////////////////////////////////////////
+      //    This is where the 1 on 1 convo is done    //
+      //////////////////////////////////////////////////
+
       // Ensure the message has the required fields
-      var { user_id, recipient_id, message, timestamp } = parsedMessage;
-      // console.log("user_id: " + user_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
-      if (!user_id || !recipient_id || !message || !timestamp) {
+      var { sender_id, recipient_id, message, timestamp } = parsedMessage;
+      // console.log("sender_id: " + sender_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
+      if (!sender_id || !recipient_id || !message || !timestamp) {
         ws.send(JSON.stringify({ error: 'Invalid message format' }));
         return;
       }
@@ -214,16 +304,16 @@ wss.on('connection', (ws, req) => {
 
       /////////////////////////////////////////////////////////////////////////
       // Save the message to the database
-      const messageJson = { user_id, recipient_id, message, timestamp };
+      const messageJson = { sender_id, recipient_id, message, timestamp };
       await pool.query(
         `UPDATE contacts
          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
          WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
-        [JSON.stringify(messageJson), user_id, recipient_id]
+        [JSON.stringify(messageJson), sender_id, recipient_id]
       );
       if(imgBytes !== null) {
-        await pool.query('INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
-          [message.image_id, user_id, recipient_id, '', msg]);
+        await pool.query('INSERT INTO images (id, sender_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)', 
+          [message.image_id, sender_id, recipient_id, '', msg]);
       }
       /////////////////////////////////////////////////////////////////////////
 

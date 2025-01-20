@@ -29,6 +29,7 @@ export default function CurrentChat( props: any ) {
         setMessages([]);
     }
 
+
     //gets all messages already existing in the DB
     useEffect(() => {
         // if(props.contact !== null){
@@ -105,8 +106,36 @@ export default function CurrentChat( props: any ) {
         if (msg.trim() === '') return;
 
         const message = {
-            user_id: props.curr_user, // Replace with dynamic user ID
+            sender_id: props.curr_user, // Replace with dynamic user ID
             recipient_id: props.contact.contact_id, // Replace with dynamic recipient ID
+            message: msg,
+            timestamp: new Date().toISOString(),
+        };
+
+        sendMessage(message);
+        if(allMessages.length === 0) {
+            console.log("why is this triggering now?")
+            updateAllMessages([message])    
+        }
+        else {
+            console.log("allMessages" + JSON.stringify(allMessages))
+            updateAllMessages([...allMessages, message])
+        }
+        setText(''); // Clear input
+    };
+
+    const handleSendMessage2 = (msg) => {
+        if (msg.trim() === '') return;
+
+        var recipient_ids = []
+        for(let i = 0; i < props.contact.members.length ; i++) {
+            if(props.contact.members[i] !== props.curr_user) recipient_ids.push(props.contact.members[i])
+        }
+
+        const message = {
+            sender_id: props.curr_user, // Replace with dynamic user ID
+            recipient_ids: recipient_ids, // Replace with dynamic recipient ID
+            group_id: props.contact.id,
             message: msg,
             timestamp: new Date().toISOString(),
         };
@@ -125,7 +154,7 @@ export default function CurrentChat( props: any ) {
 
     function getImage(contact: any) {
         if(contact.is_group === false) {
-            const image = props.images.find((image: any) => image.user_id === props.contact.contact_id);
+            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
             const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
@@ -138,6 +167,13 @@ export default function CurrentChat( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
+    // get user from ID
+    function getUserFromId(idUser: any) {
+        const user = props.users.find((user: any) => user.id === idUser);
+        return user || { data: "" }; // Ensure we return a fallback value
+    }
+
+
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const findImageBasedOnId = (message: any) => {
@@ -149,7 +185,7 @@ export default function CurrentChat( props: any ) {
 
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
-            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row">
+            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row" onClick={() => {}}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
                     {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -170,32 +206,64 @@ export default function CurrentChat( props: any ) {
                     allMessages.map((message, idx) => {
                         console.log("message =", message);
                         return (
-                            Object.keys(message.message).length > 0 && (
+                            (message.hasOwnProperty('recipient_id') && Object.keys(message.message).length > 0) ? (
                                 <div
                                     key={idx}
-                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-row ${
-                                        String(props.curr_user) === String(message.user_id)
+                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                        String(props.curr_user) === String(message.sender_id)
+                                            ? 'bg-green-500 text-white ml-auto bg-opacity-80'
+                                            : 'bg-gray-500 text-white mr-auto'
+                                    }`}
+                                >
+                                    <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                    <div className="relative flex w-full h-[1/2]">
+                                        <div className="w-[80%] break-words">
+                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                            message.message}
+                                        </div>
+                                        {/* Timestamp */}
+                                        <div
+                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
+                                            // style={{
+                                            //     marginBottom: '4px', // Small margin from the bottom
+                                            // }}
+                                        >
+                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                        </div>
+                                    </div>
+
+                                    {/* Message Text */}
+                                </div>
+                            ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
+                                <div
+                                    key={idx}
+                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                        String(props.curr_user) === String(message.sender_id)
                                             ? 'bg-green-400 text-white ml-auto'
                                             : 'bg-blue-500 text-white mr-auto'
                                     }`}
                                 >
-                                    {/* Message Text */}
-                                    <div className="w-[80%] break-words px-3">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                          isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                        message.message}
-                                    </div>
-                                    {/* Timestamp */}
-                                    <div
-                                        className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
-                                        // style={{
-                                        //     marginBottom: '4px', // Small margin from the bottom
-                                        // }}
-                                    >
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                    <div className="relative flex w-full h-[1/2]">getUserFromId(message.sender_id)</div>
+                                    <div className="relative flex w-full h-[1/2]">
+                                        {/* Message Text */}
+                                        <div className="w-[80%] break-words px-3">
+                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnId(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                            message.message}
+                                        </div>
+                                        {/* Timestamp */}
+                                        <div
+                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
+                                            // style={{
+                                            //     marginBottom: '4px', // Small margin from the bottom
+                                            // }}
+                                        >
+                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                        </div>
                                     </div>
                                 </div>
-                            )
+                            ) : <></>
                         );
                     })}
             </div>
