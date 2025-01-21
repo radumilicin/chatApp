@@ -7,6 +7,7 @@ export default function ProfileInfo( props ) {
     const oldNameGroup = useRef(nameGroup)
     const contacts = useRef(props.contacts)
     const contactNow = useRef(props.contact)
+    const [onProfilePic, setHoverStatusProfilePic] = useState(false)
 
     const settingGroupName = async (val) => {
         setNameGroup(val)
@@ -39,11 +40,12 @@ export default function ProfileInfo( props ) {
     }, [props.contacts])
 
     function getImage(contact: any) {
+        // console.log("in get image contact = " + JSON.stringify(contact))
         if(contact.is_group === false) {
-            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+            const image = props.images.find((image: any) => {return image.sender_id === props.contact.contact_id});
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
-            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            const image = props.images.find((image: any) => {return image.id === props.contact.group_pic_id});
             console.log("image = " +  JSON.stringify(image))
             return image || { data: "" }; // Ensure we return a fallback value
         }
@@ -87,6 +89,39 @@ export default function ProfileInfo( props ) {
         }
     }
 
+    async function changeProfilePic(base64Img) {
+        let group_id = null
+        if(props.contact.is_group === true) group_id = props.contact.id
+        else return
+
+        const msg = {
+            group_id: group_id,
+            data_img: base64Img,
+            profile_pic_id: Math.floor(Math.random() * 10000000) + 5
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(msg)
+        };
+
+        console.log("Before sending POST request to server to change profile pic")
+        const response = await fetch(`http://localhost:3002/putProfilePic`, requestOptions)
+        if(response.status === 200){
+            await props.fetchUsers()
+            await props.fetchImages()
+            await props.fetchContacts()
+
+            console.log("images = " + JSON.stringify(props.images))
+
+            // const img = props.images.find((img) => { return img.id === msg.profile_pic_id }) 
+            // console.log("profile pic id = " + JSON.stringify(img.id))
+            // update images here 
+            // const response2 = await fetch(`http://localhost:3002/putProfilePic?user=${props.curr_user}`)
+        }
+    }
+
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px] flex-col overflow-y-scroll scrollbar-hide">
             <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-600 bg-opacity-60">
@@ -97,10 +132,69 @@ export default function ProfileInfo( props ) {
                     <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold">Contact info</div>
                 </div>
                 <div className="relative flex flex-col h-[60%] w-[6/10] items-center justify-center">
-                    {(props.contact !== null && getImage(props.contact).data !== "") ? <img src={`data:image/jpg,png;base64,${getImage(props.contact).data}`}></img> :
-                        <img src="./userProfile2.png" className="flex flex-col max-h-[100%] rounded-full justify-center items-center"></img>       
-                    }
+                    <div className="relative flex h-full max-w-[50%] items-center justify-center rounded-full"
+                        onMouseEnter={() => {setHoverStatusProfilePic(true); console.log("On profile pic")}}
+                        onMouseLeave={() => {setHoverStatusProfilePic(false); console.log("out of profile pic")}}
+                    >
+                        {/* Profile Picture */}
+                        {(props.contact !== null && getImage(props.contact).data !== "") ? (
+                            <img
+                                src={`data:image/jpg;base64,${getImage(props.contact).data}`}
+                                className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
+                            />
+                        ) : (
+                            <img
+                                src="./userProfile2.png"
+                                className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
+                            />
+                        )}
+
+                        {/* Input Overlaid on Top of the Image */}
+                        {/* {(props.contact !== null && onProfilePic === true && props.contact.is_group === true) && ( */}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
+                                onClick={() => {console.log("File input clicked")}}
+                                onChange={(event) => {
+                                    console.log("File input triggered");
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        console.log("File selected:", file.name);
+                                        const reader = new FileReader();
+                                        console.log("FileReader created");
+                                        reader.onload = (e) => {
+                                            console.log("File loaded");
+                                            let base64Image = e.target.result as string;
+                                            const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+                                            if (base64Regex.test(base64Image)) {
+                                                // Remove the data URL prefix
+                                                base64Image = base64Image.replace(
+                                                    base64Regex,
+                                                    ""
+                                                );
+                                            }
+                                            console.log(
+                                                "Base64 Image (stripped):",
+                                                base64Image
+                                            );
+                                            changeProfilePic(base64Image);
+                                        };
+                                        reader.onerror = (error) =>
+                                            console.error("Error reading file:", error);
+                                        reader.readAsDataURL(file);
+                                        console.log("Started reading file");
+                                    } else {
+                                        console.log("No file selected");
+                                    }
+                                    // Reset the file input to allow re-selection
+                                    event.target.value = "";
+                                }}
+                            />
+                        {/* )} */}
+                    </div>
                 </div>
+
                 <div className="relative flex flex-col h-[25%] items-center">
                     <div className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
                         {props.contact !== null ? (nameChangeGroup === true ? 
