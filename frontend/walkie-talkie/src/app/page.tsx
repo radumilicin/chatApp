@@ -5,6 +5,7 @@ import CurrentChat from "./CurrentChat";
 import OptionsBar from './Settings';
 import { useEffect, useState } from 'react';
 import ProfileSettings from "./ProfileSettings";
+import ProfileInfo from "./InfoProfile";
 
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
   const [pressed, setPressed] = useState(null) // this is the id of the user 
   const [curr_contact, setCurrContact] = useState(null)
   const [pressedProfile, setPressProfile] = useState(false)
+  const [profileInfo, setProfileInfo] = useState(false)
 
   // change this when authentication will be a thing 
   let user = 1
@@ -74,7 +76,8 @@ export default function Home() {
         ></Conversations> 
                                   : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} fetchData2={fetchData2} fetchImages={fetchImages}></ProfileSettings>
         }
-        <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user}></CurrentChat>
+        {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo}></CurrentChat>
+                               : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} contacts={contacts} images={images}></ProfileInfo>}
       </div>
     </div>
   );

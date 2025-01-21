@@ -173,7 +173,6 @@ export default function CurrentChat( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
-
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const findImageBasedOnID = (message: any) => {
@@ -185,16 +184,16 @@ export default function CurrentChat( props: any ) {
 
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
-            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row" onClick={() => {}}>
+            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row" onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
                     {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
-                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> :
+                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
                      (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
-                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
                     }
                 </div>
                 <div className="flex w-[85%] h-[100%] items-center">
@@ -232,7 +231,6 @@ export default function CurrentChat( props: any ) {
                                             {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
                                         </div>
                                     </div>
-
                                     {/* Message Text */}
                                 </div>
                             ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (

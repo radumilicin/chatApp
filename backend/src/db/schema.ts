@@ -38,5 +38,6 @@ export const contacts = pgTable('contacts', {
   message: jsonb('message').default([]),
   group_name: varchar('group_name', {length : 50}).default(''),
   group_pic_id: integer('group_pic_id').references(() => images.id),
+  group_description: varchar('group_description', {length:100}).default(''),
   group_admins: jsonb('admins').default([])
 });
