@@ -8,6 +8,13 @@
       "when": 1737393807387,
       "tag": "0000_large_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737455454239,
+      "tag": "0001_closed_karen_page",
+      "breakpoints": true
     }
   ]
 }

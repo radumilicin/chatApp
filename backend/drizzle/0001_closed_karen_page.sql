@@ -1,0 +1,1 @@
+ALTER TABLE "contacts" ADD COLUMN "group_description" varchar(100) DEFAULT '';

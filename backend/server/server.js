@@ -456,6 +456,24 @@ app.post('/createGroup', async (req, res) => {
   }
 });
 
+app.post('/changeGroupName', async (req, res) => {
+
+  const { id, newName } = req.body;
+  console.log("body of query = " + JSON.stringify(req.body))
+
+  if(id !== null && newName !== null) {
+    try {
+      await pool.query(`UPDATE contacts SET group_name = $2 WHERE id = $1`, [id, newName])
+      console.log("after update in DB")
+      res.sendStatus(200)
+    } catch(err) {
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
+
 app.listen(PORT, (error) =>{
     if(!error)
         console.log("Server is Successfully Running, and App is listening on port "+ PORT)

@@ -73,6 +73,12 @@ export default function CurrentChat( props: any ) {
 
             console.log("props.contact = " + props.contact)
         }
+        else {
+            if(contact.current !== null && props.contact.group_name !== contact.current.group_name){
+                console.log("previous group name =" + contact.current.group_name)
+                console.log("current group name =" + props.contact.group_name)
+            }
+        }
         contact.current = props.contact
         // }
 
@@ -162,6 +168,15 @@ export default function CurrentChat( props: any ) {
         }
     }
 
+    function getNameContact(contact: any) {
+        if(contact.is_group === true){
+            console.log("contact name = " + JSON.stringify(contact.group_name))
+            return contact.group_name 
+        } else {
+            return props.users.find((user) => { return contact.contact_id === user.id}).username
+        }
+    }
+
     function getUser(contact: any) {
         const user = props.users.find((user: any) => user.id === props.contact.contact_id);
         return user || { data: "" }; // Ensure we return a fallback value
@@ -172,7 +187,6 @@ export default function CurrentChat( props: any ) {
         const user = props.users.find((user: any) => user.id === idUser);
         return user || { data: "" }; // Ensure we return a fallback value
     }
-
 
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
@@ -185,20 +199,20 @@ export default function CurrentChat( props: any ) {
 
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
-            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row" onClick={() => {}}>
+            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
                     {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
-                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> :
+                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
                      (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
-                        <img src={`./userProfile.jpg`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
                     }
                 </div>
                 <div className="flex w-[85%] h-[100%] items-center">
-                    {contact.current !== null && <div className="top-0 flex flex-col text-2xl font-semibold">{getUser(contact.current).username}</div>}
+                    {contact.current !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(contact.current)}</div>}
                 </div>
             </div>
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
@@ -232,7 +246,6 @@ export default function CurrentChat( props: any ) {
                                             {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
                                         </div>
                                     </div>
-
                                     {/* Message Text */}
                                 </div>
                             ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
