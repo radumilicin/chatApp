@@ -548,11 +548,12 @@ export function Contacts2( props: any) {
     }
 
     function getImage(contact: any) {
+        console.log("contact = " + JSON.stringify(contact))
         if(contact.is_group === false) {
-            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+            const image = props.images.find((image: any) => image.sender_id === contact.contact_id);
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
-            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            const image = props.images.find((image: any) => image.id === contact.group_pic_id);
             return image || { data: "" }; // Ensure we return a fallback value
         }
     }

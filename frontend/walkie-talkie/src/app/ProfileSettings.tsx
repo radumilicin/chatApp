@@ -103,18 +103,34 @@ export default function ProfileSettings(props) {
 
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2 flex flex-col">
-            <div className="relative flex flex-row top-[5%] left-[15%] w-[70%] h-[45%] bg-gray-700 justify-center items-center hover:opacity-50 rounded-full" 
-                onMouseEnter={() => {setHoverProfilePic(true)}} onMouseLeave={() => {setHoverProfilePic(false)}}>
-                {currImageData.data !== "" ? <img src={`data:image/jpeg;base64,${currImageData.data}`} className="h-[70%] w-[70%] z-0 rounded-full" />
-                                          : <img src="./profilePic2.png" className="h-[70%] w-[70%] z-0"></img>
-                }
-                {hoveredProfilePic ? <div className="absolute h-[70%] w-[70%] flex flex-col items-center justify-center">
-                    <img src="./cameraIcon2.png" className="h-[20%] w-[30%]"></img>
-                    <p className="h-[30%] w-[100%] text-black inline-block flex-row justify-center items-center">Change profile picture</p>
-                </div> : <></>}
-                <input 
-                    type="file" accept="image/*"
-                    className="absolute top-0 left-0 w-full z-10 h-full opacity-0 cursor-pointer" 
+            <div
+                className="relative flex flex-row top-[5%] left-[15%] w-[70%] h-[45%] bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
+                onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
+                onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
+            >
+                {currImageData.data !== "" ? (
+                    <img
+                        src={`data:image/jpeg;base64,${currImageData.data}`}
+                        className="h-[70%] w-[70%] z-0 rounded-full"
+                    />
+                ) : (
+                    <img src="./profilePic2.png" className="h-[70%] w-[70%] z-0 rounded-full"></img>
+                )}
+
+                {hoveredProfilePic && (
+                    <div className="absolute h-[70%] w-[70%] flex flex-col items-center justify-center z-20">
+                        <img src="./cameraIcon2.png" className="h-[20%] w-[30%]" />
+                        <p className="h-[30%] w-[100%] text-black text-center">
+                            Change profile picture
+                        </p>
+                    </div>
+                )}
+
+                {/* Input for file upload */}
+                <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
                     onChange={(event) => {
                         console.log("File input triggered");
                         const file = event.target.files[0];
@@ -128,22 +144,23 @@ export default function ProfileSettings(props) {
                                 const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
                                 if (base64Regex.test(base64Image)) {
                                     // Remove the data URL prefix
-                                    base64Image = base64Image.replace(base64Regex, '');
+                                    base64Image = base64Image.replace(base64Regex, "");
                                 }
 
                                 console.log("Base64 Image (stripped):", base64Image);
-                                
+
                                 // Send the base64 image
                                 changeProfilePic(base64Image);
                             };
-                            reader.onerror = (error) => console.error("Error reading file:", error);
+                            reader.onerror = (error) =>
+                                console.error("Error reading file:", error);
                             reader.readAsDataURL(file);
                             console.log("Started reading file");
                         } else {
                             console.log("No file selected");
                         }
                         // Reset the file input to allow re-selection
-                        event.target.value = '';
+                        event.target.value = "";
                     }}
                 />
             </div>

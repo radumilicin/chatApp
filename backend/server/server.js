@@ -369,26 +369,50 @@ app.post('/putProfilePic', async (req, res) => {
   // 1. get the data from the request
   // 2. update the tables (users + images)
   // 3. PROFIT
-
   console.log("Beginning of request to change profile picture")
-  const { id, data_img, profile_pic_id } = req.body;
-  console.log("body of query = " + JSON.stringify(req.body))
-  // console.log("id of the user trying to change profile picture: " + body.id)
 
-  if(id !== null && profile_pic_id !== null) {
-    try {
-      console.log("before inserting to images")
-      await pool.query(`INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)`, [profile_pic_id, id, '', data_img]);
-      
-      console.log("before updating user profile pic")
-      await pool.query(`UPDATE users SET profile_pic_id = $2 WHERE id = $1`, [id, profile_pic_id])
+  if(req.body.hasOwnProperty('group_id')) {
+    const { group_id, data_img, profile_pic_id } = req.body;
+    console.log("body of query = " + JSON.stringify(req.body))
+    // console.log("id of the user trying to change profile picture: " + body.id)
 
-      res.status(200).send("Profile picture changed")
-    } catch(error) {
-      res.status(500).send("Server error. Image not put in the database.")
+    if(group_id !== null && profile_pic_id !== null) {
+      try {
+        console.log("before inserting to images")
+        await pool.query(`INSERT INTO images (id, image_name, data) VALUES ($1, $2, $3)`, [profile_pic_id, '', data_img]);
+        
+        console.log("before updating user profile pic")
+        await pool.query(`UPDATE contacts SET group_pic_id = $2 WHERE id = $1`, [group_id, profile_pic_id])
+
+        console.log("put profile_pic in group")
+        res.status(200).send("Profile picture changed")
+      } catch(error) {
+        res.status(500).send("Server error. Image not put in the database.")
+      }
+    } else {
+      res.status(400).send("Bad request. The request doesn't contain an image embedded.")
     }
+
   } else {
-    res.status(400).send("Bad request. The request doesn't contain an image embedded.")
+    const { id, data_img, profile_pic_id } = req.body;
+    console.log("body of query = " + JSON.stringify(req.body))
+    // console.log("id of the user trying to change profile picture: " + body.id)
+
+    if(id !== null && profile_pic_id !== null) {
+      try {
+        console.log("before inserting to images")
+        await pool.query(`INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)`, [profile_pic_id, id, '', data_img]);
+        
+        console.log("before updating user profile pic")
+        await pool.query(`UPDATE users SET profile_pic_id = $2 WHERE id = $1`, [id, profile_pic_id])
+
+        res.status(200).send("Profile picture changed")
+      } catch(error) {
+        res.status(500).send("Server error. Image not put in the database.")
+      }
+    } else {
+      res.status(400).send("Bad request. The request doesn't contain an image embedded.")
+    }
   }
 
 });
