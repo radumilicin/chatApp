@@ -197,6 +197,11 @@ export default function CurrentChat( props: any ) {
         return image
     }
 
+    function getUserWithId(user_id) {
+        const user = props.users.find((user) => {return user.id === user_id})
+        return user || {data: ""}
+    }
+
     return (
         <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
@@ -211,9 +216,21 @@ export default function CurrentChat( props: any ) {
                         <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
                     }
                 </div>
-                <div className="flex w-[85%] h-[100%] items-center">
-                    {contact.current !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(contact.current)}</div>}
-                </div>
+                {contact.current !== null && contact.current.is_group === true &&
+                    <div className="flex w-[85%] h-[100%] flex-col">
+                        <div className="flex justify-start items-end h-[50%] w-full indent-[10px]">
+                            {contact.current !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(contact.current)}</div>}
+                        </div>
+                        <div className="flex justify-start h-[50%] w-full indent-[10px]">
+                            {contact.current !== null && contact.current.members.map((ctc, idx) => (
+                                idx === contact.current.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
+                            ))}
+                        </div>
+                    </div>}
+                    {contact.current !== null && contact.current.is_group === false && 
+                        <div className="flex w-[85%] h-[100%] flex-row">
+                        {contact.current !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(contact.current)}</div>}
+                    </div>}
             </div>
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
                 {allMessages.length > 0 &&

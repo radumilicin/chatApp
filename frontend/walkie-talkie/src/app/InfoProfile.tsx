@@ -8,6 +8,16 @@ export default function ProfileInfo( props ) {
     const contacts = useRef(props.contacts)
     const contactNow = useRef(props.contact)
     const [onProfilePic, setHoverStatusProfilePic] = useState(false)
+    const [descriptionPressed, setDescriptionPressed] = useState(false)
+    const [description, setDescription] = useState('')
+
+    const setDescriptionPressedAsync = async (val) => {
+        setDescriptionPressed(val)
+    }
+    
+    const setDescriptionAsync = async (val) => {
+        setDescription(val)
+    }
 
     const settingGroupName = async (val) => {
         setNameGroup(val)
@@ -19,8 +29,11 @@ export default function ProfileInfo( props ) {
 
     useEffect(() => {
         if(props.contact.is_group === true) {
-            console.log("Changing group name after change in profile")
+            // console.log("Changing group name after change in profile")
             settingGroupName(props.contact.group_name)
+            setDescriptionAsync(props.contact.group_description)
+        } else {
+            setDescriptionAsync(getUser(props.contact).about)
         }
     }, [props.contact])
 
@@ -28,7 +41,7 @@ export default function ProfileInfo( props ) {
         console.log("Fetching contacts after entering in DB")
         var changed_contact = props.contacts.find((kontakt) => {return kontakt.id === contactNow.current.id})
 
-        console.log("changed contact = " + JSON.stringify(changed_contact) + "\nprev contact = " + JSON.stringify(props.contact))
+        // console.log("changed contact = " + JSON.stringify(changed_contact) + "\nprev contact = " + JSON.stringify(props.contact))
 
         const settingContact = async () => {
             props.setCurrContact(changed_contact)
@@ -36,7 +49,7 @@ export default function ProfileInfo( props ) {
 
         settingContact()
 
-        console.log("current contact after update " + JSON.stringify(props.contact))
+        // console.log("current contact after update " + JSON.stringify(props.contact))
     }, [props.contacts])
 
     function getImage(contact: any) {
@@ -46,14 +59,14 @@ export default function ProfileInfo( props ) {
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
             const image = props.images.find((image: any) => {return image.id === props.contact.group_pic_id});
-            console.log("image = " +  JSON.stringify(image))
+            // console.log("image = " +  JSON.stringify(image))
             return image || { data: "" }; // Ensure we return a fallback value
         }
     }
 
     function getNameContact(contact: any) {
         if(contact.is_group === true){
-            console.log("contact name = " + JSON.stringify(contact.group_name))
+            // console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
         } else {
             return props.users.find((user) => { return contact.contact_id === user.id}).username
@@ -61,9 +74,9 @@ export default function ProfileInfo( props ) {
     }
 
     function getUser(contact: any) {
-        console.log("Is contact group or not: " + contact.is_group)
+        // console.log("Is contact group or not: " + contact.is_group)
         if(contact.is_group === false){
-            return props.users.find((elem) => { return elem.id === contact.contact_id})   
+            return props.users.find((id) => { return id.id === contact.contact_id})   
         }
     }
 
@@ -86,6 +99,31 @@ export default function ProfileInfo( props ) {
             } catch(error) {
                 console.error(error)
             }
+        }
+    }
+
+    async function changeGroupDescription(desc : string) {
+        let group_id = null
+        if(props.contact.is_group === true) group_id = props.contact.id
+        else return
+
+        const msg = {
+            group_id: group_id,
+            description: desc,
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(msg)
+        };
+
+        console.log("Before sending POST request to server to change profile pic")
+        const response = await fetch(`http://localhost:3002/changeGroupDescription`, requestOptions)
+        if(response.status === 200){
+            await props.fetchContacts()
+        } else {
+            console.log("Could not change group description")
         }
     }
 
@@ -224,12 +262,117 @@ export default function ProfileInfo( props ) {
                     </div>
                 </div>
             </div>
-            <div className="relative left-0 top-[5%] h-[15%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60">
-                <div className="flex text-md text-black indent-[20px] h-[1/2]">About</div>
-                <div className="flex text-md text-gray-500 indent-[20px] h-[1/2]">{
-                    (props.contact !== null) ? (props.contact.is_group === true ? props.contact.group_description : getUser(props.contact).about) : ""
-                }
+            <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
+                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users}>
+            </AboutProfile>
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
+            {props.contact.is_group === true && <OptionsGroup></OptionsGroup>}
+        </div>
+    );
+}
+
+function AboutProfile(props) {
+
+    const prevAbout = useRef('')
+
+    useEffect(() => {
+        if(props.contact !== null){
+            if(props.contact.is_group === true){
+                prevAbout.current = props.contact.group_description
+            } else {
+                prevAbout.current = props.users.find((user) => {return user.id === props.contact.contact_id}).about
+            }
+        }
+    }, [props.contact])
+
+    return (
+        <div className="relative left-0 top-[3%] h-[15%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60">
+                <div className="flex text-md text-black indent-[15px] h-[50%] w-full font-medium font-sans items-center">About</div>
+                <div className="flex text-md text-white indent-[15px] h-[50%] w-full font-sans flex-row items-start">
+                    <div className="w-[90%] h-full hover:cursor-pointer flex items-start" onClick={() => {props.setDescriptionPressedAsync(true)}}>
+                        {
+                            (props.contact !== null) ? 
+                                (props.contact.is_group === true && props.descriptionPressed === false ? ((props.contact.group_description === '') ? 'Add group description' 
+                                                                                                            : props.contact.group_description) 
+                                                                 : (props.contact.is_group === false && props.descriptionPressed === true) ? props.getUser(props.contact).about : '') : ''}
+                        {
+                            (props.contact !== null) ? 
+                                ((props.contact.is_group === true && props.descriptionPressed === true) ? 
+                                    <input placeholder="Add description to group" 
+                                           value={props.description}
+                                           className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md"
+                                           onChange={(e) => {
+                                              props.setDescriptionAsync(e.target.value)
+                                              console.log("Description: " + props.description)
+                                           }}
+                                           onKeyDown={(e) => {
+                                                if(e.key === 'Enter' || e.key === 'Escape') {
+                                                    // change the group name in the DB
+                                                    // if(prevAbout.current !== props.description) {
+                                                    console.log("input has been submitted")
+                                                    props.changeGroupDescription(props.description)
+                                                    props.setDescriptionPressedAsync(false)
+                                                    prevAbout.current = props.description
+                                                    // }
+                                                }
+                                           }}
+                                    >
+                                    </input> : <></>) : <></>
+                        }
+                    </div>
+                    <div className="w-[10%] h-full">
+                        <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[40%] hover:cursor-pointer overflow-x-scroll" onClick={() => {props.setDescriptionPressedAsync(true)}}></img>
+                    </div>
                 </div>
+            </div>
+    );
+}
+
+function Members(props) {
+
+    function getUser(user_id) {
+        const user = props.users.find((user) => {return user.id === user_id})
+        return user || {data: ""}
+    }
+    
+    function getProfilePic(user: any) { 
+        console.log("HERE?")
+        const image = props.images.find((image: any) => image.id === user.profile_pic_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    useEffect(() => {
+        console.log("members = " + props.contact.members)
+    }, [props.contact])
+
+    return (
+        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60 overflow-scroll scrollbar-hide">
+            {props.contact.members.map((id) => ( 
+                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
+                    <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                        {(getProfilePic(getUser(id)).data !== "") ? 
+                                <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
+                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img>
+                        }
+                    </div>
+                    <div className="flex w-[75%] h-full flex-col justify-start">
+                        <div className="flex h-[50%] text-black font-sans text-md font-medium items-end">{getUser(id).username}</div>
+                        <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
+                    </div>    
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function OptionsGroup(props) {
+    return (
+        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60 overflow-scroll scrollbar-hide">
+            <div className="relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30">
+                <div className="flex w-[15%] h-full flex-row justify-center items-center">
+                    <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
+                </div>
+                <div className="flex w-[85%] h-full justify-start items-center text-xl font-sans font-medium text-red-600">Exit group</div>
             </div>
         </div>
     );
