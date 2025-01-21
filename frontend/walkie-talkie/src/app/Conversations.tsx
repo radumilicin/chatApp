@@ -548,8 +548,13 @@ export function Contacts2( props: any) {
     }
 
     function getImage(contact: any) {
-        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
-        return image || { data: "" }; // Ensure we return a fallback value
+        if(contact.is_group === false) {
+            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        } else {
+            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            return image || { data: "" }; // Ensure we return a fallback value
+        }
     }
 
     // type user is either current or other (0,1)
@@ -561,7 +566,7 @@ export function Contacts2( props: any) {
                 return contact.contact_id === user.id
             }
         })
-        const image = props.images.find((image: any) => image.id === user.image_id);
+        const image = props.images.find((image: any) => image.id === user.profile_pic_id);
         return image || { data: "" }; // Ensure we return a fallback value
     }
 
@@ -576,16 +581,15 @@ export function Contacts2( props: any) {
                         onClick={() => {props.setPressed2(element); props.setContactsInNewGroup([...props.contactsInNewGroup, element])}}// here add to the list of contacts console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
-                            {/* Use base64 data for image */}
-                            {getImage(element).data !== "" ? <img
-                                src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
-                                alt="Profile"
-                            /> : getProfileImage(element, 1).data !== "" ? <img
-                                src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
-                                alt="Profile"></img> : 
-                                <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                            {(element !== null && element.is_group === false && getImage(element).data !== "") ? 
+                                <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
+                                (element !== null && element.is_group === false && getImage(element).data === "") ?
+                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
+                            (element !== null && element.is_group === true && element.group_pic_id !== null) ? 
+                                <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
+                                (element !== null && element.is_group === true && element.group_pic_id === null) ? 
+                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                            }
                         </div>
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[50%] w-full items-center flex-row">
