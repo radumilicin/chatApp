@@ -266,7 +266,7 @@ export default function ProfileInfo( props ) {
                             description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users}>
             </AboutProfile>
             {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
-            
+            {props.contact.is_group === true && <OptionsGroup></OptionsGroup>}
         </div>
     );
 }
@@ -363,5 +363,17 @@ function Members(props) {
             ))}
         </div>
     );
+}
 
+function OptionsGroup(props) {
+    return (
+        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60 overflow-scroll scrollbar-hide">
+            <div className="relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30">
+                <div className="flex w-[15%] h-full flex-row justify-center items-center">
+                    <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
+                </div>
+                <div className="flex w-[85%] h-full justify-start items-center text-xl font-sans font-medium text-red-600">Exit group</div>
+            </div>
+        </div>
+    );
 }
