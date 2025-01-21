@@ -414,8 +414,28 @@ app.post('/putProfilePic', async (req, res) => {
       res.status(400).send("Bad request. The request doesn't contain an image embedded.")
     }
   }
-
 });
+
+app.post('/changeGroupDescription', async (req, res) => {
+
+  const { group_id, description } = req.body
+  
+  console.log("Before if in change group description")
+  console.log("body method " + JSON.stringify(req.body))
+  if (group_id !== null || description !== null) {
+    try{
+      console.log("Before updating contacts")
+      await pool.query(`UPDATE contacts SET group_description = $2 WHERE id = $1`, [group_id, description])
+      
+      console.log("After updating contacts")
+      
+      res.status(200).send("Group description changed")
+    } catch(err) {
+      res.status(400).send("Bad request. The request doesn't contain the right parameters.")
+    }
+  }
+});
+
 
 app.post('/changeUsername', async (req, res) => {
 
