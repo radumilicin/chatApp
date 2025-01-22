@@ -231,28 +231,28 @@ export function Contacts( props: any) {
                                 <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
                         </div>
                         <div className="flex w-[90%] flex-col">
-                            <div className="flex h-[50%] w-full items-center flex-row">
-                                <div className="w-[80%] h-full">
-                                    <div className="indent-[20px] text-lg font-medium font-sans text-black">
+                            <div className="flex h-[60%] w-full items-center flex-row">
+                                <div className="w-[80%] h-full flex flex-row items-center">
+                                    <div className="indent-[20px] text-2xl font-medium font-sans text-black">
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
-                                    <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
+                                    <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
                                         {element.recipient_id === curr_user && getUnreadMessages(element, idx)}
                                     </div> 
                                 </div>
                             </div>
-                            <div className="relative flex w-full h-[50%] items-center">
+                            <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[80%]">
-                                    <div className="indent-[20px] flex h-full w-full items-center text-md text-gray-300 font-medium">
+                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
                                         {(getLastMessage(element, idx).message).hasOwnProperty("image_id") ? "Image" : getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-center text-sm text-gray-300 font-medium">
+                                    <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
                                         {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
@@ -280,28 +280,28 @@ export function Contacts( props: any) {
                                         <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
-                                    <div className="flex h-[50%] w-full items-center flex-row">
-                                        <div className="w-[80%] h-full">
-                                            <div className="indent-[20px] text-lg font-medium font-sans text-black">
+                                    <div className="flex h-[60%] w-full items-center flex-row">
+                                        <div className="w-[80%] h-full flex flex-row items-center">
+                                            <div className="indent-[20px] text-2xl font-medium font-sans text-black">
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[20%] h-full flex flex-row justify-center">
-                                            <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
+                                            <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
                                                 {element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element, idx)}
                                             </div> 
                                         </div>
                                     </div>
-                                    <div className="relative flex w-full h-[50%] items-center">
+                                    <div className="relative flex w-full h-[40%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[80%]">
-                                            <div className="indent-[20px] flex h-full w-full items-center text-sm text-gray-300 font-medium">
+                                            <div className="indent-[20px] flex h-full w-full items-start text-lg text-gray-300 font-medium">
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[20%]">
-                                            <div className="flex h-full w-full flex-row items-center text-sm text-gray-300 font-medium">
+                                            <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
@@ -331,8 +331,8 @@ export function Contacts( props: any) {
                             />
                         </div>
                         <div className="flex w-[90%] flex-col">
-                            <div className="flex h-[50%] w-full items-center flex-row">
-                                <div className="w-[80%] h-full">
+                            <div className="flex h-[60%] w-full items-center flex-row">
+                                <div className="w-[80%] h-full flex flex-row items-center">
                                     <div className="indent-[20px] text-xl font-medium font-sans text-black">
                                         {getNameWithUserId(element)}
                                     </div>
@@ -343,16 +343,16 @@ export function Contacts( props: any) {
                                     </div> 
                                 </div>
                             </div>
-                            <div className="relative flex w-full h-[50%] items-center">
+                            <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[80%]">
-                                    <div className="indent-[20px] flex h-full w-full items-center text-sm font-medium text-white font-sans">
+                                    <div className="indent-[20px] flex h-full w-full items-start text-sm font-medium text-white font-sans">
                                         {getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-center text-sm text-gray-600 font-medium font-sans">
+                                    <div className="flex h-full w-full flex-row items-center justify-center text-sm text-gray-600 font-medium font-sans">
                                         {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
@@ -463,10 +463,7 @@ export function GroupMaking(props) {
         }
     }
 
-    function getUser(user_id) {
-        const user = props.users.find((user) => {return user.id === user_id})
-        return user || {data: ""}
-    }
+    
 
     return (
         <div className="absolute left-0 top-0 w-full h-[20%]">
@@ -583,7 +580,7 @@ export function Contacts2( props: any) {
                     (element.sender_id === props.curr_user && !props.contactsInNewGroup.includes(element)) ?
                     <div
                         key={idx}
-                        className={`relative h-[12%] w-full bg-gray-500 bg-opacity-50 flex flex-row border-y-gray-700 border-t-[1px]`}
+                        className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
                         onClick={() => {props.setPressed2(element); props.setContactsInNewGroup([...props.contactsInNewGroup, element])}}// here add to the list of contacts console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">

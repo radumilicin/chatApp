@@ -253,7 +253,7 @@ export default function ProfileInfo( props ) {
                             : 
                             <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full">{getNameContact(props.contact)}</div>) 
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
-                        <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
+                        <div className="absolute flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full left-[80%] w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
                             {(props.contact !== null && props.contact.is_group === true) 
                                 ? <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[40%]" onClick={() => {}}></img>
                                 : <></>
@@ -263,10 +263,11 @@ export default function ProfileInfo( props ) {
                 </div>
             </div>
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
-                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users}>
+                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser}>
             </AboutProfile>
             {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
             {props.contact.is_group === true && <OptionsGroup></OptionsGroup>}
+            {props.contact.is_group === false && <OptionsChat></OptionsChat>}
         </div>
     );
 }
@@ -286,21 +287,21 @@ function AboutProfile(props) {
     }, [props.contact])
 
     return (
-        <div className="relative left-0 top-[3%] h-[15%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60">
-                <div className="flex text-md text-black indent-[15px] h-[50%] w-full font-medium font-sans items-center">About</div>
-                <div className="flex text-md text-white indent-[15px] h-[50%] w-full font-sans flex-row items-start">
-                    <div className="w-[90%] h-full hover:cursor-pointer flex items-start" onClick={() => {props.setDescriptionPressedAsync(true)}}>
+        <div className="relative left-0 top-[3%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40">
+                <div className="flex text-2xl text-black indent-[30px] h-[60%] w-full font-medium font-sans items-center">About</div>
+                <div className="flex text-md text-white indent-[30px] h-[40%] w-full font-sans flex-row items-start">
+                    <div className="w-[90%] h-full hover:cursor-pointer flex items-start text-xl " onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
                         {
                             (props.contact !== null) ? 
                                 (props.contact.is_group === true && props.descriptionPressed === false ? ((props.contact.group_description === '') ? 'Add group description' 
                                                                                                             : props.contact.group_description) 
-                                                                 : (props.contact.is_group === false && props.descriptionPressed === true) ? props.getUser(props.contact).about : '') : ''}
+                                                                 : (props.contact.is_group === false) ? props.getUser(props.contact).about : '') : ''}
                         {
                             (props.contact !== null) ? 
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
                                     <input placeholder="Add description to group" 
                                            value={props.description}
-                                           className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md"
+                                           className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[30px]"
                                            onChange={(e) => {
                                               props.setDescriptionAsync(e.target.value)
                                               console.log("Description: " + props.description)
@@ -321,7 +322,7 @@ function AboutProfile(props) {
                         }
                     </div>
                     <div className="w-[10%] h-full">
-                        <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[40%] hover:cursor-pointer overflow-x-scroll" onClick={() => {props.setDescriptionPressedAsync(true)}}></img>
+                        {props.contact.is_group === true && <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[40%] hover:cursor-pointer overflow-x-scroll" onClick={() => {props.setDescriptionPressedAsync(true)}}></img>}
                     </div>
                 </div>
             </div>
@@ -346,7 +347,7 @@ function Members(props) {
     }, [props.contact])
 
     return (
-        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60 overflow-scroll scrollbar-hide">
+        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
             {props.contact.members.map((id) => ( 
                 <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
                     <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
@@ -367,8 +368,8 @@ function Members(props) {
 
 function OptionsGroup(props) {
     return (
-        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-600 bg-opacity-60 overflow-scroll scrollbar-hide">
-            <div className="relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30">
+        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+            <div className="relative flex h-[150px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30">
                 <div className="flex w-[15%] h-full flex-row justify-center items-center">
                     <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
                 </div>
@@ -376,4 +377,29 @@ function OptionsGroup(props) {
             </div>
         </div>
     );
+}
+
+function OptionsChat(props) {
+
+    return (
+        <div className="relative left-0 top-[6%] w-full flex-col bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+                <div className="flex flex-row h-full w-[15%] items-center justify-center">
+                    <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
+                </div>
+                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                    <div className="text-xl text-red-600 font-semibold font-sans">Block user</div>
+                </div>
+            </div>
+            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+                <div className="flex flex-row h-full w-[15%] items-center justify-center">
+                    <img src="./trashIcon2.png" className="h-[60%] max-w-[60%] aspect-square"></img>
+                </div>
+                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                    <div className="text-xl text-red-600 font-semibold font-sans">Delete chat</div>
+                </div>
+            </div>
+        </div>
+    )
+
 }
