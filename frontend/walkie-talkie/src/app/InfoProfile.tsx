@@ -69,6 +69,7 @@ export default function ProfileInfo( props ) {
     }
 
     function getNameContact(contact: any) {
+        if(contact === null || contact === undefined) return ""
         if(contact.is_group === true){
             // console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
@@ -78,6 +79,7 @@ export default function ProfileInfo( props ) {
     }
 
     function getUser(contact: any) {
+        if(contact === null || contact === undefined) return {data: ""}
         // console.log("Is contact group or not: " + contact.is_group)
         if(contact.is_group === false){
             return props.users.find((id) => { return id.id === contact.contact_id})   
@@ -85,7 +87,7 @@ export default function ProfileInfo( props ) {
     }
 
     async function changeGroupName(contact: any, newName: string) {
-        if(contact.is_group === true){
+        if((contact !== null || contact !== undefined) && contact.is_group === true){
             let message = {
                 id: contact.id,
                 newName: newName
@@ -179,7 +181,7 @@ export default function ProfileInfo( props ) {
                         onMouseLeave={() => {setHoverStatusProfilePic(false); console.log("out of profile pic")}}
                     >
                         {/* Profile Picture */}
-                        {(props.contact !== null && getImage(props.contact).data !== "") ? (
+                        {((props.contact !== undefined || props.contact !== null) && getImage(props.contact).data !== "") ? (
                             <img
                                 src={`data:image/jpg;base64,${getImage(props.contact).data}`}
                                 className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
@@ -239,7 +241,7 @@ export default function ProfileInfo( props ) {
 
                 <div className="relative flex flex-col h-[25%] items-center">
                     <div className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
-                        {props.contact !== null ? (nameChangeGroup === true ? 
+                        {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ? 
                             (<input value={nameGroup} className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full outline-none overflow-x-auto border-b-2 bg-transparent border-green-800" 
                                 onChange={(e) => {
                                     settingGroupName(e.target.value)
@@ -258,7 +260,7 @@ export default function ProfileInfo( props ) {
                             <div className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full">{getNameContact(props.contact)}</div>) 
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
                         <div className="absolute flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full left-[80%] w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
-                            {(props.contact !== null && props.contact.is_group === true) 
+                            {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true) 
                                 ? <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[20%] aspect-square" onClick={() => {}}></img>
                                 : <></>
                             }
@@ -269,7 +271,7 @@ export default function ProfileInfo( props ) {
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
                             description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser}>
             </AboutProfile>
-            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup}></Members>}
             {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsGroup>}
             {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsChat>}
         </div>
@@ -352,12 +354,12 @@ function Members(props) {
 
     return (
         <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
-            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
+            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
                 <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                     <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
                 </div>
                 <div className={`flex w-[85%] h-full flex-row justify-start items-center`}>
-                    <div className="text-xl text-green-500 font-sans font-semibold" onClick={() => {}}>Add member</div>
+                    <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
                 </div>
             </div>
             {props.contact.members.map((id) => ( 
@@ -377,6 +379,23 @@ function Members(props) {
         </div>
     );
 }
+
+// function AddPersonToGroup(props) {
+//     return (
+//         <div className="absolute left-[35%] w-[30%] top-[15%] h-[70%] bg-gray-800">
+//             <div className="relative top-0 left-0 flex flex-col">
+//                 <div className="relative flex flex-row h-[100px] w-full bg-slate-500">
+//                     <div className="flex w-[15%] h-full justify-center items-center">
+//                         <img src="./xicon.png" className="h-[50%] w-[50%]"></img>
+//                     </div>
+//                     <div className="flex flex-row w-[85%] h-full justify-start items-center text-xl text-white">
+//                         Add member
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
 
 function OptionsGroup(props) {
     

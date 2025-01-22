@@ -6,6 +6,7 @@ import OptionsBar from './Settings';
 import { useEffect, useState } from 'react';
 import ProfileSettings from "./ProfileSettings";
 import ProfileInfo from "./InfoProfile";
+import AddPersonToGroup from "./AddingToGroup";
 
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
   const [curr_contact, setCurrContact] = useState(null)
   const [pressedProfile, setPressProfile] = useState(false)
   const [profileInfo, setProfileInfo] = useState(false)
+  const [addingToGroup, setAddToGroup] = useState(false)
 
   // change this when authentication will be a thing 
   let user = 1
@@ -68,17 +70,21 @@ export default function Home() {
   }, [images])
 
   return (
-    <div className="absolute left-0 top-0 w-full h-full bg-[#3B7E9B]">
-      <div className="relative left-0 top-0 w-full h-full flex flex-row">
+    <div className="absolute left-0 top-0 w-full h-full">
+      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#3B7E9B] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
         <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
         {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                     fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} 
         ></Conversations> 
-                                  : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} fetchData2={fetchData2} fetchImages={fetchImages}></ProfileSettings>
+                                  : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
+                                        fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
         }
-        {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo}></CurrentChat>
-                               : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} fetchImages={fetchImages} setCurrContact={setCurrContact}></ProfileInfo>}
+        {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} addingToGroup={addingToGroup}></CurrentChat>
+                               : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
+                                    fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
       </div>
+      {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && 
+        <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images}></AddPersonToGroup>}
     </div>
   );
 }

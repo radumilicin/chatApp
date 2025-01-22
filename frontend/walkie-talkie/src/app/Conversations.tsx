@@ -97,7 +97,7 @@ export function MenuDropdown (props) {
 export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            <div className="relative indent-[20px] left-[2%] w-[10%] text-4xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>
+            <div className="relative indent-[20px] left-[2%] w-[10%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>
             <div className="relative left-[66%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
                     <img src="./newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
