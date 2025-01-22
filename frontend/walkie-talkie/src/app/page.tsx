@@ -77,7 +77,7 @@ export default function Home() {
                                   : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} fetchData2={fetchData2} fetchImages={fetchImages}></ProfileSettings>
         }
         {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo}></CurrentChat>
-                               : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} fetchImages={fetchImages} setCurrContact={setCurrContact}></ProfileInfo>}
+                               : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} fetchImages={fetchImages} setCurrContact={setCurrContact}></ProfileInfo>}
       </div>
     </div>
   );
