@@ -271,7 +271,7 @@ export default function ProfileInfo( props ) {
             </AboutProfile>
             {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
             {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsGroup>}
-            {props.contact.is_group === false && <OptionsChat></OptionsChat>}
+            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsChat>}
         </div>
     );
 }
@@ -303,7 +303,7 @@ function AboutProfile(props) {
                         {
                             (props.contact !== null) ? 
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
-                                    <input placeholder="Add description to group" 
+                                    <input placeholder="Add description to group"
                                            value={props.description}
                                            className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[30px]"
                                            onChange={(e) => {
@@ -352,6 +352,14 @@ function Members(props) {
 
     return (
         <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
+                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                    <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
+                </div>
+                <div className={`flex w-[85%] h-full flex-row justify-start items-center`}>
+                    <div className="text-xl text-green-500 font-sans font-semibold" onClick={() => {}}>Add member</div>
+                </div>
+            </div>
             {props.contact.members.map((id) => ( 
                 <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
                     <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
@@ -410,17 +418,74 @@ function OptionsGroup(props) {
 
 function OptionsChat(props) {
 
+    async function deleteChat() {
+        console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
+        if(props.contact !== null && props.contact.is_group === false) {
+            let msg = {
+                curr_user: props.contact.sender_id,
+                contact_id: props.contact.contact_id
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(msg)
+            }
+
+            const response = await fetch('http://localhost:3002/deleteChat', requestOptions)
+            if(response.status === 200){
+                console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has deleted the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
+                await props.fetchContacts()
+            } else {
+                console.log("Error deleting chat " + JSON.stringify(props.contact.id))
+            }
+        }
+    }
+
+    async function blockContact(status: string) {
+        console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
+        if(props.contact !== null && props.contact.is_group === false) {
+            let msg = {
+                curr_user: props.contact.sender_id,
+                contact_id: props.contact.contact_id,
+                status: status
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(msg)
+            }
+
+            const response = await fetch('http://localhost:3002/blockContact', requestOptions)
+            if(response.status === 200){
+                console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
+                await props.fetchContacts()
+            } else {
+                console.log("Error blocking chat " + JSON.stringify(props.contact.id))
+            }
+        }
+    }
+
     return (
         <div className="relative left-0 top-[6%] w-full flex-col bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
-            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+            {props.contact.blocked === false && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="text-xl text-red-600 font-semibold font-sans">Block user</div>
                 </div>
-            </div>
-            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+            </div>}
+            {props.contact.blocked === true && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('unblock'); }}>
+                <div className="flex flex-row h-full w-[15%] items-center justify-center">
+                    <img src="./unblock2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
+                </div>
+                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                    <div className="text-xl text-green-800 font-semibold font-sans">Unblock user</div>
+                </div>
+            </div>}
+            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./trashIcon2.png" className="h-[60%] max-w-[60%] aspect-square"></img>
                 </div>
@@ -430,5 +495,4 @@ function OptionsChat(props) {
             </div>
         </div>
     )
-
 }

@@ -40,5 +40,6 @@ export const contacts = pgTable('contacts', {
   group_pic_id: integer('group_pic_id').references(() => images.id),
   group_description: varchar('group_description', {length:100}).default(''),
   group_admins: jsonb('admins').default([]),
-  blocked: boolean('blocked').default(false)
+  blocked: boolean('blocked').default(false),
+  blockedAt: varchar('blockedAt', {length: 50})
 });
