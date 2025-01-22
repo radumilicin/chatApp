@@ -500,6 +500,43 @@ app.post('/createGroup', async (req, res) => {
   }
 });
 
+app.post('/exitGroup', async (req, res) => {
+  const { curr_user, group_id } = req.body;
+
+  console.log("curr_user = " + curr_user + " group_id = " + group_id)
+  if (curr_user !== null && group_id !== null) {
+    try { 
+      console.log("Before deleting member from group");
+
+      // Insert the group into the "contacts" table
+      await pool.query(
+          `
+          UPDATE contacts
+          SET members = (
+              SELECT jsonb_agg(elem)
+              FROM jsonb_array_elements(members) AS elem
+              WHERE elem::int <> $1
+          )
+          WHERE is_group = true
+            AND id = $2
+            AND members @> to_jsonb($1::int);
+          `,
+        [curr_user, group_id] // Bind variables
+      );
+
+
+      console.log("After deleting member from group");
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Error deleting member from group:", err.message);
+      res.sendStatus(500);
+    }
+  } else {
+    console.error("Invalid or missing curr_user or group_id parameters");
+    res.status(400).send({ error: "Invalid or missing curr_user or group_id parameters"});
+  }
+});
+
 app.post('/changeGroupName', async (req, res) => {
 
   const { id, newName } = req.body;
