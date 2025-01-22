@@ -171,7 +171,7 @@ export default function ProfileInfo( props ) {
                     <div className="h-full flex w-[12%] flex-row justify-center items-center hover:rounded-xl hover:bg-gray-500" onClick={() => {props.setProfileInfo(false)}}>
                         <img src="./xicon.png" className="flex flex-col max-w-[60%] max-h-[60%] justify-center"></img>
                     </div>
-                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold">Contact info</div>
+                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold indent-[20px] text-2xl font-sans">Contact info</div>
                 </div>
                 <div className="relative flex flex-col h-[60%] w-[6/10] items-center justify-center">
                     <div className="relative flex h-full max-w-[50%] items-center justify-center rounded-full"
