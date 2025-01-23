@@ -4,16 +4,23 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { WebSocketServer } from 'ws'
 import url from 'url'
+import cookieParser from 'cookie-parser'
+import bcrypt from 'bcrypt'
 
 dotenv.config();
 
 // console.log("password = " + process.env.DATABASE_PSWD)
 const wss = new WebSocketServer({ port: 8080 });
 
+
 const app = express();
+
 app.use(cors())
 app.use(express.json({ limit: '10mb' })); // Adjust limit
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+
 const PORT = 3002;
 
 
@@ -37,6 +44,42 @@ app.get('/users', async (req,res) => {
         res.status(500).send('Database error')
     }
 });
+
+////////////////////////////////////////////////////////////
+//          USER AUTHENTICATION AND REGISTRATION          //
+////////////////////////////////////////////////////////////
+
+// Middleware for authentication
+const authenticateToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+};
+
+app.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    console.log("before query")
+    const result = await pool.query(
+      'INSERT INTO users (username, email, password_hash, about) VALUES ($1, $2, $3, $4) RETURNING id',
+      [username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
+    );
+    console.log("After query")
+    res.status(201).json({ userId: result.rows[0].id });
+  } catch (error) {
+    res.status(400).json({ error: 'User already exists' });
+  }
+});
+
+/////////////////////////////////////////////////////////////
+
 
 app.get('/contacts', async (req, res) => {      
     const user_id = parseInt(req.query.user); // Extract user_id query parameter

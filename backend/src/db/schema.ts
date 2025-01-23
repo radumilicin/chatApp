@@ -23,6 +23,7 @@ export const images = pgTable("images", {
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: varchar('username', { length: 50 }).notNull().unique(),
+  email: varchar('email', {length: 100}). notNull().unique(),
   password_hash: text('password_hash').notNull(),
   profile_pic_id: integer("profile_pic_id").references(() => images.id),
   about: varchar('about', {length : 250})
