@@ -271,7 +271,7 @@ export default function ProfileInfo( props ) {
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
                             description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser}>
             </AboutProfile>
-            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup}></Members>}
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser} fetchContacts={props.fetchContacts}></Members>}
             {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsGroup>}
             {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsChat>}
         </div>
@@ -337,6 +337,20 @@ function AboutProfile(props) {
 
 function Members(props) {
 
+    const [pressed, setPressed] = useState([])
+    
+    const updatePressedAsync = async (arr : any) => {
+        setPressed(arr)
+    }
+
+    const updatePressedIndex = async (idx: number) => {
+        const filteredPressed = pressed.map((elem, i) => 
+            i === idx ? true : false
+        );
+        console.log("filteredPressed after press" + JSON.stringify(filteredPressed));
+        updatePressedAsync(filteredPressed);
+    }
+
     function getUser(user_id) {
         const user = props.users.find((user) => {return user.id === user_id})
         return user || {data: ""}
@@ -350,7 +364,33 @@ function Members(props) {
 
     useEffect(() => {
         console.log("members = " + props.contact.members)
+        if(props.contact !== null && props.contact.is_group === true) updatePressedAsync(props.contact.members.map(() => false))
     }, [props.contact])
+
+    async function kickFromGroup(val : number) {
+        console.log("curr_user = " + props.curr_user + " group_id = " + props.contact.id)
+        if(props.contact !== null && props.contact.is_group === true) {
+            let msg = {
+                curr_user: val,
+                group_id: props.contact.id
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(msg)
+            }
+
+            const response = await fetch('http://localhost:3002/exitGroup', requestOptions)
+            if(response.status === 200){
+                console.log(JSON.stringify(props.getUser(val)) + " has been kicked out from the group " + props.contact.group_name)
+                await props.fetchContacts()
+            } else {
+                console.log("Error exiting the group " + JSON.stringify(props.contact.group_name))
+            }
+        }
+    }
+
 
     return (
         <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
@@ -362,8 +402,8 @@ function Members(props) {
                     <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
                 </div>
             </div>
-            {props.contact.members.map((id) => ( 
-                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
+            {props.contact.members.map((id, idx) => ( 
+                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 z-0`} onClick={() => { /* removing people from group */ updatePressedIndex(idx) }}>
                     <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                         {(getProfilePic(getUser(id)).data !== "") ? 
                                 <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -374,28 +414,14 @@ function Members(props) {
                         <div className="flex h-[50%] text-black font-sans text-md font-medium items-end">{getUser(id).username}</div>
                         <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
                     </div>    
+                    {pressed[idx] == true && <div className="absolute left-[80%] top-[80%] w-[15%] h-[50px] bg-gray-600 flex justify-center items-center rounded-md z-20">
+                        <div className="absolute w-full h-full text-white font-sans text-lg flex items-center justify-center hover:bg-gray-400 hover:rounded-md" onClick={() => {kickFromGroup(id)}}>Remove user</div>
+                    </div>}
                 </div>
             ))}
         </div>
     );
 }
-
-// function AddPersonToGroup(props) {
-//     return (
-//         <div className="absolute left-[35%] w-[30%] top-[15%] h-[70%] bg-gray-800">
-//             <div className="relative top-0 left-0 flex flex-col">
-//                 <div className="relative flex flex-row h-[100px] w-full bg-slate-500">
-//                     <div className="flex w-[15%] h-full justify-center items-center">
-//                         <img src="./xicon.png" className="h-[50%] w-[50%]"></img>
-//                     </div>
-//                     <div className="flex flex-row w-[85%] h-full justify-start items-center text-xl text-white">
-//                         Add member
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
 
 function OptionsGroup(props) {
     
