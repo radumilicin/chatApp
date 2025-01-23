@@ -15,24 +15,18 @@ export default function AddPersonToGroup(props) {
     }
 
     const removePressedContactsAsync = async (elem) => {
-        var pressed = [...pressedContacts]
-        let idx = -1
-        for(let i = 0; i < pressed.length ; i++) {
-            if(elem.id === pressed[i].id){
-                idx = i
-                break
-            }
-        }
-        setPressedContactsAsync([...pressed.splice(idx, 1)])
+        const updatedContacts = pressedContacts.filter(contact => contact.id !== elem.id);
+        setPressedContactsAsync(updatedContacts);
     }
 
     useEffect(() => {
-        setFilteredContactsAsync(props.users)
-    }, [props.contacts])
+        if(props.users !== undefined || props.users !== null) setFilteredContactsAsync(props.users)
+        changeFilteredContacts()
+    }, [props.contacts, props.users])
 
     async function changeFilteredContacts () {
         if(props.contacts !== null || props.contacts !== undefined) {
-            const users_matching_search = props.users.find((user) => {return user.username.includes(searchedContact)})
+            const users_matching_search = props.users.filter((user) => {return user.username.includes(searchedContact)})
             var filteredContactz = []  
             for(let user of users_matching_search) {
                 for(let contact of props.contacts){
@@ -42,6 +36,30 @@ export default function AddPersonToGroup(props) {
                 }
             }
             setFilteredContactsAsync(filteredContactz)
+        }
+    }
+
+    async function insertMembersInGroup() {
+
+        if(props.contacts === null) return
+
+        const msg = {
+            members: pressedContacts,
+            group_id: props.contact.id
+        }
+
+        const req_options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(msg)
+        }
+
+        const response = await fetch('http://localhost:3002/insertMembersInGroup', req_options)
+        if(response.status === 200){
+            await props.fetchContacts()
+            console.log("Inserted users in group " + props.contact.id)
+        } else {
+            console.error("Could not insert in group")
         }
     }
 
@@ -90,6 +108,13 @@ export default function AddPersonToGroup(props) {
                             </div>    
                         </div>
                     ))}
+                </div>
+            </div>
+            <div className="absolute left-0 top-[90%] h-[10%] w-full rounded-b-xl bg-slate-500">
+                <div className="relative left-[90%] w-[10%] h-full flex flex-row justify-center items-center">
+                    <img src="./greenTick2.png" className="max-w-[50%] max-h-[50%] aspect-square rounded-full hover:cursor-pointer" onClick={ async () => {
+                        await insertMembersInGroup(); props.setAddToGroup(false)
+                    }}></img>
                 </div>
             </div>
         </div>

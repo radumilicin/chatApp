@@ -619,6 +619,36 @@ app.post('/changeGroupName', async (req, res) => {
   }
 })
 
+app.post('/insertMembersInGroup', async (req, res) => {
+
+  const { members , group_id } = req.body;
+
+  var members_ids = []
+  for(let m of members) {
+    console.log("type of id = " + typeof(m.id))
+    members_ids.push(m.id)
+  }
+  console.log("body of query = " + JSON.stringify(req.body))
+  console.log("members ids = " + JSON.stringify(members_ids) + " group_id = " + group_id)
+
+  if(group_id !== null && members_ids.length !== 0) {
+    try {
+      console.log("before adding members to group")
+      await pool.query(`UPDATE contacts 
+         SET members = (COALESCE(members, '[]'::jsonb) || $2::jsonb) 
+         WHERE id = $1`,  [group_id, JSON.stringify(members_ids)])
+      console.log("after update in DB")
+      res.sendStatus(200)
+    } catch(err) {
+      console.error("Detailed error" + err.message)
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
+
+
 app.listen(PORT, (error) =>{
     if(!error)
         console.log("Server is Successfully Running, and App is listening on port "+ PORT)
