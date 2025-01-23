@@ -1,0 +1,12 @@
+Type	Host / Name	               Value	                        Priority	  TTL 
+MX	        send      feedback-smtp.us-east-1.amazonses.com            10	     Auto
+TXT	        send      v=spf1 include:amazonses.com ~all                          Auto
+TXT	  resend._domainkey p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDINUNfmv49qQ7m3qZnEM7IEH7QyDD5LioCX1IVRUWl4psxXrixY2HcMfxVoKrDtMs6hePaZvyAKNq9xsp+qlLasT6fby+P2xn7D2qqghS7b7wObaMY+GHNaCS2oAg3g6zsAyDO20QGn1WtaZY0SOKOXvTfeuJXEL6O97xFkRMcfQIDAQAB
+	                                                                             Auto
+
+DMARC
+
+Set authentication policies and receive reports.
+Type	Host / Name	        Value		TTL
+TXT	       _dmarc           v=DMARC1; p=none;
+	                                    Auto
