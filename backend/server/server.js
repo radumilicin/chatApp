@@ -537,6 +537,70 @@ app.post('/exitGroup', async (req, res) => {
   }
 });
 
+app.post('/deleteChat', async (req, res) => {
+  const { curr_user, contact_id } = req.body;
+
+  console.log("curr_user = " + curr_user + " group_id = " + contact_id)
+  if (curr_user !== null && contact_id !== null) {
+    try { 
+      console.log("Before deleting member from group");
+
+      // Insert the group into the "contacts" table
+      await pool.query(
+          `DELETE FROM contacts WHERE sender_id=$1 AND contact_id=$2`,
+        [curr_user, contact_id] // Bind variables
+      );
+
+
+      console.log("After deleting chat");
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Error deleting chat", err.message);
+      res.sendStatus(500);
+    }
+  } else {
+    console.error("Invalid or missing curr_user or contact_id parameters");
+    res.status(400).send({ error: "Invalid or missing curr_user or contact_id parameters"});
+  }
+});
+
+app.post('/blockContact', async (req, res) => {
+  const { curr_user, contact_id, status} = req.body;
+
+  console.log("curr_user = " + curr_user + " group_id = " + contact_id)
+  if (curr_user !== null && contact_id !== null && status !== null) {
+    try { 
+      console.log("Before blocking contact");
+
+      const timestamp = new Date().toISOString()
+      console.log("type timestamp = " + typeof(timestamp))
+      // Insert the group into the "contacts" table
+      if(status === "block") {
+        await pool.query(
+            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE sender_id=$1 AND contact_id=$2`,
+          [curr_user, contact_id, timestamp, true] // Bind variables
+        );
+      } else if(status === "unblock") {
+        await pool.query(
+            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE sender_id=$1 AND contact_id=$2`,
+          [curr_user, contact_id, '', false] // Bind variables
+        );
+      }
+
+      console.log("After blocking contact");
+      res.sendStatus(200);
+    } catch (err) {
+      console.error("Error blocking contact", err.message);
+      res.sendStatus(500);
+    }
+  } else {
+    console.error("Invalid or missing curr_user or contact_id parameters");
+    res.status(400).send({ error: "Invalid or missing curr_user or contact_id parameters"});
+  }
+});
+
+
+
 app.post('/changeGroupName', async (req, res) => {
 
   const { id, newName } = req.body;
@@ -554,6 +618,36 @@ app.post('/changeGroupName', async (req, res) => {
     res.sendStatus(400)
   }
 })
+
+app.post('/insertMembersInGroup', async (req, res) => {
+
+  const { members , group_id } = req.body;
+
+  var members_ids = []
+  for(let m of members) {
+    console.log("type of id = " + typeof(m.id))
+    members_ids.push(m.id)
+  }
+  console.log("body of query = " + JSON.stringify(req.body))
+  console.log("members ids = " + JSON.stringify(members_ids) + " group_id = " + group_id)
+
+  if(group_id !== null && members_ids.length !== 0) {
+    try {
+      console.log("before adding members to group")
+      await pool.query(`UPDATE contacts 
+         SET members = (COALESCE(members, '[]'::jsonb) || $2::jsonb) 
+         WHERE id = $1`,  [group_id, JSON.stringify(members_ids)])
+      console.log("after update in DB")
+      res.sendStatus(200)
+    } catch(err) {
+      console.error("Detailed error" + err.message)
+      res.sendStatus(500)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+})
+
 
 app.listen(PORT, (error) =>{
     if(!error)

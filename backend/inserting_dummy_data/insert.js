@@ -74,7 +74,7 @@ async function insertUsers() {
             const client = await pool.connect();
             try {
                 // Insert the user into the "users" table
-                await client.query('INSERT INTO users (username, password_hash) VALUES ($1, $2)', [username, hashedPassword]);
+                await client.query('INSERT INTO users (username, password_hash, about) VALUES ($1, $2, $3)', [username, hashedPassword, "Hey, there! I am using WhatsDown!"]);
                 console.log(`User ${username} inserted successfully.`);
             }
             catch (err) {

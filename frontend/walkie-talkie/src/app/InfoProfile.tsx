@@ -69,6 +69,7 @@ export default function ProfileInfo( props ) {
     }
 
     function getNameContact(contact: any) {
+        if(contact === null || contact === undefined) return ""
         if(contact.is_group === true){
             // console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
@@ -78,6 +79,7 @@ export default function ProfileInfo( props ) {
     }
 
     function getUser(contact: any) {
+        if(contact === null || contact === undefined) return {data: ""}
         // console.log("Is contact group or not: " + contact.is_group)
         if(contact.is_group === false){
             return props.users.find((id) => { return id.id === contact.contact_id})   
@@ -85,7 +87,7 @@ export default function ProfileInfo( props ) {
     }
 
     async function changeGroupName(contact: any, newName: string) {
-        if(contact.is_group === true){
+        if((contact !== null || contact !== undefined) && contact.is_group === true){
             let message = {
                 id: contact.id,
                 newName: newName
@@ -171,7 +173,7 @@ export default function ProfileInfo( props ) {
                     <div className="h-full flex w-[12%] flex-row justify-center items-center hover:rounded-xl hover:bg-gray-500" onClick={() => {props.setProfileInfo(false)}}>
                         <img src="./xicon.png" className="flex flex-col max-w-[60%] max-h-[60%] justify-center"></img>
                     </div>
-                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold">Contact info</div>
+                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold indent-[20px] text-2xl font-sans">Contact info</div>
                 </div>
                 <div className="relative flex flex-col h-[60%] w-[6/10] items-center justify-center">
                     <div className="relative flex h-full max-w-[50%] items-center justify-center rounded-full"
@@ -179,7 +181,7 @@ export default function ProfileInfo( props ) {
                         onMouseLeave={() => {setHoverStatusProfilePic(false); console.log("out of profile pic")}}
                     >
                         {/* Profile Picture */}
-                        {(props.contact !== null && getImage(props.contact).data !== "") ? (
+                        {((props.contact !== undefined || props.contact !== null) && getImage(props.contact).data !== "") ? (
                             <img
                                 src={`data:image/jpg;base64,${getImage(props.contact).data}`}
                                 className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
@@ -239,7 +241,7 @@ export default function ProfileInfo( props ) {
 
                 <div className="relative flex flex-col h-[25%] items-center">
                     <div className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
-                        {props.contact !== null ? (nameChangeGroup === true ? 
+                        {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ? 
                             (<input value={nameGroup} className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full outline-none overflow-x-auto border-b-2 bg-transparent border-green-800" 
                                 onChange={(e) => {
                                     settingGroupName(e.target.value)
@@ -258,7 +260,7 @@ export default function ProfileInfo( props ) {
                             <div className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full">{getNameContact(props.contact)}</div>) 
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
                         <div className="absolute flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full left-[80%] w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
-                            {(props.contact !== null && props.contact.is_group === true) 
+                            {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true) 
                                 ? <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[20%] aspect-square" onClick={() => {}}></img>
                                 : <></>
                             }
@@ -269,9 +271,9 @@ export default function ProfileInfo( props ) {
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
                             description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser}>
             </AboutProfile>
-            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts}></Members>}
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup}></Members>}
             {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsGroup>}
-            {props.contact.is_group === false && <OptionsChat></OptionsChat>}
+            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsChat>}
         </div>
     );
 }
@@ -303,7 +305,7 @@ function AboutProfile(props) {
                         {
                             (props.contact !== null) ? 
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
-                                    <input placeholder="Add description to group" 
+                                    <input placeholder="Add description to group"
                                            value={props.description}
                                            className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[30px]"
                                            onChange={(e) => {
@@ -352,6 +354,14 @@ function Members(props) {
 
     return (
         <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
+                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                    <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
+                </div>
+                <div className={`flex w-[85%] h-full flex-row justify-start items-center`}>
+                    <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
+                </div>
+            </div>
             {props.contact.members.map((id) => ( 
                 <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`}>
                     <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
@@ -369,6 +379,23 @@ function Members(props) {
         </div>
     );
 }
+
+// function AddPersonToGroup(props) {
+//     return (
+//         <div className="absolute left-[35%] w-[30%] top-[15%] h-[70%] bg-gray-800">
+//             <div className="relative top-0 left-0 flex flex-col">
+//                 <div className="relative flex flex-row h-[100px] w-full bg-slate-500">
+//                     <div className="flex w-[15%] h-full justify-center items-center">
+//                         <img src="./xicon.png" className="h-[50%] w-[50%]"></img>
+//                     </div>
+//                     <div className="flex flex-row w-[85%] h-full justify-start items-center text-xl text-white">
+//                         Add member
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
 
 function OptionsGroup(props) {
     
@@ -410,17 +437,74 @@ function OptionsGroup(props) {
 
 function OptionsChat(props) {
 
+    async function deleteChat() {
+        console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
+        if(props.contact !== null && props.contact.is_group === false) {
+            let msg = {
+                curr_user: props.contact.sender_id,
+                contact_id: props.contact.contact_id
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(msg)
+            }
+
+            const response = await fetch('http://localhost:3002/deleteChat', requestOptions)
+            if(response.status === 200){
+                console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has deleted the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
+                await props.fetchContacts()
+            } else {
+                console.log("Error deleting chat " + JSON.stringify(props.contact.id))
+            }
+        }
+    }
+
+    async function blockContact(status: string) {
+        console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
+        if(props.contact !== null && props.contact.is_group === false) {
+            let msg = {
+                curr_user: props.contact.sender_id,
+                contact_id: props.contact.contact_id,
+                status: status
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(msg)
+            }
+
+            const response = await fetch('http://localhost:3002/blockContact', requestOptions)
+            if(response.status === 200){
+                console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
+                await props.fetchContacts()
+            } else {
+                console.log("Error blocking chat " + JSON.stringify(props.contact.id))
+            }
+        }
+    }
+
     return (
         <div className="relative left-0 top-[6%] w-full flex-col bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
-            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+            {props.contact.blocked === false && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="text-xl text-red-600 font-semibold font-sans">Block user</div>
                 </div>
-            </div>
-            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30">
+            </div>}
+            {props.contact.blocked === true && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('unblock'); }}>
+                <div className="flex flex-row h-full w-[15%] items-center justify-center">
+                    <img src="./unblock2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
+                </div>
+                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                    <div className="text-xl text-green-800 font-semibold font-sans">Unblock user</div>
+                </div>
+            </div>}
+            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./trashIcon2.png" className="h-[60%] max-w-[60%] aspect-square"></img>
                 </div>
@@ -430,5 +514,4 @@ function OptionsChat(props) {
             </div>
         </div>
     )
-
 }
