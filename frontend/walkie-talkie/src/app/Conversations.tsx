@@ -100,10 +100,10 @@ export function OtherOptions (props) {
             <div className="relative indent-[20px] left-[2%] w-[10%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>
             <div className="relative left-[66%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
-                    <img src="./newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                    <img src="/newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
-                    <img src="./menu3.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                    <img src="/menu3.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
             </div>
         </div>

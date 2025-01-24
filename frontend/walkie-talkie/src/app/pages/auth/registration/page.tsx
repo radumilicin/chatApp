@@ -1,5 +1,9 @@
+'use client'
+
 import react, {useState, useEffect, useRef} from 'react'
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'
+import {useAuth} from '../../../AuthProvider'
 
 export default function Register(props) {
 
@@ -8,6 +12,8 @@ export default function Register(props) {
     const [password, setPassword] = useState('')
     const [usernameExists, setUsernameExists] = useState(false)
     const [emailExists, setEmailExists] = useState(false)
+    const router = useRouter()
+    const { loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
 
 
     function getUsernames() {
@@ -57,10 +63,12 @@ export default function Register(props) {
         }
 
         const response = await fetch("http://localhost:3002/register", requestParams);
-        if(response.status === 200){
+        if(response.status === 201){
             console.log("Got registered suckas")
+            return "success"
         } else {
             console.log("registration failed bitchass")
+            return "error"
         }
     }
 
@@ -98,13 +106,18 @@ export default function Register(props) {
                 </div>
                 <div className="flex flex-row w-full h-[12%] justify-center items-start">
                     <div className="w-[40%] h-[50%] bg-gray-600 rounded-xl flex flex-row justify-center items-center text-xl font-semibold font-sans hover:cursor-pointer"
-                         onClick={async () => { await register(); }}>
+                         onClick={async () => { const resp = await register(); 
+                                                if(resp === "success") { setRegistered() ; 
+                                                                         router.push("/pages/auth/login")
+                                                                        } 
+
+                         }}>
                             Submit
                     </div>
                 </div>
                 <div className="flex flex-row left-0 w-full h-[8%] justify-center">
                     <div className="flex flex-row w-[80%] h-[30%] text-lg justify-center items-center">
-                        <Link href="/auth/Login" className='flex justify-center hover:border-b-2 hover:border-blue-600'>If you have an account log in!</Link>
+                        <Link href="/pages/auth/login" className='flex justify-center hover:border-b-2 hover:border-blue-600'>If you have an account log in!</Link>
                     </div>
                 </div>
             </div>
