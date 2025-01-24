@@ -64,6 +64,7 @@ const authenticateToken = (req, res, next) => {
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
+  console.log("username = " + username + ";  password register = " + password)
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     console.log("before query")
@@ -74,9 +75,47 @@ app.post('/register', async (req, res) => {
     console.log("After query")
     res.status(201).json({ userId: result.rows[0].id });
   } catch (error) {
+    console.error("More detailed error: " + error.message)
     res.status(400).json({ error: 'User already exists' });
   }
 });
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  console.log("username = " + username + ";  password login = " + password);
+
+  try {
+    console.log("before query");
+    const result = await pool.query(
+      'SELECT * from users WHERE username = $1',
+      [username]
+    );
+
+    console.log("result query = " + JSON.stringify(result));
+
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
+      // console.log("username = " + username + ";  password login = " + JSON.stringify(await bcrypt.hash(password, 10)));
+      console.log("user = " + JSON.stringify(user))
+      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+      console.log("password valid = " + isPasswordValid)
+
+      if (isPasswordValid) {
+        res.status(200).json({ userId: user.id });
+      } else {
+        res.status(401).json({ error: "Invalid username or password" });
+      }
+    } else {
+      res.status(404).json({ error: "User does not exist" });
+    }
+  } catch (error) {
+    console.error("More detailed error: " + error.message);
+    res.status(400).json({ error: 'An error occurred while logging in' });
+  }
+});
+
+
 
 /////////////////////////////////////////////////////////////
 

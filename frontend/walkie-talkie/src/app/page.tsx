@@ -7,8 +7,9 @@ import { useEffect, useState } from 'react';
 import ProfileSettings from "./ProfileSettings";
 import ProfileInfo from "./InfoProfile";
 import AddPersonToGroup from "./AddingToGroup";
-import Login from "./auth/Login";
-import Register from "./auth/Registration";
+import Login from "./pages/auth/login/page";
+import Register from "./pages/auth/registration/page";
+import {useAuth} from "./AuthProvider"
 
 
 export default function Home() {
@@ -21,8 +22,7 @@ export default function Home() {
   const [pressedProfile, setPressProfile] = useState(false)
   const [profileInfo, setProfileInfo] = useState(false)
   const [addingToGroup, setAddToGroup] = useState(false)
-  const [registered, setRegistered] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
+  const {loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
 
   // change this when authentication will be a thing 
   let user = 1
@@ -30,7 +30,7 @@ export default function Home() {
   let image_path = "./images/userProfile2.jpg"
 
   const setRegisteredAsync = async () => {
-    setRegistered(true)
+    setRegistered()
   }
 
   const fetchData = async () => {
@@ -60,6 +60,8 @@ export default function Home() {
 
     // Function to fetch data
 
+    console.log("Logged in = " + loggedIn + " registered = " + registered)
+
     fetchData()
 
     console.log("user = " + user)
@@ -80,7 +82,8 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#3B7E9B] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
-        {loggedIn === true && <div>
+        {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#3B7E9B]">
+        
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
           {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} 
@@ -93,10 +96,9 @@ export default function Home() {
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
          
         </div>}
-        {(registered === true && loggedIn === false) ? <Login></Login> : (registered === false && loggedIn === false) ? <Register users={users}></Register> : <></>}
+        {(registered === true && loggedIn === false) ? <Login users={users}></Login> : (registered === false && loggedIn === false) ? <Register users={users}></Register> : <></>}
       </div>
-      {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && 
-        <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images}></AddPersonToGroup>}
+      {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images}></AddPersonToGroup>}
     </div>
   );
 }
