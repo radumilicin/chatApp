@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../AuthProvider'
 
-export default function Login(props) {
+export default function Login(props: any) {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -21,7 +21,12 @@ export default function Login(props) {
         setUsers(data);
         };
         fetchUsers();
+        console.log("props = " + JSON.stringify(props));
     }, []);
+
+    const setLoggedInAsync = async () => {
+        setLoggedIn()
+    }
 
     function getUsernames() {
         if(users !== null) return users.map((elem) => elem.username)
@@ -55,13 +60,18 @@ export default function Login(props) {
         }
 
         const response = await fetch("http://localhost:3002/login", requestParams);
+        const user = await response.json()
+
+        props.setU(user.userId)
+
+
         if(response.status === 200){
-            console.log("Logged in suckas")
-            setLoggedIn(); 
-            return "success"
+            console.log("Logged in")
+            setLoggedInAsync(); 
+            return user
         } else {
-            console.log("login failed bitchass")
-            return "error"
+            console.log("login failed")
+            return {}
         }
     }
 
@@ -89,14 +99,14 @@ export default function Login(props) {
                 <div className="flex flex-row w-full h-[12%] justify-center items-start">
                     <div className="w-[40%] h-[50%] bg-gray-600 rounded-xl flex flex-row justify-center items-center text-xl font-semibold font-sans hover:cursor-pointer"
                          onClick={async () => { const resp = await login(); 
-                                                if(resp === "success") { console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered) }
+                                                if(resp !== null) { console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered) }
                          }}>
                             Submit
                     </div>
                 </div>
                 <div className="flex flex-row left-0 w-full h-[8%] justify-center">
                     <div className="flex flex-row w-[80%] h-[30%] text-lg justify-center items-center">
-                        <Link href="/pages/auth/registration" className='flex justify-center hover:border-b-2 hover:border-blue-600'>Register if you don't have an account!</Link>
+                        <div className='flex justify-center hover:border-b-2 hover:border-blue-600 hover:cursor-pointer' onClick={async () => {if(registered) {await props.setRegisteredAsync();}}}>Register if you don't have an account!</div>
                     </div>
                 </div>
             </div>

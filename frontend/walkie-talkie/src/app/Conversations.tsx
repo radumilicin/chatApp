@@ -13,6 +13,7 @@ export default function Conversations( props : any) {
     const [logOut, setLogOut] = useState(false)
     const [pressed2, setPressed2] = useState(false) // this is for selecting contacts for groups
     const [contactsInNewGroup, setContactsInNewGroup] = useState([])
+    const [addContact, setAddContact] = useState(false) // adding contact
 
     useEffect(() => {
         if(props.contacts !== null) {
@@ -20,6 +21,10 @@ export default function Conversations( props : any) {
             console.log("filteredContacts = " + JSON.stringify(filteredContacts))
         }
     }, [props.contacts, currentSearch])
+
+    useEffect(() => {
+        props.setLoggedIn(false)
+    }, [logOut])
 
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -52,8 +57,9 @@ export default function Conversations( props : any) {
             {newGroupPress && <Contacts2 users={props.users} contacts={props.contacts} filteredContacts={filteredContacts} 
                 curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
                 setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
-            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut}></MenuDropdown>}
+            {/* {addContact && } */}
+            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact}></OtherOptions>}
+            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>}
             {!newGroupPress && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
         </div>
@@ -89,6 +95,7 @@ export function MenuDropdown (props) {
     return (
         (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" >
             <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setNewGroupPress(true); props.setMenuPress(false);}}>New Group</div>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setAddContact(true); props.setMenuPress(false);}}>New Contact</div>
             <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setLogOut(true); props.setMenuPress(false);}}>Log out</div>
         </div>)
     );
@@ -97,8 +104,10 @@ export function MenuDropdown (props) {
 export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            <div className="relative indent-[20px] left-[2%] w-[10%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>
-            <div className="relative left-[66%] w-[20%] h-full flex flex-row items-center">
+            {/* {props.addContact && <div className="relative indent-[20px] left-[2%] w-[10%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>} */}
+            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[30%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Add contact</div>}
+            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[30%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Chats</div>}
+            <div className="relative left-[50%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
                     <img src="/newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
@@ -471,7 +480,7 @@ export function GroupMaking(props) {
                 <div className="relative flex flex-col justify-center items-center left-2 w-[15%] top-[15%] h-[70%] text-xl font-semibold text-black hover:bg-slate-500 rounded-md p-2" onClick={() => {props.setNewGroupPress(false)}}>
                     <img src="./xicon.png" className="w-[60%] h-full"></img> 
                 </div> 
-                <div className="flex w-[20%] h-full text-xl font-semibold flex-col justify-center items-center text-black font-sans">Group</div>
+                <div className="flex w-[50%] h-full text-xl font-semibold flex-col justify-center items-start text-black font-sans">Create Group</div>
             </div>
             <div className="relative left-0 top-0 h-[30%] flex flex-row justify-center items-center">
                 {/* First child div */}

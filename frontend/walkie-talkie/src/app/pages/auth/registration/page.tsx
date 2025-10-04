@@ -107,17 +107,16 @@ export default function Register(props) {
                 <div className="flex flex-row w-full h-[12%] justify-center items-start">
                     <div className="w-[40%] h-[50%] bg-gray-600 rounded-xl flex flex-row justify-center items-center text-xl font-semibold font-sans hover:cursor-pointer"
                          onClick={async () => { const resp = await register(); 
-                                                if(resp === "success") { setRegistered() ; 
-                                                                         router.push("/pages/auth/login")
+                                                if(resp === "success") { await props.setRegisteredAsync() ; 
+                                                                        //  router.push("/pages/auth/login")
                                                                         } 
-
                          }}>
                             Submit
                     </div>
                 </div>
                 <div className="flex flex-row left-0 w-full h-[8%] justify-center">
                     <div className="flex flex-row w-[80%] h-[30%] text-lg justify-center items-center">
-                        <Link href="/pages/auth/login" className='flex justify-center hover:border-b-2 hover:border-blue-600'>If you have an account log in!</Link>
+                    <div className='flex justify-center hover:border-b-2 hover:border-blue-600 hover:cursor-pointer' onClick={async () => {await props.setRegisteredAsync()}}>If you have an account log in!</div>
                     </div>
                 </div>
             </div>

@@ -29,7 +29,7 @@ const pool = new pg.Pool({
   user: 'postgres',       // Replace with your PostgreSQL username
   host: 'localhost',           // Replace with your database host
   database: 'chatapp',   // Replace with your database name
-  password: process.env.DATABASE_PSWD,   // Replace with your PostgreSQL password
+  password: 'ValoareMare503!', // process.env.DATABASE_PSWD,   // Replace with your PostgreSQL password
   port: 5432,                  // Replace with your database port (default: 5432)
 });
 

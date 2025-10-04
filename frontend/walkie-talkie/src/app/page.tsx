@@ -14,6 +14,7 @@ import {useAuth} from "./AuthProvider"
 
 export default function Home() {
 
+  const [user, setUser] = useState(-1);
   const [users, updateUsers] = useState([]);  // Change state to an array instead of object
   const [contacts, updateContacts] = useState([]);
   const [images, updateImages] = useState([]);
@@ -25,7 +26,16 @@ export default function Home() {
   const {loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
 
   // change this when authentication will be a thing 
-  let user = 1
+
+  useEffect(() => {
+    if(loggedIn) {
+
+    }
+  }, [loggedIn])
+
+  useEffect(() => {
+    console.log("registered changed to = " + JSON.stringify(registered));
+  }, [registered])
   
   let image_path = "./images/userProfile2.jpg"
 
@@ -86,7 +96,7 @@ export default function Home() {
         
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
           {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
-                                      fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} 
+                                      fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} 
           ></Conversations> 
                                     : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
@@ -96,7 +106,7 @@ export default function Home() {
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
          
         </div>}
-        {(registered === true && loggedIn === false) ? <Login users={users}></Login> : (registered === false && loggedIn === false) ? <Register users={users}></Register> : <></>}
+        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images}></AddPersonToGroup>}
     </div>
