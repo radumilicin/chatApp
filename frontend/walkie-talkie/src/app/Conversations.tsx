@@ -17,6 +17,7 @@ export default function Conversations( props : any) {
 
     /* This is for adding users to contacts IF IN the ADD CONTACT mode */
     const [filteredUsers, setFilteredUsers] = useState([])
+    const [potentialContact, setPotentialContact] = useState(null);
 
     useEffect(() => {
         if(props.contacts !== null) {
@@ -90,7 +91,8 @@ export default function Conversations( props : any) {
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
-            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></UsersToAddToContacts>}
+            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} 
+                                        filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
     );
 }
@@ -182,8 +184,11 @@ export function UsersToAddToContacts (props : any) {
     let [curr_user, setCurrUser] = useState(-1);
 
     useEffect(() => {
-        if(props.curr_user != -1) setCurrUser(curr_user);
-    }, [props.curr_user])
+        setCurrUser(props.curr_user);
+
+        props.filterUsers("")
+
+    }, [])
 
     useEffect(() => {
         if(props.addContact) {
@@ -243,6 +248,31 @@ export function UsersToAddToContacts (props : any) {
         return image || { data: "" }; // Ensure we return a fallback value
     }
 
+   async function makeTemporaryContact(user: any) {
+        const response = await fetch(
+            `http://localhost:3002/insertContact?sender_id=${curr_user}&contact_id=${user.id}`
+        );
+
+        if (!response.ok) {
+            console.error("Bad request");
+            // return null;
+        }
+
+        const data = await response.json();
+
+        var row = null;
+        if (data?.data) {
+            console.log("Inserted contact:", data.data);
+            row = data.data; // This is the inserted contact row
+        }
+
+        props.setPotentialContact(row);
+        props.setCurrContact(row);
+        // props.setAddContact(false);
+        props.filterUsers(props.currentSearch)
+        // return null;
+    }
+
     return (
         
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
@@ -252,7 +282,7 @@ export function UsersToAddToContacts (props : any) {
                     <div
                         key={idx}
                         className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
-                        onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                        onClick={async () => { await makeTemporaryContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}

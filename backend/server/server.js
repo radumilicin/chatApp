@@ -168,6 +168,27 @@ app.get('/contacts', async (req, res) => {
     }
 });
 
+app.get('/insertContact', async (req, res) => {
+
+  var {sender_id, contact_id} = req.query;
+
+  if(!sender_id || !contact_id) {
+    return res.status(400).send("Bad request")
+  }
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO contacts (sender_id, contact_id, group_pic_id) VALUES ($1, $2, $3) RETURNING *",
+      [sender_id, contact_id, null]
+    );
+
+    res.status(200).json({ data: result.rows[0] });
+  } catch (err) {
+    console.error("Error inserting in contact:", err);
+    res.status(500).send("Internal server error");
+  }
+})
+
 app.get('/contactsGroup', async (req, res) => {      
     var group_id = null;
     if (req.query.group_id) {

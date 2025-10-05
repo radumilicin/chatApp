@@ -12,6 +12,14 @@ export default function CurrentChat( props: any ) {
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
 
+    // useEffect(() => {
+    //     if(props.potentialContact !== props.prevPotentialContact.current)
+    // }, [props.potentialContact])
+
+    useEffect(() => {
+
+    }, [])
+
     async function updateList(allMessages, newMessages: any[]){
         var elems = []
         for (const elem of newMessages) {
