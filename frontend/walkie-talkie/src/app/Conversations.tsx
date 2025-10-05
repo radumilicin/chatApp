@@ -15,6 +15,9 @@ export default function Conversations( props : any) {
     const [contactsInNewGroup, setContactsInNewGroup] = useState([])
     const [addContact, setAddContact] = useState(false) // adding contact
 
+    /* This is for adding users to contacts IF IN the ADD CONTACT mode */
+    const [filteredUsers, setFilteredUsers] = useState([])
+
     useEffect(() => {
         if(props.contacts !== null) {
             filterContacts(currentSearch)
@@ -45,6 +48,31 @@ export default function Conversations( props : any) {
         }))
     }
 
+    // function for adding contacts
+    async function filterUsers(val: string) {
+        const users_matching_filter = props.users.filter(
+            usr => usr.username.includes(val) && usr.id !== props.curr_user
+        );
+
+        console.log("users matching filter:", users_matching_filter);
+
+        const not_in_contacts = users_matching_filter.filter(user => {
+            const isInContacts = props.contacts.find(contact => {
+            return (
+                (props.curr_user === contact.sender_id && user.id === contact.contact_id) ||
+                (props.curr_user === contact.contact_id && user.id === contact.sender_id)
+            );
+            });
+
+            return isInContacts === undefined; // ✅ was `null`
+        });
+
+        console.log("not in contacts matching filter:", not_in_contacts);
+
+        setFilteredUsers(not_in_contacts);
+        // return not_in_contacts;
+    }
+
     async function removeContactFromGroup(contact) {
         setContactsInNewGroup(contactsInNewGroup.filter((elem) => ( contact.contact_id !== elem.contact_id )))
     }
@@ -58,10 +86,11 @@ export default function Conversations( props : any) {
                 curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
                 setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
             {/* {addContact && } */}
-            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact}></OtherOptions>}
+            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact}></MenuDropdown>}
-            {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts}></SearchBar>}
-            {!newGroupPress && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
+            {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
+            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
+            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></UsersToAddToContacts>}
         </div>
     );
 }
@@ -104,10 +133,12 @@ export function MenuDropdown (props) {
 export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            {/* {props.addContact && <div className="relative indent-[20px] left-[2%] w-[10%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center">Chats</div>} */}
-            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[30%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Add contact</div>}
-            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[30%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Chats</div>}
-            <div className="relative left-[50%] w-[20%] h-full flex flex-row items-center">
+            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false)}}>
+                    <img src="/go-back-2-icon.png" className="justify-center items-center max-h-[80%] aspect-square"></img>
+                </div>} 
+            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Add contact</div>}
+            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Chats</div>}
+            <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
                     <img src="/newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
                 </div>
@@ -130,7 +161,14 @@ export function SearchBar( props : any ) {
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
                     <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
                         value={props.currentSearch}
-                        onChange={async (e) => {props.setCurrSearch(e.target.value); props.filterContacts(e.target.value)}} // Update `currentSearch`
+                        onChange={async (e) => {props.setCurrSearch(e.target.value); 
+                                                if(props.addContact) {
+                                                    console.log("Filtering users in Search")
+                                                    props.filterUsers(e.target.value)
+                                                }
+                                                else {
+                                                    props.filterContacts(e.target.value)
+                                                }}} // Update `currentSearch`
                     >
                     </input>
                 </div>
@@ -139,9 +177,137 @@ export function SearchBar( props : any ) {
     );
 }
 
+export function UsersToAddToContacts (props : any) {
+    
+    let [curr_user, setCurrUser] = useState(-1);
+
+    useEffect(() => {
+        if(props.curr_user != -1) setCurrUser(curr_user);
+    }, [props.curr_user])
+
+    useEffect(() => {
+        if(props.addContact) {
+            console.log("In Add Contacts")
+        }
+    }, [props.addContact])
+
+    useEffect(() => {
+        if(props.filteredUsers) {
+            console.log("In Add Contacts, filteredUsers = " + JSON.stringify(props.filteredUsers))
+        }
+    }, [props.filteredUsers])
+
+    
+    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+
+    function getNameWithUserId(contact: any) {
+        const user = props.users.find((user) => user.id === contact.contact_id);
+        return user ? user.username : "";
+    }
+    
+    function getNameUser(usr: any) {
+        const user = props.users.find((user) => user.id === usr.contact_id);
+        return user ? user.username : "";
+    }
+    
+    function getNameUser2(usr: any) {
+        if(usr !== null) {
+            return usr.username;
+        } 
+        
+        return ""
+    }
+
+
+    
+    function getImage(contact: any) {
+        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    function getImageUser(user: any) {
+        const image = props.images.find((image: any) => image.user_id === user.id)
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    // type user is either current or other (0,1)
+    function getProfileImage(contact: any, type_user : number) {
+        const user = props.users.find((user) => {
+            if(type_user === 0){
+                return user.id === props.curr_user
+            } else {
+                return contact.contact_id === user.id
+            }
+        })
+        const image = props.images.find((image: any) => image.id === user.image_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    return (
+        
+        <div className="absolute left-0 top-[16%] w-full h-[84%]">
+            <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
+                { props.filteredUsers !== null && props.filteredUsers.map((element: any, idx: number) => (
+                    // this is the normal conversation (1 on 1)
+                    <div
+                        key={idx}
+                        className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                        onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                    >
+                        <div className="flex w-[10%] justify-center items-center">
+                            {/* Use base64 data for image */}
+                            {getImageUser(element).data !== "" ? <img
+                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                                className="h-[75%] w-[75%] rounded-full"
+                                alt="Profile"
+                            /> : getImageUser(element).data !== "" ? <img
+                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                                className="h-[75%] w-[75%] rounded-full"
+                                alt="Profile"></img> : 
+                                <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                        </div>
+                        <div className="flex w-[90%] flex-col">
+                            <div className="flex h-[60%] w-full items-center flex-row">
+                                <div className="w-[80%] h-full flex flex-row items-center">
+                                    <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                                        {getNameUser2(element)}
+                                    </div>
+                                </div>
+                                <div className="w-[20%] h-full flex flex-row justify-center">
+                                    <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
+                                    </div> 
+                                </div>
+                            </div>
+                            <div className="relative flex w-full h-[40%] items-center">
+                                {/* Left text container */}
+                                <div className="relative flex flex-row h-full w-[80%]">
+                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
+                                        {element.about}
+                                    </div>
+                                </div>
+                                {/* Right time container */}
+                                <div className="relative flex flex-row h-full w-[20%]">
+                                    <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>))}
+                </div>
+            </div>
+    );
+
+}
+
 export function Contacts( props: any) {
 
-    let curr_user = 1
+    let [curr_user, setCurrUser] = useState(-1);
+
+    useEffect(() => {
+        if(props.curr_user != -1) setCurrUser(curr_user);
+    }, [props.curr_user])
 
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
