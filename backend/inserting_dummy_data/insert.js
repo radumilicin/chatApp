@@ -1,7 +1,8 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 import bcrypt from 'bcrypt';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
 import readline from 'readline';
 import fs from "fs";
 console.log("aa");
@@ -15,7 +16,7 @@ const pool = new Pool({
     user: 'postgres', // Replace with your PostgreSQL username
     host: '127.0.0.1',
     database: 'chatapp', // Replace with your database name
-    password: process.env.DATABASE_PSWD, // Replace with your password
+    password: 'ValoareMare503!', // process.env.DATABASE_PSWD, // Replace with your password
     port: 5432, // Default PostgreSQL port
 });
 // Function to insert a user with a hashed password
@@ -136,7 +137,7 @@ async function insertContacts() {
         }
     }
 }
-await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+// await insertContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 // await insertUsers().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
 async function insertImages() {
     try {
@@ -218,3 +219,4 @@ async function insertMessageContacts() {
     }
 }
 // await insertMessageContacts().catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
+await insertUser('NicusorDan2', 'ValoareMare503!').catch((err) => console.error('Error:', err)).finally(() => pool.end()); // Close the pool when done
