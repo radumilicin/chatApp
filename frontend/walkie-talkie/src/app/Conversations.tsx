@@ -79,7 +79,7 @@ export default function Conversations( props : any) {
     }
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2">
+        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-[#0D1317] border-2 border-y-2 bg-opacity-70">
             {newGroupPress && <GroupMaking setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} 
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages}></GroupMaking>}
@@ -87,8 +87,8 @@ export default function Conversations( props : any) {
                 curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
                 setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
             {/* {addContact && } */}
-            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact}></MenuDropdown>}
+            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></OtherOptions>}
+            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
             {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} 
@@ -126,7 +126,7 @@ export function MenuDropdown (props) {
     return (
         (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" >
             <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setNewGroupPress(true); props.setMenuPress(false);}}>New Group</div>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setAddContact(true); props.setMenuPress(false);}}>New Contact</div>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>New Contact</div>
             <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setLogOut(true); props.setMenuPress(false);}}>Log out</div>
         </div>)
     );
@@ -135,17 +135,17 @@ export function MenuDropdown (props) {
 export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false)}}>
-                    <img src="/go-back-2-icon.png" className="justify-center items-center max-h-[80%] aspect-square"></img>
+            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
+                    <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>} 
-            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Add contact</div>}
-            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold text-black font-sans flex flex-row justify-start items-center">Chats</div>}
+            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-white font-sans flex flex-row justify-start items-center">Add contact</div>}
+            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold text-slate-200 font-sans flex flex-row justify-start items-center">Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
-                    <img src="/newChat2.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                    <img src="/add-contact-3.png" className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
-                    <img src="/menu3.png" className="justify-end items-center max-h-[80%] max-w-[100%]"></img>
+                    <img src="/Menu2.png" className="justify-end items-center max-h-[50%] max-w-[100%]"></img>
                 </div>
             </div>
         </div>
@@ -155,10 +155,10 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className="absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50">
+        <div className="absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-[#57CC99] border-2 bg-[#0D1317]">
             <div className="relative top-0 left-0 h-full w-full flex flex-row">
                 <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                    <img className='absolute max-w-[50px] max-h-[50px] w-[50%] h-[50%]' src="/search.png"></img>
+                    <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
                     <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
@@ -281,7 +281,7 @@ export function UsersToAddToContacts (props : any) {
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                        className={`relative flex flex-row h-[12%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={async () => { await makeTemporaryContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
@@ -294,7 +294,7 @@ export function UsersToAddToContacts (props : any) {
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
                                 className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                                <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
                         </div>
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[60%] w-full items-center flex-row">
@@ -412,6 +412,34 @@ export function Contacts( props: any) {
         return image || { data: "" }; // Ensure we return a fallback value
     }
 
+    function calcDayDifference(currDate: string, cmpDate: string) {
+        let curr : any = new Date(currDate)
+        let cmpD : any = new Date(cmpDate)
+        let timeDifference = curr - cmpD;
+        return timeDifference / (1000 * 3600 * 24);
+    }
+
+    function getDateTimestamp(val: string) {
+        let date = val;
+        let currDate = new Date().toISOString();
+
+        let diff = calcDayDifference(currDate, date);
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+        let cmpDate = new Date(date);
+        if(diff == 0) {
+            return val.split("T")[1].split(".")[0]
+        } else if(diff < 7) {
+            return dayNames[cmpDate.getDay()];
+        } else {
+            const day = String(cmpDate.getDate()).padStart(2, '0');
+            const month = String(cmpDate.getMonth() + 1).padStart(2, '0');
+            const year = cmpDate.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+    }
+
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
@@ -420,7 +448,7 @@ export function Contacts( props: any) {
                     (element.sender_id !== null && element.sender_id === props.curr_user) ? 
                     <div
                         key={idx}
-                        className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
@@ -433,12 +461,12 @@ export function Contacts( props: any) {
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                                <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
                         </div>
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[60%] w-full items-center flex-row">
                                 <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                                    <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800 text-[#A3E7FC]">
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
@@ -451,7 +479,7 @@ export function Contacts( props: any) {
                             <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[80%]">
-                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
+                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-xl text-gray-300 font-medium">
                                         {(getLastMessage(element, idx).message).hasOwnProperty("image_id") ? "Image" : getLastMessage(element, idx).message}
                                     </div>
                                 </div>

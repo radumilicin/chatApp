@@ -102,7 +102,7 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#7DD8C3] rounded-r-xl border-white border-2 flex flex-col">
+        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
             <div
                 className="relative flex flex-row top-[5%] left-[15%] w-[70%] h-[45%] bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
                 onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
@@ -166,10 +166,10 @@ export default function ProfileSettings(props) {
             </div>
             <div className="relative flex flex-col top-[0%] left-[15%] w-[70%] h-[45%] justify-center text-black">
                 <div className="relative top-[10%] w-full h-[30%] flex flex-col">
-                    <div className="relative text-green-600 top-[10%] h-[40%] text-lg font-semibold items-center">Your name</div>
+                    <div className="relative text-white text-opacity-80 top-[10%] h-[30%] text-lg font-semibold items-center">Name</div>
                     <div className="relative top-[10%] w-full h-[40%] flex flex-row items-center">
                         {
-                        stateUsername === "fixed" ? <p className="flex flex-row w-[50%] h-full items-center text-md font-medium">{getCurrUser().username}</p> 
+                        stateUsername === "fixed" ? <p className="flex flex-row w-[50%] h-full items-center text-xl font-medium">{getCurrUser().username}</p> 
                                                 : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
                                                             value={username} onChange={(e) => {
                                                                 setUsername(e.target.value)
@@ -188,16 +188,14 @@ export default function ProfileSettings(props) {
                     </div>
                 </div>
                 <div className="relative top-[10%] w-full h-[30%] flex flex-col justify-center">
-                    <div className="relative text-green-600 mt-4 h-[30%] text-lg font-semibold">
-                        About
-                    </div>
-                    <div className="relative mt-2 w-full h-[70%] flex flex-row items-center">
+                    <div className="relative text-white text-opacity-80 mt-4 h-[30%] text-lg font-semibold">About</div>
+                    <div className="relative w-full h-[40%] flex flex-row items-center">
                         {
                             stateAbout === "fixed" ? (
-                                <p className="flex-grow text-md font-medium">{getCurrUser().about}</p>
+                                <p className="flex flex-row w-[50%] h-full items-center text-xl font-medium">{getCurrUser().about}</p>
                             ) : (
                                 <input
-                                    className="flex-grow text-md font-medium outline-none border-b-2 border-black bg-transparent overflow-auto"
+                                    className="flex flex-row text-xl font-medium w-[50%] outline-none border-b-2 border-black bg-transparent overflow-auto"
                                     value={about}
                                     onChange={(e) => setAbout(e.target.value)}
                                     onKeyDown={(e) => {

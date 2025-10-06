@@ -178,8 +178,8 @@ app.get('/insertContact', async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO contacts (sender_id, contact_id, group_pic_id) VALUES ($1, $2, $3) RETURNING *",
-      [sender_id, contact_id, null]
+      "INSERT INTO contacts (sender_id, contact_id, group_pic_id, is_group) VALUES ($1, $2, $3, $4) RETURNING *",
+      [sender_id, contact_id, null, false]
     );
 
     res.status(200).json({ data: result.rows[0] });
