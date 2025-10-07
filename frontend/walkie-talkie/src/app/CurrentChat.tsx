@@ -42,6 +42,7 @@ export default function CurrentChat( props: any ) {
     useEffect(() => {
         // if(props.contact !== null){
         if(props.contact !== contact.current){
+
             console.log("NEW CONTACT = " + props.contact.contact_id)
             const emptyMessages = async () => {
                 updateAllMessages(() => [])
@@ -88,6 +89,7 @@ export default function CurrentChat( props: any ) {
             }
         }
         contact.current = props.contact
+        console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
         // }
 
         // if(props.contact !== null)
@@ -211,8 +213,8 @@ export default function CurrentChat( props: any ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px]">
-            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-t-lg border-b-2 bg-gray-500 bg-opacity-50 flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
+        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg bg-[#637081] border-2  border-[#0D1317] bg-opacity-70">
+            <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
                     {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
                         <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -234,11 +236,12 @@ export default function CurrentChat( props: any ) {
                                 idx === contact.current.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
                             ))}
                         </div>
-                    </div>}
-                    {contact.current !== null && contact.current.is_group === false && 
-                        <div className="flex w-[85%] h-[100%] flex-row">
+                </div>}
+                {contact.current !== null && contact.current.is_group === false && 
+                    <div className="flex w-[85%] h-[100%] flex-row">
                         {contact.current !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(contact.current)}</div>}
-                    </div>}
+                    </div>
+                }
             </div>
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
                 {allMessages.length > 0 &&
@@ -250,11 +253,11 @@ export default function CurrentChat( props: any ) {
                                     key={idx}
                                     className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                         String(props.curr_user) === String(message.sender_id)
-                                            ? 'bg-green-500 text-white ml-auto bg-opacity-80'
+                                            ? 'bg-green-500 text-white ml-auto'
                                             : 'bg-gray-500 text-white mr-auto'
                                     }`}
                                 >
-                                    <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                    <div className="relative flex w-full h-[1/2] text-base text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
                                     <div className="relative flex w-full h-[1/2]">
                                         <div className="w-[80%] break-words">
                                             { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
@@ -305,13 +308,13 @@ export default function CurrentChat( props: any ) {
                         );
                     })}
             </div>
-            <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-white border-2 bg-gray-500 bg-opacity-50 flex flex-row">
+            <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-[#80ED99] border-2 bg-[#0D1317] flex flex-row">
                 <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] hover:bg-gray-500 ml-2 rounded-2xl" >
                     {/* Wrapper for Image and Input */}
                     <div className="relative flex items-center justify-center w-full h-full">
                         <img
-                            src="/attach1.png"
-                            className="h-[70%] rounded-2xl hover:bg-slate-500 cursor-pointer z-0"
+                            src="/attach2-1.png"
+                            className="h-[50%] aspect-square hover:bg-slate-500 cursor-pointer z-0"
                             alt="Upload"
                             // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
                         />
@@ -365,7 +368,7 @@ export default function CurrentChat( props: any ) {
                 </div>
                 <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center " >
                     <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl mr-2 w-full hover:bg-slate-500" onClick={() => {handleSendMessage(text); setText("")}}>
-                        <img src="/sendImg4.png" className="h-[100%] max-w-[80%]"></img>
+                        <img src="/sendIcon3-1.png" className="h-[50%] max-w-[60%]"></img>
                     </div>
                 </div>
             </div>

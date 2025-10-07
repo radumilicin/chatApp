@@ -29,11 +29,16 @@ export default function Home() {
   const [potentialContact, setPotentialContact] = useState(null);
   const prevPotentialContact = useRef(null);
 
-  useEffect(() => {
-    if(loggedIn) {
+  const [addContact2, setAddContact2] = useState(false);
 
+  useEffect(() => {
+    if(loggedIn || !addContact2) {
+      fetchData()
+      console.log("user = " + user)
+      fetchData2()
+      fetchImages()
     }
-  }, [loggedIn])
+  }, [loggedIn, addContact2])
 
   useEffect(() => {
     console.log("registered changed to = " + JSON.stringify(registered));
@@ -93,12 +98,12 @@ export default function Home() {
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
-      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#3B7E9B] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
-        {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#3B7E9B]">
+      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
+        {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42]">
         
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
           {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
-                                      fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact}
+                                      fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
           ></Conversations> 
                                     : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>

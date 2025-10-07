@@ -167,13 +167,21 @@ export default function ProfileInfo( props ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[10%] w-[50%] h-[90%] rounded-lg bg-[#7DD8C3] border-[3px] flex-col overflow-y-scroll scrollbar-hide">
-            <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-600 bg-opacity-60">
+        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] bg-[#637081] border-2 border-[#0D1317] flex-col overflow-y-scroll scrollbar-hide">
+            <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-800 bg-opacity-40">
                 <div className="relative left-0 flex h-[15%] w-full flex-row items-center">
-                    <div className="h-full flex w-[12%] flex-row justify-center items-center hover:rounded-xl hover:bg-gray-500" onClick={() => {props.setProfileInfo(false)}}>
-                        <img src="./xicon.png" className="flex flex-col max-w-[60%] max-h-[60%] justify-center"></img>
+                    <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full transition-colors hover:bg-gray-500 cursor-pointer">
+                            <img
+                                src="./xicon.png"
+                                alt="Close"
+                                className="w-5 h-5 object-contain"
+                            />
+                        </div>
                     </div>
-                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold indent-[20px] text-2xl font-sans">Contact info</div>
+                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold text-2xl font-sans">
+                        Contact info
+                    </div>
                 </div>
                 <div className="relative flex flex-col h-[60%] w-[6/10] items-center justify-center">
                     <div className="relative flex h-full max-w-[50%] items-center justify-center rounded-full"
