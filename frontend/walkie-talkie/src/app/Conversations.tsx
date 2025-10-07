@@ -80,13 +80,9 @@ export default function Conversations( props : any) {
 
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-[#0D1317] border-2 border-y-2 bg-opacity-70">
-            {newGroupPress && <GroupMaking setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} 
-                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} 
-                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages}></GroupMaking>}
-            {newGroupPress && <Contacts2 users={props.users} contacts={props.contacts} filteredContacts={filteredContacts} 
-                curr_user={props.curr_user} images={props.images} setNewGroupPress={setNewGroupPress} setPressed2={setPressed2} 
-                setContactsInNewGroup={setContactsInNewGroup} contactsInNewGroup={contactsInNewGroup}></Contacts2>}
-            {/* {addContact && } */}
+            {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
+                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
+                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
@@ -652,9 +648,10 @@ export function Contacts( props: any) {
     );
 }
 
-export function GroupMaking(props) {
+export function Groups(props) {
 
     const [usernameSearch, setUsernameSearch] = useState('')
+    const [filteredUsersG, setFilteredUsersG] = useState([])
     
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -662,9 +659,51 @@ export function GroupMaking(props) {
     }    
 
     useEffect(() => {
+
+        console.log('props.users in Groups = ' + JSON.stringify(props.users))
+
+        filtUsers('')
+
+    }, [])
+
+    useEffect(() => {
+        console.log("filteredUsersG = " + JSON.stringify(filteredUsersG))
+    }, [filteredUsersG])
+
+    useEffect(() => {
         console.log("contacts in new group changed " + JSON.stringify(props.contactsInNewGroup))
 
     }, [props.contactsInNewGroup])
+
+    function getImage(contact: any) {
+        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    function getImageUser(user: any) {
+        const image = props.images.find((image: any) => image.user_id === user.id)
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
+
+    function getNameUser2(usr: any) {
+        if(usr !== null) {
+            return usr.username;
+        } 
+        
+        return ""
+    }
+
+    function getProfileImage(contact: any, type_user : number) {
+        const user = props.users.find((user) => {
+            if(type_user === 0){
+                return user.id === props.curr_user
+            } else {
+                return contact.contact_id === user.id
+            }
+        })
+        const image = props.images.find((image: any) => image.id === user.profile_pic_id);
+        return image || { data: "" }; // Ensure we return a fallback value
+    }
 
     async function createGroup() {
         console.log("In create group")
@@ -695,19 +734,47 @@ export function GroupMaking(props) {
         }
     }
 
+    function filtUsers (val: string) {
+        const users_matching_filter = props.users.filter(
+            usr => usr.username.includes(val) && usr.id !== props.curr_user
+        );
+
+        setFilteredUsersG(users_matching_filter)
+    }
+
     
 
     return (
-        <div className="absolute left-0 top-0 w-full h-[20%]">
-            <div className="relative flex flex-row h-[40%] w-full">
-                <div className="relative flex flex-col justify-center items-center left-2 w-[15%] top-[15%] h-[70%] text-xl font-semibold text-black hover:bg-slate-500 rounded-md p-2" onClick={() => {props.setNewGroupPress(false)}}>
-                    <img src="./xicon.png" className="w-[60%] h-full"></img> 
-                </div> 
-                <div className="flex w-[50%] h-full text-xl font-semibold flex-col justify-center items-start text-black font-sans">Create Group</div>
-            </div>
-            <div className="relative left-0 top-0 h-[30%] flex flex-row justify-center items-center">
-                {/* First child div */}
-                <div className="relative left-[5%] grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center h-full w-[70%] overflow-y-scroll scrollbar-hide">
+        <div className="absolute left-0 top-0 w-full h-full">
+            <div className="relative left-0 top-0 w-full h-[20%]">
+                <div className="relative flex flex-row top-0 h-[40%] w-full items-center">
+                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setNewGroupPress(false)}}>
+                        <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    </div>
+                    <div className="flex w-[50%] indent-[20px] h-full text-2xl font-semibold flex-col justify-center items-start text-white font-sans">Create Group</div>
+                </div>
+                <div className="relative left-0 top-0 h-[30%] flex flex-row justify-center items-center">
+                    {/* First child div */}
+                    <div className="absolute left-[2%] top-[7%] w-[96%] h-full rounded-2xl border-[#57CC99] border-2 bg-[#0D1317]">
+                        <div className="relative top-0 left-0 h-full w-full flex flex-row">
+                            <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
+                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
+                            </div>
+                            <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
+                                <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
+                                    value={usernameSearch} placeholder="Search user to add"
+                                    onChange={async (e) => { 
+                                        const val = e.target.value;
+                                        setUsernameSearch(val);
+                                        filtUsers(val);
+                                    }}
+                                >       
+                                </input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="relative left-[5%] h-[30%] grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center w-[70%] overflow-y-scroll scrollbar-hide">
                     {props.contactsInNewGroup.map((contact) => (
                         <div className="relative text-md bg-blue-500 w-full h-[50px] flex flex-row items-center rounded-full">
                             <div className="relative w-[80%] h-full flex flex-row items-center pl-5">{getNameWithUserId(contact)}</div>
@@ -723,20 +790,64 @@ export function GroupMaking(props) {
                         </div>
                     ))}
                 </div>
-
-                {/* Second child div */}
-                <div className="relative flex flex-row justify-center w-[25%] h-full">
+            </div>
+            <div className="relative flex flex-col w-full h-[70%] justify-center items-center overflow-y-scroll">
+                { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
+                // this is the normal conversation (1 on 1)
+                <div
+                    key={idx}
+                    className={`relative flex-none flex flex-row h-[15%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                    onClick={async () => { await props.setContactsInNewGroup([...props.contactsInNewGroup, element]); console.log("clicked")}}
+                >
+                    <div className="flex w-[10%] justify-center items-center">
+                        {/* Use base64 data for image */}
+                        {getImageUser(element).data !== "" ? <img
+                            src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                            className="h-[75%] w-[75%] rounded-full"
+                            alt="Profile"
+                        /> : getImageUser(element).data !== "" ? <img
+                            src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                            className="h-[75%] w-[75%] rounded-full"
+                            alt="Profile"></img> : 
+                            <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
+                    </div>
+                    <div className="flex w-[90%] flex-col">
+                        <div className="flex h-[60%] w-full items-center flex-row">
+                            <div className="w-[80%] h-full flex flex-row items-center">
+                                <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                                    {getNameUser2(element)}
+                                </div>
+                            </div>
+                            <div className="w-[20%] h-full flex flex-row justify-center">
+                                <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
+                                </div> 
+                            </div>
+                        </div>
+                        <div className="relative flex w-full h-[40%] items-center">
+                            {/* Left text container */}
+                            <div className="relative flex flex-row h-full w-[80%]">
+                                <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
+                                    {element.about}
+                                </div>
+                            </div>
+                            {/* Right time container */}
+                            <div className="relative flex flex-row h-full w-[20%]">
+                                <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>))}
+            </div>
+            <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
+                <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
                     <img
-                        src="./arrowimg2.png"
-                        className="h-[60%] flex items-center hover:bg-gray-500"
+                        src="./plus-sign-2.png"
+                        className="h-[40%] flex items-center"
                         onClick={() => { createGroup(); props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages();}}
                     ></img>
                 </div>
-            </div>
-
-            <div className="relative top-[10%] flex flex-row left-[5%] w-[75%] h-[20%] border-b-2 border-gray-500 z-20">
-                <input placeholder="Search name" value={usernameSearch} className="left-[5%] w-[90%] h-full outline-none bg-transparent overflow-x-auto" 
-                    onChange={(e) => {setUsernameSearch(e.target.value)}}></input>
             </div>
         </div>
     );
