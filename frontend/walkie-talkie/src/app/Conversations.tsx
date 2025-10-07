@@ -141,7 +141,7 @@ export function OtherOptions (props) {
             {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-white font-sans flex flex-row justify-start items-center">Add contact</div>}
             {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold text-slate-200 font-sans flex flex-row justify-start items-center">Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setNewChatPress(true)}}>
+                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src="/add-contact-3.png" className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
@@ -273,15 +273,14 @@ export function UsersToAddToContacts (props : any) {
         // return null;
     }
 
-    return (
-        
+    return ( 
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 { props.filteredUsers !== null && props.filteredUsers.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`relative flex flex-row h-[12%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[12%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={async () => { await makeTemporaryContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
