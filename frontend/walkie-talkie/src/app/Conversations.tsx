@@ -75,7 +75,8 @@ export default function Conversations( props : any) {
     }
 
     async function removeContactFromGroup(contact) {
-        setContactsInNewGroup(contactsInNewGroup.filter((elem) => ( contact.contact_id !== elem.contact_id )))
+        setContactsInNewGroup(contactsInNewGroup.filter((elem) => ( contact.id !== elem.id )))
+
     }
 
     return (
@@ -652,11 +653,17 @@ export function Groups(props) {
 
     const [usernameSearch, setUsernameSearch] = useState('')
     const [filteredUsersG, setFilteredUsersG] = useState([])
+    const [removedFromAddingToGroup, setToRemoveFromAddingToGroup] = useState(null)
     
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
         return user ? user.username : "";
     }    
+
+    function getNameUser(user: any){
+        if (user !== null) return user.username;
+        else return ''
+    }
 
     useEffect(() => {
 
@@ -668,12 +675,28 @@ export function Groups(props) {
 
     useEffect(() => {
         console.log("filteredUsersG = " + JSON.stringify(filteredUsersG))
+        
+        setToRemoveFromAddingToGroup(null)
+
     }, [filteredUsersG])
 
     useEffect(() => {
         console.log("contacts in new group changed " + JSON.stringify(props.contactsInNewGroup))
 
+        /*  */
+        if(filteredUsersG.length !== 0) 
+        {
+            var filteredUsersWithoutAdded = filteredUsersG.filter((elem : any) => !props.contactsInNewGroup.some((c:any) => c.id === elem.id))
+            setFilteredUsersG(filteredUsersWithoutAdded)
+        }
+
     }, [props.contactsInNewGroup])
+
+    useEffect(() => {
+        if(removedFromAddingToGroup !== null) {
+            setFilteredUsersG(() => [...filteredUsersG, removedFromAddingToGroup])
+        }
+    }, [removedFromAddingToGroup])
 
     function getImage(contact: any) {
         const image = props.images.find((image: any) => image.user_id === contact.contact_id);
@@ -715,6 +738,7 @@ export function Groups(props) {
         }
 
         let users = {
+            "admin": curr_user,
             "users": [...ids, curr_user.id]
         }
         console.log("ids in new group: " + JSON.stringify(users))
@@ -773,17 +797,18 @@ export function Groups(props) {
                     </div>
                 </div>
             </div>
-            {props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%]">
-                <div className="relative top-[5%] left-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 items-center w-[70%] overflow-y-scroll scrollbar-hide">
+            {props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
+                <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center w-[80%] overflow-y-scroll scrollbar-hide">
                 {props.contactsInNewGroup.map((contact) => (
-                    <div className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row items-center rounded-full">
-                        <div className="relative w-[80%] h-full flex flex-row items-center pl-5">{getNameWithUserId(contact)}</div>
-                        <div className="relative w-[20%] h-full flex flex-row items-center justify-center">
+                    <div className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
+                        <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden">{getNameUser(contact)}</div>
+                        <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
                             <img
                                 src="./xicon.png"
                                 className="w-6 h-6"
                                 onClick={() => {
                                     props.removeContactFromGroup(contact);
+                                    setToRemoveFromAddingToGroup(contact)
                                 }}
                             ></img>
                         </div>

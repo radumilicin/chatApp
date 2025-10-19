@@ -10,6 +10,7 @@ export default function ProfileInfo( props ) {
     const [onProfilePic, setHoverStatusProfilePic] = useState(false)
     const [descriptionPressed, setDescriptionPressed] = useState(false)
     const [description, setDescription] = useState('')
+    const [isAdmin, setIsAdmin] = useState(false)
 
     const setDescriptionPressedAsync = async (val) => {
         setDescriptionPressed(val)
@@ -27,11 +28,17 @@ export default function ProfileInfo( props ) {
         setNameChangeGroup(!nameChangeGroup)
     }
 
+    const setIsAdminAsync = async (val: boolean) => {
+        setIsAdmin(val)
+    }
+
     useEffect(() => {
         if(props.contact.is_group === true) {
             // console.log("Changing group name after change in profile")
             settingGroupName(props.contact.group_name)
             setDescriptionAsync(props.contact.group_description)
+            if(props.curr_user in props.contact.admins) setIsAdminAsync(true)
+            else setIsAdminAsync(false)
         } else {
             setDescriptionAsync(getUser(props.contact).about)
         }
@@ -203,7 +210,7 @@ export default function ProfileInfo( props ) {
 
                         {/* Input Overlaid on Top of the Image */}
                         {/* {(props.contact !== null && onProfilePic === true && props.contact.is_group === true) && ( */}
-                            <input
+                            {isAdmin && <input
                                 type="file"
                                 accept="image/*"
                                 className="absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
@@ -242,7 +249,7 @@ export default function ProfileInfo( props ) {
                                     // Reset the file input to allow re-selection
                                     event.target.value = "";
                                 }}
-                            />
+                            />}
                         {/* )} */}
                     </div>
                 </div>
