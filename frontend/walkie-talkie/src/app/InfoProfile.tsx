@@ -10,6 +10,7 @@ export default function ProfileInfo( props ) {
     const [onProfilePic, setHoverStatusProfilePic] = useState(false)
     const [descriptionPressed, setDescriptionPressed] = useState(false)
     const [description, setDescription] = useState('')
+    const [isAdmin, setIsAdmin] = useState(false)
 
     const setDescriptionPressedAsync = async (val) => {
         setDescriptionPressed(val)
@@ -27,11 +28,17 @@ export default function ProfileInfo( props ) {
         setNameChangeGroup(!nameChangeGroup)
     }
 
+    const setIsAdminAsync = async (val: boolean) => {
+        setIsAdmin(val)
+    }
+
     useEffect(() => {
         if(props.contact.is_group === true) {
             // console.log("Changing group name after change in profile")
             settingGroupName(props.contact.group_name)
             setDescriptionAsync(props.contact.group_description)
+            if(props.curr_user in props.contact.admins) setIsAdminAsync(true)
+            else setIsAdminAsync(false)
         } else {
             setDescriptionAsync(getUser(props.contact).about)
         }
@@ -167,8 +174,8 @@ export default function ProfileInfo( props ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] bg-[#637081] border-2 border-[#0D1317] flex-col overflow-y-scroll scrollbar-hide">
-            <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-800 bg-opacity-40">
+        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] bg-[#637081] border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hide bg-opacity-70">
+            <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-800 bg-opacity-30">
                 <div className="relative left-0 flex h-[15%] w-full flex-row items-center">
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
                         <div className="flex items-center justify-center w-12 h-12 rounded-full transition-colors hover:bg-gray-500 cursor-pointer">
@@ -203,7 +210,7 @@ export default function ProfileInfo( props ) {
 
                         {/* Input Overlaid on Top of the Image */}
                         {/* {(props.contact !== null && onProfilePic === true && props.contact.is_group === true) && ( */}
-                            <input
+                            {isAdmin && <input
                                 type="file"
                                 accept="image/*"
                                 className="absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
@@ -242,7 +249,7 @@ export default function ProfileInfo( props ) {
                                     // Reset the file input to allow re-selection
                                     event.target.value = "";
                                 }}
-                            />
+                            />}
                         {/* )} */}
                     </div>
                 </div>
@@ -301,7 +308,7 @@ function AboutProfile(props) {
     }, [props.contact])
 
     return (
-        <div className="relative left-0 top-[3%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40">
+        <div className="relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 border-y-2 border-gray-500">
                 <div className="flex text-2xl text-black indent-[30px] h-[60%] w-full font-medium font-sans items-center">About</div>
                 <div className="flex text-md text-white indent-[30px] h-[40%] w-full font-sans flex-row items-start">
                     <div className="w-[90%] h-full hover:cursor-pointer flex items-start text-xl " onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
@@ -521,16 +528,16 @@ function OptionsChat(props) {
     }
 
     return (
-        <div className="relative left-0 top-[6%] w-full flex-col bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
-            {props.contact.blocked === false && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('block'); }}>
+        <div className="relative left-0 top-[0%] h-[25%] w-full flex-col bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
+            {props.contact.blocked === false && <div className="relative flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
-                    <div className="text-xl text-red-600 font-semibold font-sans">Block user</div>
+                    <div className="text-xl text-red-500 font-semibold font-sans">Block user</div>
                 </div>
             </div>}
-            {props.contact.blocked === true && <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('unblock'); }}>
+            {props.contact.blocked === true && <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('unblock'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./unblock2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
@@ -538,12 +545,12 @@ function OptionsChat(props) {
                     <div className="text-xl text-green-800 font-semibold font-sans">Unblock user</div>
                 </div>
             </div>}
-            <div className="flex flex-row w-full h-[100px] hover:bg-slate-300 hover:bg-opacity-30" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
+            <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./trashIcon2.png" className="h-[60%] max-w-[60%] aspect-square"></img>
+                    <img src="./trash-icon-red.png" className="h-[35%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
-                    <div className="text-xl text-red-600 font-semibold font-sans">Delete chat</div>
+                    <div className="text-xl text-red-500 font-semibold font-sans">Delete chat</div>
                 </div>
             </div>
         </div>
