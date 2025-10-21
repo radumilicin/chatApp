@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import React, {useState, useEffect, useRef} from 'react';
+import { GrFormNextLink } from "react-icons/gr";
 
 export default function Conversations( props : any) {
     
@@ -656,6 +657,13 @@ export function Groups(props) {
     const [finishingSettingUpGroup, setFinishingSettingUpGroup] = useState(false)
     const [groupName, setGroupName] = useState("")
     const [nameAlreadyExists, setNameAlreadyExists] = useState(false)
+    const [description, setDescription] = useState("")
+    const [newGroupImage, setNewGroupImage] = useState(null)
+    const [hoveringGroupIcon, setHoveringGroupIcon] = useState(false)
+
+    async function setNameAlreadyExistsAsync(val : boolean) {
+        setNameAlreadyExists(val)
+    }
 
     async function setFinishingSettingUpGroupAsync(val : boolean) {
         setFinishingSettingUpGroup(val)
@@ -750,7 +758,8 @@ export function Groups(props) {
         let data = {
             "admin": curr_user.id,
             "users": [...ids, curr_user.id],
-            "group_name": groupName
+            "group_name": groupName,
+            "description": description
         }
         // console.log("ids in new group: " + JSON.stringify(data))
 
@@ -803,23 +812,74 @@ export function Groups(props) {
                     <div className="flex w-[80%] left-0 indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
                 </div>
             </div>}
-            {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[22%] justify-center items-center">
+            {finishingSettingUpGroup && (
+                <div className="relative flex flex-col left-0 top-0 w-full h-[30%] justify-center items-center">
                     <div className="absolute w-full h-full">
-                        <div className="relative w-full h-full flex flex-col justify-center items-center">
-                            <div className='relative flex flex-col w-[30%] h-[30%] aspect-square justify-center items-center'>
-                                <img src="/group_icon-nobg.png" className="flex w-full h-full aspect-square"></img>
-                            </div>
+                    <div className="relative w-full h-full flex flex-col justify-center items-center">
+                        <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" onClick={() => document.getElementById("groupImageInput")?.click()} onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
+                        {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-60'}`}/>}
+                        {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
+                        <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
+                            {hoveringGroupIcon && <img src="/camera-icon.png" className="relative flex flex-row w-[60%] h-[60%] justify-center items-center"/>}
+                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] justify-center items-center">Upload group picture..</div>}
                         </div>
-                    </div> 
-                </div>}
+                        {/* Hidden file input */}
+                        <input
+                            id="groupImageInput"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                const base64 = reader.result as string;
+                                console.log("Base64 image:", base64);
+                                // you can store it in state:
+                                setNewGroupImage(base64);
+                            };
+                            reader.readAsDataURL(file);
+                            }}
+                        />
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                )}
+
             {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[10%] justify-center items-center">
-                    <input type="text" className="flex flex-row w-[80%] h-[60%] outline-none bg-transparent border-b-2 border-gray-700 text-base text-white"
+                    <input type="text" className="flex flex-row indent-[10px] w-[80%] h-[60%] outline-none bg-transparent border-b-2 border-gray-700 text-base text-white"
                         placeholder="Enter group name here.." 
                         value={groupName} 
                         onChange={(e) => {
-                            setGroupNameAsync(e.target.value)
+                            const newGroupName = e.target.value
+                            setGroupNameAsync(newGroupName)
+                            console.log("groupName = " + newGroupName)
+                            props.fetchContacts();
+                            const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === newGroupName)})
+                            if(group_w_name.length > 0) setNameAlreadyExistsAsync(true)
+                            else setNameAlreadyExistsAsync(false) 
                         }}
                         >
+                    </input>
+                    {nameAlreadyExists && <div className="relative flex flex-row indent-[20px] w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
+            </div>}
+            {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[20%] justify-center items-center">
+                    <input type="text" className="flex flex-row indent-[10px] w-[80%] h-[60%] outline-none bg-transparent border-2 border-gray-700 rounded-xl text-base text-white"
+                        placeholder="Add description.." 
+                        value={description} 
+                        onChange={(e) => {
+                            const description = e.target.value
+                            setDescription(description)
+                        }}
+                        onKeyDown={(e) => {
+                            if(e.key === "Enter"){
+                                console.log("Changed description")
+                                /* Update description in DB */ 
+                            }
+                        }}>
                     </input>
                     {nameAlreadyExists && <div className="relative flex flex-row w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
             </div>}
@@ -923,7 +983,7 @@ export function Groups(props) {
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
                 <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
                     <img
-                        src="./plus-sign-2.png"
+                        src={`${finishingSettingUpGroup ? '/forward-nobg.png' : '/plus-sign-2.png'}`}
                         className="h-[40%] flex items-center"
                         onClick={
                             async () => 
@@ -931,7 +991,8 @@ export function Groups(props) {
                                     if(!finishingSettingUpGroup) setFinishingSettingUpGroupAsync(true); 
                                     else {
                                         props.fetchContacts();
-                                        const group_w_name = props.contacts.filter((contact) => {(contact.members.length > 1 && contact.group_name === groupName)})
+                                        const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === groupName)})
+                                        console.log("group_w_name = " + JSON.stringify(group_w_name))
                                         if(group_w_name.length === 0) {
                                             console.log("Did not find group with name = " + JSON.stringify(groupName))
                                             let success = await createGroup()
@@ -944,7 +1005,7 @@ export function Groups(props) {
                                             }
                                         } else {
                                             console.log("Group with name " + JSON.stringify(groupName) + " already exists!")
-                                            setNameAlreadyExists(true)
+                                            setNameAlreadyExistsAsync(true)
                                         }
                                     }
                                 }

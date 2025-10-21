@@ -577,7 +577,7 @@ app.post('/changeAbout', async (req, res) => {
 })
 
 app.post('/createGroup', async (req, res) => {
-  const { admin, users, group_name } = req.body;
+  const { admin, users, group_name, description } = req.body;
 
   if (users !== null && Array.isArray(users)) {
     try {
@@ -597,8 +597,8 @@ app.post('/createGroup', async (req, res) => {
 
         // Insert the group into the "contacts" table
         await pool.query(
-          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb)",
-          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin])] // Serialize users array to JSON
+          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins, group_description) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8)",
+          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin]), description] // Serialize users array to JSON
         );
 
         console.log("After inserting group into contacts");
