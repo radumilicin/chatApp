@@ -585,14 +585,26 @@ app.post('/createGroup', async (req, res) => {
       
       console.log("Before inserting group into contacts");
 
-      // Insert the group into the "contacts" table
-      await pool.query(
-        "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb)",
-        [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin])] // Serialize users array to JSON
-      );
+      const groups_w_name = await pool.query(`SELECT * from contacts WHERE group_name='${group_name}'`);
 
-      console.log("After inserting group into contacts");
-      res.sendStatus(200);
+      console.log("group with the same name: " + JSON.stringify(groups_w_name.rows))
+      console.log(`There are ${groups_w_name.rows.length} groups with the same name`)
+
+      // if there's already a group with that name, we don't do nothing
+      if(groups_w_name.rows.length > 0) {
+        res.sendStatus(409);
+      } else {
+
+        // Insert the group into the "contacts" table
+        await pool.query(
+          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb)",
+          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin])] // Serialize users array to JSON
+        );
+
+        console.log("After inserting group into contacts");
+        res.sendStatus(200);
+      }
+
     } catch (err) {
       console.error("Error inserting into the database:", err.message);
       res.sendStatus(500);

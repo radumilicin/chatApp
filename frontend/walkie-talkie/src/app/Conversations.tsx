@@ -487,7 +487,6 @@ export function Contacts( props: any) {
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                         }
                                     </div>
-
                                 </div>
                         </div>
                         </div>
@@ -656,6 +655,7 @@ export function Groups(props) {
     const [removedFromAddingToGroup, setToRemoveFromAddingToGroup] = useState(null)
     const [finishingSettingUpGroup, setFinishingSettingUpGroup] = useState(false)
     const [groupName, setGroupName] = useState("")
+    const [nameAlreadyExists, setNameAlreadyExists] = useState(false)
 
     async function setFinishingSettingUpGroupAsync(val : boolean) {
         setFinishingSettingUpGroup(val)
@@ -763,9 +763,22 @@ export function Groups(props) {
         console.log("Before request to server")
 
         try {
-            await fetch('http://localhost:3002/createGroup', requestOptions)
-            console.log("Group created successfully")
-            return 0;
+            const response = await fetch('http://localhost:3002/createGroup', requestOptions)
+
+            if(response.status === 200) {
+                console.log("Group created successfully")
+                return 200;
+            }
+            else {
+                if(response.status === 409) {
+                    console.log("Group with the same name already exists")
+                    return 409;
+                }
+                else if(response.status === 500) {
+                    console.log("Server error")
+                    return 500;
+                }
+            }
         } catch(err) {
             console.error("Group creation failed")
             return -1;
@@ -807,8 +820,8 @@ export function Groups(props) {
                             setGroupNameAsync(e.target.value)
                         }}
                         >
-
                     </input>
+                    {nameAlreadyExists && <div className="relative flex flex-row w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
                 <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
@@ -917,12 +930,21 @@ export function Groups(props) {
                                 { 
                                     if(!finishingSettingUpGroup) setFinishingSettingUpGroupAsync(true); 
                                     else {
-                                        let success = await createGroup()
-                                        if(success == 0) {
-                                            props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages(); 
-                                            setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
+                                        props.fetchContacts();
+                                        const group_w_name = props.contacts.filter((contact) => {(contact.members.length > 1 && contact.group_name === groupName)})
+                                        if(group_w_name.length === 0) {
+                                            console.log("Did not find group with name = " + JSON.stringify(groupName))
+                                            let success = await createGroup()
+                                            if(success === 200) {
+                                                props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages(); 
+                                                setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
+                                            } else {
+                                                if(success === 409) alert("Group with same name already exists")
+                                                else alert("Error! Could not create group!")
+                                            }
                                         } else {
-                                            alert("Error! Could not create group!")
+                                            console.log("Group with name " + JSON.stringify(groupName) + " already exists!")
+                                            setNameAlreadyExists(true)
                                         }
                                     }
                                 }
