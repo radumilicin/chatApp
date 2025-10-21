@@ -61,7 +61,7 @@ export default function Home() {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // Replace with your API endpoint
       const result = await response.json();
       updateContacts(result);
-      console.log("contacts = " + JSON.stringify(result));
+      // console.log("contacts = " + JSON.stringify(result));
     };
 
   const fetchImages = async () => {
