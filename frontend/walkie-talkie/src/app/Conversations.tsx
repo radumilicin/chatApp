@@ -438,16 +438,16 @@ export function Contacts( props: any) {
 
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
-            <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
+            <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
                     (element.sender_id !== null && element.sender_id === props.curr_user) ? 
                     <div
                         key={idx}
-                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[10%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
-                        <div className="flex w-[10%] justify-center items-center">
+                        <div className="relative flex w-[10%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
                             {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
@@ -459,10 +459,10 @@ export function Contacts( props: any) {
                                 alt="Profile"></img> : 
                                 <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
                         </div>
-                        <div className="flex w-[90%] flex-col">
+                        <div className="relative flex flex-col w-[90%]">
                             <div className="flex h-[60%] w-full items-center flex-row">
                                 <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800 text-[#A3E7FC]">
+                                    <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800">
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
@@ -493,10 +493,10 @@ export function Contacts( props: any) {
                         </div>
                     </div> : 
                         // otherwise group conversation so check if the members is not null
-                        element.members.length > 0 && getLenMembers(element) > 0 ? 
+                        element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                                className={`relative flex-none flex flex-row h-[10%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
                                 <div className="flex w-[10%] justify-center items-center">
@@ -511,7 +511,7 @@ export function Contacts( props: any) {
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[60%] w-full items-center flex-row">
                                         <div className="w-[80%] h-full flex flex-row items-center">
-                                            <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                                            <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800">
                                                 {element.group_name}
                                             </div>
                                         </div>
@@ -548,7 +548,7 @@ export function Contacts( props: any) {
                     (element.sender_id !== null && element.sender_id === props.curr_user) ?
                     <div
                         key={idx}
-                        className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
@@ -596,7 +596,7 @@ export function Contacts( props: any) {
                         element.is_group === true && getLenMembers(element) > 0 ? 
                             <div 
                                 key={idx}
-                                className={`relative h-[12%] w-full bg-gray-600 bg-opacity-60 flex flex-row border-y-gray-700 border-t-[1px] hover:bg-gray-500 hover:bg-opacity-40`}
+                                className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
                                 <div className="flex w-[10%] justify-center items-center">
@@ -654,6 +654,12 @@ export function Groups(props) {
     const [usernameSearch, setUsernameSearch] = useState('')
     const [filteredUsersG, setFilteredUsersG] = useState([])
     const [removedFromAddingToGroup, setToRemoveFromAddingToGroup] = useState(null)
+    const [finishingSettingUpGroup, setFinishingSettingUpGroup] = useState(false)
+    const [groupName, setGroupName] = useState("")
+
+    async function setFinishingSettingUpGroupAsync(val : boolean) {
+        setFinishingSettingUpGroup(val)
+    }
     
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -663,6 +669,10 @@ export function Groups(props) {
     function getNameUser(user: any){
         if (user !== null) return user.username;
         else return ''
+    }
+
+    async function setGroupNameAsync(val: string) {
+        setGroupName(val)
     }
 
     useEffect(() => {
@@ -737,24 +747,28 @@ export function Groups(props) {
             ids.push(props.contactsInNewGroup[i].contact_id)
         }
 
-        let users = {
-            "admin": curr_user,
-            "users": [...ids, curr_user.id]
+        let data = {
+            "admin": curr_user.id,
+            "users": [...ids, curr_user.id],
+            "group_name": groupName
         }
-        console.log("ids in new group: " + JSON.stringify(users))
+        // console.log("ids in new group: " + JSON.stringify(data))
 
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(users)
+            body: JSON.stringify(data)
         };
         
+        console.log("Before request to server")
 
         try {
             await fetch('http://localhost:3002/createGroup', requestOptions)
             console.log("Group created successfully")
+            return 0;
         } catch(err) {
             console.error("Group creation failed")
+            return -1;
         }
     }
 
@@ -768,12 +782,40 @@ export function Groups(props) {
 
     return (
         <div className="absolute left-0 top-0 w-full h-full">
-            <div className="relative left-0 top-0 w-full h-[15%]">
-                <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setNewGroupPress(false)}}>
+            {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
+                <div className="relative flex flex-row top-0 h-full w-full items-center">
+                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
                         <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
-                    <div className="flex w-[50%] indent-[20px] h-full text-2xl font-semibold flex-col justify-center items-start text-white font-sans">Create Group</div>
+                    <div className="flex w-[80%] left-0 indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
+                </div>
+            </div>}
+            {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[22%] justify-center items-center">
+                    <div className="absolute w-full h-full">
+                        <div className="relative w-full h-full flex flex-col justify-center items-center">
+                            <div className='relative flex flex-col w-[30%] h-[30%] aspect-square justify-center items-center'>
+                                <img src="/group_icon-nobg.png" className="flex w-full h-full aspect-square"></img>
+                            </div>
+                        </div>
+                    </div> 
+                </div>}
+            {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[10%] justify-center items-center">
+                    <input type="text" className="flex flex-row w-[80%] h-[60%] outline-none bg-transparent border-b-2 border-gray-700 text-base text-white"
+                        placeholder="Enter group name here.." 
+                        value={groupName} 
+                        onChange={(e) => {
+                            setGroupNameAsync(e.target.value)
+                        }}
+                        >
+
+                    </input>
+            </div>}
+            {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
+                <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
+                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
+                        <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    </div>
+                    <div className="flex w-[80%] indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Add group members</div>
                 </div>
                 <div className="relative left-0 top-0 h-[40%] flex flex-row justify-center items-center">
                     {/* First child div */}
@@ -796,11 +838,11 @@ export function Groups(props) {
                         </div>
                     </div>
                 </div>
-            </div>
-            {props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
+            </div>}
+            {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
                 <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center w-[80%] overflow-y-scroll scrollbar-hide">
-                {props.contactsInNewGroup.map((contact) => (
-                    <div className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
+                {props.contactsInNewGroup.map((contact, idx) => (
+                    <div key={idx} className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
                         <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden">{getNameUser(contact)}</div>
                         <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
                             <img
@@ -808,7 +850,7 @@ export function Groups(props) {
                                 className="w-6 h-6"
                                 onClick={() => {
                                     props.removeContactFromGroup(contact);
-                                    setToRemoveFromAddingToGroup(contact)
+                                setToRemoveFromAddingToGroup(contact)
                                 }}
                             ></img>
                         </div>
@@ -816,12 +858,12 @@ export function Groups(props) {
                 ))}
                 </div>
             </div>}
-            <div className={`relative flex flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[60%]' : 'h-[75%]' } justify-center items-center overflow-y-scroll`}>
+            {!finishingSettingUpGroup && <div className={`relative flex flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[60%]' : 'h-[75%]' } justify-center items-center overflow-y-scroll`}>
                 { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`relative flex-none flex flex-row h-[15%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                     onClick={async () => { await props.setContactsInNewGroup([...props.contactsInNewGroup, element]); console.log("clicked")}}
                 >
                     <div className="flex w-[10%] justify-center items-center">
@@ -864,13 +906,27 @@ export function Groups(props) {
                         </div>
                     </div>
                 </div>))}
-            </div>
+            </div>}
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
                 <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
                     <img
                         src="./plus-sign-2.png"
                         className="h-[40%] flex items-center"
-                        onClick={() => { createGroup(); props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages();}}
+                        onClick={
+                            async () => 
+                                { 
+                                    if(!finishingSettingUpGroup) setFinishingSettingUpGroupAsync(true); 
+                                    else {
+                                        let success = await createGroup()
+                                        if(success == 0) {
+                                            props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages(); 
+                                            setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
+                                        } else {
+                                            alert("Error! Could not create group!")
+                                        }
+                                    }
+                                }
+                            }
                     ></img>
                 </div>
             </div>
