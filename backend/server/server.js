@@ -665,6 +665,37 @@ app.post('/exitGroup', async (req, res) => {
   }
 });
 
+app.post('/makeAdmin', async (req, res) => {
+  const {userToAddAsAdmin, group_id, admins} = req.body;
+
+  if(!userToAddAsAdmin) res.status(400).send("Missing user to add as admin")
+  if(!group_id) res.status(400).send("Missing group_id")
+  
+  try {
+
+    console.log(`in makeAdmin endpoint adding ${userToAddAsAdmin} to admin list ${admins}`)
+
+    // push() modifies the array in place and returns the length, not the array
+    const new_admins = [...admins, userToAddAsAdmin]; // Create new array with added admin
+
+    console.log(`new admins: ${new_admins}`)
+
+    // Use parameterized query to prevent SQL injection
+    await pool.query(
+      'UPDATE contacts SET admins = $1 WHERE id = $2',
+      [JSON.stringify(new_admins), group_id]
+    );
+    
+    console.log("successfully updated admin list: ", new_admins);
+    res.status(200).json({ success: true, admins: new_admins }); // Send success response
+
+    console.log("successfully updated admin list: " + new_admins)
+
+  } catch(error) {
+    res.status(500).send(JSON.stringify(error))
+  }
+});
+
 app.post('/deleteChat', async (req, res) => {
   const { curr_user, contact_id } = req.body;
 
