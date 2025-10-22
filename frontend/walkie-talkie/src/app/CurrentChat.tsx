@@ -217,13 +217,13 @@ export default function CurrentChat( props: any ) {
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[15%] h-[100%] justify-center items-center">
                     {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
-                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
-                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
+                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> :
                      (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
-                        <img src={`data:image/jpg;base64,${getImage(contact.current).data}`} className="max-h-[60%] rounded-full"></img> :
+                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
                         (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
-                        <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> : <></>                        
                     }
                 </div>
                 {contact.current !== null && contact.current.is_group === true &&

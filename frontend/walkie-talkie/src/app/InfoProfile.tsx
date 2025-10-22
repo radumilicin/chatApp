@@ -12,6 +12,8 @@ export default function ProfileInfo( props ) {
     const [description, setDescription] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
 
+    const divRef = useRef<HTMLDivElement>(null);
+
     const setDescriptionPressedAsync = async (val) => {
         setDescriptionPressed(val)
     }
@@ -58,6 +60,18 @@ export default function ProfileInfo( props ) {
 
         // console.log("current contact after update " + JSON.stringify(props.contact))
     }, [props.contacts])
+
+    useEffect(() => {
+        function handleOutsideClick(event) {
+            if (divRef.current && !divRef.current.contains(event.target)) {
+                setNameChangeGroup(false)
+            }
+        } 
+
+        document.addEventListener("mousedown", handleOutsideClick)
+
+        return () => document.removeEventListener("mousedown", handleOutsideClick)
+    }, [])
 
     function getImage(contact: any) {
         // console.log("in get image contact = " + JSON.stringify(contact))
@@ -198,7 +212,7 @@ export default function ProfileInfo( props ) {
                         {/* Profile Picture */}
                         {((props.contact !== undefined || props.contact !== null) && getImage(props.contact).data !== "") ? (
                             <img
-                                src={`data:image/jpg;base64,${getImage(props.contact).data}`}
+                                src={getImage(props.contact).data}
                                 className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
                             />
                         ) : (
@@ -255,7 +269,7 @@ export default function ProfileInfo( props ) {
                 </div>
 
                 <div className="relative flex flex-col h-[25%] items-center">
-                    <div className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
+                    <div ref={divRef} className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
                         {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ? 
                             (<input value={nameGroup} className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full outline-none overflow-x-auto border-b-2 bg-transparent border-green-800" 
                                 onChange={(e) => {
@@ -276,7 +290,7 @@ export default function ProfileInfo( props ) {
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
                         <div className="absolute flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full left-[80%] w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
                             {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true) 
-                                ? <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[20%] aspect-square" onClick={() => {}}></img>
+                                ? <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[30%] aspect-square" onClick={() => {}}></img>
                                 : <></>
                             }
                         </div>
@@ -296,6 +310,29 @@ export default function ProfileInfo( props ) {
 function AboutProfile(props) {
 
     const prevAbout = useRef('')
+    const divRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Event listener for clicks
+        const handleClickOutside = (event) => {
+            console.log("divRef.current:", divRef.current);
+            console.log("event.target:", event.target);
+            if (divRef.current && !divRef.current.contains(event.target)) {
+                props.setDescriptionPressedAsync(false) // set menu press to false
+                console.log("outside press")
+            }
+        };
+
+        // listens if the whole document was clicked and if it is then see if it was then
+        // check if the click happened outside
+        // Attach event listener to the document
+        document.addEventListener("mousedown", handleClickOutside);
+
+        // Cleanup function to remove the listener
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         if(props.contact !== null){
@@ -307,11 +344,13 @@ function AboutProfile(props) {
         }
     }, [props.contact])
 
+    
+
     return (
         <div className="relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 border-y-2 border-gray-500">
                 <div className="flex text-2xl text-black indent-[30px] h-[60%] w-full font-medium font-sans items-center">About</div>
-                <div className="flex text-md text-white indent-[30px] h-[40%] w-full font-sans flex-row items-start">
-                    <div className="w-[90%] h-full hover:cursor-pointer flex items-start text-xl " onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
+                <div ref={divRef} className="flex flex-row text-md text-white indent-[30px] h-[40%] w-full font-sans items-center justify-center">
+                    <div className={`flex flex-row left-[5%] w-[90%] h-full hover:cursor-pointer items-start justify-start text-xl ${props.descriptionPressed ? 'ml-6' : ''}`} onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
                         {
                             (props.contact !== null) ? 
                                 (props.contact.is_group === true && props.descriptionPressed === false ? ((props.contact.group_description === '') ? 'Add group description' 
@@ -322,7 +361,7 @@ function AboutProfile(props) {
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
                                     <input placeholder="Add description to group"
                                            value={props.description}
-                                           className="w-full outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[30px]"
+                                           className="w-[98%] outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[5px]"
                                            onChange={(e) => {
                                               props.setDescriptionAsync(e.target.value)
                                               console.log("Description: " + props.description)
@@ -343,7 +382,12 @@ function AboutProfile(props) {
                         }
                     </div>
                     <div className="w-[10%] h-full">
-                        {props.contact.is_group === true && <img src="./editIcon.png" className="flex text-lg text-black font-medium font-sans left-[10%] h-[30%] hover:cursor-pointer overflow-x-scroll aspect-square" onClick={() => {props.setDescriptionPressedAsync(true)}}></img>}
+                        {props.contact.is_group === true && <img src="./editIcon.png" 
+                            className="flex text-lg text-black font-medium font-sans left-[10%] h-5 w-5 hover:cursor-pointer overflow-x-scroll aspect-square" 
+                            onClick={() => {
+                                if(props.descriptionPressed) props.setDescriptionPressedAsync(false)
+                                else props.setDescriptionPressedAsync(true)
+                            }}></img>}
                     </div>
                 </div>
             </div>
@@ -413,12 +457,12 @@ function Members(props) {
                 <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                     <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
                 </div>
-                <div className={`flex w-[85%] h-full flex-row justify-start items-center`}>
+                <div className={`flex w-[85%] h-full flex-row justify-start items-center hover:cursor-pointer`}>
                     <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
                 </div>
             </div>
             {props.contact.members.map((id, idx) => ( 
-                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 z-0`} onClick={() => { /* removing people from group */ updatePressedIndex(idx) }}>
+                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 z-0 cursor-pointer`} onClick={() => { /* removing people from group */ updatePressedIndex(idx) }}>
                     <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                         {(getProfilePic(getUser(id)).data !== "") ? 
                                 <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -470,7 +514,7 @@ function OptionsGroup(props) {
                 <div className="flex w-[15%] h-full flex-row justify-center items-center">
                     <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
                 </div>
-                <div className="flex w-[85%] h-full justify-start items-center text-xl font-sans font-medium text-red-600">Exit group</div>
+                <div className="flex w-[85%] h-full justify-start items-center text-xl font-sans font-medium text-red-600 hover:cursor-pointer">Exit group</div>
             </div>
         </div>
     );

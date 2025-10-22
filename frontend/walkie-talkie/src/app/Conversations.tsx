@@ -445,7 +445,7 @@ export function Contacts( props: any) {
                     (element.sender_id !== null && element.sender_id === props.curr_user) ? 
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[10%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
                         <div className="relative flex w-[10%] h-full justify-center items-center">
@@ -496,7 +496,7 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[10%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                                className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
                                 <div className="flex flex-row w-[10%] h-full justify-center items-center">
@@ -548,7 +548,7 @@ export function Contacts( props: any) {
                     (element.sender_id !== null && element.sender_id === props.curr_user) ?
                     <div
                         key={idx}
-                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
@@ -596,7 +596,7 @@ export function Contacts( props: any) {
                         element.is_group === true && getLenMembers(element) > 0 ? 
                             <div 
                                 key={idx}
-                                className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                                className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
                                 <div className="flex w-[10%] justify-center items-center">
@@ -752,7 +752,7 @@ export function Groups(props) {
 
         let ids = []
         for(let i = 0; i < props.contactsInNewGroup.length ; i++){
-            ids.push(props.contactsInNewGroup[i].contact_id)
+            ids.push(props.contactsInNewGroup[i].id)
         }
 
         console.log("description = " + JSON.stringify(description))

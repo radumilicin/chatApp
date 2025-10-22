@@ -39,6 +39,21 @@ export default function AddPersonToGroup(props) {
         }
     }
 
+    async function changeFilteredContacts2 (val: string) {
+        if(props.contacts !== null || props.contacts !== undefined) {
+            const users_matching_search = props.users.filter((user) => {return user.username.includes(val)})
+            var filteredContactz = []  
+            for(let user of users_matching_search) {
+                for(let contact of props.contacts){
+                    if(contact.contact_id === user.id && contact.is_group === false && !props.contact.members.includes(user.id)) {
+                        filteredContactz.push(user)
+                    } 
+                }
+            }
+            setFilteredContactsAsync(filteredContactz)
+        }
+    }
+
     async function insertMembersInGroup() {
 
         if(props.contacts === null) return
@@ -73,17 +88,21 @@ export default function AddPersonToGroup(props) {
         <div className="absolute left-[30%] w-[40%] top-[10%] h-[80%] bg-gray-800 rounded-xl">
             <div className="relative top-0 left-0 w-full h-full flex flex-col gap-4">
                 <div className="relative flex flex-row h-[8%] w-full bg-slate-500 rounded-t-xl">
-                    <div className="flex w-[15%] h-full justify-center items-center hover:cursor-pointer" onClick={() => { props.setAddToGroup(false); }}>
-                        <img src="./xicon.png" className="h-[40%] w-[20%]"></img>
+                    <div className="flex w-[10%] h-full justify-center items-center hover:cursor-pointer" onClick={() => { props.setAddToGroup(false); }}>
+                        <img src="./xicon.png" className="h-6 w-6"></img>
                     </div>
                     <div className="flex flex-row w-[85%] h-full justify-start items-center text-xl text-white">
                         Add member
                     </div>
                 </div>
                 <div className="relative flex flex-row h-[6%] w-full items-center justify-center">
-                    <input placeholder="Search for username" value={searchedContact} 
-                        className="bg-transparent outline-none h-[50px] w-[90%] indent-[20px] bg-slate-500 rounded-xl"
-                        onChange={async (e) => {setSearchedContact(e.target.value); await changeFilteredContacts()}}
+                    <input  placeholder="Search for username" 
+                            value={searchedContact} 
+                            className="bg-transparent outline-none h-[50px] w-[90%] indent-[20px] bg-slate-500 rounded-xl"
+                            onChange={async (e) => {
+                                setSearchedContact(e.target.value); 
+                                await changeFilteredContacts2(e.target.value)
+                            }}
                         ></input>
                 </div>
                 <div className="flex flex-col left-0 top-0 h-[86%] w-full overflow-y-scroll scrollbar-hide">
@@ -112,8 +131,8 @@ export default function AddPersonToGroup(props) {
             </div>
             <div className="absolute left-0 top-[90%] h-[10%] w-full rounded-b-xl bg-slate-500">
                 <div className="relative left-[90%] w-[10%] h-full flex flex-row justify-center items-center">
-                    <img src="./greenTick2.png" className="max-w-[50%] max-h-[50%] aspect-square rounded-full hover:cursor-pointer" onClick={ async () => {
-                        await insertMembersInGroup(); props.setAddToGroup(false)
+                    <img src="./greenTick2.png" className="max-w-[50%] max-h-[50%] aspect-square rounded-full hover:cursor-pointer bg-transparent" onClick={ async () => {
+                        await insertMembersInGroup(); props.setAddToGroup(false); 
                     }}></img>
                 </div>
             </div>
