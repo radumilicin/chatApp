@@ -577,7 +577,7 @@ app.post('/changeAbout', async (req, res) => {
 })
 
 app.post('/createGroup', async (req, res) => {
-  const { admin, users, group_name, description } = req.body;
+  const { admin, users, group_name, description, image } = req.body;
 
   if (users !== null && Array.isArray(users)) {
     try {
@@ -595,10 +595,23 @@ app.post('/createGroup', async (req, res) => {
         res.sendStatus(409);
       } else {
 
+        const id_img = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
+
+        console.log("id image = " + id_img.toString())
+        console.log("image = " + image.toString())
+
+        // Insert image into "images" table
+        await pool.query(
+          "INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)",
+          [id_img, null, null, "", image] // Serialize users array to JSON
+        );
+
+        console.log("inserted image")
+
         // Insert the group into the "contacts" table
         await pool.query(
-          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins, group_description) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8)",
-          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin]), description] // Serialize users array to JSON
+          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins, group_description, group_pic_id) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9)",
+          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin]), description, id_img] // Serialize users array to JSON
         );
 
         console.log("After inserting group into contacts");

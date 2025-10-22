@@ -452,13 +452,13 @@ export function Contacts( props: any) {
                             {/* Use base64 data for image */}
                             {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
+                                className="h-10 w-10 rounded-full"
                                 alt="Profile"
                             /> : getProfileImage(element, 1).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
+                                <img src="./userProfile2.png" className="h-10 w-10 rounded-full"></img>}
                         </div>
                         <div className="relative flex flex-col w-[90%]">
                             <div className="flex h-[60%] w-full items-center flex-row">
@@ -499,14 +499,14 @@ export function Contacts( props: any) {
                                 className={`relative flex-none flex flex-row h-[10%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
-                                <div className="flex w-[10%] justify-center items-center">
+                                <div className="flex flex-row w-[10%] h-full justify-center items-center">
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data !== "" ? <img
-                                        src={`data:image/jpg;base64,${getImageGroup(element).data}`}
-                                        className="h-[75%] w-[75%] rounded-full"
+                                        src={getImageGroup(element).data}
+                                        className="h-12 w-12 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[60%] w-full items-center flex-row">
@@ -554,7 +554,7 @@ export function Contacts( props: any) {
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
                             <img
-                                src={`data:image/jpg;base64,${getImage(element).data}`}
+                                src={getImage(element).data}
                                 className="h-[75%] w-[75%] rounded-full"
                                 alt="Profile"
                             />
@@ -602,7 +602,7 @@ export function Contacts( props: any) {
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data !== "" ? <img
-                                        src={`data:image/jpg;base64,${getImageGroup(element).data}`}
+                                        src={getImageGroup(element).data}
                                         className="h-[75%] w-[75%] rounded-full"
                                         alt="Profile"
                                     /> : 
@@ -755,11 +755,14 @@ export function Groups(props) {
             ids.push(props.contactsInNewGroup[i].contact_id)
         }
 
+        console.log("description = " + JSON.stringify(description))
+
         let data = {
             "admin": curr_user.id,
             "users": [...ids, curr_user.id],
             "group_name": groupName,
-            "description": description
+            "description": description,
+            "image": newGroupImage
         }
         // console.log("ids in new group: " + JSON.stringify(data))
 
@@ -821,7 +824,7 @@ export function Groups(props) {
                         {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
                         <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
                             {hoveringGroupIcon && <img src="/camera-icon.png" className="relative flex flex-row w-[60%] h-[60%] justify-center items-center"/>}
-                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] justify-center items-center">Upload group picture..</div>}
+                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] text-center justify-center items-center">Upload group picture..</div>}
                         </div>
                         {/* Hidden file input */}
                         <input
@@ -867,20 +870,21 @@ export function Groups(props) {
                     {nameAlreadyExists && <div className="relative flex flex-row indent-[20px] w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
             </div>}
             {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[20%] justify-center items-center">
-                    <input type="text" className="flex flex-row indent-[10px] w-[80%] h-[60%] outline-none bg-transparent border-2 border-gray-700 rounded-xl text-base text-white"
-                        placeholder="Add description.." 
-                        value={description} 
+                    <textarea 
+                        className="relative px-[10px] pt-2 pb-2 w-[80%] h-[60%] outline-none bg-transparent border-2 border-gray-700 rounded-xl text-base text-white align-top"
+                        placeholder="Add description.."
+                        value={description}
                         onChange={(e) => {
                             const description = e.target.value
                             setDescription(description)
                         }}
                         onKeyDown={(e) => {
                             if(e.key === "Enter"){
-                                console.log("Changed description")
-                                /* Update description in DB */ 
+                            console.log("Changed description")
+                            /* Update description in DB */
                             }
-                        }}>
-                    </input>
+                        }}
+                    />
                     {nameAlreadyExists && <div className="relative flex flex-row w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
