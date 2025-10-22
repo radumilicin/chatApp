@@ -1,9 +1,12 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { resolve } from 'path';
 import { defineConfig } from 'drizzle-kit';
 
-console.log("in drizzle config = " + process.env.DATABASE_PSWD)
-console.log("pswd type " + typeof(process.env.DATABASE_PSWD))
-console.log("url = " + process.env.DATABASE_URL!)
+config({ path: resolve(__dirname, '../.env') });
+
+// console.log("in drizzle config = " + process.env.DATABASE_PSWD!)
+// console.log("pswd type " + typeof(process.env.DATABASE_PSWD!))
+// console.log("url = " + process.env.DATABASE_URL!)
 
 export default defineConfig({
   out: './drizzle',
