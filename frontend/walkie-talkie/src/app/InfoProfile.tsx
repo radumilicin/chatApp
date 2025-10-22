@@ -1,4 +1,6 @@
 import react, {useState, useEffect, useRef} from 'react'
+import { GrUserAdmin } from "react-icons/gr";
+import { CiCircleRemove } from "react-icons/ci";
 
 export default function ProfileInfo( props ) {
 
@@ -397,6 +399,7 @@ function AboutProfile(props) {
 function Members(props) {
 
     const [pressed, setPressed] = useState([])
+    const [userToAddAsAdmin, setUserToAddAsAdmin] = useState(-1)
     
     const updatePressedAsync = async (arr : any) => {
         setPressed(arr)
@@ -450,33 +453,74 @@ function Members(props) {
         }
     }
 
+    async function makeAdmin(val: number) {
+        if(props.contact !== null && props.contact.is_group === true) {
+            let body = {
+                userToAddAsAdmin: val,
+                group_id: props.contact.id,
+                admins: props.contact.admins
+            }
+
+            let requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            }
+
+            const response = await fetch(`http://localhost:3002/makeAdmin`, requestOptions);
+            if(response.ok) {
+                console.log("User " + userToAddAsAdmin.toString() + " successfully made admin")
+                await props.fetchContacts()
+            } else {
+                console.log("response error: " + response.status)
+            }
+        }
+    }
 
     return (
         <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
             <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
-                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
-                    <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
-                </div>
-                <div className={`flex w-[85%] h-full flex-row justify-start items-center hover:cursor-pointer`}>
-                    <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
-                </div>
+            <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
             </div>
-            {props.contact.members.map((id, idx) => ( 
-                <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 z-0 cursor-pointer`} onClick={() => { /* removing people from group */ updatePressedIndex(idx) }}>
-                    <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
-                        {(getProfilePic(getUser(id)).data !== "") ? 
-                                <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
-                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img>
-                        }
-                    </div>
-                    <div className="flex w-[75%] h-full flex-col justify-start">
-                        <div className="flex h-[50%] text-black font-sans text-md font-medium items-end">{getUser(id).username}</div>
-                        <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
-                    </div>    
-                    {pressed[idx] == true && <div className="absolute left-[80%] top-[80%] w-[15%] h-[50px] bg-gray-600 flex justify-center items-center rounded-md z-20">
-                        <div className="absolute w-full h-full text-white font-sans text-lg flex items-center justify-center hover:bg-gray-400 hover:rounded-md" onClick={() => {kickFromGroup(id)}}>Remove user</div>
-                    </div>}
+            <div className={`flex w-[85%] h-full flex-row justify-start items-center hover:cursor-pointer`}>
+                <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
+            </div>
+            </div>
+            {props.contact.members.map((id, idx) => (
+            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
+                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                {(getProfilePic(getUser(id)).data !== "") ?
+                    <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
+                    <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img>
+                }
                 </div>
+                <div className="flex w-[70%] h-full flex-col justify-start">
+                    <div className="flex h-[50%] text-black font-sans text-md font-medium items-end">{getUser(id).username}</div>
+                    <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
+                </div>
+                {(props.contact.admins.includes(id)) && <div className="relative flex flex-row justify-center items-center w-[12%] h-[30%] bg-green-700 rounded-xl text-white">Group admin</div>}
+                {pressed[idx] == true && 
+                <div className="absolute flex flex-col left-[70%] top-[70%] w-[22%] h-[100px] bg-gray-600 justify-center items-center rounded-md z-50">
+                    <div className="relative flex flex-row w-full h-full text-white font-sans text-lg items-center justify-center hover:bg-gray-400 hover:rounded-md" onClick={() => {makeAdmin(id)}}>
+                        <div className="relative flex flex-row w-[30%] h-full justify-center items-center">
+                            <GrUserAdmin className="w-5 h-5"></GrUserAdmin>
+                        </div>
+                        <div className="relative flex flex-row w-[70%] h-full justify-start items-center">
+                            Make admin
+                        </div>
+                    </div>
+                    <div className="relative w-full h-full text-white font-sans text-lg flex items-center justify-center hover:bg-gray-400 hover:rounded-md" onClick={() => {kickFromGroup(id)}}>
+                        <div className="relative flex flex-row w-[30%] h-full justify-center items-center">
+                            <CiCircleRemove className="w-6 h-6"></CiCircleRemove>
+                        </div>
+                        <div className="relative flex flex-row w-[70%] h-full justify-start items-center">
+                            Remove user
+                        </div> 
+                    </div>
+                </div>
+                }
+            </div>
             ))}
         </div>
     );
