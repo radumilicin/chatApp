@@ -383,14 +383,14 @@ function AboutProfile(props) {
                                     </input> : <></>) : <></>
                         }
                     </div>
-                    <div className="w-[10%] h-full">
+                    {<div className="w-[10%] h-full">
                         {props.contact.is_group === true && <img src="./editIcon.png" 
                             className="flex text-lg text-black font-medium font-sans left-[10%] h-5 w-5 hover:cursor-pointer overflow-x-scroll aspect-square" 
                             onClick={() => {
                                 if(props.descriptionPressed) props.setDescriptionPressedAsync(false)
                                 else props.setDescriptionPressedAsync(true)
                             }}></img>}
-                    </div>
+                    </div>}
                 </div>
             </div>
     );
@@ -478,7 +478,7 @@ function Members(props) {
     }
 
     return (
-        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
             <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
             <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                 <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
@@ -488,7 +488,7 @@ function Members(props) {
             </div>
             </div>
             {props.contact.members.map((id, idx) => (
-            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
+            <div key={idx} className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
                 <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                 {(getProfilePic(getUser(id)).data !== "") ?
                     <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -553,7 +553,7 @@ function OptionsGroup(props) {
     }
 
     return (
-        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-40 overflow-scroll scrollbar-hide">
+        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
             <div className="relative flex h-[150px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex w-[15%] h-full flex-row justify-center items-center">
                     <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
