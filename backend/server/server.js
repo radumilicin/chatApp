@@ -6,16 +6,26 @@ import { WebSocketServer } from 'ws'
 import url from 'url'
 import cookieParser from 'cookie-parser'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 // console.log("password = " + process.env.DATABASE_PSWD)
 const wss = new WebSocketServer({ port: 8080 });
 
-
 const app = express();
 
-app.use(cors())
+app.use(cors(
+  {
+    origin: "http://localhost:3000",
+    credentials: true
+  }
+))
 app.use(express.json({ limit: '10mb' })); // Adjust limit
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.urlencoded({ extended: true }))
@@ -23,13 +33,14 @@ app.use(cookieParser())
 
 const PORT = 3002;
 
+const JWT_TOKEN = process.env.JWT_TOKEN
 
 // Database configuration
 const pool = new pg.Pool({
   user: 'postgres',       // Replace with your PostgreSQL username
   host: 'localhost',           // Replace with your database host
   database: 'chatapp',   // Replace with your database name
-  password: 'ValoareMare503!', // process.env.DATABASE_PSWD,   // Replace with your PostgreSQL password
+  password: process.env.DATABASE_PSWD,   // Replace with your PostgreSQL password
   port: 5432,                  // Replace with your database port (default: 5432)
 });
 
@@ -54,12 +65,29 @@ const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'];
   if (!token) return res.status(401).json({ error: 'No token provided' });
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_TOKEN, (err, user) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
     req.user = user;
     next();
   });
 };
+
+app.get("/verify", (req, res) => {
+  
+  console.log("In verify endpoint")
+
+  const token = req.cookies["auth_token"];
+  if (!token) return res.status(401).json({ valid: false, message: "No cookie" });
+
+  console.log(`token: ${token}`)
+
+  try {
+    const payload = jwt.verify(token, JWT_TOKEN);
+    res.json({ valid: true, user: payload });
+  } catch (err) {
+    res.status(401).json({ valid: false, message: "Invalid or expired token" });
+  }
+});
 
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
@@ -81,6 +109,9 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+
+  console.log("In login endpoint")
+
   const { username, password } = req.body;
 
   console.log("username = " + username + ";  password login = " + password);
@@ -97,11 +128,25 @@ app.post('/login', async (req, res) => {
     if (result.rows.length > 0) {
       const user = result.rows[0];
       // console.log("username = " + username + ";  password login = " + JSON.stringify(await bcrypt.hash(password, 10)));
-      console.log("user = " + JSON.stringify(user))
+      // console.log("user = " + JSON.stringify(user))
       const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-      console.log("password valid = " + isPasswordValid)
+      // console.log("password valid = " + isPasswordValid)
 
       if (isPasswordValid) {
+        
+        console.log("Password is valid, making and incorporating the token")
+
+        const token = jwt.sign({user}, JWT_TOKEN, { expiresIn: "24h" })
+        res.cookie("auth_token", token, {
+          httpOnly: true, 
+          // secure : process.env.NODE_ENV === "production",
+          secure: false,
+          maxAge: 3600000,
+          sameSite: "strict",
+        });
+        
+        console.log("After cookie incorporation in the response")
+
         res.status(200).json({ userId: user.id });
       } else {
         res.status(401).json({ error: "Invalid username or password" });

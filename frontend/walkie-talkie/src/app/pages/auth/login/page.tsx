@@ -53,13 +53,13 @@ export default function Login(props: any) {
             password: password
         }
 
-        let requestParams = {
-            'method': 'POST',
-            'headers': {'Content-Type' : 'application/json'},
-            'body': JSON.stringify(msg)
-        }
+        const response = await fetch("http://localhost:3002/login", {
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify(msg),
+            credentials: 'include', // allows cookies to be set
+        });
 
-        const response = await fetch("http://localhost:3002/login", requestParams);
         const user = await response.json()
 
         props.setU(user.userId)
@@ -67,7 +67,8 @@ export default function Login(props: any) {
 
         if(response.status === 200){
             console.log("Logged in")
-            setLoggedInAsync(); 
+            setLoggedInAsync();
+            // localStorage.setItem("jwt-token", user.) 
             return user
         } else {
             console.log("login failed")
