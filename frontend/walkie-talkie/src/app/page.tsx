@@ -70,10 +70,36 @@ export default function Home() {
       updateImages(result);
       console.log(result);
     };
+
+  async function trySSO() {
+
+    const res = await fetch(`http://localhost:3002/verify`, {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+
+    const data = await res.json()
+
+    if (res.ok) {
+      console.log("✅ Token is valid:", data);
+      setUser(data.user.id)
+      if(!loggedIn) setLoggedIn()
+    } else {
+      console.log("❌ Invalid token:", data);
+    }
+  }
+
+  useEffect(() => {
+    console.log(`User has id ${user}`)
+  }, [user])
   
 
   // gets the users
   useEffect(() => {
+
+    /* First check with SSO if we have a token by SENDING A REQUEST */ 
+    trySSO();
 
     // Function to fetch data
 
@@ -87,7 +113,7 @@ export default function Home() {
 
     fetchImages()
 
-    console.log(JSON.stringify(contacts))
+    // console.log(JSON.stringify(contacts))
 
     // console.log("images = " + images)
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
