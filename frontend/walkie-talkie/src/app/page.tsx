@@ -83,7 +83,7 @@ export default function Home() {
 
     if (res.ok) {
       console.log("✅ Token is valid:", data);
-      setUser(data.user.id)
+      setUser(data.user.user.id)
       if(!loggedIn) setLoggedIn()
     } else {
       console.log("❌ Invalid token:", data);
@@ -92,6 +92,11 @@ export default function Home() {
 
   useEffect(() => {
     console.log(`User has id ${user}`)
+    if(user !== -1) {
+      fetchData()
+      fetchData2()
+      fetchImages()
+    }
   }, [user])
   
 
@@ -105,17 +110,14 @@ export default function Home() {
 
     console.log("Logged in = " + loggedIn + " registered = " + registered)
 
-    fetchData()
+    if(user) {
+      fetchData()
+      fetchData2()
+      fetchImages()
+    }
 
     console.log("user = " + user)
 
-    fetchData2()
-
-    fetchImages()
-
-    // console.log(JSON.stringify(contacts))
-
-    // console.log("images = " + images)
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
 
   useEffect(() => {
