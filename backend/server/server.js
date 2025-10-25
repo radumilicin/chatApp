@@ -160,6 +160,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/logout', (req, res) => {
+  res.clearCookie("auth_token", {
+    httpOnly: true, 
+    // secure : process.env.NODE_ENV === "production",
+    secure: false,
+    maxAge: 3600000,
+    sameSite: "strict",
+  });
+  res.status(200).json( {message: 'Logged out successfully'} );
+});
+
 
 
 /////////////////////////////////////////////////////////////
