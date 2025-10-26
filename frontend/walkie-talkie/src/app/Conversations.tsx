@@ -29,7 +29,28 @@ export default function Conversations( props : any) {
 
     useEffect(() => {
         props.setLoggedIn(false)
+        logOutNow()
     }, [logOut])
+
+    async function logOutNow() {
+
+        try {
+            const res = await fetch(`http://localhost:3002/logout`, {
+                method: 'POST',
+                credentials: "include",
+            });
+            
+            if(res.ok) {
+                props.updateUsers([]);
+                props.updateContacts([]);
+                props.updateImages([]);
+                props.setUser(-1);
+            }
+
+        } catch (err) {
+            console.error(JSON.stringify(err))
+        }
+    }
 
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
