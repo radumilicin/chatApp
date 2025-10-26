@@ -10,6 +10,7 @@ import AddPersonToGroup from "./AddingToGroup";
 import Login from "./pages/auth/login/page";
 import Register from "./pages/auth/registration/page";
 import {useAuth} from "./AuthProvider"
+import SettingsView from "./SettingsView";
 
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
   const [pressedProfile, setPressProfile] = useState(false)
   const [profileInfo, setProfileInfo] = useState(false)
   const [addingToGroup, setAddToGroup] = useState(false)
+  const [pressedSettings, setPressedSettings] = useState(false)
   const {loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
 
   // this is when we are looking at AddContacts and we press on one to text
@@ -129,13 +131,17 @@ export default function Home() {
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
         {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42]">
         
-          <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile}></OptionsBar>
-          {pressedProfile === false ? <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
+          <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings}></OptionsBar>
+          {pressedProfile === true ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
+                                          fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
+                                   :                 
+            pressedSettings ? <SettingsView curr_user={user}> </SettingsView>
+
+                                   :
+          <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser}
           ></Conversations> 
-                                    : <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
-                                          fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact}></CurrentChat>

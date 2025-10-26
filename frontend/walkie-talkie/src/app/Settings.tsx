@@ -11,7 +11,7 @@ export default function OptionsBar(props){
                     </div>
                 </div>
             </div>
-            <Settings curr_user={props.curr_user} users={props.users} images={props.images} setPressProfile={props.setPressProfile}></Settings>
+            <Settings curr_user={props.curr_user} users={props.users} images={props.images} setPressProfile={props.setPressProfile} pressedSettings={props.pressedSettings} setPressedSettings={props.setPressedSettings}></Settings>
         </div>
     );
 }
@@ -37,7 +37,11 @@ export function Settings(props) {
         <div className="relative flex flex-col h-[50%] rounded-bl-2xl w-full">
             <div className="w-full h-[20%] top-[60%] relative flex flex-col items-center justify-center">
                 <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl">
-                    <img src="/cogIcon2.png" className="flex w-[70%] h-[70%]" onClick={() => {}}></img>
+                    <img src="/cogIcon2.png" className="flex w-[70%] h-[70%]" onClick={() => { 
+                                                                                               if(props.pressedSettings) props.setPressedSettings(false)
+                                                                                               else props.setPressedSettings(true)         
+                                                                                             }
+                                                                                      }></img>
                 </div>
             </div>
             <div className="w-full h-[20%] top-[60%] hover:rounded-bl-xl relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(true)}}>
