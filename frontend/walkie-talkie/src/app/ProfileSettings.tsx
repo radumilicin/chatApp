@@ -104,23 +104,23 @@ export default function ProfileSettings(props) {
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
             <div
-                className="relative flex flex-row top-[5%] left-[15%] w-[70%] h-[45%] bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
+                className="relative flex flex-row top-[5%] left-[15%] w-80 h-80 bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
                 onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
                 onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
             >
                 {currImageData.data !== "" ? (
                     <img
                         src={`data:image/jpeg;base64,${currImageData.data}`}
-                        className="h-[70%] w-[70%] z-0 rounded-full"
+                        className="h-60 w-60 z-0 rounded-full"
                     />
                 ) : (
-                    <img src="./profilePic2.png" className="h-[70%] w-[70%] z-0 rounded-full"></img>
+                    <img src="./profilePic2.png" className="h-60 w-60 z-0 rounded-full"></img>
                 )}
 
                 {hoveredProfilePic && (
                     <div className="absolute h-[70%] w-[70%] flex flex-col items-center justify-center z-20">
-                        <img src="./cameraIcon2.png" className="h-[20%] w-[30%]" />
-                        <p className="h-[30%] w-[100%] text-black text-center">
+                        <img src="./camera-icon-white2.png" className="h-20 w-20" />
+                        <p className="h-[30%] w-[100%] text-white text-center">
                             Change profile picture
                         </p>
                     </div>
@@ -164,10 +164,10 @@ export default function ProfileSettings(props) {
                     }}
                 />
             </div>
-            <div className="relative flex flex-col top-[0%] left-[15%] w-[70%] h-[45%] justify-center text-black">
+            <div className="relative flex flex-col top-[0%] left-[15%] w-80 h-[45%] justify-center text-black">
                 <div className="relative top-[10%] w-full h-[30%] flex flex-col">
-                    <div className="relative text-white text-opacity-80 top-[10%] h-[30%] text-lg font-semibold items-center">Name</div>
-                    <div className="relative top-[10%] w-full h-[40%] flex flex-row items-center">
+                    <div className="relative text-white text-opacity-80 top-[10%] left-12 h-[30%] text-lg font-semibold items-center">Name</div>
+                    <div className="relative top-[10%] left-12 w-full h-[40%] flex flex-row items-center">
                         {
                         stateUsername === "fixed" ? <p className="flex flex-row w-[50%] h-full items-center text-xl font-medium">{getCurrUser().username}</p> 
                                                 : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
@@ -182,14 +182,14 @@ export default function ProfileSettings(props) {
                                                             }}></input>
                                                 
                         }
-                        <div className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400" onClick={() => {setStateUsername("input")}}>
+                        <div className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400 hover:cursor-pointer" onClick={() => {setStateUsername("input")}}>
                             <img src="./edit2.png" className="w-[40%] h-[50%]"></img>
                         </div>
                     </div>
                 </div>
                 <div className="relative top-[10%] w-full h-[30%] flex flex-col justify-center">
-                    <div className="relative text-white text-opacity-80 mt-4 h-[30%] text-lg font-semibold">About</div>
-                    <div className="relative w-full h-[40%] flex flex-row items-center">
+                    <div className="relative text-white text-opacity-80 left-12 mt-4 h-[30%] text-lg font-semibold">About</div>
+                    <div className="relative left-12 w-full h-[40%] flex flex-row items-center">
                         {
                             stateAbout === "fixed" ? (
                                 <p className="flex flex-row w-[50%] h-full items-center text-xl font-medium">{getCurrUser().about}</p>
@@ -208,7 +208,7 @@ export default function ProfileSettings(props) {
                             )
                         }
                         <div
-                            className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400"
+                            className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400 hover:cursor-pointer"
                             onClick={() => setStateAbout("input")}
                         >
                             <img src="./edit2.png" className="w-[40%] h-[50%]" />
