@@ -132,11 +132,10 @@ export default function Home() {
         {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42]">
         
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings}></OptionsBar>
-          {pressedProfile === true ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
+          {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
                                    :                 
-            pressedSettings ? <SettingsView curr_user={user}> </SettingsView>
-
+            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} users={users} images={images}> </SettingsView>
                                    :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
