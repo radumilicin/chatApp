@@ -6,7 +6,7 @@ export default function OptionsBar(props){
         <div className={`absolute left-[3%] top-[5%] w-[5%] h-[90%] bg-[#0D1317] rounded-l-xl flex flex-col`}>  
             <div className="relative flex flex-col h-[50%] w-full">
                 <div className="w-full top-0 h-[20%] relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(false); props.setPressedSettings(false)}}>
-                    <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl">
+                    <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl hover:cursor-pointer">
                         <img src="/messageIcon2.png" className="flex w-full h-full rounded-full"></img>
                     </div>
                 </div>
@@ -36,7 +36,7 @@ export function Settings(props) {
     return (
         <div className="relative flex flex-col h-[50%] rounded-bl-2xl w-full">
             <div className="w-full h-[20%] top-[60%] relative flex flex-col items-center justify-center">
-                <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl">
+                <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl hover:cursor-pointer">
                     <img src="/cogIcon2.png" className="flex w-[70%] h-[70%]" onClick={() => { 
                                                                                                if(props.pressedSettings) props.setPressedSettings(false)
                                                                                                else props.setPressedSettings(true)         
@@ -44,7 +44,7 @@ export function Settings(props) {
                                                                                       }></img>
                 </div>
             </div>
-            <div className="w-full h-[20%] top-[60%] hover:rounded-bl-xl relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(true)}}>
+            <div className="w-full h-[20%] top-[60%] hover:rounded-bl-xl relative flex flex-col items-center justify-center hover:cursor-pointer" onClick={() => {props.setPressProfile(true)}}>
                 <div className="flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 rounded-2xl">
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-[70%] h-[70%] hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
                                                : <img src="./profilePic2.png" className="flex w-[70%] h-[70%] hover:bg-gray-500 rounded-full"></img>

@@ -126,6 +126,25 @@ export default function Home() {
     // console.log("images = " + JSON.stringify(images))
   }, [images])
 
+  async function logOutNow() {
+    try {
+        const res = await fetch("http://localhost:3002/logout", {
+            method: 'GET',
+            credentials: "include",
+        });
+        
+        if(res.ok) {
+            updateUsers([]);
+            updateContacts([]);
+            updateImages([]);
+            setUser(-1);
+        }
+
+    } catch (err) {
+        console.error(JSON.stringify(err))
+    }
+  }
+
   return (
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
@@ -135,7 +154,7 @@ export default function Home() {
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
                                    :                 
-            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} users={users} images={images}> </SettingsView>
+            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
                                    :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}

@@ -28,15 +28,18 @@ export default function Conversations( props : any) {
     }, [props.contacts, currentSearch])
 
     useEffect(() => {
-        props.setLoggedIn(false)
-        logOutNow()
+        if(logOut === true) {
+            console.log("LOGOUT === TRUE???")
+            props.setLoggedIn(false)
+            logOutNow()
+        }
     }, [logOut])
 
     async function logOutNow() {
 
         try {
             const res = await fetch(`http://localhost:3002/logout`, {
-                method: 'POST',
+                method: 'GET',
                 credentials: "include",
             });
             

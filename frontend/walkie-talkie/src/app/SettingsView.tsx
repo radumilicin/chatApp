@@ -20,7 +20,8 @@ export default function SettingsView(props) {
                     <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images}></CurrUserDiv>
                     <AccountOption></AccountOption>
                     <NotificationsOption></NotificationsOption>
-                    <LogOutOption></LogOutOption>
+                    <AppearanceOption></AppearanceOption>
+                    <LogOutOption loggedIn={props.loggedIn} logOutNow={props.logOutNow} setLoggedIn={props.setLoggedIn}></LogOutOption>
                     {/* <div className="">Account</div>
                     <div className="">Appearance</div>
                     <div className="">Notifications</div> */}
@@ -62,8 +63,8 @@ export function CurrUserDiv (props: any) {
     }, [props.curr_user])
 
     return (
-        <div className="relative flex flex-row w-full h-[15%]">
-            <div className="relative flex flex-row w-[25%] h-full justify-center items-center">
+        <div className="relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+            <div className="relative flex flex-row w-[25%] h-[70%] justify-center items-center">
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-20 h-20 hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
                                                : <img src="./profilePic2.png" className="flex w-20 h-20 hover:bg-gray-500 rounded-full"></img>
                 }
@@ -91,6 +92,20 @@ export function AccountOption( props: any ){
     );
 }
 
+export function AppearanceOption( props: any ){
+    return (
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+            <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
+            <img src="color_palette_nobg.png" className="w-16 h-16"></img>
+            </div>
+            <div className="relative flex flex-col w-[85%] h-full">
+                <div className="flex flex-row h-[50%] text-xl text-[#CBD4E0] font-medium">Appearance</div>
+                <div className="flex flex-row h-[50%] text-lg">Fonts, Themes</div>
+            </div>
+        </div>
+    );
+}
+
 export function NotificationsOption( props: any ){
     return (
         <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
@@ -106,8 +121,18 @@ export function NotificationsOption( props: any ){
 }
 
 export function LogOutOption( props: any ){
+
+    const [logOut, setLogOut] = useState(false)
+
+    useEffect(() => {
+        if(logOut === true) {
+            props.logOutNow();
+            props.setLoggedIn(false);
+        }
+    }, [logOut])
+
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src="exitIcon.png" className="w-8 h-8"></img>
             </div>
