@@ -62,8 +62,8 @@ export function CurrUserDiv (props: any) {
     }, [props.curr_user])
 
     return (
-        <div className="relative flex flex-row w-full h-[15%]">
-            <div className="relative flex flex-row w-[25%] h-full justify-center items-center">
+        <div className="relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+            <div className="relative flex flex-row w-[25%] h-[70%] justify-center items-center">
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-20 h-20 hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
                                                : <img src="./profilePic2.png" className="flex w-20 h-20 hover:bg-gray-500 rounded-full"></img>
                 }
