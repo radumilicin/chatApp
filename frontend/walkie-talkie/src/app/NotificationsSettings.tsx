@@ -19,9 +19,11 @@ export default function NotificationSettings( props: any ) {
                 <div className="relative indent-[20px] left-[2%] w-[40%] text-xl font-semibold text-white font-sans flex flex-row justify-start items-center">Notifications</div>
             </div>
 
-            <div className="absolute left-0 w-full top-[20%] h-[70%] flex flex-col items-center">
+            <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
+                    <div className="relative flex flex-row left-[6%] h-[6%] w-[96%] text-xl text-[#CBD4E0] font-medium">Messages</div>
                     <EnableNotifications setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}></EnableNotifications>
+                    <div className="relative flex flex-row top-[4%] left-[6%] h-[6%] w-[96%] text-[#CBD4E0] text-xl font-medium">Message sounds</div>
                     <IncomingSounds setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}></IncomingSounds>
                     <OutgoingSounds setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}></OutgoingSounds>
                 </div>
@@ -38,8 +40,9 @@ export function EnableNotifications(props: any) {
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src="bell-icon.png" className="w-8 h-8"></img>
             </div>
-            <div className="relative flex flex-row justify-begin items-center w-[70%] h-full text-xl font-medium">
-                Enable notifications
+            <div className="relative flex flex-col justify-begin w-[70%]">
+                <div className="relative flex flex-row w-full h-[50%] items-end text-lg font-medium">Message notifications</div>
+                <div className="relative flex flex-row w-full h-[50%] text-base font-medium text-white">Enable notification sound</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.notificationsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
@@ -54,12 +57,13 @@ export function EnableNotifications(props: any) {
 export function IncomingSounds(props: any) {
 
     return (
-        <div className="relative flex flex-row justify-row h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
+        <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src="./arrow_incoming.png" className="w-8 h-8"></img>
             </div>
-            <div className="relative flex flex-row justify-begin items-center w-[70%] h-full text-xl font-medium">
-                Incoming sounds
+            <div className="relative flex flex-col justify-begin w-[70%] h-full">
+                <div className="relative flex flex-row w-full h-[50%] items-end text-lg font-medium">Incoming sounds</div>
+                <div className="relative flex flex-row w-full h-[50%] text-base font-medium">Play sound when receiving a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.incomingSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
@@ -74,12 +78,13 @@ export function IncomingSounds(props: any) {
 export function OutgoingSounds(props: any) {
 
     return (
-        <div className="relative flex flex-row justify-row h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
+        <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src="./arrow_outgoing.png" className="w-8 h-8"></img>
             </div>
-            <div className="relative flex flex-row justify-begin items-center w-[70%] h-full text-xl font-medium">
-                Outgoing sounds
+            <div className="relative flex flex-col justify-begin w-[70%] h-full">
+                <div className="relative flex flex-row w-full h-[50%] items-end text-lg font-medium">Outgoing sounds</div>
+                <div className="relative flex flex-row w-full h-[50%] text-base font-medium">Play sound when sending a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.outgoingMessagesSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
