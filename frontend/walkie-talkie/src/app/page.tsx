@@ -14,11 +14,13 @@ import SettingsView, { AppearanceOption } from "./SettingsView";
 import NotificationsView from "./NotificationsSettings";
 import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
+import Theme from "./Theme";
 
 
 export default function Home() {
 
   const [user, setUser] = useState(-1);
+  const [userObj, setUserObj] = useState(null);
   const [users, updateUsers] = useState([]);  // Change state to an array instead of object
   const [contacts, updateContacts] = useState([]);
   const [images, updateImages] = useState([]);
@@ -42,6 +44,9 @@ export default function Home() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [incomingSoundsEnabled, setIncomingSoundsEnabled] = useState(false);
   const [outgoingMessagesSoundsEnabled, setOutgoingMessagesSoundsEnabled] = useState(false);
+
+  const [themePressed, setThemePressed] = useState(false)
+  const [fontPressed, setFontPressed] = useState(false)
     
   const [ messages, setMessages] = useState([]); // Store received messages
   // Only initialize WebSocket when user is valid (not -1 and not null)
@@ -121,6 +126,17 @@ export default function Home() {
 
     }
   }, [user])
+
+  useEffect(() => {
+    if(user !== -1 && users.length !== 0) {
+
+      const user_0 = users.find((elem) => {
+        return user === elem.id
+      })
+      
+      setUserObj(user_0)
+    }
+  }, [user, users])
   
 
   // gets the users
@@ -170,6 +186,7 @@ export default function Home() {
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
         {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42]">
+          {themePressed ? <Theme themePressed={themePressed} setThemePressed={setThemePressed}></Theme> : <></>}
         
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings}></OptionsBar>
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
@@ -178,12 +195,13 @@ export default function Home() {
             pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
                                    :
-            pressedNotifications ? <NotificationsView setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+            pressedNotifications ? <NotificationsView userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                         setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
                                         outgoingMessagesSoundsEnabled={outgoingMessagesSoundsEnabled} setOutgoingMessagesSoundsEnabled={setOutgoingMessagesSoundsEnabled}
                                         ></NotificationsView>
                                     :
-            pressedAppearance ? <AppearanceSettings setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+            pressedAppearance ? <AppearanceSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+                                                    themePressed={themePressed} setThemePressed={setThemePressed} fontPressed={fontPressed} setFontPressed={setFontPressed}
                                         ></AppearanceSettings>
                                     :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
@@ -197,7 +215,8 @@ export default function Home() {
                                 : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
          
-        </div>}
+        </div>
+        }
         {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images}></AddPersonToGroup>}

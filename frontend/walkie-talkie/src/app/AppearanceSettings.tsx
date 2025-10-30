@@ -20,9 +20,9 @@ export default function AppearanceSettings(props: any) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Overall appearance</div>
-                    <Theme></Theme>
+                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed}></Theme>
                     <div className="relative flex flex-row top-[4%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Message</div>
-                    <Fonts></Fonts>
+                    <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setThemePressed}></Fonts>
                 </div>
             </div>
         </div>
@@ -31,7 +31,8 @@ export default function AppearanceSettings(props: any) {
 
 export function Theme(props: any) {
     return (
-        <div className="relative flex flex-row left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" 
+            onClick={() => {props.setThemePressed(!props.themePressed)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Theme</div>
                 <div className="relative flex flex-row h-[50%] w-full text-white text-base">
@@ -50,7 +51,8 @@ export function Theme(props: any) {
 
 export function Fonts(props: any) {
     return (
-        <div className="relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer"
+            onClick={() => {props.setFontPressed(!props.fontPressed)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Fonts</div>
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base">Arial</div>

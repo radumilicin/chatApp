@@ -85,8 +85,8 @@ export function AccountOption( props: any ){
                 <img src="key-icon.png" className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className="relative flex flex-col h-[50%] text-xl text-[#CBD4E0] font-medium">Account</div>
-                <div className="relative flex flex-row h-[50%] text-lg">account info</div>
+                <div className="relative flex flex-row h-[50%] text-lg text-[#CBD4E0] font-medium justify-start items-end">Account</div>
+                <div className="relative flex flex-row h-[50%] text-base justify-start items-start">Account info</div>
             </div>
         </div>
     );
@@ -105,8 +105,8 @@ export function AppearanceOption( props: any ){
             <img src="color_palette_nobg.png" className="w-16 h-16"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className="flex flex-row h-[50%] text-xl text-[#CBD4E0] font-medium">Appearance</div>
-                <div className="flex flex-row h-[50%] text-lg">Fonts, Themes</div>
+                <div className="flex flex-row h-[50%] text-lg text-[#CBD4E0] font-medium items-end">Appearance</div>
+                <div className="flex flex-row h-[50%] text-base justify-start items-start">Fonts, Themes</div>
             </div>
         </div>
     );
@@ -125,8 +125,8 @@ export function NotificationsOption( props: any ){
                 <img src="bell-icon.png" className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className="flex flex-row h-[50%] text-xl text-[#CBD4E0] font-medium">Notifications</div>
-                <div className="flex flex-row h-[50%] text-lg">Message notifications</div>
+                <div className="flex flex-row h-[50%] text-lg text-[#CBD4E0] font-medium items-end">Notifications</div>
+                <div className="flex flex-row h-[50%] text-base justify-start items-start ">Message notifications</div>
             </div>
         </div>
     );
@@ -164,7 +164,7 @@ export function SearchBar( props : any ) {
                     <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
+                    <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-xl" 
                         value={props.searchedSetting}
                         placeholder="Search for a setting.."
                         onChange={async (e) => {

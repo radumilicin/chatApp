@@ -2,6 +2,15 @@ import {useEffect, useState, useRef} from 'react'
 
 export default function NotificationSettings( props: any ) {
 
+    useEffect(() => {
+
+        if(props.userObj !== null) {
+            props.setIncomingSoundsEnabled(props.userObj.incoming_sounds)
+            props.setOutgoingMessagesSoundsEnabled(props.userObj.outgoing_sounds)
+            props.setNotificationsEnabled(props.userObj.notifications_enabled)
+        }
+
+    }, [props.userObj])
 
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
@@ -22,10 +31,13 @@ export default function NotificationSettings( props: any ) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row left-[6%] h-[6%] w-[96%] text-xl text-[#CBD4E0] font-medium">Messages</div>
-                    <EnableNotifications setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}></EnableNotifications>
+                    <EnableNotifications user={props.user} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
+                                        setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}    
+                                        setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}
+                    ></EnableNotifications>
                     <div className="relative flex flex-row top-[4%] left-[6%] h-[6%] w-[96%] text-[#CBD4E0] text-xl font-medium">Message sounds</div>
-                    <IncomingSounds setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}></IncomingSounds>
-                    <OutgoingSounds setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}></OutgoingSounds>
+                    <IncomingSounds user={props.user} userObj={props.userObj} setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}></IncomingSounds>
+                    <OutgoingSounds user={props.user} userObj={props.userObj} setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}></OutgoingSounds>
                 </div>
             </div>
         </div>
@@ -34,6 +46,38 @@ export default function NotificationSettings( props: any ) {
 }
 
 export function EnableNotifications(props: any) {
+
+    useEffect(() => {
+        changeNotificationsEnabled()
+    }, [props.notificationsEnabled])
+
+    async function changeNotificationsEnabled() {
+
+        console.log("In changeNotificationsEnabled")
+
+        const data = {
+            "new_setting": props.notificationsEnabled,
+            "user": props.user
+        }
+        
+        console.log("new_setting: " + JSON.stringify(props.notificationsEnabled))
+        console.log("user: " + JSON.stringify(props.user))
+
+        const resp = await fetch("http://localhost:3002/changeNotificationsEnabled", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+
+        if(!resp.ok) {
+            console.log("Could not change sound notification on server")
+            // alert("Could not change sound notification on server")
+            // props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)
+        }
+    }
 
     return (
         <div className="relative flex flex-row justify-row h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
@@ -46,7 +90,9 @@ export function EnableNotifications(props: any) {
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.notificationsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
-                    onClick={() => {props.setNotificationsEnabled(!props.notificationsEnabled)}}
+                    onClick={() => {
+                        props.setNotificationsEnabled(!props.notificationsEnabled)
+                    }}
                     ></div>
                 <div className={`absolute w-4 h-4 ${props.notificationsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}></div>
             </div>
@@ -55,6 +101,38 @@ export function EnableNotifications(props: any) {
 }
 
 export function IncomingSounds(props: any) {
+
+    useEffect(() => {
+        changeIncomingSoundsNotif()
+    }, [props.incomingSoundsEnabled])
+
+    async function changeIncomingSoundsNotif() {
+        
+        console.log("In changeIncomingMessageSoundsSetting")
+
+        const data = {
+            "new_setting": props.incomingSoundsEnabled,
+            "user": props.user
+        }
+
+        console.log("new_setting: " + JSON.stringify(props.incomingSoundsEnabled))
+        console.log("user: " + JSON.stringify(props.user))
+
+        const resp = await fetch("http://localhost:3002/changeIncomingMessageSoundsSetting", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+
+        if(!resp.ok) {
+            console.log("Could not change sound notification on server")
+            // alert("Could not change sound notification on server")
+        //     props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)
+        }
+    }
 
     return (
         <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
@@ -76,6 +154,38 @@ export function IncomingSounds(props: any) {
 }
 
 export function OutgoingSounds(props: any) {
+    
+    useEffect(() => {
+        changeOutgoingMessageSoundsSetting()
+    }, [props.outgoingMessagesSoundsEnabled])
+
+    async function changeOutgoingMessageSoundsSetting() {
+
+        console.log("In changeOutgoingMessageSoundsSetting")
+
+        const data = {
+            "new_setting": props.outgoingMessagesSoundsEnabled,
+            "user": props.user
+        }
+        
+        console.log("new_setting: " + JSON.stringify(props.outgoingMessagesSoundsEnabled))
+        console.log("user: " + JSON.stringify(props.user))
+
+        const resp = await fetch("http://localhost:3002/changeOutgoingMessageSoundsSetting", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+
+        if(!resp.ok) {
+            console.log("Could not change sound notification on server")
+            // alert("Could not change sound notification on server")
+            // props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)
+        }
+    }
 
     return (
         <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">

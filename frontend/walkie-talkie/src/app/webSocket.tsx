@@ -49,7 +49,7 @@ export default function useWebSocket (url, setMessages, incomingSoundsEnabled, o
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
         
-      if(audioRef.current !== null) {
+      if(audioRef.current !== null && outgoingMessagesSoundsEnabled) {
         audioRef.current.play().catch(err => {
           console.error("Error playing notification wawaweewa:", err)
         }); 
