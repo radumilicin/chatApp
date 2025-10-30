@@ -94,7 +94,13 @@ export function AccountOption( props: any ){
 
 export function AppearanceOption( props: any ){
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" onClick={() => {
+            props.setPressNotifications(false)
+            props.setPressAccount(false)
+            props.setPressProfile(false)
+            props.setPressAppearance(true)
+            props.setPressedSettings(false)
+        }}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
             <img src="color_palette_nobg.png" className="w-16 h-16"></img>
             </div>

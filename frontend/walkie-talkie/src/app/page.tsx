@@ -10,8 +10,9 @@ import AddPersonToGroup from "./AddingToGroup";
 import Login from "./pages/auth/login/page";
 import Register from "./pages/auth/registration/page";
 import {useAuth} from "./AuthProvider"
-import SettingsView from "./SettingsView";
+import SettingsView, { AppearanceOption } from "./SettingsView";
 import NotificationsView from "./NotificationsSettings";
+import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
 
 
@@ -177,10 +178,13 @@ export default function Home() {
             pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
                                    :
-            pressedNotifications ? <NotificationsView setPressedProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+            pressedNotifications ? <NotificationsView setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                         setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
                                         outgoingMessagesSoundsEnabled={outgoingMessagesSoundsEnabled} setOutgoingMessagesSoundsEnabled={setOutgoingMessagesSoundsEnabled}
                                         ></NotificationsView>
+                                    :
+            pressedAppearance ? <AppearanceSettings setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+                                        ></AppearanceSettings>
                                     :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
