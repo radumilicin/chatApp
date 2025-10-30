@@ -27,7 +27,10 @@ export const users = pgTable('users', {
   email: varchar('email', {length: 100}).notNull().unique(),
   password_hash: text('password_hash').notNull(),
   profile_pic_id: integer("profile_pic_id").references(() => images.id),
-  about: varchar('about', {length : 250})
+  about: varchar('about', {length : 250}),
+  incoming_sounds: boolean().default(false),
+  outgoing_sounds: boolean().default(false),
+  notifications_enabled: boolean().default(false)
 });
 
 // Define the "users" table with columns "id", "username", and "password_hash"
