@@ -864,6 +864,73 @@ app.post('/insertMembersInGroup', async (req, res) => {
   }
 })
 
+app.post('/changeOutgoingMessageSoundsSetting', async (req, res) => {
+  const { new_setting, user } = req.body;
+  
+  console.log("Before checking body elements")
+
+  if (new_setting === undefined || !user) {
+    return res.status(400).json({ error: "Missing 'new_setting' or 'user' field" });
+  }
+
+  console.log("before updating in changeOutgoing")
+
+  try {
+    const resp = await pool.query(
+      "UPDATE users SET outgoing_sounds = $1 WHERE id = $2 RETURNING *",
+      [new_setting, user]
+    );
+
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+ 
+    console.log("update succeeded")
+
+    res.status(200).json({
+      message: "Outgoing message sound setting updated successfully",
+      user: resp.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating outgoing_sounds:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post('/changeIncomingMessageSoundsSetting', async (req, res) => {
+  const { new_setting, user } = req.body;
+
+  console.log("Before checking body elements")
+
+  if (new_setting === undefined || !user) {
+    return res.status(400).json({ error: "Missing 'new_setting' or 'user' field" });
+  }
+
+  console.log("before updating in changeIncoming")
+
+  try {
+    const resp = await pool.query(
+      "UPDATE users SET incoming_sounds = $1 WHERE id = $2 RETURNING *",
+      [new_setting, user]
+    );
+
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+      
+    console.log("update succeeded in incoming messages")
+
+    res.status(200).json({
+      message: "Outgoing message sound setting updated successfully",
+      user: resp.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating outgoing_sounds:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 app.listen(PORT, (error) =>{
     if(!error)

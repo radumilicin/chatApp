@@ -15,6 +15,20 @@
       "when": 1761134119605,
       "tag": "0001_opposite_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761849029772,
+      "tag": "0002_unknown_bug",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1761849887299,
+      "tag": "0003_colossal_piledriver",
+      "breakpoints": true
     }
   ]
 }
