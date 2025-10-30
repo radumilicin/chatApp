@@ -11,6 +11,8 @@ import Login from "./pages/auth/login/page";
 import Register from "./pages/auth/registration/page";
 import {useAuth} from "./AuthProvider"
 import SettingsView from "./SettingsView";
+import NotificationsView from "./NotificationsSettings";
+import useWebSocket from "./webSocket";
 
 
 export default function Home() {
@@ -22,6 +24,10 @@ export default function Home() {
   const [pressed, setPressed] = useState(null) // this is the id of the user 
   const [curr_contact, setCurrContact] = useState(null)
   const [pressedProfile, setPressProfile] = useState(false)
+  const [pressedAppearance, setPressAppearance] = useState(false)
+  const [pressedAccount, setPressAccount] = useState(false)
+  const [pressedNotifications, setPressNotifications] = useState(false)
+  
   const [profileInfo, setProfileInfo] = useState(false)
   const [addingToGroup, setAddToGroup] = useState(false)
   const [pressedSettings, setPressedSettings] = useState(false)
@@ -32,6 +38,18 @@ export default function Home() {
   const prevPotentialContact = useRef(null);
 
   const [addContact2, setAddContact2] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [incomingSoundsEnabled, setIncomingSoundsEnabled] = useState(false);
+  const [outgoingMessagesSoundsEnabled, setOutgoingMessagesSoundsEnabled] = useState(false);
+    
+  const [ messages, setMessages] = useState([]); // Store received messages
+  // Only initialize WebSocket when user is valid (not -1 and not null)
+  const { isConnected, sendMessage } = useWebSocket(
+    user !== -1 && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    setMessages,
+    incomingSoundsEnabled,
+    outgoingMessagesSoundsEnabled
+  );
 
   useEffect(() => {
     if(loggedIn || !addContact2) {
@@ -98,6 +116,8 @@ export default function Home() {
       fetchData()
       fetchData2()
       fetchImages()
+    } else {
+
     }
   }, [user])
   
@@ -154,15 +174,22 @@ export default function Home() {
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
                                    :                 
-            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
+            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
+                                  users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
                                    :
+            pressedNotifications ? <NotificationsView setPressedProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+                                        setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
+                                        outgoingMessagesSoundsEnabled={outgoingMessagesSoundsEnabled} setOutgoingMessagesSoundsEnabled={setOutgoingMessagesSoundsEnabled}
+                                        ></NotificationsView>
+                                    :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser}
           ></Conversations> 
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
-                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact}></CurrentChat>
+                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage}></CurrentChat>
                                 : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
          

@@ -4,10 +4,10 @@ import fs from "fs";
 
 export default function CurrentChat( props: any ) {
 
-    const [ messages, setMessages] = useState([]); // Store received messages
-    const { isConnected, sendMessage } = useWebSocket(`ws://localhost:8080?userId=${props.curr_user}`, setMessages);
+    // const [ messages, setMessages] = useState([]); // Store received messages
+    // const { isConnected, sendMessage } = useWebSocket(`ws://localhost:8080?userId=${props.curr_user}`, setMessages);
     const [text, setText] = useState('');
-    const prevMessages = useRef(messages)
+    const prevMessages = useRef(props.messages)
     const [allMessages, updateAllMessages] = useState([])
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
@@ -34,7 +34,7 @@ export default function CurrentChat( props: any ) {
             allMessagesPrev.current = updatedMessages; // Update the reference
             return updatedMessages;
         });
-        setMessages([]);
+        props.setMessages([]);
     }
 
 
@@ -76,7 +76,7 @@ export default function CurrentChat( props: any ) {
 
             const updateContactAndMessages = async () => {
                 // setContact(props.contact)
-                setMessages([])
+                props.setMessages([])
             }
             updateContactAndMessages()
 
@@ -100,7 +100,7 @@ export default function CurrentChat( props: any ) {
         if(props.contact === contact.current) {  // this only happens when the contact user stays the same
             if(props.contact !== null) console.log("is this triggering? Contact = " + props.contact.contact_id)
             const currMessages = [...allMessages]
-            const messagesNotYetReceived = messages.slice(messages.length - prevMessages.current.length, messages.length)
+            const messagesNotYetReceived = props.messages.slice(props.messages.length - prevMessages.current.length, props.messages.length)
             
             var ls = []
             // const initial_length = messagesNotYetReceived.length
@@ -115,7 +115,7 @@ export default function CurrentChat( props: any ) {
 
             console.log("allMessages in messages = " + JSON.stringify(allMessages))
         }
-    }, [messages])
+    }, [props.messages])
 
 
     const handleSendMessage = (msg) => {
@@ -128,7 +128,7 @@ export default function CurrentChat( props: any ) {
             timestamp: new Date().toISOString(),
         };
 
-        sendMessage(message);
+        props.sendMessage(message);
         if(allMessages.length === 0) {
             console.log("why is this triggering now?")
             updateAllMessages([message])    
@@ -156,7 +156,7 @@ export default function CurrentChat( props: any ) {
             timestamp: new Date().toISOString(),
         };
 
-        sendMessage(message);
+        props.sendMessage(message);
         if(allMessages.length === 0) {
             console.log("why is this triggering now?")
             updateAllMessages([message])    
