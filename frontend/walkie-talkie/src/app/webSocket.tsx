@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-export default function useWebSocket (url, setMessages) {
+export default function useWebSocket (url, setMessages, incomingSoundsEnabled, outgoingMessagesSoundsEnabled) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
+    const audioRef = useRef(null);
 
     useEffect(() => {
         // Initialize WebSocket
         ws.current = new WebSocket(url);
+        
+        // Create audio element for notification sound
+        audioRef.current = new Audio('/borat-wawaweewa.mp3');
 
         ws.current.onopen = () => {
             console.log('WebSocket connected');
@@ -18,7 +22,13 @@ export default function useWebSocket (url, setMessages) {
             const message = JSON.parse(event.data);
             console.log('Message received:', message);
             setMessages((prev) => [...prev, message]);
+            if(incomingSoundsEnabled) {
+              audioRef.current.play().catch(err => {
+                console.error("Error playing notification wawaweewa:", err)
+              }); 
+            }
         };
+
 
         ws.current.onclose = () => {
             console.log('WebSocket disconnected');
@@ -33,11 +43,17 @@ export default function useWebSocket (url, setMessages) {
         return () => {
             ws.current.close();
         };
-    }, [url]);
+    }, [url, incomingSoundsEnabled]);
 
   const sendMessage = (message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
+        
+      if(audioRef.current !== null) {
+        audioRef.current.play().catch(err => {
+          console.error("Error playing notification wawaweewa:", err)
+        }); 
+      }
     } else {
       console.error('WebSocket is not open');
     }

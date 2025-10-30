@@ -18,9 +18,9 @@ export default function SettingsView(props) {
             <div className="absolute left-0 w-full top-[20%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images}></CurrUserDiv>
-                    <AccountOption></AccountOption>
-                    <NotificationsOption></NotificationsOption>
-                    <AppearanceOption></AppearanceOption>
+                    <AccountOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance}></AccountOption>
+                    <NotificationsOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance}></NotificationsOption>
+                    <AppearanceOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance}></AppearanceOption>
                     <LogOutOption loggedIn={props.loggedIn} logOutNow={props.logOutNow} setLoggedIn={props.setLoggedIn}></LogOutOption>
                     {/* <div className="">Account</div>
                     <div className="">Appearance</div>
@@ -80,13 +80,13 @@ export function CurrUserDiv (props: any) {
 
 export function AccountOption( props: any ){
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src="key-icon.png" className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className="flex flex-row h-[50%] text-xl text-[#CBD4E0] font-medium">Account</div>
-                <div className="flex flex-row h-[50%] text-lg">account info</div>
+                <div className="relative flex flex-col h-[50%] text-xl text-[#CBD4E0] font-medium">Account</div>
+                <div className="relative flex flex-row h-[50%] text-lg">account info</div>
             </div>
         </div>
     );
@@ -94,7 +94,7 @@ export function AccountOption( props: any ){
 
 export function AppearanceOption( props: any ){
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
             <img src="color_palette_nobg.png" className="w-16 h-16"></img>
             </div>
@@ -108,7 +108,13 @@ export function AppearanceOption( props: any ){
 
 export function NotificationsOption( props: any ){
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer">
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" onClick={() => {
+                            props.setPressNotifications(true)
+                            props.setPressAccount(false)
+                            props.setPressProfile(false)
+                            props.setPressAppearance(false)
+                            props.setPressedSettings(false)
+                        }}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src="bell-icon.png" className="w-8 h-8"></img>
             </div>
@@ -132,7 +138,7 @@ export function LogOutOption( props: any ){
     }, [logOut])
 
     return (
-        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[10%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
+        <div className="relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src="exitIcon.png" className="w-8 h-8"></img>
             </div>
