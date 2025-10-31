@@ -902,6 +902,8 @@ app.post('/changeIncomingMessageSoundsSetting', async (req, res) => {
 
   console.log("Before checking body elements")
 
+  console.log("new_setting: " + JSON.stringify(new_setting) + ", user: " + JSON.stringify(user))
+
   if (new_setting === undefined || !user) {
     return res.status(400).json({ error: "Missing 'new_setting' or 'user' field" });
   }

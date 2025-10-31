@@ -8,8 +8,8 @@ export default function NotificationSettings( props: any ) {
             props.setIncomingSoundsEnabled(props.userObj.incoming_sounds)
             props.setOutgoingMessagesSoundsEnabled(props.userObj.outgoing_sounds)
             props.setNotificationsEnabled(props.userObj.notifications_enabled)
+            // props.setNotificationsEnabled(props.userObj.notifications_enabled)
         }
-
     }, [props.userObj])
 
     return (
@@ -31,13 +31,20 @@ export default function NotificationSettings( props: any ) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row left-[6%] h-[6%] w-[96%] text-xl text-[#CBD4E0] font-medium">Messages</div>
-                    <EnableNotifications user={props.user} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
+                    <EnableNotifications user={props.user} userObj={props.userObj} users={props.users} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
                                         setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}    
                                         setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}
+                                        fetchUsers={props.fetchUsers}
                     ></EnableNotifications>
                     <div className="relative flex flex-row top-[4%] left-[6%] h-[6%] w-[96%] text-[#CBD4E0] text-xl font-medium">Message sounds</div>
-                    <IncomingSounds user={props.user} userObj={props.userObj} setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}></IncomingSounds>
-                    <OutgoingSounds user={props.user} userObj={props.userObj} setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}></OutgoingSounds>
+                    <IncomingSounds user={props.user} userObj={props.userObj} users={props.users} setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}
+                                    incomingSoundsEnabledPending={props.incomingSoundsEnabledPending} setIncomingSoundsEnabledPending={props.setIncomingSoundsEnabledPending} fetchUsers={props.fetchUsers}
+                                    setUserObj={props.setUserObj}
+                    ></IncomingSounds>
+                    <OutgoingSounds user={props.user} userObj={props.userObj} users={props.users} setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}
+                                    outgoingMessagesSoundsEnabledPending={props.outgoingMessagesSoundsEnabledPending} setOutgoingMessagesSoundsEnabledPending={props.setOutgoingMessagesSoundsEnabledPending}
+                                    fetchUsers={props.fetchUsers} setUserObj={props.setUserObj}
+                    ></OutgoingSounds>
                 </div>
             </div>
         </div>
@@ -47,8 +54,16 @@ export default function NotificationSettings( props: any ) {
 
 export function EnableNotifications(props: any) {
 
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
-        changeNotificationsEnabled()
+        // Skip the first render to avoid calling API on mount
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
+        changeNotificationsEnabled();
     }, [props.notificationsEnabled])
 
     async function changeNotificationsEnabled() {
@@ -75,7 +90,10 @@ export function EnableNotifications(props: any) {
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
             // alert("Could not change sound notification on server")
+            props.setNotificationsEnabled(!props.notificationsEnabled);
             // props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)
+        } else {
+            props.fetchUsers()
         }
     }
 
@@ -94,29 +112,28 @@ export function EnableNotifications(props: any) {
                         props.setNotificationsEnabled(!props.notificationsEnabled)
                     }}
                     ></div>
-                <div className={`absolute w-4 h-4 ${props.notificationsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}></div>
+                <div className={`absolute w-4 h-4 ${props.notificationsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}
+                    onClick={() => {
+                        props.setNotificationsEnabled(!props.notificationsEnabled)
+                    }}
+                ></div>
             </div>
         </div>
     );
 }
 
 export function IncomingSounds(props: any) {
-
-    useEffect(() => {
-        changeIncomingSoundsNotif()
-    }, [props.incomingSoundsEnabled])
-
-    async function changeIncomingSoundsNotif() {
         
-        console.log("In changeIncomingMessageSoundsSetting")
+    const isFirstRender = useRef(true);
+
+    const handleToggle = async () => {
+        const newValue = !props.incomingSoundsEnabled;
+        props.setIncomingSoundsEnabled(newValue);
 
         const data = {
-            "new_setting": props.incomingSoundsEnabled,
+            "new_setting": newValue,
             "user": props.user
         }
-
-        console.log("new_setting: " + JSON.stringify(props.incomingSoundsEnabled))
-        console.log("user: " + JSON.stringify(props.user))
 
         const resp = await fetch("http://localhost:3002/changeIncomingMessageSoundsSetting", {
             method: 'POST',
@@ -129,10 +146,20 @@ export function IncomingSounds(props: any) {
 
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
-            // alert("Could not change sound notification on server")
-        //     props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)
+            // Revert on failure
+            props.setIncomingSoundsEnabled(!newValue);
+        } else {
+            props.fetchUsers()
         }
     }
+
+    useEffect(() => {
+        const user_0 = props.users.find((elem) => {
+            return props.user === elem.id
+        })
+        
+        props.setUserObj(user_0)
+    }, [props.users])
 
     return (
         <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
@@ -145,31 +172,28 @@ export function IncomingSounds(props: any) {
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.incomingSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
-                    onClick={() => {props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)}}
+                    onClick={handleToggle}
                     ></div>
-                <div className={`absolute w-4 h-4 ${props.incomingSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}></div>
+                <div className={`absolute w-4 h-4 ${props.incomingSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}
+                    onClick={handleToggle}
+                ></div>
             </div>
         </div>
     );
 }
 
 export function OutgoingSounds(props: any) {
-    
-    useEffect(() => {
-        changeOutgoingMessageSoundsSetting()
-    }, [props.outgoingMessagesSoundsEnabled])
 
-    async function changeOutgoingMessageSoundsSetting() {
+    const isFirstRender = useRef(true);
 
-        console.log("In changeOutgoingMessageSoundsSetting")
+    const handleToggle = async () => {
+        const newValue = !props.outgoingMessagesSoundsEnabled;
+        props.setOutgoingMessagesSoundsEnabled(newValue);
 
         const data = {
-            "new_setting": props.outgoingMessagesSoundsEnabled,
+            "new_setting": newValue,
             "user": props.user
         }
-        
-        console.log("new_setting: " + JSON.stringify(props.outgoingMessagesSoundsEnabled))
-        console.log("user: " + JSON.stringify(props.user))
 
         const resp = await fetch("http://localhost:3002/changeOutgoingMessageSoundsSetting", {
             method: 'POST',
@@ -182,8 +206,10 @@ export function OutgoingSounds(props: any) {
 
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
-            // alert("Could not change sound notification on server")
-            // props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)
+            // Revert on failure
+            props.setOutgoingMessagesSoundsEnabled(!newValue);
+        } else {
+            props.fetchUsers()
         }
     }
 
@@ -198,9 +224,10 @@ export function OutgoingSounds(props: any) {
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.outgoingMessagesSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
-                    onClick={() => {props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)}}
+                    onClick={handleToggle}
                     ></div>
-                <div className={`absolute w-4 h-4 ${props.outgoingMessagesSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}></div>
+                <div className={`absolute w-4 h-4 ${props.outgoingMessagesSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`} 
+                    onClick={handleToggle}></div>
             </div>
         </div>
     );
