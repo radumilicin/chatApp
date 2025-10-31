@@ -30,7 +30,9 @@ export const users = pgTable('users', {
   about: varchar('about', {length : 250}),
   incoming_sounds: boolean().default(false),
   outgoing_sounds: boolean().default(false),
-  notifications_enabled: boolean().default(false)
+  notifications_enabled: boolean().default(false),
+  theme: varchar('theme', {length: 250}).default('Dark'),
+  font: varchar('font', {length: 250}).default('Sans')
 });
 
 // Define the "users" table with columns "id", "username", and "password_hash"
