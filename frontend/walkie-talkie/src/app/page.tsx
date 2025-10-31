@@ -15,6 +15,7 @@ import NotificationsView from "./NotificationsSettings";
 import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
 import Theme from "./Theme";
+import Fonts from "./Fonts";
 
 
 export default function Home() {
@@ -47,6 +48,9 @@ export default function Home() {
 
   const [themePressed, setThemePressed] = useState(false)
   const [fontPressed, setFontPressed] = useState(false)
+
+  const [themeChosen, setThemeChosen] = useState("Dark")
+  const [fontChosen, setFontChosen] = useState("Arial")
     
   const [ messages, setMessages] = useState([]); // Store received messages
   // Only initialize WebSocket when user is valid (not -1 and not null)
@@ -184,9 +188,15 @@ export default function Home() {
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
-      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${addingToGroup === true ? 'blur-sm' : 'blur-none'}`}>
-        {loggedIn === true && <div className="relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42]">
-          {themePressed ? <Theme themePressed={themePressed} setThemePressed={setThemePressed}></Theme> : <></>}
+      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
+        {themePressed ? <Theme curr_user={user} userObj={userObj} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen}
+                        ></Theme> : <></>}
+        {fontPressed ? <Fonts curr_user={user} userObj={userObj} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen}
+                        ></Fonts> : <></>}
+        {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
+          {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
         
           <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings}></OptionsBar>
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
@@ -201,7 +211,7 @@ export default function Home() {
                                         ></NotificationsView>
                                     :
             pressedAppearance ? <AppearanceSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
-                                                    themePressed={themePressed} setThemePressed={setThemePressed} fontPressed={fontPressed} setFontPressed={setFontPressed}
+                                                    themePressed={themePressed} setThemePressed={setThemePressed} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} fontChosen={fontChosen}
                                         ></AppearanceSettings>
                                     :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}

@@ -20,9 +20,9 @@ export default function AppearanceSettings(props: any) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Overall appearance</div>
-                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed}></Theme>
+                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen}></Theme>
                     <div className="relative flex flex-row top-[4%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Message</div>
-                    <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setThemePressed}></Fonts>
+                    <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen}></Fonts>
                 </div>
             </div>
         </div>
@@ -36,9 +36,9 @@ export function Theme(props: any) {
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Theme</div>
                 <div className="relative flex flex-row h-[50%] w-full text-white text-base">
-                    <div className="relative flex flex-row indent-[20px] h-full text-base">Dark mode</div>
+                    <div className="relative flex flex-row indent-[20px] h-full text-base">{props.themeChosen} mode</div>
                     <div className="relative flex flex-row w-[20%] left-[2%] h-full ">
-                        <img src="./crescent_moon_nobg.png" className="flex w-6 h-6"></img>
+                        <img src={`${props.themeChosen === "Dark" ? './crescent_moon_nobg.png' : './sun_icon_nobg.png'}`} className="flex w-6 h-6"></img>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,8 @@ export function Fonts(props: any) {
             onClick={() => {props.setFontPressed(!props.fontPressed)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Fonts</div>
-                <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base">Arial</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base 
+                    ${props.fontChosen === "Sans" ? 'font-sans' : props.fontChosen === "Mono" ? 'font-mono' : 'font-serif'}`}>{props.fontChosen}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
                 <img src="./next-arrow-wout-tail-nobg.png" className="w-4 h-6"></img>
