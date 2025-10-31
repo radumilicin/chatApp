@@ -61,7 +61,7 @@ export default function ProfilePicPrivacy(props: any) {
 
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className="relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Who can see your profile picture</div>
+                    <div className="relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Who can see your profile picture:</div>
                     <div className="relative flex flex-col left-[6%] w-[88%] h-[40%]">
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">

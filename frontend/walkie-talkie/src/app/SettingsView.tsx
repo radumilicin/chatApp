@@ -7,7 +7,8 @@ export default function SettingsView(props) {
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setPressedSettings(false); props.setPressProfile(false); props.setProfilePicPrivPress(false)}}>
+                <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" 
+                        onClick={() => {props.setPressedSettings(false); props.setPressProfile(false); props.setProfilePicPrivPress(false); props.setStatusPrivPress(false)}}>
                         <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                 <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-white font-sans flex flex-row justify-start items-center">Settings</div>
