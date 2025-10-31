@@ -16,6 +16,9 @@ import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
 import Theme from "./Theme";
 import Fonts from "./Fonts";
+import Privacy from "./Privacy";
+import ProfilePicPrivacy from "./ProfilePicPrivacy";
+import StatusPrivacy from "./StatusPrivacy";
 
 
 export default function Home() {
@@ -60,6 +63,19 @@ export default function Home() {
   const [themeChosen, setThemeChosen] = useState("Dark")
   const [fontChosen, setFontChosen] = useState("Arial")
   /* END APPEARANCE */
+
+  /* PRIVACY */
+  const [pressedPrivacy, setPressPrivacy] = useState(false)
+
+  const [profilePicPrivPress, setProfilePicPrivPress] = useState(false)
+  const [statusPrivPress, setStatusPrivPress] = useState(false)
+
+  const [blockedContacts, setBlockedContacts] = useState([])
+
+  const [visibilityProfilePic, setVisibilityProfilePic] = useState("Everyone")
+  const [visibilityStatus, setVisibilityStatus] = useState("Everyone")
+
+  /* END PRIVACY */
   
   const [ messages, setMessages] = useState([]); // Store received messages
   // Only initialize WebSocket when user is valid (not -1 and not null)
@@ -211,8 +227,8 @@ export default function Home() {
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
                                    :                 
-            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
-                                  users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
+            pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setProfilePicPrivPress={setProfilePicPrivPress} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
+                                  users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy}> </SettingsView>
                                    :
             pressedNotifications ? <NotificationsSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                         setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
@@ -225,6 +241,16 @@ export default function Home() {
             pressedAppearance ? <AppearanceSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                                     themePressed={themePressed} setThemePressed={setThemePressed} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} fontChosen={fontChosen}
                                         ></AppearanceSettings>
+                                    :
+            pressedPrivacy ? <Privacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress}
+                            ></Privacy>
+                                    : 
+            profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setProfilePicPrivPress={setProfilePicPrivPress} visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic}></ProfilePicPrivacy>
+                                    :
+            statusPrivPress ? <StatusPrivacy></StatusPrivacy>
                                     :
           <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}

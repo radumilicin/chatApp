@@ -1037,6 +1037,39 @@ app.post('/changeFont', async (req, res) => {
 });
 
 
+app.put('/changeProfilePicVisibility', async (req, res) => {
+  const { user, new_visibility } = req.body;
+
+  console.log("Before checking body elements")
+
+  if (new_visibility === undefined || !user) {
+    return res.status(400).json({ error: "Missing 'new_visibility' or 'user' field" });
+  }
+
+  console.log("before updating in changeProfilePicVisibility")
+
+  try {
+    const resp = await pool.query(
+      "UPDATE users SET profile_pic_visibility = $1 WHERE id = $2 RETURNING *",
+      [new_visibility, user]
+    );
+
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+      
+    console.log("update succeeded in changeProfilePicVisibility")
+
+    res.status(200).json({
+      message: "Outgoing message sound setting updated successfully",
+      user: resp.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating outgoing_sounds:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 app.listen(PORT, (error) =>{
     if(!error)
