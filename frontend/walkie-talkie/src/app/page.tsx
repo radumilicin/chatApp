@@ -11,7 +11,7 @@ import Login from "./pages/auth/login/page";
 import Register from "./pages/auth/registration/page";
 import {useAuth} from "./AuthProvider"
 import SettingsView, { AppearanceOption } from "./SettingsView";
-import NotificationsView from "./NotificationsSettings";
+import NotificationsSettings from "./NotificationsSettings";
 import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
 import Theme from "./Theme";
@@ -42,16 +42,25 @@ export default function Home() {
   const prevPotentialContact = useRef(null);
 
   const [addContact2, setAddContact2] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [incomingSoundsEnabled, setIncomingSoundsEnabled] = useState(false);
-  const [outgoingMessagesSoundsEnabled, setOutgoingMessagesSoundsEnabled] = useState(false);
 
+  /* NOTIFICATIONS */   
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const [incomingSoundsEnabled, setIncomingSoundsEnabled] = useState(false);
+  const [incomingSoundsEnabledPending, setIncomingSoundsEnabledPending] = useState(false);
+
+  const [outgoingMessagesSoundsEnabled, setOutgoingMessagesSoundsEnabled] = useState(false);
+  const [outgoingMessagesSoundsEnabledPending, setOutgoingMessagesSoundsEnabledPending] = useState(false);
+  /* END NOTIFICATIONS */
+
+  /* APPEARANCE */
   const [themePressed, setThemePressed] = useState(false)
   const [fontPressed, setFontPressed] = useState(false)
 
   const [themeChosen, setThemeChosen] = useState("Dark")
   const [fontChosen, setFontChosen] = useState("Arial")
-    
+  /* END APPEARANCE */
+  
   const [ messages, setMessages] = useState([]); // Store received messages
   // Only initialize WebSocket when user is valid (not -1 and not null)
   const { isConnected, sendMessage } = useWebSocket(
@@ -205,10 +214,13 @@ export default function Home() {
             pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn}> </SettingsView>
                                    :
-            pressedNotifications ? <NotificationsView userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
+            pressedNotifications ? <NotificationsSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                         setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
                                         outgoingMessagesSoundsEnabled={outgoingMessagesSoundsEnabled} setOutgoingMessagesSoundsEnabled={setOutgoingMessagesSoundsEnabled}
-                                        ></NotificationsView>
+                                        incomingSoundsEnabledPending={incomingSoundsEnabledPending} setIncomingSoundsEnabledPending={setIncomingSoundsEnabledPending}
+                                        outgoingMessagesSoundsEnabledPending={outgoingMessagesSoundsEnabledPending} setOutgoingMessagesSoundsEnabledPending={setOutgoingMessagesSoundsEnabledPending} 
+                                        fetchUsers={fetchData} users={users} updateUsers={updateUsers} setUserObj={setUserObj}
+                                        ></NotificationsSettings>
                                     :
             pressedAppearance ? <AppearanceSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                                     themePressed={themePressed} setThemePressed={setThemePressed} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} fontChosen={fontChosen}
