@@ -43,7 +43,7 @@ export function Theme(props: any) {
                 </div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src="./next-arrow-wout-tail-nobg.png" className="w-4 h-6"></img>
+                <img src="./next-arrow-wout-tail-nobg.png" className="w-3 h-5"></img>
             </div>
         </div>
     );
@@ -59,7 +59,7 @@ export function Fonts(props: any) {
                     ${props.fontChosen === "Sans" ? 'font-sans' : props.fontChosen === "Mono" ? 'font-mono' : 'font-serif'}`}>{props.fontChosen}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src="./next-arrow-wout-tail-nobg.png" className="w-4 h-6"></img>
+                <img src="./next-arrow-wout-tail-nobg.png" className="w-3 h-5"></img>
             </div>
         </div>
     );

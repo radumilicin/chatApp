@@ -57,6 +57,13 @@
       "when": 1761924281500,
       "tag": "0007_sturdy_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1761948714548,
+      "tag": "0008_overconfident_daredevil",
+      "breakpoints": true
     }
   ]
 }
