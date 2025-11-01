@@ -9,6 +9,14 @@ export default function Privacy(props: any) {
                         onClick={() => {
                             props.setPressedSettings(true)
                             props.setPressPrivacy(false)
+                            props.setPressNotifications(false)
+                            props.setPressAccount(false)
+                            props.setPressProfile(false)
+                            props.setPressAppearance(false)
+                            props.setPressedSettings(false)
+                            props.setProfilePicPrivPress(false)
+                            props.setStatusPrivPress(false)
+                            props.setDisappearingMessagesPressed(false)
                         }}>
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
@@ -21,11 +29,13 @@ export default function Privacy(props: any) {
                     <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy}></ProfilePicturePrivacy>
                     <StatusPrivacy setStatusPrivPress={props.setStatusPrivPress} setPressPrivacy={props.setPressPrivacy}></StatusPrivacy>
                     <div className="relative flex flex-row top-[6%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Disappearing messages</div>
-                    <DisappearingMessages></DisappearingMessages>
+                    <DisappearingMessages disappearingMessagesPeriod={props.disappearingMessagesPeriod} setDisappearingMessagesPressed={props.setDisappearingMessagesPressed}
+                                          setPressPrivacy={props.setPressPrivacy} disappearingMessagesPressed={props.disappearingMessagesPressed}
+                    ></DisappearingMessages>
                     {/* <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen}></Theme> */}
                     {/* <div className="relative flex flex-row top-[8%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Blocked contacts</div> */}
                     <div className="relative top-[4%] left-[4%] w-[92%] h-[2px] bg-gray-500 bg-opacity-60"></div>
-                    <BlockedContacts blockedContacts={props.blockedContacts}></BlockedContacts>
+                    <BlockedContacts blockedContacts={props.blockedContacts} setBlockedContactsPressed={props.setBlockedContactsPressed} setPressPrivacy={props.setPressPrivacy}></BlockedContacts>
                     {/* <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen}></Fonts> */}
                 </div>
             </div>
@@ -68,12 +78,18 @@ export function StatusPrivacy(props: any) {
 
 export function DisappearingMessages(props: any) {
 
+    /* DEBUG */
+    useEffect(() => {
+        console.log("disappearing messages pressed? " + JSON.stringify(props.disappearingMessagesPressed))
+    }, [props.disappearingMessagesPressed])
+
     return (
         <div className="relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer"
-            onClick={() => {}}>
+            onClick={() => {props.setDisappearingMessagesPressed(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Default duration</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>Off</div>
+                {props.disappearingMessagesPeriod === -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>Off</div>}
+                {props.disappearingMessagesPeriod !== -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>{props.disappearingMessagesPeriod}</div>}
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
                 <img src="./next-arrow-wout-tail-nobg.png" className="w-3 h-5"></img>
@@ -86,7 +102,7 @@ export function BlockedContacts(props: any) {
 
     return (
         <div className="relative flex flex-row top-[6%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer"
-            onClick={() => {}}>
+            onClick={() => {props.setBlockedContactsPressed(true); props.setPressPrivacy(false);}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Blocked contacts</div>
                 <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>{props.blockedContacts.length}</div>

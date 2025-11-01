@@ -780,7 +780,7 @@ app.post('/deleteChat', async (req, res) => {
   }
 });
 
-app.post('/blockContact', async (req, res) => {
+app.put('/blockContact', async (req, res) => {
   const { curr_user, contact_id, status} = req.body;
 
   console.log("curr_user = " + curr_user + " group_id = " + contact_id)
@@ -793,12 +793,15 @@ app.post('/blockContact', async (req, res) => {
       // Insert the group into the "contacts" table
       if(status === "block") {
         await pool.query(
-            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE sender_id=$1 AND contact_id=$2`,
+            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
           [curr_user, contact_id, timestamp, true] // Bind variables
         );
       } else if(status === "unblock") {
+
+        console.log("In server before unblocking")
+
         await pool.query(
-            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE sender_id=$1 AND contact_id=$2`,
+            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
           [curr_user, contact_id, '', false] // Bind variables
         );
       }
@@ -1084,7 +1087,7 @@ app.put('/changeStatusVisibility', async (req, res) => {
 
   try {
     const resp = await pool.query(
-      "UPDATE users SET status_visibility = $1 WHERE id = $2 RETURNING *",
+      "UPDATE users SET disappearing_message_period = $1 WHERE id = $2 RETURNING *",
       [new_visibility, user]
     );
 
@@ -1093,6 +1096,40 @@ app.put('/changeStatusVisibility', async (req, res) => {
     }
       
     console.log("update succeeded in changeStatusVisibility")
+
+    res.status(200).json({
+      message: "Outgoing message sound setting updated successfully",
+      user: resp.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating outgoing_sounds:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.put('/changeDisappearingMessagesPeriod', async (req, res) => {
+  const { user, new_period } = req.body;
+
+  console.log("Before checking body elements")
+
+  if (new_period === undefined || !user) {
+    return res.status(400).json({ error: "Missing 'new_period' or 'user' field" });
+  }
+
+  console.log("before updating in changeDisappearingMessagesPeriod")
+
+  try {
+    const resp = await pool.query(
+      "UPDATE users SET disappearing_message_period = $1 WHERE id = $2 RETURNING *",
+      [new_period, user]
+    );
+
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+      
+    console.log("update succeeded in changeDisappearingMessagesPeriod")
 
     res.status(200).json({
       message: "Outgoing message sound setting updated successfully",

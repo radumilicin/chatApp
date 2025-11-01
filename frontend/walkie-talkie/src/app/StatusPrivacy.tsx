@@ -54,6 +54,7 @@ export default function StatusPrivacy(props: any) {
                             props.setPressedSettings(false)
                             props.setProfilePicPrivPress(false)
                             props.setStatusPrivPrev(false)
+                            props.setDisappearingMessagesPressed(false)
                         }}>
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
