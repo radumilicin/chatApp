@@ -16,10 +16,11 @@ import AppearanceSettings from "./AppearanceSettings";
 import useWebSocket from "./webSocket";
 import Theme from "./Theme";
 import Fonts from "./Fonts";
-import Privacy from "./Privacy";
+import Privacy, { BlockedContacts } from "./Privacy";
 import ProfilePicPrivacy from "./ProfilePicPrivacy";
 import StatusPrivacy from "./StatusPrivacy";
-
+import DisappearingMessagesView from "./DisappearingMessages";
+import BlockedContactsView from "./BlockedContacts";
 
 export default function Home() {
 
@@ -70,11 +71,15 @@ export default function Home() {
   const [profilePicPrivPress, setProfilePicPrivPress] = useState(false)
   const [statusPrivPress, setStatusPrivPress] = useState(false)
 
-  const [blockedContacts, setBlockedContacts] = useState([])
-
   const [visibilityProfilePic, setVisibilityProfilePic] = useState("Everyone")
   const [visibilityStatus, setVisibilityStatus] = useState("Everyone")
 
+
+  const [disappearingMessagesPressed, setDisappearingMessagesPressed] = useState(false)
+  const [disappearingMessagesPeriod, setDisappearingMessagesPeriod] = useState("Off")
+
+  const [blockedContactsPressed, setBlockedContactsPressed] = useState(false)
+  const [blockedContacts, setBlockedContacts] = useState([])
   /* END PRIVACY */
   
   const [ messages, setMessages] = useState([]); // Store received messages
@@ -211,6 +216,12 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    if(contacts.length > 0 && userObj !== null) {
+      setBlockedContacts(contacts.filter((elem) => elem.blocked === true))
+    }
+  }, [contacts, userObj])
+
   return (
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
@@ -228,7 +239,9 @@ export default function Home() {
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
                                    :                 
             pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setProfilePicPrivPress={setProfilePicPrivPress} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
-                                  users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy}> </SettingsView>
+                                  users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy} setStatusPrivPress={setStatusPrivPress}
+                                  setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}   
+                              ></SettingsView>
                                    :
             pressedNotifications ? <NotificationsSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
                                         setNotificationsEnabled={setNotificationsEnabled} notificationsEnabled={notificationsEnabled} incomingSoundsEnabled={incomingSoundsEnabled} setIncomingSoundsEnabled={setIncomingSoundsEnabled}
@@ -243,18 +256,34 @@ export default function Home() {
                                         ></AppearanceSettings>
                                     :
             pressedPrivacy ? <Privacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
-                                      setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress}
+                                      setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
+                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} 
+                                      disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                             ></Privacy>
                                     : 
             profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic}></ProfilePicPrivacy>
                                     :
-            statusPrivPress ? <StatusPrivacy></StatusPrivacy>
+            statusPrivPress ? <StatusPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus}></StatusPrivacy>
                                     :
-          <Conversations users={users} contacts={contacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
+            disappearingMessagesPressed ? <DisappearingMessagesView userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPeriod={disappearingMessagesPeriod} setDisappearingMessagesPeriod={setDisappearingMessagesPeriod}
+                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed}
+                                      ></DisappearingMessagesView>
+                                    :
+            blockedContactsPressed ? <BlockedContactsView userObj={userObj} user={user} users={users} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      images={images}
+                                      ></BlockedContactsView>
+                                    :
+          <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
-                                      updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser}
+                                      updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed}
           ></Conversations> 
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 

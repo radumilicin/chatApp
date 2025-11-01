@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "disappearing_message_period" varchar(250) DEFAULT 'Off';

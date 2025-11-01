@@ -34,7 +34,8 @@ export const users = pgTable('users', {
   theme: varchar('theme', {length: 250}).default('Dark'),
   font: varchar('font', {length: 250}).default('Sans'),
   profile_pic_visibility: varchar('profile_pic_visibility', {length: 250}).default('Everyone'),
-  status_visibility: varchar('status_visibility', {length: 250}).default('Everyone')
+  status_visibility: varchar('status_visibility', {length: 250}).default('Everyone'),
+  disappearing_message_period: varchar('disappearing_message_period', {length: 250}).default('Off')
 });
 
 // Define the "users" table with columns "id", "username", and "password_hash"
