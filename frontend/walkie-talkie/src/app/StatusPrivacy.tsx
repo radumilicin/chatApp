@@ -16,12 +16,12 @@ export default function StatusPrivacy(props: any) {
 
     useEffect(() => {
         if(props.userObj !== null) {
-            props.setVisibilityStatus(props.userObj.profile_pic_visibility)
-            prevStatus.current = props.visibilityStatus
+            props.setVisibilityStatus(props.userObj.status_visibility)
+            // prevStatus.current = props.visibilityStatus
         }
         else {
             props.setVisibilityStatus("Everyone")
-            prevStatus.current = props.visibilityStatus
+            // prevStatus.current = props.visibilityStatus
         }
     }, [props.userObj])
 
@@ -43,10 +43,11 @@ export default function StatusPrivacy(props: any) {
 
         if(resp.ok){
             console.log("Visibility changed successfuly in the server")
-            prevStatus.current = props.visibilityStatus
+            props.fetchUsers()
+            // prevStatus.current = props.visibilityStatus
         } else {
             console.error("Error could not update ")
-            props.setVisibilityStatus(prevStatus.current)
+            // props.setVisibilityStatus(prevStatus.current)
         }
     }
 
