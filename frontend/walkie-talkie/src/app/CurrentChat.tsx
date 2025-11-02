@@ -11,6 +11,7 @@ export default function CurrentChat( props: any ) {
     const [allMessages, updateAllMessages] = useState([])
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
+    const image = useRef(null)
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -90,6 +91,8 @@ export default function CurrentChat( props: any ) {
         }
         contact.current = props.contact
         console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
+
+        image.current = getImage(props.contact)
         // }
 
         // if(props.contact !== null)
@@ -168,12 +171,16 @@ export default function CurrentChat( props: any ) {
         setText(''); // Clear input
     };
 
-    function getImage(contact: any) {
-        if(contact.is_group === false) {
-            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+    function getImage(curr_contact: any) {
+
+        if(curr_contact === null || curr_contact === undefined) return ""
+
+        if(!curr_contact.is_group) {
+            const image = props.images.find((image: any) => (image.user_id === curr_contact.sender_id && curr_contact.sender_id !== props.curr_user) || 
+                                                            (image.user_id === curr_contact.contact_id && curr_contact.contact_id !== props.curr_user));
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
-            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            const image = props.images.find((image: any) => image.id === curr_contact.group_pic_id);
             return image || { data: "" }; // Ensure we return a fallback value
         }
     }
@@ -215,31 +222,31 @@ export default function CurrentChat( props: any ) {
     return (
         <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg bg-[#637081] border-2  border-[#0D1317] bg-opacity-70">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
-                <div className="flex w-[15%] h-[100%] justify-center items-center">
-                    {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
-                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
-                        (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
-                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> :
-                     (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
-                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
-                        (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
-                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> : <></>                        
+                <div className="flex w-[10%] h-[100%] justify-end items-center">
+                    {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> :
+                     (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> : <></>                        
                     }
                 </div>
-                {contact.current !== null && contact.current.is_group === true &&
-                    <div className="flex w-[85%] h-[100%] flex-col">
-                        <div className="flex justify-start items-end h-[50%] w-full indent-[10px]">
-                            {contact.current !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(contact.current)}</div>}
+                {props.contact !== null && props.contact.is_group === true &&
+                    <div className="relative flex w-[85%] h-[100%] flex-col">
+                        <div className="relative flex justify-start items-end h-[50%] w-full indent-[20px]">
+                            {props.contact !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(props.contact)}</div>}
                         </div>
-                        <div className="flex justify-start h-[50%] w-full indent-[10px]">
-                            {contact.current !== null && contact.current.members.map((ctc, idx) => (
-                                idx === contact.current.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
+                        <div className="flex flex-row justify-start h-[50%] w-full indent-[20px]">
+                            {props.contact !== null && props.contact.members.map((ctc, idx) => (
+                                idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
                             ))}
                         </div>
                 </div>}
-                {contact.current !== null && contact.current.is_group === false && 
-                    <div className="flex w-[85%] h-[100%] flex-row">
-                        {contact.current !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(contact.current)}</div>}
+                {props.contact !== null && props.contact.is_group === false && 
+                    <div className="flex flex-row indent-[20px] w-[90%] h-[100%]">
+                        {props.contact !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(props.contact)}</div>}
                     </div>
                 }
             </div>

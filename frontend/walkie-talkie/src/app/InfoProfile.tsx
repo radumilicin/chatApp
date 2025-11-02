@@ -81,12 +81,12 @@ export default function ProfileInfo( props ) {
             return {data: ""}
         }
         console.log("in get Image.. get contact = " + JSON.stringify(contact))
-        if(contact.is_group === false) {
-            const image = props.images.find((image: any) => {return image.sender_id === contact.contact_id});
+        if(!contact.is_group) {
+            const image = props.images.find((image: any) => (image.user_id === contact.sender_id && contact.sender_id !== props.curr_user) || 
+                                                            (image.user_id === contact.contact_id && contact.contact_id !== props.curr_user));
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
-            const image = props.images.find((image: any) => {return image.id === contact.group_pic_id});
-            // console.log("image = " +  JSON.stringify(image))
+            const image = props.images.find((image: any) => image.id === contact.group_pic_id);
             return image || { data: "" }; // Ensure we return a fallback value
         }
     }
@@ -212,9 +212,11 @@ export default function ProfileInfo( props ) {
                         onMouseLeave={() => {setHoverStatusProfilePic(false); console.log("out of profile pic")}}
                     >
                         {/* Profile Picture */}
-                        {((props.contact !== undefined || props.contact !== null) && getImage(props.contact).data !== "") ? (
+                        {((props.contact !== undefined && props.contact !== null) && getImage(props.contact).data !== "") ? (
                             <img
-                                src={getImage(props.contact).data}
+                                src={getImage(props.contact).data.startsWith('data:image') 
+                                    ? `${getImage(props.contact).data}` 
+                                    : `data:image/jpg;base64,${getImage(props.contact).data}`}
                                 className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
                             />
                         ) : (
@@ -229,7 +231,7 @@ export default function ProfileInfo( props ) {
                             {isAdmin && <input
                                 type="file"
                                 accept="image/*"
-                                className="absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
+                                className="absolute top-0 left-0 w-full h-full z-40 cursor-pointer opacity-0"
                                 onClick={() => {console.log("File input clicked")}}
                                 onChange={(event) => {
                                     console.log("File input triggered");
