@@ -41,6 +41,7 @@ export default function BlockedContactsView(props: any) {
             let blockedContactsWithoutUnblocked = props.blockedContacts.filter((elem) => !((elem.sender_id === user_id && elem.contact_id === props.user) || 
                                                                                          (elem.sender_id === props.user && elem.contact_id === user_id)))
             props.setBlockedContacts(blockedContactsWithoutUnblocked)
+            props.fetchContacts()
         } else {
             console.log("Unblocking failed")
         }

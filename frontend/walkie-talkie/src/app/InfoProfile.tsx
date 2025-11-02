@@ -590,50 +590,64 @@ function OptionsChat(props) {
         }
     }
 
+    function setCurrContactAfterChange() {
+        props.setCurrContact(
+            props.contacts.find((elem) => (elem.sender_id === props.contact.sender_id && elem.contact_id === props.contact.contact_id) || 
+                                          (elem.contact_id === props.contact.sender_id && elem.sender_id === props.contact.contact_id))
+        )
+    }
+
     async function blockContact(status: string) {
         console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
         if(props.contact !== null && props.contact.is_group === false) {
             let msg = {
-                curr_user: props.contact.sender_id,
-                contact_id: props.contact.contact_id,
-                status: status
+                "curr_user": props.contact.sender_id,
+                "contact_id": props.contact.contact_id,
+                "status": status
             }
 
             let requestOptions = {
-                method: 'POST',
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(msg)
             }
+
+            console.log("curr_user: " + JSON.stringify(props.contact.sender_id) + " contact_id: " + JSON.stringify(props.contact.contact_id) + " status: " + status)
 
             const response = await fetch('http://localhost:3002/blockContact', requestOptions)
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
                 await props.fetchContacts()
+                setCurrContactAfterChange
             } else {
                 console.log("Error blocking chat " + JSON.stringify(props.contact.id))
             }
         }
     }
 
+    useEffect(() => {
+        setCurrContactAfterChange()
+    }, [props.contacts])
+
     return (
         <div className="relative left-0 top-[0%] h-[25%] w-full flex-col bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
-            {props.contact.blocked === false && <div className="relative flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('block'); }}>
+            {props.contact.blocked === false && <div className="relative flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-10 hover:cursor-pointer" onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
-                    <div className="text-xl text-red-500 font-semibold font-sans">Block user</div>
+                    <div className="absolute text-xl text-red-500 font-semibold font-sans">Block user</div>
                 </div>
             </div>}
-            {props.contact.blocked === true && <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {blockContact('unblock'); }}>
+            {props.contact.blocked === true && <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-10 hover:cursor-pointer" onClick={() => {blockContact('unblock'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./unblock2.png" className="h-[40%] max-w-[60%] aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
-                    <div className="text-xl text-green-800 font-semibold font-sans">Unblock user</div>
+                    <div className="text-xl text-green-700 font-semibold font-sans">Unblock user</div>
                 </div>
             </div>}
-            <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-30" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
+            <div className="flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-10 hover:cursor-pointer" onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./trash-icon-red.png" className="h-[35%] max-w-[60%] aspect-square"></img>
                 </div>
