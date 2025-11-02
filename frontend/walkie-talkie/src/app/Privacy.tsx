@@ -17,6 +17,7 @@ export default function Privacy(props: any) {
                             props.setProfilePicPrivPress(false)
                             props.setStatusPrivPress(false)
                             props.setDisappearingMessagesPressed(false)
+                            props.blockedContactsPressed(false)
                         }}>
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
@@ -26,8 +27,8 @@ export default function Privacy(props: any) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row h-[2%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Who can see my personal info</div>
-                    <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy}></ProfilePicturePrivacy>
-                    <StatusPrivacy setStatusPrivPress={props.setStatusPrivPress} setPressPrivacy={props.setPressPrivacy}></StatusPrivacy>
+                    <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityProfilePic={props.visibilityProfilePic}></ProfilePicturePrivacy>
+                    <StatusPrivacy setStatusPrivPress={props.setStatusPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityStatus={props.visibilityStatus}></StatusPrivacy>
                     <div className="relative flex flex-row top-[6%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Disappearing messages</div>
                     <DisappearingMessages disappearingMessagesPeriod={props.disappearingMessagesPeriod} setDisappearingMessagesPressed={props.setDisappearingMessagesPressed}
                                           setPressPrivacy={props.setPressPrivacy} disappearingMessagesPressed={props.disappearingMessagesPressed}
@@ -50,7 +51,7 @@ export function ProfilePicturePrivacy(props: any) {
             onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Profile picture</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>Everyone</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>{props.visibilityProfilePic}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
                 <img src="./next-arrow-wout-tail-nobg.png" className="w-3 h-5"></img>
@@ -67,7 +68,7 @@ export function StatusPrivacy(props: any) {
             onClick={() => {props.setStatusPrivPress(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className="relative flex flex-row h-[50%] w-full indent-[20px] text-white text-lg items-end font-medium">Status</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>Everyone</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] text-white text-base`}>{props.visibilityStatus}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
                 <img src="./next-arrow-wout-tail-nobg.png" className="w-3 h-5"></img>

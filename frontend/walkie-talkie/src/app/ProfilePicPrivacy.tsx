@@ -55,6 +55,7 @@ export default function ProfilePicPrivacy(props: any) {
                             props.setProfilePicPrivPress(false)
                             props.setStatusPrivPress(false)
                             props.setDisappearingMessagesPressed(false)
+                            props.setBlockedContactsPressed(false)
                         }}>
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>

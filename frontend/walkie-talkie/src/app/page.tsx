@@ -171,6 +171,18 @@ export default function Home() {
       setUserObj(user_0)
     }
   }, [user, users])
+
+  useEffect(() => {
+    if(userObj !== null) {
+      setVisibilityProfilePic(userObj.profile_pic_visibility)
+      setVisibilityStatus(userObj.status_visibility)
+      setDisappearingMessagesPeriod(userObj.disappearing_message_period)
+    } else {
+      setVisibilityProfilePic("Everyone")
+      setVisibilityStatus("Everyone")
+      setDisappearingMessagesPeriod("Off")
+    }
+  }, [userObj])
   
 
   // gets the users
@@ -258,26 +270,31 @@ export default function Home() {
             pressedPrivacy ? <Privacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
                                       setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} 
-                                      disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus}
+                                      visibilityProfilePic={visibilityProfilePic}
                             ></Privacy>
                                     : 
             profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
-                                      setProfilePicPrivPress={setProfilePicPrivPress} visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic}></ProfilePicPrivacy>
+                                      setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic} setPressProfile={setPressProfile}></ProfilePicPrivacy>
                                     :
             statusPrivPress ? <StatusPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
-                                      setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus}></StatusPrivacy>
+                                      setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus} 
+                                      setDisappearingMessagesPeriod={setDisappearingMessagesPeriod} setDisappearingMessagesPressed={setDisappearingMessagesPressed} 
+                                      setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressProfile={setPressProfile}
+                                      ></StatusPrivacy>
                                     :
             disappearingMessagesPressed ? <DisappearingMessagesView userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPeriod={disappearingMessagesPeriod} setDisappearingMessagesPeriod={setDisappearingMessagesPeriod}
-                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed}
+                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed}
                                       ></DisappearingMessagesView>
                                     :
             blockedContactsPressed ? <BlockedContactsView userObj={userObj} user={user} users={users} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
-                                      setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                                       images={images}
                                       ></BlockedContactsView>
                                     :

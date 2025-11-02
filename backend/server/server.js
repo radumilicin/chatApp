@@ -1087,7 +1087,7 @@ app.put('/changeStatusVisibility', async (req, res) => {
 
   try {
     const resp = await pool.query(
-      "UPDATE users SET disappearing_message_period = $1 WHERE id = $2 RETURNING *",
+      "UPDATE users SET status_visibility = $1 WHERE id = $2 RETURNING *",
       [new_visibility, user]
     );
 

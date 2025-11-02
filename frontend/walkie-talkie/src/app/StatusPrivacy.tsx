@@ -3,6 +3,7 @@ import {useState, useEffect, useRef} from 'react'
 export default function StatusPrivacy(props: any) {
 
     const first = useRef(false)
+    const prevStatus = useRef("")
 
     useEffect(() => {
         if(!first.current) {
@@ -14,8 +15,14 @@ export default function StatusPrivacy(props: any) {
     }, [props.visibilityStatus])
 
     useEffect(() => {
-    if(props.userObj !== null) props.setVisibilityStatus(props.userObj.profile_pic_visibility)
-        else props.setVisibilityStatus("Everyone")
+        if(props.userObj !== null) {
+            props.setVisibilityStatus(props.userObj.profile_pic_visibility)
+            prevStatus.current = props.visibilityStatus
+        }
+        else {
+            props.setVisibilityStatus("Everyone")
+            prevStatus.current = props.visibilityStatus
+        }
     }, [props.userObj])
 
     async function changeVisibilityStatus() {
@@ -36,8 +43,10 @@ export default function StatusPrivacy(props: any) {
 
         if(resp.ok){
             console.log("Visibility changed successfuly in the server")
+            prevStatus.current = props.visibilityStatus
         } else {
             console.error("Error could not update ")
+            props.setVisibilityStatus(prevStatus.current)
         }
     }
 
@@ -47,14 +56,15 @@ export default function StatusPrivacy(props: any) {
                 <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" 
                         onClick={() => {
                             props.setPressPrivacy(true)
+                            props.setStatusPrivPress(false)
                             props.setPressNotifications(false)
                             props.setPressAccount(false)
                             props.setPressProfile(false)
                             props.setPressAppearance(false)
                             props.setPressedSettings(false)
                             props.setProfilePicPrivPress(false)
-                            props.setStatusPrivPrev(false)
                             props.setDisappearingMessagesPressed(false)
+                            props.setBlockedContactsPressed(false)
                         }}>
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
