@@ -84,12 +84,6 @@ export default function Home() {
   
   const [ messages, setMessages] = useState([]); // Store received messages
   // Only initialize WebSocket when user is valid (not -1 and not null)
-  const { isConnected, sendMessage } = useWebSocket(
-    user !== -1 && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
-    setMessages,
-    incomingSoundsEnabled,
-    outgoingMessagesSoundsEnabled
-  );
 
   useEffect(() => {
     if(loggedIn || !addContact2) {
@@ -111,25 +105,33 @@ export default function Home() {
   }
 
   const fetchData = async () => {
-      const response = await fetch('http://localhost:3002/users'); // Replace with your API endpoint
+      const response = await fetch('http://localhost:3002/users'); // gets all users (need this for when adding contacts)
       const result = await response.json();
       updateUsers(result);
       console.log(result);
     };
 
   const fetchData2 = async () => {
-      const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // Replace with your API endpoint
+      const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
-      // console.log("contacts = " + JSON.stringify(result));
+      console.log("contacts = " + JSON.stringify(result));
     };
 
   const fetchImages = async () => {
-      const response = await fetch(`http://localhost:3002/images`); // Replace with your API endpoint
+      const response = await fetch(`http://localhost:3002/images`); // Gets all images (TODO images of all contacts and users)
       const result = await response.json();
       updateImages(result);
       console.log(result);
     };
+  
+  const { isConnected, sendMessage } = useWebSocket(
+    user !== -1 && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    setMessages,
+    incomingSoundsEnabled,
+    outgoingMessagesSoundsEnabled,
+    fetchData2
+  );
 
   async function trySSO() {
 
@@ -173,7 +175,7 @@ export default function Home() {
   }, [user, users])
 
   useEffect(() => {
-    if(userObj !== null) {
+    if(userObj !== null || userObj === undefined) {
       setVisibilityProfilePic(userObj.profile_pic_visibility)
       setVisibilityStatus(userObj.status_visibility)
       setDisappearingMessagesPeriod(userObj.disappearing_message_period)
@@ -274,25 +276,26 @@ export default function Home() {
                                       visibilityProfilePic={visibilityProfilePic}
                             ></Privacy>
                                     : 
-            profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+            profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                                       visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic} setPressProfile={setPressProfile}></ProfilePicPrivacy>
                                     :
-            statusPrivPress ? <StatusPrivacy userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+            statusPrivPress ? <StatusPrivacy userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus} 
                                       setDisappearingMessagesPeriod={setDisappearingMessagesPeriod} setDisappearingMessagesPressed={setDisappearingMessagesPressed} 
                                       setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressProfile={setPressProfile}
                                       ></StatusPrivacy>
                                     :
-            disappearingMessagesPressed ? <DisappearingMessagesView userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+            disappearingMessagesPressed ? <DisappearingMessagesView userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPeriod={disappearingMessagesPeriod} setDisappearingMessagesPeriod={setDisappearingMessagesPeriod}
-                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} 
+                                      setPressProfile={setPressProfile}
                                       ></DisappearingMessagesView>
                                     :
-            blockedContactsPressed ? <BlockedContactsView userObj={userObj} user={user} users={users} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+            blockedContactsPressed ? <BlockedContactsView userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                                       images={images}
@@ -308,7 +311,6 @@ export default function Home() {
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage}></CurrentChat>
                                 : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
-         
         </div>
         }
         {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}

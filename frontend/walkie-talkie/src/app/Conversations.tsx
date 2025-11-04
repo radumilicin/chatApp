@@ -62,16 +62,42 @@ export default function Conversations( props : any) {
 
     async function filterContacts(val : string) { 
         console.log("In filteredContacts .. ")     
-        console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
-        console.log("contacts = " + JSON.stringify(props.contacts))     
-        setFilteredContacts(props.contacts.filter((contact) => {
+        // console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
+        console.log("contacts = " + JSON.stringify(props.contacts))   
+        
+        const filteredContactsUnordered = props.contacts.filter((contact) => {
             if(contact.is_group === false) {
-                const user = props.users.find((user) => user.id === contact.contact_id);
+                // Find the OTHER user in the contact (not the current user)
+                const otherUserId = contact.sender_id === props.curr_user 
+                    ? contact.contact_id 
+                    : contact.sender_id;
+            
+                const user = props.users.find((user) => user.id === otherUserId);
+            
                 return user?.username.includes(val); // Safely access `username` using optional chaining
             } else {
                 return contact.group_name.includes(val);
             }
-        }))
+        });
+
+        /* GET id and timestamp of all contacts and sort based on descending timestamp */ 
+        /* Sort contacts based on the timestamp of the last message (descending - most recent first) */
+        const filteredContactsOrderedByTimestamp = filteredContactsUnordered.sort((a, b) => {
+            // Get the last message timestamp for contact a
+            const lastMessageA = a.message && a.message.length > 0 
+                ? new Date(a.message[a.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Get the last message timestamp for contact b
+            const lastMessageB = b.message && b.message.length > 0 
+                ? new Date(b.message[b.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Sort in descending order (most recent first)
+            return lastMessageB - lastMessageA;
+        });
+
+        setFilteredContacts(filteredContactsOrderedByTimestamp)
     }
 
     // function for adding contacts
@@ -87,8 +113,7 @@ export default function Conversations( props : any) {
             return (
                 (props.curr_user === contact.sender_id && user.id === contact.contact_id) ||
                 (props.curr_user === contact.contact_id && user.id === contact.sender_id)
-            );
-            });
+            )});
 
             return isInContacts === undefined; // ✅ was `null`
         });
@@ -369,7 +394,8 @@ export function Contacts( props: any) {
     // and here we extract its contacts and the messages that happen most recently are shown first
 
     function getNameWithUserId(contact: any) {
-        const user = props.users.find((user) => user.id === contact.contact_id);
+        const user = props.users.find((user) => (user.id === contact.contact_id && contact.sender_id === props.curr_user) || 
+                                                (user.id === contact.sender_id && contact.contact_id === props.curr_user));
         return user ? user.username : "";
     }
      
@@ -396,7 +422,9 @@ export function Contacts( props: any) {
     }
 
     function getImage(contact: any) {
-        const image = props.images.find((image: any) => image.user_id === contact.contact_id);
+        const image = props.images.find((image: any) => (image.user_id === contact.contact_id && contact.sender_id === props.curr_user) ||
+                                                        (image.user_id === contact.sender_id && contact.contact_id === props.curr_user)
+                                       );
         return image || { data: "" }; // Ensure we return a fallback value
     }
     
@@ -417,8 +445,8 @@ export function Contacts( props: any) {
     }
 
     useEffect(() => {
-        console.log("contact in conversations = " + JSON.stringify(props.contacts))
-    }, [props.contacts])
+        console.log("contacts in conversations = " + JSON.stringify(props.filteredContacts))
+    }, [props.filteredContacts])
 
     // type user is either current or other (0,1)
     function getProfileImage(contact: any, type_user : number) {
@@ -466,13 +494,13 @@ export function Contacts( props: any) {
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
-                    (element.sender_id !== null && element.sender_id === props.curr_user) ? 
+                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
                     <div
                         key={idx}
                         className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                     >
-                        <div className="relative flex w-[10%] h-full justify-center items-center">
+                        <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
                             {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
@@ -480,41 +508,41 @@ export function Contacts( props: any) {
                                 alt="Profile"
                             /> : getProfileImage(element, 1).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
+                                className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
                                 <img src="./userProfile2.png" className="h-10 w-10 rounded-full"></img>}
                         </div>
-                        <div className="relative flex flex-col w-[90%]">
-                            <div className="flex h-[60%] w-full items-center flex-row">
-                                <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800">
+                        <div className="relative flex flex-col w-[85%]">
+                            <div className="relative flex flex-row h-[50%] w-full items-center">
+                                <div className="w-[80%] h-full flex flex-row items-end">
+                                    <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
-                                    <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
+                                    <div className="rounded-full contain-size text-xl bg-green-700 justify-center bg-contain h-full">
                                         {element.recipient_id === curr_user && getUnreadMessages(element, idx)}
                                     </div> 
                                 </div>
                             </div>
-                            <div className="relative flex w-full h-[40%] items-center">
+                            <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[80%]">
-                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-xl text-gray-300 font-medium">
+                                <div className="relative flex flex-row h-full w-[80%] items-start">
+                                    <div className="relative indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium">
                                         {(getLastMessage(element, idx).message).hasOwnProperty("image_id") ? "Image" : getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
-                                        {getLastMessage(element, idx).sender_id === curr_user
+                                    <div className="flex h-full w-full flex-row items-start justify-center text-base text-gray-300 font-medium">
+                                        {getLastMessage(element, idx).sender_id === curr_user || getLastMessage(element, idx).contact_id
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                         }
                                     </div>
                                 </div>
                         </div>
-                        </div>
+                    </div>
                     </div> : 
                         // otherwise group conversation so check if the members is not null
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
@@ -523,39 +551,39 @@ export function Contacts( props: any) {
                                 className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
                             >
-                                <div className="flex flex-row w-[10%] h-full justify-center items-center">
+                                <div className="flex flex-row w-[15%] h-full justify-center items-center">
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data !== "" ? <img
                                         src={getImageGroup(element).data}
-                                        className="h-12 w-12 rounded-full"
+                                        className="h-10 w-10 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full"></img>}
+                                        <img src="./userProfile2.png" className="h-12 w-12 rounded-full"></img>}
                                 </div>
-                                <div className="flex w-[90%] flex-col">
-                                    <div className="flex h-[60%] w-full items-center flex-row">
+                                <div className="flex w-[85%] flex-col">
+                                    <div className="flex h-[50%] w-full items-center flex-row">
                                         <div className="w-[80%] h-full flex flex-row items-center">
-                                            <div className="indent-[20px] text-2xl font-medium font-sans text-gray-800">
+                                            <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[20%] h-full flex flex-row justify-center">
-                                            <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
-                                                {element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element, idx)}
+                                            <div className="rounded-full contain-size text-xl bg-green-700 justify-center bg-contain h-full">
+                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element, idx) > 0) ? getUnreadMessages(element, idx) : ""}
                                             </div> 
                                         </div>
                                     </div>
-                                    <div className="relative flex w-full h-[40%] items-center">
+                                    <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[80%]">
-                                            <div className="indent-[20px] flex h-full w-full items-start text-lg text-gray-300 font-medium">
+                                            <div className="indent-[10px] flex h-full w-full items-start text-base text-gray-300 font-medium">
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[20%]">
-                                            <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user
+                                            <div className="flex h-full w-full flex-row items-start justify-center text-base text-gray-300 font-medium">
+                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
                                                 }
@@ -569,7 +597,7 @@ export function Contacts( props: any) {
                         : <></>))}
                     
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
-                    (element.sender_id !== null && element.sender_id === props.curr_user) ?
+                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
                         className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
@@ -579,7 +607,7 @@ export function Contacts( props: any) {
                             {/* Use base64 data for image */}
                             <img
                                 src={getImage(element).data}
-                                className="h-[75%] w-[75%] rounded-full"
+                                className="h-12 w-12 rounded-full"
                                 alt="Profile"
                             />
                         </div>
@@ -592,7 +620,7 @@ export function Contacts( props: any) {
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
                                     <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
-                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx)}
+                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx) !== 0 ? getUnreadMessages(element,idx) : ""}
                                     </div> 
                                 </div>
                             </div>
@@ -627,10 +655,10 @@ export function Contacts( props: any) {
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data !== "" ? <img
                                         src={getImageGroup(element).data}
-                                        className="h-[75%] w-[75%] rounded-full"
+                                        className="h-12 w-12 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile.jpg" className="h-[75%] w-[75%] rounded-full"></img>}
+                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">

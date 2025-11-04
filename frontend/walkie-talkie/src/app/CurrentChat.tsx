@@ -11,6 +11,7 @@ export default function CurrentChat( props: any ) {
     const [allMessages, updateAllMessages] = useState([])
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
+    const image = useRef(null)
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -53,32 +54,43 @@ export default function CurrentChat( props: any ) {
 
             console.log("props.contact in if = " + props.contact.contact_id)
             const fetchMessages = async () => {
-                console.log("is contact a group? " + JSON.stringify(props.contact_is_group))
-                if(props.contact.is_group === false) {
-                    const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${props.contact.contact_id}`); // Replace with your API endpoint
-                    // console.log("response = " + JSON.stringify(response))
-                    const result = await response.json();
-                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
-                    await updateList(allMessages, result[0]?.message)
-                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                console.log("is contact a group? " + JSON.stringify(props.contact.is_group))
+                try {
+                    if(props.contact.is_group === false) {
 
-                } else {
+                        const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
+                        console.log("CURRENT CONTACT NOT GROUP BEFORE REQUEST")
+                        const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
+                        // console.log("response = " + JSON.stringify(response))
+                        if(!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`)
+                        }
 
-                    const response = await fetch(`http://localhost:3002/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
-                    // console.log("response = " + JSON.stringify(response))
-                    const result = await response.json();
-                    console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
-                    await updateList(allMessages, result[0]?.message)
-                    console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                        const result = await response.json();
+                        console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                        await updateList(allMessages, result[0]?.message)
+                        console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+
+                    } else {
+
+                        const response = await fetch(`http://localhost:3002/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
+                        // console.log("response = " + JSON.stringify(response))
+                        const result = await response.json();
+                        console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                        await updateList(allMessages, result[0]?.message)
+                        console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                    }
+                } catch(e) {
+                    console.error("Error fetching messages:", e)
                 }
             };
             fetchMessages()
 
-            const updateContactAndMessages = async () => {
-                // setContact(props.contact)
-                props.setMessages([])
-            }
-            updateContactAndMessages()
+            // const updateContactAndMessages = async () => {
+            //     // setContact(props.contact)
+            //     props.setMessages([])
+            // }
+            // updateContactAndMessages()
 
             console.log("props.contact = " + props.contact)
         }
@@ -90,6 +102,8 @@ export default function CurrentChat( props: any ) {
         }
         contact.current = props.contact
         console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
+
+        image.current = getImage(props.contact)
         // }
 
         // if(props.contact !== null)
@@ -117,13 +131,19 @@ export default function CurrentChat( props: any ) {
         }
     }, [props.messages])
 
+    useEffect(() => {
+        console.log("Changed all messages: " + JSON.stringify(allMessages))
+    }, [allMessages])
+
 
     const handleSendMessage = (msg) => {
         if (msg.trim() === '') return;
 
+        const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
+
         const message = {
             sender_id: props.curr_user, // Replace with dynamic user ID
-            recipient_id: props.contact.contact_id, // Replace with dynamic recipient ID
+            recipient_id: other_user, // Replace with dynamic recipient ID
             message: msg,
             timestamp: new Date().toISOString(),
         };
@@ -168,12 +188,16 @@ export default function CurrentChat( props: any ) {
         setText(''); // Clear input
     };
 
-    function getImage(contact: any) {
-        if(contact.is_group === false) {
-            const image = props.images.find((image: any) => image.sender_id === props.contact.contact_id);
+    function getImage(curr_contact: any) {
+
+        if(curr_contact === null || curr_contact === undefined) return ""
+
+        if(!curr_contact.is_group) {
+            const image = props.images.find((image: any) => (image.user_id === curr_contact.sender_id && curr_contact.contact_id === props.curr_user) || 
+                                                            (image.user_id === curr_contact.contact_id && curr_contact.sender_id === props.curr_user));
             return image || { data: "" }; // Ensure we return a fallback value
         } else {
-            const image = props.images.find((image: any) => image.id === props.contact.group_pic_id);
+            const image = props.images.find((image: any) => image.id === curr_contact.group_pic_id);
             return image || { data: "" }; // Ensure we return a fallback value
         }
     }
@@ -183,12 +207,15 @@ export default function CurrentChat( props: any ) {
             console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
         } else {
-            return props.users.find((user) => { return contact.contact_id === user.id}).username
+            return props.users.find((user) => (contact.contact_id === user.id && contact.sender_id === props.curr_user) || 
+                                              (contact.sender_id === user.id && contact.contact_id === props.curr_user)).username
         }
     }
 
-    function getUser(contact: any) {
-        const user = props.users.find((user: any) => user.id === props.contact.contact_id);
+    function getUser() {
+        const user = props.users.find((user: any) => (props.contact.contact_id === user.id && props.contact.sender_id === props.curr_user) || 
+                                                     (props.contact.sender_id === user.id && props.contact.contact_id === props.curr_user)
+                                     );
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
@@ -215,31 +242,31 @@ export default function CurrentChat( props: any ) {
     return (
         <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg bg-[#637081] border-2  border-[#0D1317] bg-opacity-70">
             <div className="absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer" onClick={() => { props.setProfileInfo(true) }}>
-                <div className="flex w-[15%] h-[100%] justify-center items-center">
-                    {(contact.current !== null && contact.current.is_group === false && getImage(contact.current).data !== "") ? 
-                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
-                        (contact.current !== null && contact.current.is_group === false && getImage(contact.current).data === "") ?
-                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> :
-                     (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id !== null) ? 
-                        <img src={getImage(contact.current).data} className="w-16 h-16 rounded-full"></img> :
-                        (contact.current !== null && contact.current.is_group === true && contact.current.group_pic_id === null) ? 
-                        <img src={`./userProfile2.png`} className="w-16 h-16 rounded-full"></img> : <></>                        
+                <div className="flex w-[10%] h-[100%] justify-end items-center">
+                    {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> :
+                     (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> : <></>                        
                     }
                 </div>
-                {contact.current !== null && contact.current.is_group === true &&
-                    <div className="flex w-[85%] h-[100%] flex-col">
-                        <div className="flex justify-start items-end h-[50%] w-full indent-[10px]">
-                            {contact.current !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(contact.current)}</div>}
+                {props.contact !== null && props.contact.is_group === true &&
+                    <div className="relative flex w-[85%] h-[100%] flex-col">
+                        <div className="relative flex justify-start items-end h-[50%] w-full indent-[20px]">
+                            {props.contact !== null && <div className="top-0 flex flex-col text-xl font-sans font-semibold">{getNameContact(props.contact)}</div>}
                         </div>
-                        <div className="flex justify-start h-[50%] w-full indent-[10px]">
-                            {contact.current !== null && contact.current.members.map((ctc, idx) => (
-                                idx === contact.current.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
+                        <div className="flex flex-row justify-start h-[50%] w-full indent-[20px]">
+                            {props.contact !== null && props.contact.members.map((ctc, idx) => (
+                                idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
                             ))}
                         </div>
                 </div>}
-                {contact.current !== null && contact.current.is_group === false && 
-                    <div className="flex w-[85%] h-[100%] flex-row">
-                        {contact.current !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(contact.current)}</div>}
+                {props.contact !== null && props.contact.is_group === false && 
+                    <div className="flex flex-row indent-[20px] w-[90%] h-[100%]">
+                        {props.contact !== null && <div className="top-0 flex flex-row items-center text-xl font-sans font-semibold indent-[10px]">{getNameContact(props.contact)}</div>}
                     </div>
                 }
             </div>
@@ -254,7 +281,7 @@ export default function CurrentChat( props: any ) {
                                     className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                         String(props.curr_user) === String(message.sender_id)
                                             ? 'bg-green-500 text-white ml-auto'
-                                            : 'bg-gray-500 text-white mr-auto'
+                                            : 'bg-blue-600 text-white mr-auto'
                                     }`}
                                 >
                                     <div className="relative flex w-full h-[1/2] text-base text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
@@ -282,7 +309,7 @@ export default function CurrentChat( props: any ) {
                                     className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                         String(props.curr_user) === String(message.sender_id)
                                             ? 'bg-green-500 text-white ml-auto bg-opacity-80'
-                                            : 'bg-blue-500 text-white mr-auto'
+                                            : 'bg-blue-600 text-white mr-auto'
                                     }`}
                                 >
                                     <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>

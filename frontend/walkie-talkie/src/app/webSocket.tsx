@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-export default function useWebSocket (url, setMessages, incomingSoundsEnabled, outgoingMessagesSoundsEnabled) {
+export default function useWebSocket (url, setMessages, incomingSoundsEnabled, outgoingMessagesSoundsEnabled, fetchContacts) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
     const audioRef = useRef(null);
@@ -22,6 +22,7 @@ export default function useWebSocket (url, setMessages, incomingSoundsEnabled, o
             const message = JSON.parse(event.data);
             console.log('Message received:', message);
             setMessages((prev) => [...prev, message]);
+            fetchContacts()
             if(incomingSoundsEnabled) {
               audioRef.current.play().catch(err => {
                 console.error("Error playing notification wawaweewa:", err)

@@ -36,6 +36,7 @@ export default function ProfilePicPrivacy(props: any) {
 
         if(resp.ok){
             console.log("Visibility changed successfuly in the server")
+            props.fetchUsers()
         } else {
             console.error("Error could not update ")
         }
