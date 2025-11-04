@@ -274,65 +274,97 @@ export default function CurrentChat( props: any ) {
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
                         console.log("message =", message);
+
+                        // Helper function to get date label
+                        const getDateLabel = (timestamp: string) => {
+                            const messageDate = new Date(timestamp);
+                            const today = new Date();
+                            const yesterday = new Date(today);
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            
+                            // Reset time to compare only dates
+                            const messageDateOnly = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
+                            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                            const yesterdayDateOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+                            
+                            if (messageDateOnly.getTime() === todayDateOnly.getTime()) {
+                                return "Today";
+                            } else if (messageDateOnly.getTime() === yesterdayDateOnly.getTime()) {
+                                return "Yesterday";
+                            } else {
+                                return messageDate.toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                });
+                            }
+                        };
+                        
+                        // Check if we need to show a date divider
+                        const showDateDivider = idx === 0 || 
+                            (idx > 0 && 
+                            new Date(message.timestamp).toDateString() !== 
+                            new Date(allMessages[idx - 1].timestamp).toDateString());
+
                         return (
-                            (message.hasOwnProperty('recipient_id') && Object.keys(message.message).length > 0) ? (
-                                <div
-                                    key={idx}
-                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
-                                        String(props.curr_user) === String(message.sender_id)
-                                            ? 'bg-green-500 text-white ml-auto'
-                                            : 'bg-blue-600 text-white mr-auto'
-                                    }`}
-                                >
-                                    <div className="relative flex w-full h-[1/2] text-base text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
-                                    <div className="relative flex w-full h-[1/2]">
-                                        <div className="w-[80%] break-words">
-                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                            message.message}
-                                        </div>
-                                        {/* Timestamp */}
-                                        <div
-                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
-                                            // style={{
-                                            //     marginBottom: '4px', // Small margin from the bottom
-                                            // }}
-                                        >
-                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                        </div>
+                <div key={idx} className="">
+                    {/* Date Divider */}
+                    {showDateDivider && (
+                        <div className="flex justify-center items-center my-2">
+                            <div className="bg-gray-500 text-white-700 text-sm font-semibold py-1 px-3 rounded-xl">
+                                {getDateLabel(message.timestamp)}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Message */}
+                    {(message.hasOwnProperty('recipient_id') && Object.keys(message.message).length > 0) ? (
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
+                            <div
+                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                    String(props.curr_user) === String(message.sender_id)
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-blue-600 text-white'
+                                }`}
+                            >
+                                <div className="relative flex w-full text-base text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                <div className="relative flex flex-col gap-2 items-end">
+                                    <div className="break-words">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                        message.message}
                                     </div>
-                                    {/* Message Text */}
-                                </div>
-                            ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
-                                <div
-                                    key={idx}
-                                    className={`flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
-                                        String(props.curr_user) === String(message.sender_id)
-                                            ? 'bg-green-500 text-white ml-auto bg-opacity-80'
-                                            : 'bg-blue-600 text-white mr-auto'
-                                    }`}
-                                >
-                                    <div className="relative flex w-full h-[1/2] text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
-                                    <div className="relative flex w-full h-[1/2]">
-                                        {/* Message Text */}
-                                        <div className="w-[80%] break-words px-3">
-                                            { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                            isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                            message.message}
-                                        </div>
-                                        {/* Timestamp */}
-                                        <div
-                                            className="relative flex flex-col top-[6px] left-[6px] w-[20%] h-full items-end justify-end text-xs"
-                                            // style={{
-                                            //     marginBottom: '4px', // Small margin from the bottom
-                                            // }}
-                                        >
-                                            {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                        </div>
+                                    <div className="text-xs whitespace-nowrap self-end">
+                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
                                     </div>
                                 </div>
-                            ) : <></>
-                        );
+                            </div>
+                        </div>
+                    ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
+                            <div
+                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                    String(props.curr_user) === String(message.sender_id)
+                                        ? 'bg-green-500 text-white bg-opacity-80'
+                                        : 'bg-blue-600 text-white'
+                                }`}
+                            >
+                                <div className="relative flex w-full text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
+                                <div className="relative flex flex-col gap-1 items-end">
+                                    <div className="break-words">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                        message.message}
+                                    </div>
+                                    <div className="text-xs whitespace-nowrap self-end">
+                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : <></>}
+                </div>
+            );
                     })}
             </div>
             <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-[#80ED99] border-2 bg-[#0D1317] flex flex-row">
