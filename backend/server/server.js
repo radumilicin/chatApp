@@ -203,8 +203,8 @@ app.get('/contacts', async (req, res) => {
 
       if(contact_id !== null) {
         console.log("before query")
-        contacts = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2);", [user_id, contact_id]);
-        console.log("contacts = " + JSON.stringify(contacts))
+        contacts = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2) OR (sender_id = $2 AND contact_id = $1);", [user_id, contact_id]);
+        console.log("contacts = " + JSON.stringify(contacts.rows))
       }
       else {
         console.log("in else")
@@ -382,16 +382,26 @@ wss.on('connection', (ws, req) => {
           /////////////////////////////////////////////////////////////////////////
           // Save the message to the database
           const messageJson = { sender_id, recipient_ids, group_id, message, timestamp };
-          await pool.query(
-            `UPDATE contacts
-            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-            WHERE (id = $2)`,
-            [JSON.stringify(messageJson), group_id]
-          );
+
+          try {
+            await pool.query(
+              `UPDATE contacts
+              SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+              WHERE (id = $2)`,
+              [JSON.stringify(messageJson), group_id]
+            );
+          } catch(err) {
+            console.error("Error could not update contacts:" + err)
+          }
+
           console.log("After appending message to DB")
           if(imgBytes !== null) {
-            await pool.query('INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)', 
-              [message.image_id, sender_id, '', msg]);
+            try {
+              await pool.query('INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)', 
+                [message.image_id, sender_id, '', msg]);
+            } catch(err) {
+              console.error("Could not insert image ")
+            }
           }
           /////////////////////////////////////////////////////////////////////////
 
@@ -642,7 +652,7 @@ app.post('/createGroup', async (req, res) => {
       
       console.log("Before inserting group into contacts");
 
-      const groups_w_name = await pool.query(`SELECT * from contacts WHERE group_name='${group_name}'`);
+      const groups_w_name = await pool.query(`SELECT * from contacts WHERE group_name=$1`, [group_name]);
 
       console.log("group with the same name: " + JSON.stringify(groups_w_name.rows))
       console.log(`There are ${groups_w_name.rows.length} groups with the same name`)
@@ -655,12 +665,15 @@ app.post('/createGroup', async (req, res) => {
         const id_img = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
 
         console.log("id image = " + id_img.toString())
-        console.log("image = " + image.toString())
+        // console.log("image = " + image.toString())
+        var image_new = ""
+        if(image === null) image_new = "" 
+        else image_new = image
 
         // Insert image into "images" table
         await pool.query(
           "INSERT INTO images (id, user_id, contact_id, image_name, data) VALUES ($1, $2, $3, $4, $5)",
-          [id_img, null, null, "", image] // Serialize users array to JSON
+          [id_img, null, null, "", image_new] // Serialize users array to JSON
         );
 
         console.log("inserted image")
