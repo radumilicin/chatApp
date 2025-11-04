@@ -1219,6 +1219,52 @@ app.put('/accessedChat', async (req, res) => {
   }
 });
 
+
+app.put('/closeChat', async (req, res) => {
+  console.log("===============\n IN CLOSED CHAT ENDPOINT\n===============")
+
+  const {curr_user, contact, exited_at} = req.body;
+  
+  console.log(`curr_user: ${curr_user}, contact: ${contact}, exited_At: ${exited_at}`)
+
+  if(!curr_user || !contact || !exited_at) {
+    return res.status(400).json({ error: "Missing request parameters" });
+  }
+  
+  try {
+    // Update the closedAt timestamp for the specific user in the closed_at JSONB array
+    const resp = await pool.query(
+      `UPDATE contacts 
+       SET closed_at = (
+         SELECT jsonb_agg(
+           CASE 
+             WHEN elem->>'id' = $1::text 
+             THEN jsonb_set(elem, '{closed_at}', to_jsonb($3::text))
+             ELSE elem
+           END
+         )
+         FROM jsonb_array_elements(closed_at) AS elem
+       )
+       WHERE id = $2`,
+      [curr_user.toString(), contact.id, exited_at]
+    );
+
+    
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+    
+    console.log("Inserted correctly:" + JSON.stringify(resp.rows[0]))
+    
+    console.log(`Updated openedAt for user ${curr_user} in contact ${contact.id}`);
+    res.status(200).json({ success: true });
+    
+  } catch(err) {
+    console.error(`Error updating access time for contact ${JSON.stringify(contact)}:`, err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(PORT, (error) =>{
     if(!error)
         console.log("Server is Successfully Running, and App is listening on port "+ PORT)

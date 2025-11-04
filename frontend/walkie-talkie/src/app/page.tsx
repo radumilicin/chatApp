@@ -228,6 +228,36 @@ export default function Home() {
     } catch (err) {
         console.error(JSON.stringify(err))
     }
+  } 
+
+  /* UPDATE THE CLOSE TIME of the chat */
+  async function closeChat(contact) {
+    
+    let body = {
+      "curr_user": user,
+      "contact": contact,
+      "exited_at": new Date().toISOString()
+    }
+
+    try { 
+      const resp = await fetch(`http://localhost:3002/closeChat`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      })
+
+      if(resp.ok) {
+        console.log("We have updated the closing of the chat")
+      } else {
+        // IDK???
+      }
+
+    } catch(err) {
+      console.log(`Could not update closing time of chat: ${err}`)
+    }
   }
 
   useEffect(() => {
@@ -303,7 +333,8 @@ export default function Home() {
                                     :
           <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
-                                      updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
+                                      closeChat={closeChat}
           ></Conversations> 
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
