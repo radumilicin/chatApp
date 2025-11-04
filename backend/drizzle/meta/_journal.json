@@ -71,6 +71,27 @@
       "when": 1761951973887,
       "tag": "0009_woozy_harry_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1762263539714,
+      "tag": "0010_safe_nico_minoru",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1762265087935,
+      "tag": "0011_aromatic_microchip",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1762265112812,
+      "tag": "0012_wide_rocket_raccoon",
+      "breakpoints": true
     }
   ]
 }

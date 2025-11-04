@@ -137,7 +137,8 @@ export default function Conversations( props : any) {
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
-            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setCurrContact={props.setCurrContact}></Contacts>}
+            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
+                                                        setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts}></Contacts>}
             {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} 
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
@@ -296,8 +297,20 @@ export function UsersToAddToContacts (props : any) {
     }
 
    async function makeTemporaryContact(user: any) {
+        let body = {
+            "sender_id": curr_user,
+            "contact_id": user.id
+        }
+
         const response = await fetch(
-            `http://localhost:3002/insertContact?sender_id=${curr_user}&contact_id=${user.id}`
+            `http://localhost:3002/insertContact`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }
         );
 
         if (!response.ok) {
@@ -388,6 +401,7 @@ export function Contacts( props: any) {
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const groupRef = useRef(null);
+    const prevContact = useRef(null);
 
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1
@@ -468,6 +482,37 @@ export function Contacts( props: any) {
         return timeDifference / (1000 * 3600 * 24);
     }
 
+    async function updateAccessedOnChat(timestamp : string) {
+
+        let body = {
+            "curr_user": props.curr_user,
+            "contact": props.contact,
+            "accessed_at": timestamp
+        }
+
+        console.log(`accessed chat with curr_user: ${props.curr_user}, contact: ${props.contact}, accessed_at: ${timestamp}`)
+
+        try {
+            const response = await fetch(`http://localhost:3002/accessedChat`, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+
+            if(response.ok) {
+                props.fetchContacts()
+                console.log("updated accessedChat")
+            } else {
+                console.log()
+            }
+        } catch(err) {
+            console.log("Error in changing time of access:" + err)
+        }
+    }
+
     function getDateTimestamp(val: string) {
         let date = val;
         let currDate = new Date().toISOString();
@@ -489,6 +534,25 @@ export function Contacts( props: any) {
 
     }
 
+    useEffect(() => { 
+        console.log(`CONTACT CHANGED LET'S SEE IF WE UPDATE ACCESS TIME. Contact: ${JSON.stringify(props.contact)}`) 
+        // if(props.contact) console.log(`contact: ${JSON.stringify(props.contact.opened_at)}`)
+        if(props.contact && props.contact.opened_at) {
+            for(let elem of props.contact.opened_at){
+                if(elem.id === props.curr_user) {
+                    console.log("============\nupdating access time for chat\n==========")
+                    updateAccessedOnChat(elem.opened_at)
+                }
+            }
+
+            if(prevContact !== null) {
+                props.closeChat(prevContact.current)            /* update this by fetching contacts */
+            }
+            props.fetchContacts()
+            prevContact.current = props.contact                 // NEED TO UPDATE PROPS.CONTACT to have the new timestamp for accessed
+        }
+    }, [props.contact])
+
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
@@ -498,7 +562,16 @@ export function Contacts( props: any) {
                     <div
                         key={idx}
                         className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                        onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                        onClick={() => {
+                            props.setPressed(element); 
+
+                            let contact = element;
+                            let timestamp = new Date().toISOString()
+                            for(let i = 0 ; i < contact.opened_at.length; i++) {
+                                if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
+                            }
+                            props.setCurrContact(contact); 
+                            console.log("clicked")}}
                     >
                         <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
@@ -549,7 +622,15 @@ export function Contacts( props: any) {
                             <div
                                 key={idx}
                                 className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                                onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                                onClick={() => {
+                                    props.setPressed(element); 
+                                    let contact = element;
+                                    let timestamp = new Date().toISOString()
+                                    for(let i = 0 ; i < contact.opened_at.length; i++) {
+                                        if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
+                                    }
+                                    props.setCurrContact(contact); 
+                                    console.log("clicked")}}
                             >
                                 <div className="flex flex-row w-[15%] h-full justify-center items-center">
                                     {/* Use base64 data for image */}
@@ -601,7 +682,15 @@ export function Contacts( props: any) {
                     <div
                         key={idx}
                         className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                        onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                        onClick={() => {
+                            props.setPressed(element); 
+                            let contact = element;
+                            let timestamp = new Date().toISOString()
+                            for(let i = 0 ; i < contact.opened_at.length; i++) {
+                                if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
+                            }
+                            props.setCurrContact(contact); 
+                            console.log("clicked")}}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
@@ -649,7 +738,15 @@ export function Contacts( props: any) {
                             <div 
                                 key={idx}
                                 className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                                onClick={() => {props.setPressed(element); props.setCurrContact(element); console.log("clicked")}}
+                                onClick={() => {
+                                    props.setPressed(element); 
+                                    let contact = element;
+                                    let timestamp = new Date().toISOString()
+                                    for(let i = 0 ; i < contact.opened_at.length; i++) {
+                                        if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
+                                    }
+                                    props.setCurrContact(contact); 
+                                    console.log("clicked")}}
                             >
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}

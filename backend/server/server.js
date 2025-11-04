@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import path from "path";
 import { fileURLToPath } from "url";
+import { access } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -178,6 +179,7 @@ app.get('/logout', (req, res) => {
 
 
 app.get('/contacts', async (req, res) => {      
+    console.log("==============\n In contacts endpoint\n=============")
     const user_id = parseInt(req.query.user); // Extract user_id query parameter
     var contact_id = null
     if (req.query.contact_id) {
@@ -204,7 +206,7 @@ app.get('/contacts', async (req, res) => {
       if(contact_id !== null) {
         console.log("before query")
         contacts = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2) OR (sender_id = $2 AND contact_id = $1);", [user_id, contact_id]);
-        console.log("contacts = " + JSON.stringify(contacts.rows))
+        // console.log("contacts = " + JSON.stringify(contacts.rows))
       }
       else {
         console.log("in else")
@@ -225,18 +227,29 @@ app.get('/contacts', async (req, res) => {
     }
 });
 
-app.get('/insertContact', async (req, res) => {
+app.post('/insertContact', async (req, res) => {
 
-  var {sender_id, contact_id} = req.query;
+  console.log("============\n In insert contact\n==============")
+  var {sender_id, contact_id} = req.body;
 
   if(!sender_id || !contact_id) {
     return res.status(400).send("Bad request")
   }
 
+  console.log(`sender_id: ${sender_id}, contact_id: ${contact_id}`)
+
   try {
+    let users = [sender_id, contact_id]
+    let openedAt = []
+    let closedAt = []
+    for(let user of users) {
+      openedAt.push({"id": user, "opened_at": null})
+      closedAt.push({"id": user, "closed_at": null})
+    }
+
     const result = await pool.query(
-      "INSERT INTO contacts (sender_id, contact_id, group_pic_id, is_group) VALUES ($1, $2, $3, $4) RETURNING *",
-      [sender_id, contact_id, null, false]
+      "INSERT INTO contacts (sender_id, contact_id, group_pic_id, is_group, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb) RETURNING *",
+      [sender_id, contact_id, null, false, JSON.stringify(openedAt), JSON.stringify(closedAt)]
     );
 
     res.status(200).json({ data: result.rows[0] });
@@ -678,10 +691,17 @@ app.post('/createGroup', async (req, res) => {
 
         console.log("inserted image")
 
+        let openedAt = []
+        let closedAt = []
+        for(let user of users) {
+          openedAt.push({"id": user, "opened_at": null})
+          closedAt.push({"id": user, "closed_at": null})
+        }
+
         // Insert the group into the "contacts" table
         await pool.query(
-          "INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins, group_description, group_pic_id) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9)",
-          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin]), description, id_img] // Serialize users array to JSON
+          `INSERT INTO contacts (id, group_name, is_group, sender_id, contact_id, members, admins, group_description, group_pic_id, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9, $10::jsonb, $11::jsonb)`,
+          [rdm, group_name, true, null, null, JSON.stringify(users), JSON.stringify([admin]), description, id_img, JSON.stringify(openedAt), JSON.stringify(closedAt)] // Serialize users array to JSON
         );
 
         console.log("After inserting group into contacts");
@@ -1150,6 +1170,97 @@ app.put('/changeDisappearingMessagesPeriod', async (req, res) => {
     });
   } catch (err) {
     console.error("Error updating outgoing_sounds:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put('/accessedChat', async (req, res) => {
+  console.log("===============\n IN ACCESSED CHAT ENDPOINT\n===============")
+
+  const {curr_user, contact, accessed_at} = req.body;
+  
+  console.log(`curr_user: ${curr_user}, contact: ${contact}, accessed_at: ${accessed_at}`)
+
+  if(!curr_user || !contact || !accessed_at) {
+    return res.status(400).json({ error: "Missing request parameters" });
+  }
+  
+  try {
+    // Update the openedAt timestamp for the specific user in the opened_at JSONB array
+    const resp = await pool.query(
+      `UPDATE contacts 
+       SET opened_at = (
+         SELECT jsonb_agg(
+           CASE 
+             WHEN elem->>'id' = $1::text 
+             THEN jsonb_set(elem, '{opened_at}', to_jsonb($3::text))
+             ELSE elem
+           END
+         )
+         FROM jsonb_array_elements(opened_at) AS elem
+       )
+       WHERE id = $2`,
+      [curr_user.toString(), contact.id, accessed_at]
+    );
+
+    
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+    
+    console.log("Inserted correctly:" + JSON.stringify(resp.rows[0]))
+    
+    console.log(`Updated openedAt for user ${curr_user} in contact ${contact.id}`);
+    res.status(200).json({ success: true });
+    
+  } catch(err) {
+    console.error(`Error updating access time for contact ${JSON.stringify(contact)}:`, err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.put('/closeChat', async (req, res) => {
+  console.log("===============\n IN CLOSED CHAT ENDPOINT\n===============")
+
+  const {curr_user, contact, exited_at} = req.body;
+  
+  console.log(`curr_user: ${curr_user}, contact: ${contact}, exited_At: ${exited_at}`)
+
+  if(!curr_user || !contact || !exited_at) {
+    return res.status(400).json({ error: "Missing request parameters" });
+  }
+  
+  try {
+    // Update the closedAt timestamp for the specific user in the closed_at JSONB array
+    const resp = await pool.query(
+      `UPDATE contacts 
+       SET closed_at = (
+         SELECT jsonb_agg(
+           CASE 
+             WHEN elem->>'id' = $1::text 
+             THEN jsonb_set(elem, '{closed_at}', to_jsonb($3::text))
+             ELSE elem
+           END
+         )
+         FROM jsonb_array_elements(closed_at) AS elem
+       )
+       WHERE id = $2`,
+      [curr_user.toString(), contact.id, exited_at]
+    );
+
+    
+    if (resp.rowCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+    
+    console.log("Inserted correctly:" + JSON.stringify(resp.rows[0]))
+    
+    console.log(`Updated openedAt for user ${curr_user} in contact ${contact.id}`);
+    res.status(200).json({ success: true });
+    
+  } catch(err) {
+    console.error(`Error updating access time for contact ${JSON.stringify(contact)}:`, err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
