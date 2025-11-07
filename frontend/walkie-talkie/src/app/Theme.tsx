@@ -52,7 +52,7 @@ export default function Theme(props: any) {
                         <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
                             if(props.themeChosenPending === "Light") {
                                 props.setThemeChosenPending("Dark")
-                                console.log("Changed to dark")
+                                // console.log("Changed to dark")
                             }
                             }}>
                             {props.themeChosenPending === "Light" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
@@ -67,7 +67,7 @@ export default function Theme(props: any) {
                         <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
                             if(props.themeChosenPending === "Dark") {
                                 props.setThemeChosenPending("Light")
-                                console.log("Changed to light")
+                                // console.log("Changed to light")
                             }
                         }}>
                             {props.themeChosenPending === "Dark" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
