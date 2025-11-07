@@ -909,7 +909,7 @@ app.post('/changeOutgoingMessageSoundsSetting', async (req, res) => {
     return res.status(400).json({ error: "Missing 'new_setting' or 'user' field" });
   }
 
-  console.log("before updating in changeOutgoing")
+  console.log(`before updating in changeOutgoing wth new_setting: ${new_setting} for user: ${user}`)
 
   try {
     const resp = await pool.query(

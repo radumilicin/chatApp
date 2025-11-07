@@ -272,21 +272,40 @@ export default function Home() {
   useEffect(() => {
     if(userObj !== null) {
       if(userObj.theme) {
-        setThemeChosen(userObj.theme)
-        setThemeChosenPending(userObj.theme)
+        setThemeChosen(userObj.theme); setThemeChosenPending(userObj.theme)
       } else {      
-        setThemeChosen("Dark")
-        setThemeChosenPending("Dark")
+        setThemeChosen("Dark"); setThemeChosenPending("Dark")
       }
-
+      
       if(userObj.font) {
         setFontChosen(userObj.font); setFontChosenPending(userObj.font);
       } else {
         setFontChosen("Sans"); setFontChosenPending("Sans")
       }
+
+      if(userObj.incoming_sounds) {
+        setIncomingSoundsEnabled(userObj.incoming_sounds); 
+      } else {
+        setIncomingSoundsEnabled(false); 
+      }
+      
+      if(userObj.outgoing_sounds) {
+        setOutgoingMessagesSoundsEnabled(userObj.outgoing_sounds); 
+      } else {
+        setOutgoingMessagesSoundsEnabled(false); 
+      } 
+
+      if(userObj.notifications_enabled) {
+        setNotificationsEnabled(userObj.notifications_enabled); 
+      } else {
+        setNotificationsEnabled(false); 
+      } 
     } else {
       setThemeChosen("Dark"); setThemeChosenPending("Dark")
       setFontChosen("Sans"); setFontChosenPending("Dark")
+      setIncomingSoundsEnabled(false); 
+      setOutgoingMessagesSoundsEnabled(false); 
+      setNotificationsEnabled(false); 
     }
       
   }, [userObj])
