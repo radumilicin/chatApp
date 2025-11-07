@@ -21,7 +21,7 @@ export default function Login(props: any) {
         setUsers(data);
         };
         fetchUsers();
-        console.log("props = " + JSON.stringify(props));
+        // console.log("props = " + JSON.stringify(props));
     }, []);
 
     const setLoggedInAsync = async () => {

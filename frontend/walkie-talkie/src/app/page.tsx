@@ -108,21 +108,21 @@ export default function Home() {
       const response = await fetch('http://localhost:3002/users'); // gets all users (need this for when adding contacts)
       const result = await response.json();
       updateUsers(result);
-      console.log(result);
+      // console.log(result);
     };
 
   const fetchData2 = async () => {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
-      console.log("contacts = " + JSON.stringify(result));
+      // console.log("contacts = " + JSON.stringify(result));
     };
 
   const fetchImages = async () => {
       const response = await fetch(`http://localhost:3002/images`); // Gets all images (TODO images of all contacts and users)
       const result = await response.json();
       updateImages(result);
-      console.log(result);
+      // console.log(result);
     };
   
   const { isConnected, sendMessage } = useWebSocket(

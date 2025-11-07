@@ -26,7 +26,7 @@ export default function CurrentChat( props: any ) {
         for (const elem of newMessages) {
             // Assuming `message` is the unique key in each element
             if (!allMessages.some((msg) => msg.timestamp === elem.timestamp)) {
-                console.log("new message: " + JSON.stringify(elem.message))
+                // console.log("new message: " + JSON.stringify(elem.message))
                 elems.push(elem);
             }
         }
@@ -44,7 +44,8 @@ export default function CurrentChat( props: any ) {
         // if(props.contact !== null){
         if(props.contact !== contact.current){
 
-            console.log("NEW CONTACT = " + props.contact.contact_id)
+            if(props.contact.is_group) console.log("NEW CONTACT with name: " + props.contact.group_name)
+            else console.log("NEW CONTACT with name: " + props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id)
             const emptyMessages = async () => {
                 updateAllMessages(() => [])
                 console.log("messages after emptying = " + JSON.stringify(allMessages))
@@ -52,33 +53,29 @@ export default function CurrentChat( props: any ) {
             emptyMessages()
             prevMessages.current = []
 
-            console.log("props.contact in if = " + props.contact.contact_id)
             const fetchMessages = async () => {
-                console.log("is contact a group? " + JSON.stringify(props.contact.is_group))
                 try {
                     if(props.contact.is_group === false) {
 
                         const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
-                        console.log("CURRENT CONTACT NOT GROUP BEFORE REQUEST")
                         const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
-                        // console.log("response = " + JSON.stringify(response))
                         if(!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`)
                         }
 
                         const result = await response.json();
-                        console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                        // console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
                         await updateList(allMessages, result[0]?.message)
-                        console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                        // console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
 
                     } else {
 
                         const response = await fetch(`http://localhost:3002/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
                         // console.log("response = " + JSON.stringify(response))
                         const result = await response.json();
-                        console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
+                        // console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
                         await updateList(allMessages, result[0]?.message)
-                        console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
+                        // console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
                     }
                 } catch(e) {
                     console.error("Error fetching messages:", e)
@@ -92,16 +89,16 @@ export default function CurrentChat( props: any ) {
             // }
             // updateContactAndMessages()
 
-            console.log("props.contact = " + props.contact)
+            // console.log("props.contact = " + props.contact)
         }
         else {
             if(contact.current !== null && props.contact.group_name !== contact.current.group_name){
-                console.log("previous group name =" + contact.current.group_name)
-                console.log("current group name =" + props.contact.group_name)
+                // console.log("previous group name =" + contact.current.group_name)
+                // console.log("current group name =" + props.contact.group_name)
             }
         }
         contact.current = props.contact
-        console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
+        // console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
 
         image.current = getImage(props.contact)
         // }
@@ -112,7 +109,11 @@ export default function CurrentChat( props: any ) {
 
     useEffect(() => {
         if(props.contact === contact.current) {  // this only happens when the contact user stays the same
-            if(props.contact !== null) console.log("is this triggering? Contact = " + props.contact.contact_id)
+            if(props.contact !== null) {
+                
+                if(props.contact.is_group) console.log("SAME CONTACT with name: " + props.contact.group_name)
+                else console.log("SAME CONTACT with name: " + props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id)
+            }
             const currMessages = [...allMessages]
             const messagesNotYetReceived = props.messages.slice(props.messages.length - prevMessages.current.length, props.messages.length)
             
@@ -127,12 +128,12 @@ export default function CurrentChat( props: any ) {
             updateAllMessages([...currMessages, ...messagesNotYetReceived])
             prevMessages.current = allMessages
 
-            console.log("allMessages in messages = " + JSON.stringify(allMessages))
+            // console.log("allMessages in messages = " + JSON.stringify(allMessages))
         }
     }, [props.messages])
 
     useEffect(() => {
-        console.log("Changed all messages: " + JSON.stringify(allMessages))
+        // console.log("Changed all messages: " + JSON.stringify(allMessages))
     }, [allMessages])
 
 
@@ -150,11 +151,11 @@ export default function CurrentChat( props: any ) {
 
         props.sendMessage(message);
         if(allMessages.length === 0) {
-            console.log("why is this triggering now?")
+            // console.log("why is this triggering now?")
             updateAllMessages([message])    
         }
         else {
-            console.log("allMessages" + JSON.stringify(allMessages))
+            // console.log("allMessages" + JSON.stringify(allMessages))
             updateAllMessages([...allMessages, message])
         }
         setText(''); // Clear input
@@ -178,7 +179,7 @@ export default function CurrentChat( props: any ) {
 
         props.sendMessage(message);
         if(allMessages.length === 0) {
-            console.log("why is this triggering now?")
+            // console.log("why is this triggering now?")
             updateAllMessages([message])    
         }
         else {
@@ -228,9 +229,9 @@ export default function CurrentChat( props: any ) {
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const findImageBasedOnID = (message: any) => {
-        console.log("message = " + JSON.stringify(message))
+        // console.log("message = " + JSON.stringify(message))
         const image = props.images.find((img) => { return img.id === message.image_id})
-        console.log("image =" + JSON.stringify(image))
+        // console.log("image =" + JSON.stringify(image))
         return image
     }
 
@@ -273,7 +274,7 @@ export default function CurrentChat( props: any ) {
             <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
-                        console.log("message =", message);
+                        // console.log("message =", message);
 
                         // Helper function to get date label
                         const getDateLabel = (timestamp: string) => {
@@ -328,7 +329,7 @@ export default function CurrentChat( props: any ) {
                                 }`}
                             >
                                 <div className="relative flex w-full text-base text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-2 items-end">
+                                <div className="relative flex flex-col gap-2 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
@@ -350,7 +351,7 @@ export default function CurrentChat( props: any ) {
                                 }`}
                             >
                                 <div className="relative flex w-full text-xs text-black font-sans font-semibold">{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-1 items-end">
+                                <div className="relative flex flex-col gap-1 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
@@ -389,9 +390,9 @@ export default function CurrentChat( props: any ) {
                                 if (file) {
                                     console.log("File selected:", file.name);
                                     const reader = new FileReader();
-                                    console.log("FileReader created");
+                                    // console.log("FileReader created");
                                     reader.onload = (e) => {
-                                        console.log("File loaded");
+                                        // console.log("File loaded");
                                         let base64Image = e.target.result as string;
                                         const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
                                         if (base64Regex.test(base64Image)) {
