@@ -134,16 +134,16 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-[#0D1317] border-2 border-y-2 bg-opacity-70">
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60" : "bg-gray-300"} border-[#0D1317] border-2 border-y-2`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
-                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images}></Groups>}
-            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></OtherOptions>}
+                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
+            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
-            {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
+            {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
-                                                        setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts}></Contacts>}
-            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} 
+                                                        setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
+            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} themeChosen={props.themeChosen}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
     );
@@ -209,7 +209,7 @@ export function OtherOptions (props) {
                     <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>} 
             {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-white font-sans flex flex-row justify-start items-center">Add contact</div>}
-            {!props.addContact && <div className="relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold text-slate-200 font-sans flex flex-row justify-start items-center">Chats</div>}
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src="/add-contact-3.png" className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
@@ -225,13 +225,13 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className="absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-[#57CC99] border-2 bg-[#0D1317]">
+        <div className={`absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-2 ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99]" : "bg-gray-500 bg-opacity-60 border-gray-500" } `}>
             <div className="relative top-0 left-0 h-full w-full flex flex-row">
                 <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
                     <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
+                    <input className="absolute left-0 top-0 w-full h-full outline-none text-black bg-transparent overflow-x-auto text-2xl" 
                         value={props.currentSearch}
                         onChange={async (e) => {props.setCurrSearch(e.target.value); 
                                                 if(props.addContact) {
@@ -623,7 +623,7 @@ export function Contacts( props: any) {
     console.log("contact: " + JSON.stringify(props.contact))
 
     return (
-        <div className="absolute left-0 top-[16%] w-full h-[84%]">
+        <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => {
                     const lastMessage = getLastMessage(element, idx);
@@ -637,7 +637,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
                        onClick={(e) => {
                         console.log("==============\nFIRST DIV PRESSED\n================")
                         console.log("CLICKED BY USER?", e.isTrusted);
@@ -669,30 +669,30 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
+                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" } `}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
-                                {/* <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[40%] text-white`}>
+                                <div className="w-[25%] h-full flex flex-row justify-center items-end">
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
-                                </div> */}
+                                </div>
                             </div>
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
-                                {/* <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className="indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
+                                <div className="relative flex flex-row h-full w-[75%] items-start">
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
-                                </div> */}
+                                </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
-                                        {/* {lastMessage.sender_id === props.curr_user
+                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                        {lastMessage.sender_id === props.curr_user
                                             ? "Sent " + time
                                             : time
-                                        } */}
+                                        }
                                     </div>
                                 </div>
                         </div>
@@ -702,7 +702,7 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
                                 onClick={(e) => {
                                     console.log("========\n2nd DIV PRESSED\n========")
                                     console.log("CLICKED BY USER?", e.isTrusted);
@@ -730,30 +730,30 @@ export function Contacts( props: any) {
                                 <div className="flex w-[85%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
                                         <div className="w-[75%] h-full flex flex-row items-center">
-                                            <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
+                                            <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
-                                        {/* <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[50%] text-white`}>
+                                        <div className="w-[25%] h-full flex flex-row justify-center items-end">
+                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
                                                 {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div> 
-                                        </div> */}
+                                        </div>
                                     </div>
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
-                                        {/* <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className="indent-[10px] flex h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
+                                        <div className="relative flex flex-row h-full w-[75%]">
+                                            <div className={`indent-[10px] flex h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
-                                        </div> */}
+                                        </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
                                             <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
-                                                {/* {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
+                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
-                                                } */}
+                                                }
                                             </div>
                                         </div>
                                 </div>
@@ -769,7 +769,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative h-[12%] left-[2%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={(e) => {
                             console.log("============\n3rd DIV PRESSED\n=============")
                             console.log("CLICKED BY USER?", e.isTrusted);
@@ -796,12 +796,13 @@ export function Contacts( props: any) {
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[60%] w-full items-center flex-row">
                                 <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className="indent-[20px] text-xl font-medium font-sans text-black">
+                                    <div className={`indent-[20px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[50%] text-white`}>
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} 
+                                                    bg-contain h-[60%] w-[50%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
                                         {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element) !== 0 ? getUnreadMessages(element) : ""}
                                     </div> 
                                 </div>
@@ -809,7 +810,7 @@ export function Contacts( props: any) {
                             <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%]">
-                                    <div className="indent-[20px] flex h-full w-full items-start text-sm font-medium text-white font-sans">
+                                    <div className={`indent-[20px] flex h-full w-full items-start text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-sans`}>
                                         {getLastMessage(element, idx).message}
                                     </div>
                                 </div>

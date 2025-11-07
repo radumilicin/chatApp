@@ -190,7 +190,7 @@ export default function ProfileInfo( props ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] bg-[#637081] border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hide bg-opacity-70">
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232]" : "bg-[#637081]"} border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hide bg-opacity-70`}>
             <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-800 bg-opacity-30">
                 <div className="relative left-0 flex h-[15%] w-full flex-row items-center">
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
@@ -202,7 +202,7 @@ export default function ProfileInfo( props ) {
                             />
                         </div>
                     </div>
-                    <div className="h-full flex w-[30%] flex-col justify-center items-start text-black font-semibold text-2xl font-sans">
+                    <div className={`h-full flex w-[30%] flex-col justify-center items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}  font-semibold text-2xl font-sans`}>
                         Contact info
                     </div>
                 </div>
@@ -275,7 +275,7 @@ export default function ProfileInfo( props ) {
                 <div className="relative flex flex-col h-[25%] items-center">
                     <div ref={divRef} className="absolute flex flex-row w-[60%] h-[60%] items-center justify-center">
                         {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ? 
-                            (<input value={nameGroup} className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full outline-none overflow-x-auto border-b-2 bg-transparent border-green-800" 
+                            (<input value={nameGroup} className={`flex flex-row justify-center items-center text-2xl ${props.themeChosen === "Dark" ? "text-white" : "text-black" } font-medium font-sans h-full w-full outline-none overflow-x-auto border-b-2 bg-transparent border-green-800`} 
                                 onChange={(e) => {
                                     settingGroupName(e.target.value)
                                     console.log("input = " + nameGroup)
@@ -290,7 +290,7 @@ export default function ProfileInfo( props ) {
                                     }
                                 }} placeholder={getNameContact(props.contact)}></input>) 
                             : 
-                            <div className="flex flex-row justify-center items-center text-2xl text-black font-medium font-sans h-full w-full">{getNameContact(props.contact)}</div>) 
+                            <div className={`flex flex-row justify-center items-center text-2xl ${props.themeChosen === "Dark" ? "text-white" : "text-black"}  font-medium font-sans h-full w-full`}>{getNameContact(props.contact)}</div>) 
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
                         <div className="absolute flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full left-[80%] w-[20%] hover:cursor-pointer" onClick={() => {(settingOppositeNameChangeGroup())}}>
                             {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true) 
@@ -302,11 +302,11 @@ export default function ProfileInfo( props ) {
                 </div>
             </div>
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
-                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser}>
+                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser} themeChosen={props.themeChosen}>
             </AboutProfile>
-            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser} fetchContacts={props.fetchContacts}></Members>}
-            {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsGroup>}
-            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo}></OptionsChat>}
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Members>}
+            {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsGroup>}
+            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsChat>}
         </div>
     );
 }
@@ -352,7 +352,7 @@ function AboutProfile(props) {
 
     return (
         <div className="relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 border-y-2 border-gray-500">
-                <div className="flex text-2xl text-black indent-[30px] h-[60%] w-full font-medium font-sans items-center">About</div>
+                <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } indent-[30px] h-[60%] w-full font-medium font-sans items-center`}>About</div>
                 <div ref={divRef} className="flex flex-row text-md text-white indent-[30px] h-[40%] w-full font-sans items-center justify-center">
                     <div className={`flex flex-row left-[5%] w-[90%] h-full hover:cursor-pointer items-start justify-start text-xl ${props.descriptionPressed ? 'ml-6' : ''}`} onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
                         {
@@ -480,7 +480,7 @@ function Members(props) {
     }
 
     return (
-        <div className="relative left-0 top-[6%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
+        <div className={`relative left-0 top-0 w-full flex flex-col justify-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide border-b-2 border-gray-500`}>
             <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
             <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                 <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
@@ -498,7 +498,7 @@ function Members(props) {
                 }
                 </div>
                 <div className="flex w-[70%] h-full flex-col justify-start">
-                    <div className="flex h-[50%] text-black font-sans text-md font-medium items-end">{getUser(id).username}</div>
+                    <div className={`flex h-[50%] ${props.themeChosen === "Dark" ? "text-gray-400" : "text-black"} font-sans text-lg font-medium items-end`}>{getUser(id).username}</div>
                     <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
                 </div>
                 {(props.contact.admins.includes(id)) && <div className="relative flex flex-row justify-center items-center w-[12%] h-[30%] bg-green-700 rounded-xl text-white">Group admin</div>}
@@ -555,7 +555,7 @@ function OptionsGroup(props) {
     }
 
     return (
-        <div className="relative left-0 top-[9%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
+        <div className={`relative left-0 top-[0%] w-full flex flex-col justify-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             <div className="relative flex h-[150px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex w-[15%] h-full flex-row justify-center items-center">
                     <img src="./exitIcon.png" className="w-[40%] h-[40%]"></img>
@@ -632,7 +632,7 @@ function OptionsChat(props) {
     }, [props.contacts])
 
     return (
-        <div className="relative left-0 top-[0%] h-[25%] w-full flex-col bg-gray-800 bg-opacity-30 overflow-scroll scrollbar-hide">
+        <div className={`relative left-0 top-[0%] h-[25%] w-full flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             {props.contact.blocked === false && <div className="relative flex flex-row w-full h-[50%] hover:bg-slate-300 hover:bg-opacity-10 hover:cursor-pointer" onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
                     <img src="./denied2.png" className="h-[40%] max-w-[60%] aspect-square"></img>

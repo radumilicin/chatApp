@@ -44,7 +44,7 @@ export default function Theme(props: any) {
     }
 
     return (
-        <div className="absolute left-[35%] top-[35%] w-[30%] h-[30%] bg-gray-800 rounded-xl z-50 blur-none">
+        <div className="absolute left-[35%] top-[35%] w-[30%] h-[30%] bg-gray-800 rounded-xl z-50 blur-none border-gray-700 border-[1px]">
             <div className="relative flex flex-col left-0 w-full h-full">
                 <div className="relative flex flex-row items-center indent-[20px] text-xl text-white font-semibold h-[20%] w-full">Choose Theme</div>
                 <div className="left-[20px] relative top-[15%] flex flex-row w-full h-[15%] text-white text-base">

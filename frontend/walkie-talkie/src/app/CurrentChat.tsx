@@ -241,7 +241,7 @@ export default function CurrentChat( props: any ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg bg-[#637081] border-2  border-[#0D1317] bg-opacity-70">
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg  border-2  border-[#0D1317] ${props.themeChosen === "Dark" ? "bg-[#323232]" : "bg-[#637081]"} bg-opacity-60`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[10%] h-[100%] justify-end items-center">
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
@@ -272,7 +272,7 @@ export default function CurrentChat( props: any ) {
                     </div>
                 }
             </div>
-            <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
+            <div className={`relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
                         // console.log("message =", message);
@@ -329,7 +329,7 @@ export default function CurrentChat( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-base text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-lg text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
@@ -351,7 +351,7 @@ export default function CurrentChat( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-xs text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-sm font-semibold text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-1 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
