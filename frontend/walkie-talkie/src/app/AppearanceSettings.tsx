@@ -20,7 +20,7 @@ export default function AppearanceSettings(props: any) {
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className="relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Overall appearance</div>
-                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen}></Theme>
+                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen} setThemeChosen={props.setThemeChosen}></Theme>
                     <div className="relative flex flex-row top-[4%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Message</div>
                     <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen}></Fonts>
                 </div>
@@ -30,6 +30,7 @@ export default function AppearanceSettings(props: any) {
 }
 
 export function Theme(props: any) {
+
     return (
         <div className="relative flex flex-row left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40 hover:cursor-pointer" 
             onClick={() => {props.setThemePressed(!props.themePressed)}}>

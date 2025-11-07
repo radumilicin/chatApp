@@ -2,39 +2,23 @@ import {useState, useEffect} from 'react'
 
 export default function Theme(props: any) {
 
-
-    const [themeChosenPending, setThemeChosenPending] = useState("")
+    // const [props.themeChosenPending, props.setThemeChosenPending] = useState("Dark")
     const [confirm, setConfirm] = useState(false)
     
     useEffect(() => {
         if(confirm === true) {
             setThemeDB()
-            setThemeChosenPending("")
+            // props.setThemeChosen(props.themeChosenPending)
             setConfirm(false)
         }
     }, [confirm])
 
-    useEffect(() => {
-        if(props.userObj === null || props.themeChosen === "") {
-            props.setThemeChosen(props.userObj.font)
-            setThemeDB()
-        } else {
-            props.setThemeChosen("Dark")
-        }
-    }, [props.userObj])
-
-     useEffect(() => {
-        if(props.themeChosen !== "" || props.themeChosen !== null){
-            setThemeChosenPending(props.themeChosen)
-        }
-    }, [props.themeChosen])
-
-
+    /* Sets data in DB and also sets the themeChosen from the one that's pending */
     async function setThemeDB() {
 
         const data = {
             'user': props.curr_user,
-            'new_theme': props.themeChosen
+            'new_theme': props.themeChosenPending
         }
 
         const response = await fetch('http://localhost:3002/changeTheme', {
@@ -50,8 +34,12 @@ export default function Theme(props: any) {
             console.log("Could not update theme in DB")
         } else {
             props.setThemePressed(false)
-            props.setThemeChosen(themeChosenPending)
-            setThemeChosenPending("")
+            props.setThemeChosen(props.themeChosenPending)
+            
+            // fetch users here so that the new userObj is referenced
+            props.fetchUsers()
+
+            // props.setThemeChosenPending("")
         }
     }
 
@@ -62,11 +50,14 @@ export default function Theme(props: any) {
                 <div className="left-[20px] relative top-[15%] flex flex-row w-full h-[15%] text-white text-base">
                     <div className="relative flex flex-row w-10 h-full justify-center items-center">
                         <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
-                            if(themeChosenPending === "Light") setThemeChosenPending("Dark")
-                        }}>
-                            {themeChosenPending === "Light" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
-                            {themeChosenPending === "Dark" && <div className="absolute w-3 h-3 bg-green-500 rounded-full"></div>}
-                            {themeChosenPending === "Dark" && <div className="absolute w-6 h-6 bg-transparent rounded-full border-[2px] border-green-500"></div>}
+                            if(props.themeChosenPending === "Light") {
+                                props.setThemeChosenPending("Dark")
+                                // console.log("Changed to dark")
+                            }
+                            }}>
+                            {props.themeChosenPending === "Light" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
+                            {props.themeChosenPending === "Dark" && <div className="absolute w-3 h-3 bg-green-500 rounded-full"></div>}
+                            {props.themeChosenPending === "Dark" && <div className="absolute w-6 h-6 bg-transparent rounded-full border-[2px] border-green-500"></div>}
                         </div>
                     </div>
                     <div className="relative flex flex-row indent-[5px] w-[80%] h-full justify-start items-center text-lg text-white font-medium">Dark</div>
@@ -74,11 +65,14 @@ export default function Theme(props: any) {
                 <div className="left-[20px] relative top-[15%] flex flex-row w-full h-[15%] text-black text-base">
                     <div className="relative flex flex-row w-10 h-full justify-center items-center">
                         <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
-                            if(themeChosenPending === "Dark") setThemeChosenPending("Light")
+                            if(props.themeChosenPending === "Dark") {
+                                props.setThemeChosenPending("Light")
+                                // console.log("Changed to light")
+                            }
                         }}>
-                            {themeChosenPending === "Dark" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
-                            {themeChosenPending === "Light" && <div className="absolute w-3 h-3 bg-green-500 rounded-full"></div>}
-                            {themeChosenPending === "Light" && <div className="absolute w-6 h-6 bg-transparent rounded-full border-[2px] border-green-500"></div>}
+                            {props.themeChosenPending === "Dark" && <div className="absolute w-6 h-6 bg-transparent border-[3px] border-gray-500 rounded-full"></div>}
+                            {props.themeChosenPending === "Light" && <div className="absolute w-3 h-3 bg-green-500 rounded-full"></div>}
+                            {props.themeChosenPending === "Light" && <div className="absolute w-6 h-6 bg-transparent rounded-full border-[2px] border-green-500"></div>}
                         </div>
                     </div>
                     <div className="relative flex flex-row indent-[5px] w-[80%] h-full justify-start items-center text-lg text-white font-medium">Light</div>

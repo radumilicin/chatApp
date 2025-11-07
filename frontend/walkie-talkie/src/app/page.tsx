@@ -62,7 +62,9 @@ export default function Home() {
   const [fontPressed, setFontPressed] = useState(false)
 
   const [themeChosen, setThemeChosen] = useState("Dark")
-  const [fontChosen, setFontChosen] = useState("Arial")
+  const [themeChosenPending, setThemeChosenPending] = useState("Dark")
+  const [fontChosen, setFontChosen] = useState("Sans")
+  const [fontChosenPending, setFontChosenPending] = useState("Sans")
   /* END APPEARANCE */
 
   /* PRIVACY */
@@ -223,6 +225,7 @@ export default function Home() {
             updateContacts([]);
             updateImages([]);
             setUser(-1);
+            setCurrContact(null)
         }
 
     } catch (err) {
@@ -266,14 +269,36 @@ export default function Home() {
     }
   }, [contacts, userObj])
 
+  useEffect(() => {
+    if(userObj !== null) {
+      if(userObj.theme) {
+        setThemeChosen(userObj.theme)
+        setThemeChosenPending(userObj.theme)
+      } else {      
+        setThemeChosen("Dark")
+        setThemeChosenPending("Dark")
+      }
+
+      if(userObj.font) {
+        setFontChosen(userObj.font); setFontChosenPending(userObj.font);
+      } else {
+        setFontChosen("Sans"); setFontChosenPending("Sans")
+      }
+    } else {
+      setThemeChosen("Dark"); setThemeChosenPending("Dark")
+      setFontChosen("Sans"); setFontChosenPending("Dark")
+    }
+      
+  }, [userObj])
+
   return (
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
-        {themePressed ? <Theme curr_user={user} userObj={userObj} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
-                               fontChosen={fontChosen} setFontChosen={setFontChosen}
+        {themePressed ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
                         ></Theme> : <></>}
-        {fontPressed ? <Fonts curr_user={user} userObj={userObj} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
-                               fontChosen={fontChosen} setFontChosen={setFontChosen}
+        {fontPressed ? <Fonts curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen} fontChosenPending={fontChosenPending} setFontChosenPending={setFontChosenPending}
                         ></Fonts> : <></>}
         {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
@@ -339,7 +364,7 @@ export default function Home() {
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage}></CurrentChat>
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen}></CurrentChat>
                                 : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
         </div>

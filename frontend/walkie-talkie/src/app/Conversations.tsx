@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
 
 export default function Conversations( props : any) {
@@ -129,13 +129,17 @@ export default function Conversations( props : any) {
 
     }
 
+    const handleOutsideClick = useCallback((value) => {
+        setMenuPress(value);
+    }, []);
+
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-[#0D1317] border-2 border-y-2 bg-opacity-70">
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={setMenuPress} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
+            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts}></Contacts>}
@@ -173,10 +177,27 @@ export function MenuDropdown (props) {
     }, [props.onOutsideClick]);
 
     return (
-        (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" >
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setNewGroupPress(true); props.setMenuPress(false);}}>New Group</div>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>New Contact</div>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={() => {props.setLogOut(true); props.setMenuPress(false);}}>Log out</div>
+        (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" onMouseDown={(e) => {e.stopPropagation()}}>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault();
+                props.setNewGroupPress(true); 
+                console.log("In new group div?")
+                setTimeout(() => props.setMenuPress(false), 0);}}>New Group</div>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault();
+                props.setAddContact(true); 
+                props.setAddContact2(true); 
+                console.log("In new contact div?")
+                setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
+            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault();
+                props.setLogOut(true); 
+                setTimeout(() => props.setMenuPress(false), 0);
+                console.log("In logout div?")
+                }}>Log out</div>
         </div>)
     );
 }
@@ -596,8 +617,10 @@ export function Contacts( props: any) {
     useEffect(() => {
         // console.log("props.filteredContacts: " + JSON.stringify(props.filteredContacts))
     }, [props.filteredContacts])
-
+    
     console.log("Initial rendering")
+
+    console.log("contact: " + JSON.stringify(props.contact))
 
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
@@ -650,26 +673,26 @@ export function Contacts( props: any) {
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
-                                <div className="w-[25%] h-full flex flex-row justify-center items-end">
+                                {/* <div className="w-[25%] h-full flex flex-row justify-center items-end">
                                     <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[40%] text-white`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
-                                </div>
+                                </div> */}
                             </div>
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className="relative indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
+                                {/* <div className="relative flex flex-row h-full w-[75%] items-start">
+                                    <div className="indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
-                                </div>
+                                </div> */}
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
                                     <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
-                                        {lastMessage.sender_id === props.curr_user
+                                        {/* {lastMessage.sender_id === props.curr_user
                                             ? "Sent " + time
                                             : time
-                                        }
+                                        } */}
                                     </div>
                                 </div>
                         </div>
@@ -727,10 +750,10 @@ export function Contacts( props: any) {
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
                                             <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
+                                                {/* {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
-                                                }
+                                                } */}
                                             </div>
                                         </div>
                                 </div>
@@ -1040,7 +1063,7 @@ export function Groups(props) {
                 <div className="relative flex flex-col left-0 top-0 w-full h-[30%] justify-center items-center">
                     <div className="absolute w-full h-full">
                     <div className="relative w-full h-full flex flex-col justify-center items-center">
-                        <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" onClick={() => document.getElementById("groupImageInput")?.click()} onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
+                        <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" /*onClick={() => {document.getElementById("groupImageInput")?.click()}}*/ onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
                         {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-60'}`}/>}
                         {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
                         <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
