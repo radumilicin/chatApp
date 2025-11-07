@@ -2,16 +2,6 @@ import {useEffect, useState, useRef} from 'react'
 
 export default function NotificationSettings( props: any ) {
 
-    useEffect(() => {
-
-        if(props.userObj !== null) {
-            props.setIncomingSoundsEnabled(props.userObj.incoming_sounds)
-            props.setOutgoingMessagesSoundsEnabled(props.userObj.outgoing_sounds)
-            props.setNotificationsEnabled(props.userObj.notifications_enabled)
-            // props.setNotificationsEnabled(props.userObj.notifications_enabled)
-        }
-    }, [props.userObj])
-
     return (
         <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
@@ -93,7 +83,7 @@ export function EnableNotifications(props: any) {
             props.setNotificationsEnabled(!props.notificationsEnabled);
             // props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)
         } else {
-            props.fetchUsers()
+            // props.fetchUsers()
         }
     }
 
@@ -126,12 +116,20 @@ export function IncomingSounds(props: any) {
         
     const isFirstRender = useRef(true);
 
-    const handleToggle = async () => {
-        const newValue = !props.incomingSoundsEnabled;
-        props.setIncomingSoundsEnabled(newValue);
+    useEffect(() => {
+        // Skip the first render to avoid calling API on mount
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
+        changeIncomingSoundsSetting();
+    }, [props.incomingSoundsEnabled])
+
+    const changeIncomingSoundsSetting = async () => {
 
         const data = {
-            "new_setting": newValue,
+            "new_setting": props.incomingSoundsEnabled,
             "user": props.user
         }
 
@@ -147,19 +145,11 @@ export function IncomingSounds(props: any) {
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
             // Revert on failure
-            props.setIncomingSoundsEnabled(!newValue);
+            props.setIncomingSoundsEnabled(props.incomingSoundsEnabled);
         } else {
-            props.fetchUsers()
+            // props.fetchUsers()
         }
     }
-
-    useEffect(() => {
-        const user_0 = props.users.find((elem) => {
-            return props.user === elem.id
-        })
-        
-        props.setUserObj(user_0)
-    }, [props.users])
 
     return (
         <div className="relative flex flex-row justify-row top-[4%] h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-40">
@@ -172,10 +162,10 @@ export function IncomingSounds(props: any) {
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.incomingSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
-                    onClick={handleToggle}
+                    onClick={() => {props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)}}
                     ></div>
                 <div className={`absolute w-4 h-4 ${props.incomingSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`}
-                    onClick={handleToggle}
+                    onClick={() => {props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)}}
                 ></div>
             </div>
         </div>
@@ -186,12 +176,21 @@ export function OutgoingSounds(props: any) {
 
     const isFirstRender = useRef(true);
 
-    const handleToggle = async () => {
-        const newValue = !props.outgoingMessagesSoundsEnabled;
-        props.setOutgoingMessagesSoundsEnabled(newValue);
+    useEffect(() => {
+        // Skip the first render to avoid calling API on mount
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
+        changeOutgoingSoundsSetting();
+    }, [props.outgoingMessagesSoundsEnabled])
+
+
+    const changeOutgoingSoundsSetting = async () => {
 
         const data = {
-            "new_setting": newValue,
+            "new_setting": props.outgoingMessagesSoundsEnabled,
             "user": props.user
         }
 
@@ -207,9 +206,9 @@ export function OutgoingSounds(props: any) {
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
             // Revert on failure
-            props.setOutgoingMessagesSoundsEnabled(!newValue);
+            props.setOutgoingMessagesSoundsEnabled(props.outgoingMessagesSoundsEnabled);
         } else {
-            props.fetchUsers()
+            // props.fetchUsers()
         }
     }
 
@@ -224,10 +223,11 @@ export function OutgoingSounds(props: any) {
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.outgoingMessagesSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
-                    onClick={handleToggle}
+                    onClick={() => {props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)}}
                     ></div>
                 <div className={`absolute w-4 h-4 ${props.outgoingMessagesSoundsEnabled ? 'ml-7' : 'ml-1'} rounded-full bg-white hover:cursor-pointer z-30`} 
-                    onClick={handleToggle}></div>
+                    onClick={() => {props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)}}
+                    ></div>
             </div>
         </div>
     );
