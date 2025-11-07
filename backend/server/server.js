@@ -23,7 +23,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3003",
     credentials: true
   }
 ))
@@ -1005,6 +1005,8 @@ app.post('/changeNotificationsEnabled', async (req, res) => {
 
 
 app.post('/changeTheme', async (req, res) => {
+
+  console.log("==========\n IN CHANGE THEME \n==========")
   const { user, new_theme } = req.body;
 
   console.log("Before checking body elements")
@@ -1013,7 +1015,7 @@ app.post('/changeTheme', async (req, res) => {
     return res.status(400).json({ error: "Missing 'new_theme' or 'user' field" });
   }
 
-  console.log("before updating in changeTheme")
+  console.log(`before updating in changeTheme with theme ${new_theme} and user: ${user}`)
 
   try {
     const resp = await pool.query(
@@ -1025,7 +1027,7 @@ app.post('/changeTheme', async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
       
-    console.log("update succeeded in incoming messages")
+    console.log("update succeeded in change Theme")
 
     res.status(200).json({
       message: "Outgoing message sound setting updated successfully",
@@ -1040,6 +1042,8 @@ app.post('/changeTheme', async (req, res) => {
 
 
 app.post('/changeFont', async (req, res) => {
+  console.log("==========\n IN CHANGE FONT \n==========")
+
   const { user, new_font } = req.body;
 
   console.log("Before checking body elements")
@@ -1048,7 +1052,7 @@ app.post('/changeFont', async (req, res) => {
     return res.status(400).json({ error: "Missing 'new_font' or 'user' field" });
   }
 
-  console.log("before updating in changeFont")
+  console.log(`before updating in changeFont with new_font: ${new_font} and user: ${user}`)
 
   try {
     const resp = await pool.query(
