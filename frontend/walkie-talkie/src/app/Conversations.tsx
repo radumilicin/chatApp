@@ -23,7 +23,7 @@ export default function Conversations( props : any) {
     useEffect(() => {
         if(props.contacts !== null) {
             filterContacts(currentSearch)
-            console.log("filteredContacts = " + JSON.stringify(filteredContacts))
+            // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
         }
     }, [props.contacts, currentSearch])
 
@@ -63,7 +63,7 @@ export default function Conversations( props : any) {
     async function filterContacts(val : string) { 
         console.log("In filteredContacts .. ")     
         // console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
-        console.log("contacts = " + JSON.stringify(props.contacts))   
+        // console.log("contacts = " + JSON.stringify(props.contacts))   
         
         const filteredContactsUnordered = props.contacts.filter((contact) => {
             if(contact.is_group === false) {
@@ -158,6 +158,7 @@ export function MenuDropdown (props) {
                 props.onOutsideClick(false) // set menu press to false
                 console.log("outside press")
             }
+            console.log("HERE")
         };
 
         // listens if the whole document was clicked and if it is then see if it was then
@@ -421,7 +422,7 @@ export function Contacts( props: any) {
         return last_msg
     }
 
-    function getUnreadMessages(contact: any, idx: number) {
+    function getNrUnreadMessages(contact: any, idx: number) {
         let lenMsgs = contact.message.length
         if(contact.message.length === 0) return 0
         let last_msg = contact.message[lenMsgs - 1]
@@ -433,6 +434,32 @@ export function Contacts( props: any) {
             }
         }
         return cnt_unread
+    }
+
+    function getUnreadMessages(contact: any) {
+        if(!props.curr_user || !contact || !contact.closed_at) return 0;
+
+        // let msgs = contact.message.length
+
+        let closed_curr_user = contact.closed_at.find((elem) => elem.id === props.curr_user)
+        let opened_curr_user = contact.opened_at.find((elem) => elem.id === props.curr_user)
+        if(!closed_curr_user) return 0;
+        // console.log()t
+
+        // console.log("opened curr user: " + JSON.stringify(opened_curr_user) + ", contact = " + JSON.stringify(contact.id))
+        // console.log("closed curr user: " + JSON.stringify(closed_curr_user) + ", contact = " + JSON.stringify(contact.id))
+        // console.log("last message time: " + JSON.stringify(contact.message[contact.message.length - 1].timestamp) + ", contact = " + JSON.stringify(contact.id))
+
+        let nr_unread_messages = 0
+
+        for(let i = contact.message.length - 1; i >= 0; i--) {
+            if(contact.message[i].sender_id !== props.curr_user && ((Date.parse(contact.message[i].timestamp) > Date.parse(closed_curr_user.closed_at)) && 
+                                                                   (Date.parse(contact.message[i].timestamp) > Date.parse(opened_curr_user.opened_at)))) {
+                nr_unread_messages += 1
+            }
+        }
+
+        return nr_unread_messages
     }
 
     function getImage(contact: any) {
@@ -459,7 +486,7 @@ export function Contacts( props: any) {
     }
 
     useEffect(() => {
-        console.log("contacts in conversations = " + JSON.stringify(props.filteredContacts))
+       // console.log("contacts in conversations = " + JSON.stringify(props.filteredContacts))
     }, [props.filteredContacts])
 
     // type user is either current or other (0,1)
@@ -504,6 +531,7 @@ export function Contacts( props: any) {
 
             if(response.ok) {
                 props.fetchContacts()
+                if(prevContact !== null) props.closeChat(prevContact.current)
                 console.log("updated accessedChat")
             } else {
                 console.log()
@@ -534,44 +562,74 @@ export function Contacts( props: any) {
 
     }
 
-    useEffect(() => { 
-        console.log(`CONTACT CHANGED LET'S SEE IF WE UPDATE ACCESS TIME. Contact: ${JSON.stringify(props.contact)}`) 
-        // if(props.contact) console.log(`contact: ${JSON.stringify(props.contact.opened_at)}`)
-        if(props.contact && props.contact.opened_at) {
-            for(let elem of props.contact.opened_at){
-                if(elem.id === props.curr_user) {
-                    console.log("============\nupdating access time for chat\n==========")
-                    updateAccessedOnChat(elem.opened_at)
-                }
-            }
+    useEffect(() => {
 
-            if(prevContact !== null) {
-                props.closeChat(prevContact.current)            /* update this by fetching contacts */
-            }
-            props.fetchContacts()
-            prevContact.current = props.contact                 // NEED TO UPDATE PROPS.CONTACT to have the new timestamp for accessed
+        if(props.contact) {
+            console.log("================\n\n\n CONTACT = " + JSON.stringify(props.contact) + "\n\n\n=================")
         }
+
+        // const updateAccess = async () => {
+        //     if(props.contact && props.contact.opened_at) {
+        //         for(let elem of props.contact.opened_at){
+        //             if(elem.id === props.curr_user) {
+        //                 // console.log("============\nupdating access time for chat\n==========")
+        //                 // console.log("Sending timestamp:", elem.opened_at); // Add this log
+        //                 await updateAccessedOnChat(elem.opened_at);
+        //             }
+        //         }
+
+        //         if(prevContact.current !== null) {
+        //             await props.closeChat(prevContact.current);
+        //         }
+                
+        //         // console.log("ABOUT TO FETCH CONTACTS");
+        //         await props.fetchContacts();
+        //         // console.log("CONTACTS FETCHED, should re-render now");
+                
+        //         prevContact.current = props.contact;
+        //     }
+        // };
+        
+        // if(props.contact) updateAccess();
     }, [props.contact])
+
+    useEffect(() => {
+        // console.log("props.filteredContacts: " + JSON.stringify(props.filteredContacts))
+    }, [props.filteredContacts])
+
+    console.log("Initial rendering")
 
     return (
         <div className="absolute left-0 top-[16%] w-full h-[84%]">
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
-                { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => (
+                { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => {
+                    const lastMessage = getLastMessage(element, idx);
+                    const time = lastMessage && lastMessage.timestamp
+                    ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    : "";
+                    const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
+
+                    return (
                     // this is the normal conversation (1 on 1)
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                        onClick={() => {
-                            props.setPressed(element); 
+                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                       onClick={(e) => {
+                        console.log("==============\nFIRST DIV PRESSED\n================")
+                        console.log("CLICKED BY USER?", e.isTrusted);
+                        props.setPressed(element); 
 
-                            let contact = element;
-                            let timestamp = new Date().toISOString()
-                            for(let i = 0 ; i < contact.opened_at.length; i++) {
-                                if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
-                            }
-                            props.setCurrContact(contact); 
-                            console.log("clicked")}}
+                        let contact = {...element};
+                        let timestamp = new Date().toISOString()
+                        for(let i = 0 ; i < contact.opened_at.length; i++) {
+                            if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at = timestamp;
+                        }
+
+                        props.setCurrContact(contact); 
+                        // props.setCurrContact(element); 
+                        // console.log("clicked")
+                    }}  // <--- Only TWO closing braces needed 
                     >
                         <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
@@ -587,30 +645,30 @@ export function Contacts( props: any) {
                         </div>
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
-                                <div className="w-[80%] h-full flex flex-row items-end">
+                                <div className="w-[75%] h-full flex flex-row items-end">
                                     <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
-                                <div className="w-[20%] h-full flex flex-row justify-center">
-                                    <div className="rounded-full contain-size text-xl bg-green-700 justify-center bg-contain h-full">
-                                        {element.recipient_id === curr_user && getUnreadMessages(element, idx)}
+                                <div className="w-[25%] h-full flex flex-row justify-center items-end">
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[40%] text-white`}>
+                                        {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
                                 </div>
                             </div>
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[80%] items-start">
-                                    <div className="relative indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium">
-                                        {(getLastMessage(element, idx).message).hasOwnProperty("image_id") ? "Image" : getLastMessage(element, idx).message}
+                                <div className="relative flex flex-row h-full w-[75%] items-start">
+                                    <div className="relative indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
+                                        {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
-                                <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-start justify-center text-base text-gray-300 font-medium">
-                                        {getLastMessage(element, idx).sender_id === curr_user || getLastMessage(element, idx).contact_id
-                                            ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                            : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                                <div className="relative flex flex-row h-full w-[25%]">
+                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
+                                        {lastMessage.sender_id === props.curr_user
+                                            ? "Sent " + time
+                                            : time
                                         }
                                     </div>
                                 </div>
@@ -621,16 +679,21 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[12.5%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                                onClick={() => {
-                                    props.setPressed(element); 
-                                    let contact = element;
+                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                                onClick={(e) => {
+                                    console.log("========\n2nd DIV PRESSED\n========")
+                                    console.log("CLICKED BY USER?", e.isTrusted);
+                                    // props.setPressed(element); 
+                                    // let contact = element;
                                     let timestamp = new Date().toISOString()
-                                    for(let i = 0 ; i < contact.opened_at.length; i++) {
-                                        if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
-                                    }
+                                    let contact = {
+                                    ...element,
+                                    opened_at: element.opened_at.map(obj =>
+                                        obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
+                                    )};
                                     props.setCurrContact(contact); 
-                                    console.log("clicked")}}
+                                    // console.log("clicked")
+                                }}
                             >
                                 <div className="flex flex-row w-[15%] h-full justify-center items-center">
                                     {/* Use base64 data for image */}
@@ -639,58 +702,65 @@ export function Contacts( props: any) {
                                         className="h-10 w-10 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile2.png" className="h-12 w-12 rounded-full"></img>}
+                                        <img src="./userProfile2.png" className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[85%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
-                                        <div className="w-[80%] h-full flex flex-row items-center">
+                                        <div className="w-[75%] h-full flex flex-row items-center">
                                             <div className="indent-[10px] text-xl font-medium font-sans text-gray-800">
                                                 {element.group_name}
                                             </div>
                                         </div>
-                                        <div className="w-[20%] h-full flex flex-row justify-center">
-                                            <div className="rounded-full contain-size text-xl bg-green-700 justify-center bg-contain h-full">
-                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element, idx) > 0) ? getUnreadMessages(element, idx) : ""}
+                                        {/* <div className="w-[25%] h-full flex flex-row justify-center items-end">
+                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[50%] text-white`}>
+                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div> 
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
-                                        <div className="relative flex flex-row h-full w-[80%]">
-                                            <div className="indent-[10px] flex h-full w-full items-start text-base text-gray-300 font-medium">
+                                        {/* <div className="relative flex flex-row h-full w-[75%]">
+                                            <div className="indent-[10px] flex h-full w-full items-start text-base text-gray-300 font-medium overflow-x-hidden">
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         {/* Right time container */}
-                                        <div className="relative flex flex-row h-full w-[20%]">
-                                            <div className="flex h-full w-full flex-row items-start justify-center text-base text-gray-300 font-medium">
+                                        <div className="relative flex flex-row h-full w-[25%]">
+                                            <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
                                                 }
                                             </div>
-
                                         </div>
                                 </div>
                                 </div>
                             </div>
                     
-                        : <></>))}
+                        : <></>
+                    )}
+                    
+                )}
                     
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                        onClick={() => {
+                        className={`relative h-[12%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        onClick={(e) => {
+                            console.log("============\n3rd DIV PRESSED\n=============")
+                            console.log("CLICKED BY USER?", e.isTrusted);
                             props.setPressed(element); 
-                            let contact = element;
+                            // let contact = element;
                             let timestamp = new Date().toISOString()
-                            for(let i = 0 ; i < contact.opened_at.length; i++) {
-                                if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
-                            }
+                            let contact = {
+                                ...element,
+                                opened_at: element.opened_at.map(obj =>
+                                    obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
+                            )};
                             props.setCurrContact(contact); 
-                            console.log("clicked")}}
+                            console.log("clicked")
+                        }}
                     >
                         <div className="flex w-[10%] justify-center items-center">
                             {/* Use base64 data for image */}
@@ -707,22 +777,22 @@ export function Contacts( props: any) {
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
-                                <div className="w-[20%] h-full flex flex-row justify-center">
-                                    <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
-                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element, idx) !== 0 ? getUnreadMessages(element,idx) : ""}
+                                <div className="w-[20%] h-full flex flex-row justify-center items-end">
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} bg-contain h-[60%] w-[50%] text-white`}>
+                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element) !== 0 ? getUnreadMessages(element) : ""}
                                     </div> 
                                 </div>
                             </div>
                             <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[80%]">
+                                <div className="relative flex flex-row h-full w-[75%]">
                                     <div className="indent-[20px] flex h-full w-full items-start text-sm font-medium text-white font-sans">
                                         {getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
-                                <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-center justify-center text-sm text-gray-600 font-medium font-sans">
+                                <div className="relative flex flex-row h-full w-[25%]">
+                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
                                         {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
@@ -740,11 +810,13 @@ export function Contacts( props: any) {
                                 className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {
                                     props.setPressed(element); 
-                                    let contact = element;
+                                    // let contact = element;
                                     let timestamp = new Date().toISOString()
-                                    for(let i = 0 ; i < contact.opened_at.length; i++) {
-                                        if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at=timestamp;
-                                    }
+                                    let contact = {
+                                        ...element,
+                                        opened_at: element.opened_at.map(obj =>
+                                            obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
+                                    )};
                                     props.setCurrContact(contact); 
                                     console.log("clicked")}}
                             >
@@ -755,7 +827,7 @@ export function Contacts( props: any) {
                                         className="h-12 w-12 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full"></img>}
+                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
