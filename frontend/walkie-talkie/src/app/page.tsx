@@ -286,7 +286,7 @@ export default function Home() {
       if(userObj.incoming_sounds) {
         setIncomingSoundsEnabled(userObj.incoming_sounds); 
       } else {
-        setIncomingSoundsEnabled(true); 
+        setIncomingSoundsEnabled(false); 
       }
       
       if(userObj.outgoing_sounds) {

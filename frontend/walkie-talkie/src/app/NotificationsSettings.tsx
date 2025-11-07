@@ -145,7 +145,7 @@ export function IncomingSounds(props: any) {
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
             // Revert on failure
-            props.setIncomingSoundsEnabled(props.incomingSoundsEnabled);
+            props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled);
         } else {
             // props.fetchUsers()
         }
@@ -206,7 +206,7 @@ export function OutgoingSounds(props: any) {
         if(!resp.ok) {
             console.log("Could not change sound notification on server")
             // Revert on failure
-            props.setOutgoingMessagesSoundsEnabled(props.outgoingMessagesSoundsEnabled);
+            props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled);
         } else {
             // props.fetchUsers()
         }
