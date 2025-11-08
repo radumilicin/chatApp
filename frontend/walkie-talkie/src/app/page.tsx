@@ -312,7 +312,7 @@ export default function Home() {
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
-      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
+      <div className={`relative left-0 top-0 w-full h-full flex flex-row ${themeChosen === "Dark" ? "bg-[#101D42]" : "bg-slate-400"} ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
         {themePressed ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
                         ></Theme> : <></>}
@@ -322,13 +322,13 @@ export default function Home() {
         {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
         
-          <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings}></OptionsBar>
+          <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings} themeChosen={themeChosen}></OptionsBar>
           {pressedProfile ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
-                                          fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup}></ProfileSettings>
+                                          fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileSettings>
                                    :                 
             pressedSettings ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setProfilePicPrivPress={setProfilePicPrivPress} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy} setStatusPrivPress={setStatusPrivPress}
-                                  setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}   
+                                  setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} themeChosen={themeChosen}
                               ></SettingsView>
                                    :
             pressedNotifications ? <NotificationsSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
@@ -336,7 +336,7 @@ export default function Home() {
                                         outgoingMessagesSoundsEnabled={outgoingMessagesSoundsEnabled} setOutgoingMessagesSoundsEnabled={setOutgoingMessagesSoundsEnabled}
                                         incomingSoundsEnabledPending={incomingSoundsEnabledPending} setIncomingSoundsEnabledPending={setIncomingSoundsEnabledPending}
                                         outgoingMessagesSoundsEnabledPending={outgoingMessagesSoundsEnabledPending} setOutgoingMessagesSoundsEnabledPending={setOutgoingMessagesSoundsEnabledPending} 
-                                        fetchUsers={fetchData} users={users} updateUsers={updateUsers} setUserObj={setUserObj}
+                                        fetchUsers={fetchData} users={users} updateUsers={updateUsers} setUserObj={setUserObj} themeChosen={themeChosen}
                                         ></NotificationsSettings>
                                     :
             pressedAppearance ? <AppearanceSettings userObj={userObj} user={user} setPressProfile={setPressProfile} setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} setPressedSettings={setPressedSettings} 
@@ -347,45 +347,45 @@ export default function Home() {
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
                                       setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} 
                                       disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus}
-                                      visibilityProfilePic={visibilityProfilePic}
+                                      visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen}
                             ></Privacy>
                                     : 
             profilePicPrivPress ? <ProfilePicPrivacy userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
-                                      visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic} setPressProfile={setPressProfile}></ProfilePicPrivacy>
+                                      visibilityProfilePic={visibilityProfilePic} setVisibilityProfilePic={setVisibilityProfilePic} setPressProfile={setPressProfile} themeChosen={themeChosen}></ProfilePicPrivacy>
                                     :
             statusPrivPress ? <StatusPrivacy userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus} 
                                       setDisappearingMessagesPeriod={setDisappearingMessagesPeriod} setDisappearingMessagesPressed={setDisappearingMessagesPressed} 
-                                      setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressProfile={setPressProfile}
+                                      setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressProfile={setPressProfile} themeChosen={themeChosen}
                                       ></StatusPrivacy>
                                     :
             disappearingMessagesPressed ? <DisappearingMessagesView userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} disappearingMessagesPeriod={disappearingMessagesPeriod} setDisappearingMessagesPeriod={setDisappearingMessagesPeriod}
                                       setDisappearingMessagesPressed={setDisappearingMessagesPressed} setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      setPressProfile={setPressProfile}
+                                      setPressProfile={setPressProfile} themeChosen={themeChosen}
                                       ></DisappearingMessagesView>
                                     :
             blockedContactsPressed ? <BlockedContactsView userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
                                       setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
-                                      images={images}
+                                      images={images} themeChosen={themeChosen}
                                       ></BlockedContactsView>
                                     :
           <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat}
+                                      closeChat={closeChat} themeChosen={themeChosen}
           ></Conversations> 
           }
           {profileInfo === false ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen}></CurrentChat>
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen}></CurrentChat>
                                 : <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
-                                      fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup}></ProfileInfo>}
+                                      fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo>}
         </div>
         }
         {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}

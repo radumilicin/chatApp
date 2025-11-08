@@ -102,7 +102,7 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className="relative left-[8%] w-[30%] top-[5%] h-[90%] bg-[#637081] border-black border-2 flex flex-col bg-opacity-70">
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232]" : "bg-[#637081]"} border-black border-2 flex flex-col bg-opacity-60`}>
             <div
                 className="relative flex flex-row top-[5%] left-[15%] w-80 h-80 bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
                 onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
@@ -164,7 +164,7 @@ export default function ProfileSettings(props) {
                     }}
                 />
             </div>
-            <div className="relative flex flex-col top-[0%] left-[15%] w-80 h-[45%] justify-center text-black">
+            <div className={`relative flex flex-col top-[0%] left-[15%] w-80 h-[45%] justify-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
                 <div className="relative top-[10%] w-full h-[30%] flex flex-col">
                     <div className="relative text-white text-opacity-80 top-[10%] left-12 h-[30%] text-lg font-semibold items-center">Name</div>
                     <div className="relative top-[10%] left-12 w-full h-[40%] flex flex-row items-center">

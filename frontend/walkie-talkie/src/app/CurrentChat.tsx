@@ -241,8 +241,8 @@ export default function CurrentChat( props: any ) {
     }
 
     return (
-        <div className="relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg bg-[#637081] border-2  border-[#0D1317] bg-opacity-70">
-            <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-r-lg bg-[#0D1317] flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg  border-2 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300"}`}>
+            <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[10%] h-[100%] justify-end items-center">
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
                         <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
@@ -256,23 +256,23 @@ export default function CurrentChat( props: any ) {
                 </div>
                 {props.contact !== null && props.contact.is_group === true &&
                     <div className={`relative flex w-[85%] h-[100%] flex-col`}>
-                        <div className="relative flex justify-start items-end h-[50%] w-full indent-[20px]">
+                        <div className={`relative flex justify-start items-end h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                             {props.contact !== null && <div className="top-0 flex flex-col text-xl font-semibold">{getNameContact(props.contact)}</div>}
                         </div>
-                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px]`}>
+                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                             {props.contact !== null && props.contact.members.map((ctc, idx) => (
                                 idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
                             ))}
                         </div>
                 </div>}
                 {props.contact !== null && props.contact.is_group === false && 
-                    <div className="flex flex-row indent-[20px] w-[90%] h-[100%]">
+                    <div className={`flex flex-row indent-[20px] w-[90%] h-[100%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                         {props.contact !== null && <div className={`top-0 flex flex-row items-center text-xl font-semibold indent-[10px] 
                                                         `}>{getNameContact(props.contact)}</div>}
                     </div>
                 }
             </div>
-            <div className="relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto">
+            <div className={`relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
                         // console.log("message =", message);
@@ -329,7 +329,7 @@ export default function CurrentChat( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-base text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-lg text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
@@ -351,7 +351,7 @@ export default function CurrentChat( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-xs text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-sm font-semibold text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-1 items-start">
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
@@ -369,7 +369,8 @@ export default function CurrentChat( props: any ) {
             );
                     })}
             </div>
-            <div className="absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl border-[#80ED99] border-2 bg-[#0D1317] flex flex-row">
+            <div className={`absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
+                            border-2 flex flex-row`}>
                 <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] hover:bg-gray-500 ml-2 rounded-2xl" >
                     {/* Wrapper for Image and Input */}
                     <div className="relative flex items-center justify-center w-full h-full">
@@ -421,6 +422,7 @@ export default function CurrentChat( props: any ) {
                 </div>
                 <div className="relative left-0 flex basis-[80%] h-full">
                     <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white text-xl
+                                                                                                        ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                             ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} 
                         onKeyDown={(e) => { 
                             if(e.key === "Enter") {
