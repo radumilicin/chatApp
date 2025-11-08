@@ -190,8 +190,8 @@ export default function ProfileInfo( props ) {
     }
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232]" : "bg-[#637081]"} border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hide bg-opacity-70`}>
-            <div className="relative left-0 h-[60%] w-[full] flex-col bg-gray-800 bg-opacity-30">
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hidden`}>
+            <div className={`relative left-0 h-[60%] w-[full] flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : ""} `}>
                 <div className="relative left-0 flex h-[15%] w-full flex-row items-center">
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
                         <div className="flex items-center justify-center w-12 h-12 rounded-full transition-colors hover:bg-gray-500 cursor-pointer">
@@ -351,10 +351,10 @@ function AboutProfile(props) {
     
 
     return (
-        <div className="relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center bg-gray-800 bg-opacity-30 border-y-2 border-gray-500">
+        <div className="relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center bg-opacity-30 border-y-2 border-gray-500">
                 <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } indent-[30px] h-[60%] w-full font-medium font-sans items-center`}>About</div>
                 <div ref={divRef} className="flex flex-row text-md text-white indent-[30px] h-[40%] w-full font-sans items-center justify-center">
-                    <div className={`flex flex-row left-[5%] w-[90%] h-full hover:cursor-pointer items-start justify-start text-xl ${props.descriptionPressed ? 'ml-6' : ''}`} onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
+                    <div className={`flex flex-row left-[5%] w-[90%] h-full ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } hover:cursor-pointer items-start justify-start text-xl ${props.descriptionPressed ? 'ml-6' : ''}`} onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
                         {
                             (props.contact !== null) ? 
                                 (props.contact.is_group === true && props.descriptionPressed === false ? ((props.contact.group_description === '') ? 'Add group description' 
@@ -365,7 +365,7 @@ function AboutProfile(props) {
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
                                     <input placeholder="Add description to group"
                                            value={props.description}
-                                           className="w-[98%] outline-none bg-transparent border-b-2 border-green-700 text-white font-sans text-md indent-[5px]"
+                                           className={`w-[98%] outline-none bg-transparent border-b-2 border-green-700 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } font-sans text-md indent-[5px]`}
                                            onChange={(e) => {
                                               props.setDescriptionAsync(e.target.value)
                                               console.log("Description: " + props.description)
@@ -481,7 +481,7 @@ function Members(props) {
 
     return (
         <div className={`relative left-0 top-0 w-full flex flex-col justify-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide border-b-2 border-gray-500`}>
-            <div className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
+            <div className={`relative flex h-[100px] w-full flex-row ${props.themeChosen === "Dark" ? "hover:bg-slate-300" : "hover:bg-gray-500"} hover:bg-opacity-30`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
             <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                 <img src="./addFrendo.png" className="max-h-[60%] rounded-full bg-white"></img>
             </div>
@@ -490,7 +490,7 @@ function Members(props) {
             </div>
             </div>
             {props.contact.members.map((id, idx) => (
-            <div key={idx} className={`relative flex h-[100px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30 cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
+            <div key={idx} className={`relative flex h-[100px] w-full flex-row ${props.themeChosen === "Dark" ? "hover:bg-slate-300" : "hover:bg-gray-500"} hover:bg-opacity-30 cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
                 <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
                 {(getProfilePic(getUser(id)).data !== "") ?
                     <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="max-h-[60%] rounded-full"></img> :
@@ -498,8 +498,8 @@ function Members(props) {
                 }
                 </div>
                 <div className="flex w-[70%] h-full flex-col justify-start">
-                    <div className={`flex h-[50%] ${props.themeChosen === "Dark" ? "text-gray-400" : "text-black"} font-sans text-lg font-medium items-end`}>{getUser(id).username}</div>
-                    <div className="flex h-[50%] text-white font-sans text-md items-start">{getUser(id).about}</div>
+                    <div className={`flex h-[50%] ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-700"} font-sans text-lg font-medium items-end`}>{getUser(id).username}</div>
+                    <div className={`flex h-[50%] ${props.themeChosen === "Dark" ? "text-gray-400" : "text-black"} font-sans text-md items-start`}>{getUser(id).about}</div>
                 </div>
                 {(props.contact.admins.includes(id)) && <div className="relative flex flex-row justify-center items-center w-[12%] h-[30%] bg-green-700 rounded-xl text-white">Group admin</div>}
                 {pressed[idx] == true && 
