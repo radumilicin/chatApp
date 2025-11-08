@@ -48,7 +48,7 @@ export default function BlockedContactsView(props: any) {
     }
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232]" : "bg-[#637081]"} border-black border-2 flex flex-col bg-opacity-60`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:cursor-pointer" 
                         onClick={() => {
@@ -64,9 +64,9 @@ export default function BlockedContactsView(props: any) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
-                <div className="relative indent-[20px] left-[2%] w-full text-xl font-semibold text-white font-sans flex flex-row justify-start items-center">Blocked Contacts</div>
+                <div className={`relative indent-[20px] left-[2%] w-full text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
             </div>
             <div className="relative top-[15%] flex flex-col left-[2%] w-[96%] h-[80%]">
                 { props.blockedContacts.map((elem, idx) => {
