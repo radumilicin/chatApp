@@ -134,7 +134,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60" : "bg-gray-300"} border-[#0D1317] border-2 border-y-2`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
@@ -206,16 +206,16 @@ export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
             {props.addContact && <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
-                    <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
                 </div>} 
-            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold text-white font-sans flex flex-row justify-start items-center">Add contact</div>}
+            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
             {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
-                    <img src="/add-contact-3.png" className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
-                    <img src="/Menu2.png" className="justify-end items-center max-h-[50%] max-w-[100%]"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/Menu2.png" : "menu-icon-black.png"}`} className={`justify-end items-center w-6 h-6`}></img>
                 </div>
             </div>
         </div>
@@ -669,7 +669,7 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" } `}>
+                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
@@ -730,7 +730,7 @@ export function Contacts( props: any) {
                                 <div className="flex w-[85%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
                                         <div className="w-[75%] h-full flex flex-row items-center">
-                                            <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
+                                            <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
@@ -749,7 +749,7 @@ export function Contacts( props: any) {
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
