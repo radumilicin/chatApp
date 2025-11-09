@@ -215,7 +215,7 @@ export function OtherOptions (props) {
                     <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
                 <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/Menu2.png" : "menu-icon-black.png"}`} className={`justify-end items-center w-6 h-6`}></img>
+                    <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center ${props.themeChosen === "Dark" ? "w-6 h-6" : "w-6 h-6"}`}></img>
                 </div>
             </div>
         </div>

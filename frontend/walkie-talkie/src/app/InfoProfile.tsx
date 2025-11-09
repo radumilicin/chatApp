@@ -196,7 +196,7 @@ export default function ProfileInfo( props ) {
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
                         <div className="flex items-center justify-center w-12 h-12 rounded-full transition-colors hover:bg-gray-500 cursor-pointer">
                             <img
-                                src="./xicon.png"
+                                src={`${props.themeChosen === "Dark" ? "./xicon-white.png" : "./xicon.png"}`}
                                 alt="Close"
                                 className="w-5 h-5 object-contain"
                             />
