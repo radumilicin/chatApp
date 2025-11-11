@@ -211,10 +211,10 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
             {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
+                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
+                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center ${props.themeChosen === "Dark" ? "w-6 h-6" : "w-6 h-6"}`}></img>
                 </div>
             </div>
@@ -637,7 +637,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2`}
                        onClick={(e) => {
                         console.log("==============\nFIRST DIV PRESSED\n================")
                         console.log("CLICKED BY USER?", e.isTrusted);
@@ -664,7 +664,7 @@ export function Contacts( props: any) {
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile2.png" className="h-10 w-10 rounded-full"></img>}
+                                <img src={`${props.themePressed === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
                         </div>
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
@@ -702,7 +702,7 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
+                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2`}
                                 onClick={(e) => {
                                     console.log("========\n2nd DIV PRESSED\n========")
                                     console.log("CLICKED BY USER?", e.isTrusted);
@@ -725,11 +725,11 @@ export function Contacts( props: any) {
                                         className="h-10 w-10 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile2.png" className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                        <img src={`${props.themePressed === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[85%] flex-col">
-                                    <div className="flex h-[50%] w-full items-center flex-row">
-                                        <div className="w-[75%] h-full flex flex-row items-center">
+                                    <div className="relative flex flex-row h-[50%] w-full items-center">
+                                        <div className="w-[75%] h-full flex flex-row items-end">
                                             <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
                                                 {element.group_name}
                                             </div>
