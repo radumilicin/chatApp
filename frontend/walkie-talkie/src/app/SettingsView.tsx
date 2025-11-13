@@ -7,7 +7,7 @@ export default function SettingsView(props) {
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" 
+                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
                             props.setPressedSettings(false); 
                             props.setPressProfile(false); 
@@ -78,7 +78,7 @@ export function CurrUserDiv (props: any) {
     }, [props.curr_user])
 
     return (
-        <div className={`relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`}>
+        <div className={`relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`}>
             <div className="relative flex flex-row w-[25%] h-[70%] justify-center items-center">
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-16 h-16 hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
                                                : <img src="./profilePic2.png" className="flex w-16 h-16 hover:bg-gray-500 rounded-full"></img>
@@ -86,8 +86,8 @@ export function CurrUserDiv (props: any) {
             </div>
             <div className="relative flex flex-col w-[75%] h-full">
                 {!user && <div className="relative flex flex-row h-[50%]"></div>} 
-                {user && <div className={`relative flex flex-row items-end h-[50%] text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"}`}>{user.username}</div>}
-                {user && <div className={`relative flex flex-row items-center h-[40%] text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"}`}>{user.about}</div>}
+                {user && <div className={`relative flex flex-row items-end h-[50%] text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.username}</div>}
+                {user && <div className={`relative flex flex-row items-center h-[40%] text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.about}</div>}
             </div>
         </div>
     );
@@ -95,7 +95,7 @@ export function CurrUserDiv (props: any) {
 
 export function PrivacyOption(props: any) {
     return (
-        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`} onClick={() => {
+        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {
             props.setPressNotifications(false)
             props.setPressAccount(false)
             props.setPressProfile(false)
@@ -107,8 +107,8 @@ export function PrivacyOption(props: any) {
                 <img src={`${props.themeChosen === "Dark" ? "lock_white_nobg.png" : "lock-black-nobg.png"}`} className="w-10 h-10"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium justify-start items-end`}>Privacy</div>
-                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} justify-start items-start`}>Blocked contacts, disappearing messages</div>
+                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium justify-start items-end`}>Privacy</div>
+                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Blocked contacts, disappearing messages</div>
             </div>
         </div>
     );
@@ -117,13 +117,13 @@ export function PrivacyOption(props: any) {
 
 export function AccountOption( props: any ){
     return (
-        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`}>
+        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src={`${props.themeChosen === "Dark" ? "key-icon.png" : "key_icon_black.png"}`} className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"}  font-medium justify-start items-end`}>Account</div>
-                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} justify-start items-start`}>Account info</div>
+                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}  font-medium justify-start items-end`}>Account</div>
+                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Account info</div>
             </div>
         </div>
     );
@@ -131,7 +131,7 @@ export function AccountOption( props: any ){
 
 export function AppearanceOption( props: any ){
     return (
-        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`} onClick={() => {
+        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {
             props.setPressNotifications(false)
             props.setPressAccount(false)
             props.setPressProfile(false)
@@ -144,8 +144,8 @@ export function AppearanceOption( props: any ){
             <img src={`${props.themeChosen === "Dark" ? "color_palette_nobg.png" : "color-palette-black-icon.png"}`} className={`${props.themeChosen === "Dark" ? "w-16 h-16" : "w-14 h-14"}`}></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium items-end`}>Appearance</div>
-                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} justify-start items-start`}>Fonts, Themes</div>
+                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium items-end`}>Appearance</div>
+                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Fonts, Themes</div>
             </div>
         </div>
     );
@@ -153,7 +153,7 @@ export function AppearanceOption( props: any ){
 
 export function NotificationsOption( props: any ){
     return (
-        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`} onClick={() => {
+        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {
                             props.setPressNotifications(true)
                             props.setPressAccount(false)
                             props.setPressProfile(false)
@@ -166,8 +166,8 @@ export function NotificationsOption( props: any ){
                 <img src={`${props.themeChosen === "Dark" ? "bell-icon.png" : "bell-icon-black-nobg.png"}`} className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-900"} font-medium items-end`}>Notifications</div>
-                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} justify-start items-start`}>Message notifications</div>
+                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-900"} font-medium items-end`}>Notifications</div>
+                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Message notifications</div>
             </div>
         </div>
     );
@@ -185,7 +185,7 @@ export function LogOutOption( props: any ){
     }, [logOut])
 
     return (
-        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} hover:bg-opacity-40 hover:cursor-pointer`} onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
+        <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
                 <img src="exitIcon.png" className="w-8 h-8"></img>
             </div>

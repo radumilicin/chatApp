@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
+import { Theme } from './AppearanceSettings';
 
 export default function Conversations( props : any) {
     
@@ -139,11 +140,12 @@ export default function Conversations( props : any) {
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} setAddContact={setAddContact} setAddContact2={props.setAddContact2}></MenuDropdown>}
+            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
+                                             setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
-            {!newGroupPress && addContact && <UsersToAddToContacts currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts} themeChosen={props.themeChosen}
+            {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
     );
@@ -177,21 +179,21 @@ export function MenuDropdown (props) {
     }, [props.onOutsideClick]);
 
     return (
-        (props.menuPress && <div ref={divRef} className="absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md bg-gray-800 z-10" onMouseDown={(e) => {e.stopPropagation()}}>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+    (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setNewGroupPress(true); 
                 console.log("In new group div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Group</div>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setAddContact(true); 
                 props.setAddContact2(true); 
                 console.log("In new contact div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
-            <div className="relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] text-white text-base hover:bg-slate-400" onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setLogOut(true); 
@@ -205,16 +207,16 @@ export function MenuDropdown (props) {
 export function OtherOptions (props) {
     return (
         <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            {props.addContact && <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
+            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
                 </div>} 
             {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
             {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
+                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
-                <div className="relative left-0 w-[50%] h-full hover:bg-slate-400 hover:rounded-xl flex flex-row items-center justify-center" onClick={() => {props.setMenuPress(true)}}>
+                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center ${props.themeChosen === "Dark" ? "w-6 h-6" : "w-6 h-6"}`}></img>
                 </div>
             </div>
@@ -362,37 +364,37 @@ export function UsersToAddToContacts (props : any) {
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] left-[2%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative flex-none left-[2%] flex flex-row h-[12%] w-[96%] text-white bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
                         onClick={async () => { await makeTemporaryContact(element); console.log("clicked")}}
                     >
-                        <div className="flex w-[10%] justify-center items-center">
+                        <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
                             {getImageUser(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
+                                className="h-10 w-10 rounded-full"
                                 alt="Profile"
                             /> : getImageUser(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
+                                className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
+                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
                         </div>
-                        <div className="flex w-[90%] flex-col">
-                            <div className="flex h-[60%] w-full items-center flex-row">
-                                <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                        <div className="relative flex w-[85%] flex-col">
+                            <div className="relative flex flex-row h-[50%] w-full items-center">
+                                <div className="w-[75%] h-full flex flex-row items-end">
+                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" }`}>
                                         {getNameUser2(element)}
                                     </div>
                                 </div>
-                                <div className="w-[20%] h-full flex flex-row justify-center">
+                                <div className="w-[25%] h-full flex flex-row justify-center items-end">
                                     <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
                                     </div> 
                                 </div>
                             </div>
-                            <div className="relative flex w-full h-[40%] items-center">
+                            <div className="relative flex w-full h-[50%] items-center">
                                 {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[80%]">
-                                    <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
+                                <div className="relative flex flex-row h-full w-[75%] items-start">
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium`}>
                                         {element.about}
                                     </div>
                                 </div>
@@ -637,7 +639,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
+                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
                        onClick={(e) => {
                         console.log("==============\nFIRST DIV PRESSED\n================")
                         console.log("CLICKED BY USER?", e.isTrusted);
@@ -664,7 +666,7 @@ export function Contacts( props: any) {
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
-                                <img src="./userProfile2.png" className="h-10 w-10 rounded-full"></img>}
+                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
                         </div>
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
@@ -674,7 +676,7 @@ export function Contacts( props: any) {
                                     </div>
                                 </div>
                                 <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white`}>
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
                                 </div>
@@ -702,7 +704,7 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ? 
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent ${props.themeChosen === "Dark" ? "hover:bg-[#ACCBE1]" : "hover:bg-gray-500"} bg-opacity-60 rounded-2xl mt-2 hover:bg-opacity-40`}
+                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
                                 onClick={(e) => {
                                     console.log("========\n2nd DIV PRESSED\n========")
                                     console.log("CLICKED BY USER?", e.isTrusted);
@@ -725,11 +727,11 @@ export function Contacts( props: any) {
                                         className="h-10 w-10 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile2.png" className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                        <img src={`${props.themePressed === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[85%] flex-col">
-                                    <div className="flex h-[50%] w-full items-center flex-row">
-                                        <div className="w-[75%] h-full flex flex-row items-center">
+                                    <div className="relative flex flex-row h-[50%] w-full items-center">
+                                        <div className="w-[75%] h-full flex flex-row items-end">
                                             <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
                                                 {element.group_name}
                                             </div>
@@ -851,7 +853,7 @@ export function Contacts( props: any) {
                                         className="h-12 w-12 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src="./userProfile.jpg" className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                        <img src={`${props.themeChosen === "Dark" ? './userProfile2.png' : 'userProfile_nobg.png'}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
@@ -1054,8 +1056,8 @@ export function Groups(props) {
         <div className="absolute left-0 top-0 w-full h-full">
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
-                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
-                        <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] left-0 indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
                 </div>
@@ -1134,8 +1136,8 @@ export function Groups(props) {
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
                 <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className="relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
-                        <img src="/back-arrow.png" className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Add group members</div>
                 </div>
@@ -1147,8 +1149,8 @@ export function Groups(props) {
                                 <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                             </div>
                             <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                                <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-2xl" 
-                                    value={usernameSearch} placeholder="Search user to add"
+                                <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-xl" 
+                                    value={usernameSearch} placeholder="Search user to add.."
                                     onChange={async (e) => { 
                                         const val = e.target.value;
                                         setUsernameSearch(val);
@@ -1180,34 +1182,34 @@ export function Groups(props) {
                 ))}
                 </div>
             </div>}
-            {!finishingSettingUpGroup && <div className={`relative flex flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[60%]' : 'h-[75%]' } justify-center items-center overflow-y-scroll`}>
+            {!finishingSettingUpGroup && <div className={`relative flex top-[2%] flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[58%]' : 'h-[73%]' } justify-center items-center overflow-y-scroll`}>
                 { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}
                     onClick={async () => { await props.setContactsInNewGroup([...props.contactsInNewGroup, element]); console.log("clicked")}}
                 >
-                    <div className="flex w-[10%] justify-center items-center">
+                    <div className="relative flex w-[15%] h-full justify-center items-center">
                         {/* Use base64 data for image */}
                         {getImageUser(element).data !== "" ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                            className="h-[75%] w-[75%] rounded-full"
+                            className="h-10 w-10 rounded-full"
                             alt="Profile"
                         /> : getImageUser(element).data !== "" ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                            className="h-[75%] w-[75%] rounded-full"
+                            className="h-10 w-10 rounded-full"
                             alt="Profile"></img> : 
-                            <img src="./userProfile2.png" className="h-[75%] w-[75%] rounded-full"></img>}
+                            <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
                     </div>
-                    <div className="flex w-[90%] flex-col">
-                        <div className="flex h-[60%] w-full items-center flex-row">
-                            <div className="w-[80%] h-full flex flex-row items-center">
-                                <div className="indent-[20px] text-2xl font-medium font-sans text-black">
+                    <div className="relative flex flex-col w-[85%]">
+                        <div className="relative flex flex-row h-[50%] w-full items-center">
+                            <div className="w-[75%] h-full flex flex-row items-end">
+                                <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
                                     {getNameUser2(element)}
                                 </div>
                             </div>
-                            <div className="w-[20%] h-full flex flex-row justify-center">
+                            <div className="w-[25%] h-full flex flex-row justify-center items-end">
                                 <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
                                 </div> 
                             </div>
@@ -1215,7 +1217,7 @@ export function Groups(props) {
                         <div className="relative flex w-full h-[40%] items-center">
                             {/* Left text container */}
                             <div className="relative flex flex-row h-full w-[80%]">
-                                <div className="indent-[20px] flex flex-row h-full w-full items-start text-lg text-gray-300 font-medium">
+                                <div className="indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium">
                                     {element.about}
                                 </div>
                             </div>
@@ -1232,7 +1234,7 @@ export function Groups(props) {
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
                 <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
                     <img
-                        src={`${finishingSettingUpGroup ? '/forward-nobg.png' : '/plus-sign-2.png'}`}
+                        src={`${finishingSettingUpGroup ? (props.themeChosen === "Dark" ? '/forward-nobg.png' : "forward-black.png") : (props.themeChosen === "Dark" ? './plus-sign-2.png' : './plus-icon-black.png')}`}
                         className="h-[40%] flex items-center"
                         onClick={
                             async () => 
