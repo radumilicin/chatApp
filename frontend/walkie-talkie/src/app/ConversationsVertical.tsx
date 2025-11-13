@@ -5,7 +5,7 @@ import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettings';
 
-export default function Conversations( props : any) {
+export default function ConversationsVertical( props : any) {
     
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);
@@ -135,13 +135,13 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
+        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
-                                             setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdown>}
+            {!newGroupPress && <MenuDropdownVertical menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
+                                             setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdownVertical>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
@@ -151,7 +151,7 @@ export default function Conversations( props : any) {
     );
 }
 
-export function MenuDropdown (props) {
+export function MenuDropdownVertical (props) {
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -179,7 +179,7 @@ export function MenuDropdown (props) {
     }, [props.onOutsideClick]);
 
     return (
-    (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
+    (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[16%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
             <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
@@ -193,6 +193,13 @@ export function MenuDropdown (props) {
                 props.setAddContact2(true); 
                 console.log("In new contact div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault();
+                props.setLogOut(true); 
+                setTimeout(() => props.setMenuPress(false), 0);
+                console.log("In logout div?")
+                }}>Settings</div>
             <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
