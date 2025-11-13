@@ -221,7 +221,7 @@ export default function ProfileInfo( props ) {
                             />
                         ) : (
                             <img
-                                src="./userProfile2.png"
+                                src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
                                 className={`cursor-pointer rounded-full max-w-[100%] max-h-[80%]`}
                             />
                         )}
@@ -409,7 +409,7 @@ function Members(props) {
 
     const updatePressedIndex = async (idx: number) => {
         const filteredPressed = pressed.map((elem, i) => 
-            i === idx ? true : false
+            i === idx ? ((elem === true) ? false : true) : false
         );
         console.log("filteredPressed after press" + JSON.stringify(filteredPressed));
         updatePressedAsync(filteredPressed);

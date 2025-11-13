@@ -247,11 +247,11 @@ export default function CurrentChat( props: any ) {
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
                         <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
                         (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> :
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-14 h-14 rounded-full"></img> :
                      (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
                         <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`./userProfile2.png`} className="w-14 h-14 rounded-full"></img> : <></>                        
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-14 h-14 rounded-full"></img> : <></>                        
                     }
                 </div>
                 {props.contact !== null && props.contact.is_group === true &&
@@ -267,7 +267,7 @@ export default function CurrentChat( props: any ) {
                 </div>}
                 {props.contact !== null && props.contact.is_group === false && 
                     <div className={`flex flex-row indent-[20px] w-[90%] h-[100%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-xl font-semibold indent-[10px] 
+                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-xl font-semibold indent-[20px] 
                                                         `}>{getNameContact(props.contact)}</div>}
                     </div>
                 }
