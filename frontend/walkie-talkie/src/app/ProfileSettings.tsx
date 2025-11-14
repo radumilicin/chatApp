@@ -104,7 +104,7 @@ export default function ProfileSettings(props) {
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className="relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer" 
+                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"}  hover:rounded-xl hover:cursor-pointer`}
                         onClick={() => {
                             props.setPressPrivacy(false)
                             props.setPressNotifications(false)
@@ -121,17 +121,17 @@ export default function ProfileSettings(props) {
                 </div>
             </div>
             <div
-                className="relative flex flex-row top-[8%] left-[15%] w-80 h-80 bg-gray-700 justify-center items-center hover:opacity-50 rounded-full"
+                className="relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center hover:opacity-50 rounded-full"
                 onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
                 onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
             >
                 {currImageData.data !== "" ? (
                     <img
                         src={`data:image/jpeg;base64,${currImageData.data}`}
-                        className="h-60 w-60 z-0 rounded-full"
+                        className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600"
                     />
                 ) : (
-                    <img src="./profilePic2.png" className="h-60 w-60 z-0 rounded-full"></img>
+                    <img src="./profilePic2.png" className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600"></img>
                 )}
 
                 {hoveredProfilePic && (
@@ -181,12 +181,12 @@ export default function ProfileSettings(props) {
                     }}
                 />
             </div>
-            <div className={`relative flex flex-col top-[0%] left-[15%] w-80 h-[45%] justify-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
-                <div className="relative top-[10%] w-full h-[30%] flex flex-col">
-                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 top-[10%] left-12 h-[30%] text-lg font-medium items-center`}>Name</div>
-                    <div className="relative top-[10%] left-12 w-full h-[40%] flex flex-row items-center">
+            <div className={`relative flex flex-col top-[0%] left-0 w-full h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
+                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
+                    <div className={`relative flex flex-row ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 w-full h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center justify-start`}>Name</div>
+                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {
-                        stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center text-xl font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
+                        stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center md:indent-[20px] lg:indent-[30px] xl:indent-[40px] md:text-lg xl:text-xl font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
                                                 : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
                                                             value={username} onChange={(e) => {
                                                                 setUsername(e.target.value)
@@ -199,20 +199,22 @@ export default function ProfileSettings(props) {
                                                             }}></input>
                                                 
                         }
-                        <div className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400 hover:cursor-pointer" onClick={() => {setStateUsername("input")}}>
-                            <img src="./edit2.png" className="w-[40%] h-[50%]"></img>
+                        <div className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {setStateUsername("input")}}>
+                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
+                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="relative top-[10%] w-full h-[30%] flex flex-col justify-center">
-                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 left-12 mt-4 h-[30%] text-lg font-medium`}>About</div>
-                    <div className="relative left-12 w-full h-[40%] flex flex-row items-center">
+                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
+                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>About</div>
+                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {
                             stateAbout === "fixed" ? (
-                                <p className={`flex flex-row w-[50%] h-full items-center text-xl font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
+                                <p className={`flex flex-row w-[50%] h-full items-center md:text-lg xl:text-xl md:indent-[20px] lg:indent-[30px] xl:indent-[40px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
                             ) : (
                                 <input
-                                    className="flex flex-row text-xl font-medium w-[50%] outline-none border-b-2 border-black bg-transparent overflow-auto"
+                                    className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
                                     value={about}
                                     onChange={(e) => setAbout(e.target.value)}
                                     onKeyDown={(e) => {
@@ -225,10 +227,12 @@ export default function ProfileSettings(props) {
                             )
                         }
                         <div
-                            className="left-[80%] w-[20%] h-full flex flex-row items-center justify-center hover:rounded-full hover:bg-gray-400 hover:cursor-pointer"
+                            className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
                             onClick={() => setStateAbout("input")}
                         >
-                            <img src="./edit2.png" className="w-[40%] h-[50%]" />
+                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
+                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />
+                            </div>
                         </div>
                     </div>
                 </div>

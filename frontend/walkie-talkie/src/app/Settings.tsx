@@ -7,7 +7,7 @@ export default function OptionsBar(props){
             <div className="relative flex flex-col h-[50%] w-full">
                 <div className="w-full top-0 h-[20%] relative flex flex-col items-center justify-center" onClick={() => {props.setPressProfile(false); props.setPressedSettings(false)}}>
                     <div className={`flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl hover:cursor-pointer`}>
-                        <img src={`${props.themeChosen === "Dark" ? "/messageIcon2.png" : "messageIconBlack-nobg.png"}`} className="flex w-full h-full rounded-full"></img>
+                        <img src={`${props.themeChosen === "Dark" ? "/message-icon-white2.png" : "message-icon-black2.png"}`} className="flex w-[20px] h-[20px] md:w-[24px] md:h-[24px] xl:w-[28px] xl:h-[28px] 2xl:w-8 2xl:h-8"></img>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@ export function Settings(props) {
         <div className="relative flex flex-col h-[50%] rounded-bl-2xl w-full">
             <div className="w-full h-[20%] top-[60%] relative flex flex-col items-center justify-center">
                 <div className={`flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Light" ? "hover:bg-opacity-30" : "hover:bg-opacity-40"} rounded-2xl hover:cursor-pointer`}>
-                    <img src={`${props.themeChosen === "Dark" ? "./cogIcon2.png" : "cog-black.png"}`} className="flex w-[70%] h-[70%]" onClick={() => { 
+                    <img src={`${props.themeChosen === "Dark" ? "./cogIcon2.png" : "cog-black.png"}`} className="flex w-4 h-4 md:w-[28px] md:h-[28px] xl:w-8 xl:h-8 2xl:w-10 2xl:h-10" onClick={() => { 
                                                                                                if(props.pressedSettings) props.setPressedSettings(false)
                                                                                                else props.setPressedSettings(true)         
                                                                                              }
