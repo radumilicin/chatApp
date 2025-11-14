@@ -33,6 +33,7 @@ import ProfilePicPrivacyVertical from "./ProfilePicPrivacyVertical";
 import DisappearingMessagesViewVertical from "./DisappearingMessagesVertical";
 import BlockedContactsViewVertical from "./BlockedContactsVertical";
 import ProfileInfoVertical from "./InfoProfileVertical";
+import ProfileSettingsVertical from "./ProfileSettingsVertical";
 
 export default function Home() {
 
@@ -384,7 +385,9 @@ export default function Home() {
           {pressedProfile ? (display === "Desktop" ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
                                           fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup} themeChosen={themeChosen} setPressedSettings={setPressedSettings} setPressPrivacy={setPressPrivacy}
                                           setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} ></ProfileSettings>
-                                                   : <></>)
+                                                   : <ProfileSettingsVertical users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
+                                          fetchData2={fetchData2} fetchImages={fetchImages} addingToGroup={addingToGroup} themeChosen={themeChosen} setPressedSettings={setPressedSettings} setPressPrivacy={setPressPrivacy}
+                                          setPressAccount={setPressAccount} setPressAppearance={setPressAppearance} setPressNotifications={setPressNotifications} ></ProfileSettingsVertical>)
                                    :                 
             pressedSettings ? (display === "Desktop" ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setProfilePicPrivPress={setProfilePicPrivPress} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy} setStatusPrivPress={setStatusPrivPress}
