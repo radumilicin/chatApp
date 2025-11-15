@@ -66,7 +66,7 @@ export default function BlockedContactsView(props: any) {
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-full text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
+                <div className={`relative indent-[10px] w-[90%] text-base lg:text-lg xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
             </div>
             <div className="relative top-[15%] flex flex-col left-[2%] w-[96%] h-[80%]">
                 { props.blockedContacts.map((elem, idx) => {

@@ -245,21 +245,21 @@ export default function CurrentChat( props: any ) {
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[10%] h-[100%] justify-end items-center">
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
                         (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-14 h-14 rounded-full"></img> :
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
                      (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-14 h-14 rounded-full"></img> :
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-14 h-14 rounded-full"></img> : <></>                        
+                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> : <></>                        
                     }
                 </div>
                 {props.contact !== null && props.contact.is_group === true &&
-                    <div className={`relative flex w-[85%] h-[100%] flex-col`}>
+                    <div className={`relative flex w-[80%] h-[100%] flex-col`}>
                         <div className={`relative flex justify-start items-end h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                            {props.contact !== null && <div className="top-0 flex flex-col text-xl font-semibold">{getNameContact(props.contact)}</div>}
+                            {props.contact !== null && <div className="top-0 flex flex-col text-lg xl:text-xl font-semibold">{getNameContact(props.contact)}</div>}
                         </div>
-                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px] text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"} truncate`}>
                             {props.contact !== null && props.contact.members.map((ctc, idx) => (
                                 idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
                             ))}
@@ -267,7 +267,7 @@ export default function CurrentChat( props: any ) {
                 </div>}
                 {props.contact !== null && props.contact.is_group === false && 
                     <div className={`flex flex-row indent-[20px] w-[90%] h-[100%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-xl font-semibold indent-[20px] 
+                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-sm lg:text-base xl:text-lg font-semibold indent-[20px] 
                                                         `}>{getNameContact(props.contact)}</div>}
                     </div>
                 }

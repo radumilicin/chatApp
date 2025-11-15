@@ -36,6 +36,14 @@ export default function Conversations( props : any) {
         }
     }, [logOut])
 
+    useEffect(() => {
+        if(props.settingsPressed === true || props.pressedProfile === true) {
+            setNewGroupPress(false)
+            setNewChatPress(false)
+            setAddContact(false)
+        }
+    }, [props.settingsPressed, props.pressedProfile])
+
     async function logOutNow() {
 
         try {
@@ -180,20 +188,20 @@ export function MenuDropdown (props) {
 
     return (
     (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setNewGroupPress(true); 
                 console.log("In new group div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Group</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setAddContact(true); 
                 props.setAddContact2(true); 
                 console.log("In new contact div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setLogOut(true); 
@@ -210,8 +218,8 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
                 </div>} 
-            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
+            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-base xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
@@ -233,8 +241,9 @@ export function SearchBar( props : any ) {
                     <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className={`absolute left-0 top-0 w-full h-full outline-none ${props.themeChosen === "Dark" ? "text-white" : "text-black"} bg-transparent overflow-x-auto text-2xl`} 
+                    <input className={`absolute left-0 top-0 w-full h-full outline-none ${props.themeChosen === "Dark" ? "text-white" : "text-black"} bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl`} 
                         value={props.currentSearch}
+                        // placeholder='Add a contact..' // replace later
                         onChange={async (e) => {props.setCurrSearch(e.target.value); 
                                                 if(props.addContact) {
                                                     console.log("Filtering users in Search")
@@ -382,7 +391,7 @@ export function UsersToAddToContacts (props : any) {
                         <div className="relative flex w-[85%] flex-col">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" }`}>
+                                    <div className={`indent-[10px] lg:text-lg xl:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" }`}>
                                         {getNameUser2(element)}
                                     </div>
                                 </div>
@@ -394,7 +403,7 @@ export function UsersToAddToContacts (props : any) {
                             <div className="relative flex w-full h-[50%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium`}>
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium`}>
                                         {element.about}
                                     </div>
                                 </div>
@@ -671,12 +680,12 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
+                                    <div className={`indent-[10px] text-lg xl:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xs lg:text-sm xl:text-base ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
                                 </div>
@@ -684,13 +693,13 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs lg:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
                                         {lastMessage.sender_id === props.curr_user
                                             ? "Sent " + time
                                             : time
@@ -732,12 +741,12 @@ export function Contacts( props: any) {
                                 <div className="flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
+                                            <div className={`indent-[10px] lg:text-lg xl:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
+                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xs lg:text-sm xl:text-base ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
                                                 {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div> 
                                         </div>
@@ -745,13 +754,13 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] flex h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                            <div className={`indent-[10px] flex h-full w-full items-start text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs lg:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
@@ -1059,7 +1068,7 @@ export function Groups(props) {
                     <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
-                    <div className="flex w-[80%] left-0 indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
+                    <div className="flex w-[80%] left-0 indent-[20px] h-full text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
                 </div>
             </div>}
             {finishingSettingUpGroup && (
@@ -1205,7 +1214,7 @@ export function Groups(props) {
                     <div className="relative flex flex-col w-[85%]">
                         <div className="relative flex flex-row h-[50%] w-full items-center">
                             <div className="w-[75%] h-full flex flex-row items-end">
-                                <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
+                                <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
                                     {getNameUser2(element)}
                                 </div>
                             </div>
@@ -1217,7 +1226,7 @@ export function Groups(props) {
                         <div className="relative flex w-full h-[40%] items-center">
                             {/* Left text container */}
                             <div className="relative flex flex-row h-full w-[80%]">
-                                <div className="indent-[10px] flex flex-row h-full w-full items-start text-base text-gray-300 font-medium">
+                                <div className="indent-[10px] flex flex-row h-full w-full items-start text-xs xl:text-sm text-gray-300 font-medium">
                                     {element.about}
                                 </div>
                             </div>
@@ -1232,7 +1241,7 @@ export function Groups(props) {
                 </div>))}
             </div>}
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
-                <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
+                <div className={`relative flex flex-row justify-center items-center w-[10%] h-[60%] hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"} hover:rounded-xl hover:cursor-pointer rounded-xl`}>
                     <img
                         src={`${finishingSettingUpGroup ? (props.themeChosen === "Dark" ? '/forward-nobg.png' : "forward-black.png") : (props.themeChosen === "Dark" ? './plus-sign-2.png' : './plus-icon-black.png')}`}
                         className="h-[40%] flex items-center"
