@@ -7,11 +7,16 @@ export default function NotificationSettings( props: any ) {
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
+                            props.setPressPrivacy(false)
+                            props.setStatusPrivPress(false)
                             props.setPressNotifications(false)
                             props.setPressAccount(false)
                             props.setPressProfile(false)
                             props.setPressAppearance(false)
                             props.setPressedSettings(true)
+                            props.setProfilePicPrivPress(false)
+                            props.setDisappearingMessagesPressed(false)
+                            props.setBlockedContactsPressed(false)
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>

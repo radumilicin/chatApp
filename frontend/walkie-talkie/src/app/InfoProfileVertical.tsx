@@ -482,16 +482,16 @@ function Members(props) {
     return (
         <div className={`relative left-0 top-0 w-full flex flex-col justify-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide border-b-2 border-gray-500`}>
             <div className={`relative flex h-[100px] w-full flex-row hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`} onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
-                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
-                    <img src="./addFrendo.png" className="w-12 h-12 rounded-full bg-white"></img>
+                <div className={`flex w-[20%] h-full flex-row justify-center items-center`}>
+                    <img src="./addFrendo.png" className="w-10 h-10 rounded-full bg-white"></img>
                 </div>
-                <div className={`flex w-[85%] h-full flex-row justify-start items-center hover:cursor-pointer `}>
+                <div className={`flex w-[80%] h-full flex-row justify-start items-center hover:cursor-pointer `}>
                     <div className="text-xl text-green-500 font-sans font-semibold">Add member</div>
                 </div>
             </div>
             {props.contact.members.map((id, idx) => (
             <div key={idx} className={`relative flex h-[100px] w-full flex-row hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} cursor-pointer items-center`} onClick={() => { updatePressedIndex(idx) }}>
-                <div className={`flex w-[15%] h-full flex-row justify-center items-center`}>
+                <div className={`flex w-[20%] h-full flex-row justify-center items-center`}>
                 {(getProfilePic(getUser(id)).data !== "") ?
                     <img src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`} className="w-12 h-12 rounded-full"></img> :
                     <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className={`${props.themeChosen === "Dark" ? "w-14 h-14" : "w-12 h-12"} rounded-full`}></img>
@@ -557,10 +557,10 @@ function OptionsGroup(props) {
     return (
         <div className={`relative left-0 top-[0%] w-full flex flex-col justify-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             <div className="relative flex h-[150px] w-full flex-row hover:bg-slate-300 hover:bg-opacity-30" onClick={() => {exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
-                <div className="flex w-[15%] h-full flex-row justify-center items-center">
-                    <img src="./exitIcon.png" className="w-12 h-12"></img>
+                <div className="flex w-[20%] h-full flex-row justify-center items-center">
+                    <img src="./exitIcon.png" className="w-10 h-10"></img>
                 </div>
-                <div className="flex w-[85%] h-full justify-start items-center text-xl font-sans font-medium text-red-600 hover:cursor-pointer">Exit group</div>
+                <div className="flex w-[80%] h-full justify-start items-center text-xl font-sans font-medium text-red-600 hover:cursor-pointer">Exit group</div>
             </div>
         </div>
     );
@@ -634,26 +634,26 @@ function OptionsChat(props) {
     return (
         <div className={`relative left-0 top-[0%] h-[25%] w-full flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             {props.contact.blocked === false && <div className={`relative flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {blockContact('block'); }}>
-                <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./denied2.png" className="w-12 h-12 aspect-square"></img>
+                <div className="flex flex-row h-full w-[20%] items-center justify-center">
+                    <img src="./denied2.png" className="w-10 h-10 aspect-square"></img>
                 </div>
-                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                <div className="flex flex-row h-full w-[80%] items-center justify-start">
                     <div className="absolute text-xl text-red-500 font-semibold font-sans">Block user</div>
                 </div>
             </div>}
             {props.contact.blocked === true && <div className={`flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {blockContact('unblock'); }}>
-                <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./unblock2.png" className="w-12 h-12 aspect-square"></img>
+                <div className="flex flex-row h-full w-[20%] items-center justify-center">
+                    <img src="./unblock2.png" className="w-10 h-10 aspect-square"></img>
                 </div>
-                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                <div className="flex flex-row h-full w-[80%] items-center justify-start">
                     <div className="text-xl text-green-700 font-semibold font-sans">Unblock user</div>
                 </div>
             </div>}
             <div className={`flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
-                <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./trash-icon-red.png" className="w-12 h-12 aspect-square"></img>
+                <div className="flex flex-row h-full w-[20%] items-center justify-center">
+                    <img src="./trash-icon-red.png" className="w-10 h-10 aspect-square"></img>
                 </div>
-                <div className="flex flex-row h-full w-[85%] items-center justify-start">
+                <div className="flex flex-row h-full w-[80%] items-center justify-start">
                     <div className="text-xl text-red-500 font-semibold font-sans">Delete chat</div>
                 </div>
             </div>

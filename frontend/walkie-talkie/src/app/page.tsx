@@ -34,6 +34,8 @@ import DisappearingMessagesViewVertical from "./DisappearingMessagesVertical";
 import BlockedContactsViewVertical from "./BlockedContactsVertical";
 import ProfileInfoVertical from "./InfoProfileVertical";
 import ProfileSettingsVertical from "./ProfileSettingsVertical";
+import ThemeVertical from "./ThemeVertical";
+import FontsVertical from "./FontsVertical";
 
 export default function Home() {
 
@@ -369,17 +371,22 @@ export default function Home() {
   return (
     <div className="absolute left-0 top-0 w-full h-full">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row ${themeChosen === "Dark" ? "bg-[#101D42]" : "bg-slate-400"} ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
-        {themePressed ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+        {themePressed ? (display === "Desktop" ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
-                        ></Theme> : <></>}
-        {fontPressed ? <Fonts curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                        ></Theme> : <ThemeVertical curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
+                        ></ThemeVertical>) : <></>}
+        {fontPressed ? (display === "Desktop" ? <Fonts curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} fontChosenPending={fontChosenPending} setFontChosenPending={setFontChosenPending}
-                        ></Fonts> : <></>}
+                        ></Fonts> : <FontsVertical curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
+                               fontChosen={fontChosen} setFontChosen={setFontChosen} fontChosenPending={fontChosenPending} setFontChosenPending={setFontChosenPending}
+                        ></FontsVertical>) : <></>}
         {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
           {display === "Mobile" && <OptionsBarVerticalView curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} 
                                     setPressedSettings={setPressedSettings} themeChosen={themeChosen} setPressAccount={setPressAccount} setPressPrivacy={setPressPrivacy} setDisappearingMessagesPressed={setDisappearingMessagesPressed}
-                                    setStatusPrivPress={setStatusPrivPress} setProfilePicPrivPress={setProfilePicPrivPress} setBlockedContactsPressed={setBlockedContactsPressed}
+                                    setStatusPrivPress={setStatusPrivPress} setProfilePicPrivPress={setProfilePicPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressNotifications={setPressNotifications}
+                                    setPressAppearance={setPressAppearance} setCurrContact={setCurrContact} setProfileInfo={setProfileInfo}
                                     ></OptionsBarVerticalView>}
           {display === "Desktop" ? <OptionsBar curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} setPressedSettings={setPressedSettings} themeChosen={themeChosen}></OptionsBar> : <></>}
           {pressedProfile ? (display === "Desktop" ? <ProfileSettings users={users} curr_user={user} images={images} setPressProfile={setPressProfile} fetchData={fetchData} 
@@ -481,10 +488,10 @@ export default function Home() {
             (display === "Desktop" ? <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
+                                      closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen}></ConversationsVertical>)
+                                      closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 

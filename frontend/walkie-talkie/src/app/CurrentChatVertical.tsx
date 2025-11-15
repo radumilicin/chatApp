@@ -281,7 +281,7 @@ export default function CurrentChatVertical( props: any ) {
                     </div>
                 }
             </div>
-            <div className={`relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
+            <div className={`relative left-[5%] top-[18%] w-[90%] h-[70%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
                 {allMessages.length > 0 &&
                     allMessages.map((message, idx) => {
                         // console.log("message =", message);
@@ -378,7 +378,7 @@ export default function CurrentChatVertical( props: any ) {
             );
                     })}
             </div>
-            <div className={`absolute left-[2%] top-[88%] w-[96%] h-[10%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
+            <div className={`absolute left-[2%] top-[90%] w-[96%] h-[8%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
                             border-2 flex flex-row`}>
                 <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] hover:bg-gray-500 ml-2 rounded-2xl" >
                     {/* Wrapper for Image and Input */}

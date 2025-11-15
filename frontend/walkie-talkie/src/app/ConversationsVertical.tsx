@@ -36,6 +36,14 @@ export default function ConversationsVertical( props : any) {
         }
     }, [logOut])
 
+    useEffect(() => {
+        if(props.settingsPressed === true || props.pressedProfile === true) {
+            setNewGroupPress(false)
+            setNewChatPress(false)
+            setAddContact(false)
+        }
+    }, [props.settingsPressed, props.pressedProfile])
+
     async function logOutNow() {
 
         try {
@@ -141,7 +149,7 @@ export default function ConversationsVertical( props : any) {
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
             {!newGroupPress && <MenuDropdownVertical menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
-                                             setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdownVertical>}
+                                             setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings}></MenuDropdownVertical>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
@@ -196,7 +204,7 @@ export function MenuDropdownVertical (props) {
             <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
-                props.setLogOut(true); 
+                props.setPressedSettings(true); 
                 setTimeout(() => props.setMenuPress(false), 0);
                 console.log("In logout div?")
                 }}>Settings</div>
