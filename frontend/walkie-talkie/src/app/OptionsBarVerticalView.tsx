@@ -56,8 +56,8 @@ export default function OptionsBarVerticalView(props){
                             props.setProfileInfo(false);
                             props.setCurrContact(null);
                         }}>
-                        <div className={`flex w-15 h-15 justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer rounded-xl`}>
-                            <img src={`${props.themeChosen === "Dark" ? "/cogIcon2.png" : "./cog-black.png"}`} className="flex w-8 h-8 rounded-md"></img>
+                        <div className={`flex w-12 h-12 justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer rounded-xl`}>
+                            <img src={`${props.themeChosen === "Dark" ? "/cogIcon2.png" : "./cog-black.png"}`} className="flex w-8 h-8"></img>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default function OptionsBarVerticalView(props){
                             props.setPressAppearance(false);
                             props.setCurrContact(null);
                         }}>
-                        <div className={`flex w-12 h-12 justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`}>
+                        <div className={`flex w-12 h-12 justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer rounded-xl`}>
                             {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-8 h-8 hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
                                                 : <img src="./profilePic2.png" className="flex w-8 h-8 hover:bg-gray-500 rounded-full"></img>
                             }
