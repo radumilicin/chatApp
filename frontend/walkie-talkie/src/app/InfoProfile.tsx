@@ -635,7 +635,7 @@ function OptionsChat(props) {
         <div className={`relative left-0 top-[0%] h-[25%] w-full flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             {props.contact.blocked === false && <div className={`relative flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./denied2.png" className="w-10 h-10 xl:w-12 xl:h-12 aspect-square"></img>
+                    <img src="./denied2.png" className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="absolute text-base lg:text-lg xl:text-xl text-red-500 font-semibold font-sans">Block user</div>
@@ -651,7 +651,7 @@ function OptionsChat(props) {
             </div>}
             <div className={`flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./trash-icon-red.png" className="w-10 h-10 xl:w-12 xl:h-12 aspect-square"></img>
+                    <img src="./trash-icon-red.png" className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="text-base lg:text-lg xl:text-xl text-red-500 font-semibold font-sans">Delete chat</div>

@@ -686,12 +686,12 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
+                                    <div className={`indent-[10px] text-lg xss:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-sm xss:text-base ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
                                     </div> 
                                 </div>
@@ -699,13 +699,13 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
                                         {lastMessage.sender_id === props.curr_user
                                             ? "Sent " + time
                                             : time
@@ -747,12 +747,12 @@ export function Contacts( props: any) {
                                 <div className="flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
+                                            <div className={`indent-[10px] xsss:text-lg xss:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
+                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-lg xss:text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
                                                 {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div> 
                                         </div>
@@ -760,13 +760,13 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] flex h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                            <div className={`indent-[10px] flex h-full w-full items-start xsss:text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
@@ -813,12 +813,12 @@ export function Contacts( props: any) {
                         <div className="flex w-[90%] flex-col">
                             <div className="flex h-[60%] w-full items-center flex-row">
                                 <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className={`indent-[20px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
+                                    <div className={`indent-[20px] xsss:text-lg xss:text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} 
+                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size xsss:text-lg xss:text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} 
                                                     bg-contain h-[60%] w-[50%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
                                         {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element) !== 0 ? getUnreadMessages(element) : ""}
                                     </div> 
@@ -827,13 +827,13 @@ export function Contacts( props: any) {
                             <div className="relative flex w-full h-[40%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%]">
-                                    <div className={`indent-[20px] flex h-full w-full items-start text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-sans`}>
+                                    <div className={`indent-[20px] flex h-full w-full items-start text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-sans`}>
                                         {getLastMessage(element, idx).message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
+                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center xsss:text-sm xss:text-base text-gray-300 font-medium">
                                         {getLastMessage(element, idx).sender_id === curr_user
                                             ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                             : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)

@@ -16,9 +16,9 @@ export default function SettingsViewVertical(props) {
                             props.setDisappearingMessagesPressed(false);
                             props.setBlockedContactsPressed(false);
                         }}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center w-6 h-6 aspect-square"></img>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center w-5 h-5 xss:w-6 xss:h-6 aspect-square"></img>
                     </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Settings</div>
+                <div className={`relative indent-[20px] left-[2%] w-[40%] text-xl xss:text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Settings</div>
             </div>
 
             <SearchBar searchedSetting={searchedSettings} setSearchedSetting={setSearchedSetting} themeChosen={props.themeChosen}></SearchBar>
@@ -107,8 +107,8 @@ export function PrivacyOption(props: any) {
                 <img src={`${props.themeChosen === "Dark" ? "lock_white_nobg.png" : "lock-black-nobg.png"}`} className="w-10 h-10"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium justify-start items-end`}>Privacy</div>
-                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Blocked contacts, disappearing messages</div>
+                <div className={`relative flex flex-row h-[50%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium justify-start items-end`}>Privacy</div>
+                <div className={`relative flex flex-row h-[50%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Blocked contacts, disappearing messages</div>
             </div>
         </div>
     );
@@ -122,8 +122,8 @@ export function AccountOption( props: any ){
                 <img src={`${props.themeChosen === "Dark" ? "key-icon.png" : "key_icon_black.png"}`} className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`relative flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}  font-medium justify-start items-end`}>Account</div>
-                <div className={`relative flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Account info</div>
+                <div className={`relative flex flex-row h-[50%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}  font-medium justify-start items-end`}>Account</div>
+                <div className={`relative flex flex-row h-[50%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Account info</div>
             </div>
         </div>
     );
@@ -144,8 +144,8 @@ export function AppearanceOption( props: any ){
             <img src={`${props.themeChosen === "Dark" ? "color_palette_nobg.png" : "color-palette-black-icon.png"}`} className={`${props.themeChosen === "Dark" ? "w-16 h-16" : "w-14 h-14"}`}></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium items-end`}>Appearance</div>
-                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Fonts, Themes</div>
+                <div className={`flex flex-row h-[50%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium items-end`}>Appearance</div>
+                <div className={`flex flex-row h-[50%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Fonts, Themes</div>
             </div>
         </div>
     );
@@ -166,8 +166,8 @@ export function NotificationsOption( props: any ){
                 <img src={`${props.themeChosen === "Dark" ? "bell-icon.png" : "bell-icon-black-nobg.png"}`} className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col w-[85%] h-full">
-                <div className={`flex flex-row h-[50%] text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-900"} font-medium items-end`}>Notifications</div>
-                <div className={`flex flex-row h-[50%] text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Message notifications</div>
+                <div className={`flex flex-row h-[50%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-900"} font-medium items-end`}>Notifications</div>
+                <div className={`flex flex-row h-[50%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} justify-start items-start`}>Message notifications</div>
             </div>
         </div>
     );
@@ -187,9 +187,9 @@ export function LogOutOption( props: any ){
     return (
         <div className={`relative flex flex-row left-[2%] top-[5%] w-[96%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={async () => {setLogOut(true); console.log("logging out from settings")}}>
             <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
-                <img src="exitIcon.png" className="w-8 h-8"></img>
+                <img src="exitIcon.png" className="w-[28px] h-[28px]"></img>
             </div>
-            <div className="relative flex flex-col w-[85%] h-full text-red-500 justify-center text-xl"> Log out </div>
+            <div className="relative flex flex-col w-[85%] h-full text-red-500 justify-center text-base xss:text-lg"> Log out </div>
         </div>
     );
 }
@@ -205,7 +205,7 @@ export function SearchBar( props : any ) {
                     <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
                 </div>
                 <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-white' : 'text-gray-600 placeholder:text-gray-600'}`} 
+                    <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-lg xss:text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-white' : 'text-gray-600 placeholder:text-gray-600'}`} 
                         value={props.searchedSetting}
                         placeholder="Search for a setting.."
                         onChange={async (e) => {
