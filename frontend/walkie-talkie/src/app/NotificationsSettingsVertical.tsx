@@ -7,16 +7,11 @@ export default function NotificationSettings( props: any ) {
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
-                            props.setPressPrivacy(false)
-                            props.setStatusPrivPress(false)
                             props.setPressNotifications(false)
                             props.setPressAccount(false)
                             props.setPressProfile(false)
                             props.setPressAppearance(false)
                             props.setPressedSettings(true)
-                            props.setProfilePicPrivPress(false)
-                            props.setDisappearingMessagesPressed(false)
-                            props.setBlockedContactsPressed(false)
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px] xss:w-6 xss:h-6 aspect-square"></img>
                 </div>
@@ -98,7 +93,7 @@ export function EnableNotifications(props: any) {
             </div>
             <div className="relative flex flex-col justify-begin w-[70%]">
                 <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium  ${props.themeChosen === "Dark" ? "" : "text-black"} `}>Message notifications</div>
-                <div className={`relative flex flex-row w-full h-[50%] text-sm xss:text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"} `}>Enable notification sound</div>
+                <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"} `}>Enable notification sound</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.notificationsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
@@ -162,7 +157,7 @@ export function IncomingSounds(props: any) {
             </div>
             <div className="relative flex flex-col justify-begin w-[70%] h-full">
                 <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Incoming sounds</div>
-                <div className={`relative flex flex-row w-full h-[50%] text-sm xss:text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when receiving a message</div>
+                <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when receiving a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.incomingSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}
@@ -223,7 +218,7 @@ export function OutgoingSounds(props: any) {
             </div>
             <div className="relative flex flex-col justify-begin w-[70%] h-full">
                 <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Outgoing sounds</div>
-                <div className={`relative flex flex-row w-full h-[50%] text-sm xss:text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when sending a message</div>
+                <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when sending a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
                 <div className={`absolute w-12 h-6 ${props.outgoingMessagesSoundsEnabled ? 'bg-green-700' : 'bg-slate-700'} rounded-xl hover:cursor-pointer`}

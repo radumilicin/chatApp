@@ -736,7 +736,7 @@ export function Contacts( props: any) {
                                         className="h-10 w-10 rounded-full"
                                         alt="Profile"
                                     /> : 
-                                        <img src={`${props.themePressed === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">

@@ -338,11 +338,11 @@ export default function CurrentChatVertical( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-lg text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-base text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
-                                    <div className="break-words">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                    <div className="break-words text-sm">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px] xss:w-[250px] xss:h-[250px]"></img> : 
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px] xss:w-[250px] xss:h-[250px]"  ></img> :
                                         message.message}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
@@ -363,8 +363,8 @@ export default function CurrentChatVertical( props: any ) {
                                 <div className={`relative flex w-full text-sm font-semibold text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-1 items-start">
                                     <div className="break-words">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px] xss:w-[250px] xss:h-[250px]]"  ></img> : 
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px] xss:w-[250px] xss:h-[250px]"  ></img> :
                                         message.message}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
