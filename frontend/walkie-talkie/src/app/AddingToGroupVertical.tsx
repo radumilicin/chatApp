@@ -1,6 +1,6 @@
 import react, {useEffect, useState, useRef} from 'react'
 
-export default function AddPersonToGroup(props) {
+export default function AddPersonToGroupVertical(props) {
 
     const [searchedContact, setSearchedContact] = useState('')
     const [filteredContacts, setFilteredContacts] = useState([])
@@ -85,7 +85,7 @@ export default function AddPersonToGroup(props) {
     }
 
     return (
-        <div className={`absolute left-[30%] w-[40%] top-[10%] h-[80%] ${props.themeChosen === "Dark" ? "bg-gray-800" : "bg-gray-300"} rounded-xl border-[2px] border-gray-500 shadow-sm`}>
+        <div className={`absolute left-[15%] w-[70%] top-[10%] h-[70%] rounded-xl ${props.themeChosen === "Dark" ? "bg-gray-800" : "bg-gray-300"} rounded-xl border-[2px] border-gray-500 shadow-sm`}>
             <div className="relative top-0 left-0 w-full h-full flex flex-col gap-4">
                 <div className="relative flex flex-row h-[8%] w-full bg-slate-500 rounded-t-xl bg-opacity-40">
                     <div className="flex w-[10%] h-full justify-center items-center hover:cursor-pointer" onClick={() => { props.setAddToGroup(false); }}>
@@ -96,7 +96,7 @@ export default function AddPersonToGroup(props) {
                     </div>
                 </div>
                 <div className="relative flex flex-row h-[6%] w-full items-center justify-center">
-                    <input  placeholder="Search for username.." 
+                    <input  placeholder="Search for username" 
                             value={searchedContact} 
                             className={`bg-transparent outline-none h-[50px] w-[90%] indent-[20px] bg-slate-500 rounded-xl bg-opacity-60 ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}
                             onChange={async (e) => {
@@ -107,7 +107,7 @@ export default function AddPersonToGroup(props) {
                 </div>
                 <div className="flex flex-col left-0 top-0 h-[86%] w-full overflow-y-scroll scrollbar-hide">
                     {filteredContacts !== null && filteredContacts.map((user, idx) => (
-                        <div className={`relative flex h-[100px] w-full flex-row ${props.themeChosen === "Dark" ? "bg-gray-600" : (idx === 0 ? "border-gray-400 border-y-2" : "border-gray-400 border-b-2")} bg-opacity-80 hover:bg-slate-300 hover:bg-opacity-30`} 
+                        <div key={idx} className={`relative flex h-[100px] w-full flex-row ${props.themeChosen === "Dark" ? "bg-gray-600" : (idx === 0 ? "border-gray-400 border-y-2" : "border-gray-400 border-b-2")} bg-opacity-80 hover:bg-slate-300 hover:bg-opacity-30`} 
                             onClick={() => { 
                                 if(!pressedContacts.includes(user)) {setPressedContactsAsync([...pressedContacts, user])} 
                                 else {removePressedContactsAsync(user)}    
@@ -122,7 +122,7 @@ export default function AddPersonToGroup(props) {
                                 }
                             </div>
                             <div className="flex w-[75%] h-full flex-col justify-start">
-                            <div className={`flex h-[50%] indent-[10px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans text-sm lg:text-base font-medium items-end overflow-x-hidden`}>{user.username}</div>
+                                <div className={`flex h-[50%] indent-[10px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans text-sm lg:text-base font-medium items-end overflow-x-hidden`}>{user.username}</div>
                                 <div className={`flex h-[50%] indent-[10px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans text-xs lg:text-sm xl:text-base items-start overflow-x-hidden`}>{user.about}</div>
                             </div>    
                         </div>
@@ -131,7 +131,7 @@ export default function AddPersonToGroup(props) {
             </div>
             <div className="absolute left-0 top-[90%] h-[10%] w-full rounded-b-xl bg-slate-500 bg-opacity-40">
                 <div className="relative left-[88%] w-[10%] h-full flex flex-row justify-center items-center">
-                    <img src="./greenTick2.png" className={`w-[28px] h-[28px] xl:w-8 xl:h-8 aspect-square rounded-full hover:cursor-pointer bg-transparent hover:bg-white`} onClick={ async () => {
+                    <img src="./greenTick2.png" className="w-6 h-6 aspect-square rounded-full hover:cursor-pointer bg-transparent" onClick={ async () => {
                         await insertMembersInGroup(); props.setAddToGroup(false); 
                     }}></img>
                 </div>
