@@ -1,4 +1,4 @@
-import react, {useState, useEffect} from 'react'
+import react, {useState, useEffect, useRef} from 'react'
 
 export default function ProfileSettings(props) {
 
@@ -89,6 +89,41 @@ export default function ProfileSettings(props) {
         }
     }
 
+    const divRef = useRef<HTMLDivElement>(null);
+    const divRef2 = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Event listener for clicks
+        const handleClickOutside = (event) => {
+            console.log("divRef.current:", divRef.current);
+            console.log("event.target:", event.target);
+            if (divRef.current && !divRef.current.contains(event.target)) {
+                setStateUsername("fixed") // set menu press to false
+                console.log("outside press")
+            }
+        };
+        
+        const handleClickOutside2 = (event) => {
+            console.log("divRef.current:", divRef2.current);
+            console.log("event.target:", event.target);
+            if (divRef2.current && !divRef2.current.contains(event.target)) {
+                setStateAbout("fixed") // set menu press to false
+                console.log("outside press")
+            }
+        };
+
+        // listens if the whole document was clicked and if it is then see if it was then
+        // check if the click happened outside
+        // Attach event listener to the document
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside2);
+
+        // Cleanup function to remove the listener
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside2);
+        };
+    }, []);
 
     useEffect(() => {
         console.log("users after profile pic change = " + JSON.stringify(props.users))
@@ -184,7 +219,7 @@ export default function ProfileSettings(props) {
             <div className={`relative flex flex-col top-[0%] left-0 w-full h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
                 <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
                     <div className={`relative flex flex-row ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 w-full h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center justify-start`}>Name</div>
-                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
+                    <div ref={divRef} className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {
                         stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center md:indent-[20px] lg:indent-[30px] xl:indent-[40px] md:text-lg xl:text-xl font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
                                                 : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
@@ -206,7 +241,7 @@ export default function ProfileSettings(props) {
                         </div>
                     </div>
                 </div>
-                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
+                <div ref={divRef2} className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
                     <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>About</div>
                     <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {

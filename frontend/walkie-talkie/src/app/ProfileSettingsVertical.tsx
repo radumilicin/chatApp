@@ -1,4 +1,4 @@
-import react, {useState, useEffect} from 'react'
+import react, {useState, useEffect, useRef} from 'react'
 
 export default function ProfileSettings(props) {
 
@@ -101,6 +101,42 @@ export default function ProfileSettings(props) {
         console.log("data image changed to " + JSON.stringify(currImageData) + " at time " + new Date().toISOString())
     }, [currImageData])
 
+    const divRef = useRef<HTMLDivElement>(null);
+    const divRef2 = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Event listener for clicks
+        const handleClickOutside = (event) => {
+            console.log("divRef.current:", divRef.current);
+            console.log("event.target:", event.target);
+            if (divRef.current && !divRef.current.contains(event.target)) {
+                setStateUsername("fixed") // set menu press to false
+                console.log("outside press")
+            }
+        };
+        
+        const handleClickOutside2 = (event) => {
+            console.log("divRef.current:", divRef2.current);
+            console.log("event.target:", event.target);
+            if (divRef2.current && !divRef2.current.contains(event.target)) {
+                setStateAbout("fixed") // set menu press to false
+                console.log("outside press")
+            }
+        };
+
+        // listens if the whole document was clicked and if it is then see if it was then
+        // check if the click happened outside
+        // Attach event listener to the document
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside2);
+
+        // Cleanup function to remove the listener
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside2);
+        };
+    }, []);
+
     return (
         <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
             <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
@@ -119,7 +155,7 @@ export default function ProfileSettings(props) {
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
-                <div className={`relative indent-[10px] left-[2%] w-[60%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Profile info</div>
+                <div className={`relative indent-[10px] left-[2%] w-[60%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Profile info</div>
             </div>
             <div
                 className="relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center hover:opacity-50 rounded-full"
@@ -183,9 +219,9 @@ export default function ProfileSettings(props) {
                 />
             </div>
             <div className={`relative flex flex-col top-[0%] left-0 h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
-                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
+                <div className="relative flex flex-col top-[10%] w-[60%] xss:w-[55%] xsw:w-[50%] h-[30%]">
                     <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>Name</div>
-                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
+                    <div ref={divRef} className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {
                         stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center md:text-lg xl:text-xl indent-[40px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
                                                 : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
@@ -200,14 +236,24 @@ export default function ProfileSettings(props) {
                                                             }}></input>
                                                 
                         }
-                        <div className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {setStateUsername("input")}}>
+                        <div className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {
+                            console.log("stateUsername: " + stateUsername)
+                            if(stateUsername === "input") {
+                                setStateUsername("fixed")
+                                console.log("stateUsername change to: fixed")
+                            }
+                            else {
+                                setStateUsername("input")
+                                console.log("stateUsername change to: input")
+                            } 
+                        }}>
                             <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
                                 <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
+                <div ref={divRef2} className="relative flex flex-col top-[10%] w-[60%] xss:w-[55%] xsw:w-[50%] h-[30%]">
                     <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>About</div>
                     <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                         {
@@ -229,7 +275,10 @@ export default function ProfileSettings(props) {
                         }
                         <div
                             className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
-                            onClick={() => setStateAbout("input")}
+                            onClick={() => {
+                                if(stateAbout === "input") setStateAbout("fixed")
+                                else setStateAbout("input")
+                            }}
                         >
                             <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
                                 <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />

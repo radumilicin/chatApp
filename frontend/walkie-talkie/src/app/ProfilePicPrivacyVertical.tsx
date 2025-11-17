@@ -60,42 +60,42 @@ export default function ProfilePicPrivacyVertical(props: any) {
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-[70%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Profile Picture Privacy</div>
+                <div className={`relative indent-[10px] left-[2%] w-[70%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Profile Picture Privacy</div>
             </div>
 
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-xl ${props.themeChosen === "Dark" ? "text-" : "text-black"}`}>Who can see your profile picture:</div>
+                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-" : "text-black"}`}>Who can see your profile picture:</div>
                     <div className="relative flex flex-col left-[6%] w-[88%] h-[40%]">
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityProfilePic("Everyone") }}>
-                                    {props.visibilityProfilePic !== "Everyone" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Everyone" && <div className="absolute flex flex-row w-3 h-3 bg-green-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Everyone" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-green-700 rounded-full"></div>}
+                                    {props.visibilityProfilePic !== "Everyone" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Everyone" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Everyone" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Everyone</div>
+                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Everyone</div>
                         </div>
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityProfilePic("Contacts") }}>
-                                    {props.visibilityProfilePic !== "Contacts" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Contacts" && <div className="absolute flex flex-row w-3 h-3 bg-green-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Contacts" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-green-700 rounded-full"></div>}
+                                    {props.visibilityProfilePic !== "Contacts" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Contacts" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Contacts" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Contacts</div>
+                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Contacts</div>
                         </div>
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
-                                <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityProfilePic("Nobody") }}>
-                                    {props.visibilityProfilePic !== "Nobody" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Nobody" && <div className="absolute flex flex-row w-3 h-3 bg-green-700 rounded-full"></div>}
-                                    {props.visibilityProfilePic === "Nobody" && <div className="absolute flex flex-row w-6 h-6 bg-transparent border-[3px] border-green-700 rounded-full"></div>}
+                                <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer rounded-full" onClick={() => { props.setVisibilityProfilePic("Nobody") }}>
+                                    {props.visibilityProfilePic !== "Nobody" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Nobody" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
+                                    {props.visibilityProfilePic === "Nobody" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Nobody</div>
+                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Nobody</div>
                         </div>
                     </div>
                 </div>
