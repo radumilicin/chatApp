@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken'
 import path from "path";
 import { fileURLToPath } from "url";
 import { access } from 'fs';
+import {v4 as uuidv4} from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,16 +92,37 @@ app.get("/verify", (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic } = req.body;
 
   console.log("username = " + username + ";  password register = " + password)
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     console.log("before query")
+
+    const user_id = uuidv4();
+
+    // const user_id = result.rows[0].id;
+    // console.log("identityKeyPublic: " + JSON.stringify(identityKeyPublic));
+    // console.log("signed_prekey_public: " + JSON.stringify(signedPreKeyPublic));
+    // console.log("signed_prekey_signature: " + JSON.stringify(signedPreKeySignature));
+    // console.log("oneTimePreKeys: " + JSON.stringify(oneTimePreKeysPublic));
+
+    // res.status(500).json("Nothing wrong bruv just debugging");
+
     const result = await pool.query(
-      'INSERT INTO users (username, email, password_hash, about) VALUES ($1, $2, $3, $4) RETURNING id',
-      [username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
+      'INSERT INTO users (id, username, email, password_hash, about) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [user_id, username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
     );
+
+    const result2 = await pool.query( 
+      'INSERT INTO user_keys (user_id, identity_key_public, signed_prekey_public, signed_prekey_signature, signed_prekey_id) VALUES ($1, $2, $3, $4, $5)', 
+      [user_id, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, 1]
+    )
+
+    for(const otpk of oneTimePreKeysPublic) {
+      const res = await pool.query('INSERT INTO one_time_prekeys (user_id, key_id, public_key) VALUES ($1, $2, $3)', [user_id, otpk.keyId, otpk.publicKey])
+    }
+
     console.log("After query")
     res.status(201).json({ userId: result.rows[0].id });
   } catch (error) {
@@ -173,17 +195,62 @@ app.get('/logout', (req, res) => {
   res.status(200).json( {message: 'Logged out successfully'} );
 });
 
-
-
 /////////////////////////////////////////////////////////////
 
 
+
+// export interface ClientPreKeyBundle {
+//   identityKey: string;
+//   signedPreKey: {
+//     keyId: number;
+//     publicKey: string;
+//     signature: string;
+//   };
+//   oneTimePreKey?: {
+//     keyId: number;
+//     publicKey: string;
+//   };
+// }
+
+app.get('/app/keys', async(req, res) => {
+  const {recipient_id} = req.query.recipient_id;
+
+  if(recipient_id === null)
+
+  try {
+
+    const resp_keys = await pool.query("SELECT * from user_keys WHERE user_id = $1", [recipient_id]);
+    const resp_ot_keys = await pool.query("SELECT * from one_time_prekeys WHERE user_id = $1", [recipient_id]);
+
+    if(resp_keys.rows.length === 0 || resp_ot_keys.rows.length === 0) {
+      res.status(404).json("Recipient not found");
+    }
+
+    const public_keys_recipient = {
+      identityKey: resp_keys.rows[0].identity_key_public,
+      signedPreKey: {
+        key_id: resp_keys.rows[0].signed_prekey_id,
+        public_key: resp_keys.rows[0].signed_prekey_public,
+        signature: resp_keys.rows[0].signed_prekey_signature
+      }, 
+      oneTimePreKey: {
+        keyId: resp_ot_keys.rows[0].key_id,
+        publicKey: resp_ot_keys.rows[0].public_key
+      }
+    }
+
+    res.status(200).json(public_keys_recipient);
+  } catch (error) {
+    res.status(500).json("Error: " + error);
+  }
+});
+
 app.get('/contacts', async (req, res) => {      
     console.log("==============\n In contacts endpoint\n=============")
-    const user_id = parseInt(req.query.user); // Extract user_id query parameter
+    const user_id = req.query.user // parseInt(req.query.user); // Extract user_id query parameter
     var contact_id = null
     if (req.query.contact_id) {
-      const parsedContactId = parseInt(req.query.contact_id, 10);
+      const parsedContactId = req.query.contact_id // parseInt(req.query.contact_id, 10);
       if (!isNaN(parsedContactId)) {
         contact_id = parsedContactId;
       }

@@ -56,7 +56,7 @@ export default function Conversations( props : any) {
                 props.updateUsers([]);
                 props.updateContacts([]);
                 props.updateImages([]);
-                props.setUser(-1);
+                props.setUser("");
             }
 
         } catch (err) {
@@ -1279,7 +1279,7 @@ export function Groups(props) {
 
 export function Contacts2( props: any) {
 
-    let curr_user = 1
+    // let curr_user = 1
 
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 

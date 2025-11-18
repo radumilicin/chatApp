@@ -1,1 +1,0 @@
-ALTER TABLE "users" ALTER COLUMN "theme" SET DEFAULT 'Sans';

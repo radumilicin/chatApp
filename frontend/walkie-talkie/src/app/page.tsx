@@ -37,10 +37,11 @@ import ProfileSettingsVertical from "./ProfileSettingsVertical";
 import ThemeVertical from "./ThemeVertical";
 import FontsVertical from "./FontsVertical";
 import AddPersonToGroupVertical from "./AddingToGroupVertical";
+import { useX3DH } from "./useX3DH";
 
 export default function Home() {
 
-  const [user, setUser] = useState(-1);
+  const [user, setUser] = useState("");
   const [userObj, setUserObj] = useState(null);
   const [users, updateUsers] = useState([]);  // Change state to an array instead of object
   const [contacts, updateContacts] = useState([]);
@@ -152,12 +153,115 @@ export default function Home() {
     };
   
   const { isConnected, sendMessage } = useWebSocket(
-    user !== -1 && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
     setMessages,
     incomingSoundsEnabled,
     outgoingMessagesSoundsEnabled,
     fetchData2
   );
+
+  const { identityKey, signedPreKey, isKeysLoaded, generateKeysForSignup,
+          loadKeysAfterLogin, initiateChat, clearKeys} = useX3DH(); // Xtended Diffie-Hellman for end-to-end encryption 
+
+  async function getOrCreateDeviceKey() {
+    const storedKey = await loadDeviceKeyFromIndexedDB();
+    if (storedKey) return storedKey;
+
+    // Create brand new key
+    const newKey = await crypto.subtle.generateKey(
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+    );
+
+    await storeDeviceKeyInIndexedDB(newKey);
+    return newKey;
+  }
+
+  async function storeDeviceKeyInIndexedDB(key: CryptoKey): Promise<void> {
+    const db = await openDB();
+
+    const rawKey = await crypto.subtle.exportKey("raw", key);
+
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("cryptoKeys", "readwrite");
+        const store = tx.objectStore("cryptoKeys");
+
+        store.put(rawKey, "deviceKey");
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function loadDeviceKeyFromIndexedDB(): Promise<CryptoKey | null> {
+    const db = await openDB();
+
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("cryptoKeys", "readonly");
+        const store = tx.objectStore("cryptoKeys");
+
+        const request = store.get("deviceKey");
+
+        request.onsuccess = async () => {
+        const rawKey = request.result;
+        if (!rawKey) {
+            resolve(null);
+            return;
+        }
+
+        try {
+            const key = await crypto.subtle.importKey(
+            "raw",
+            rawKey,
+            { name: "AES-GCM" },
+            true,
+            ["encrypt", "decrypt"]
+            );
+            resolve(key);
+        } catch (err) {
+            reject(err);
+        }
+        };
+
+        request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function cryptoKeyToBase64(key: CryptoKey): Promise<string> {
+    const raw = await crypto.subtle.exportKey("raw", key);
+    return btoa(String.fromCharCode(...new Uint8Array(raw)));
+  }
+
+  async function base64ToCryptoKey(str: string): Promise<CryptoKey> {
+    const binary = atob(str);
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+
+    return crypto.subtle.importKey(
+        "raw",
+        bytes,
+        { name: "AES-GCM" },
+        true,
+        ["encrypt", "decrypt"]
+    );
+  }
+
+
+  function openDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("MySecureKeyDB", 1);
+
+        request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("cryptoKeys")) {
+            db.createObjectStore("cryptoKeys");
+        }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+  }
 
   async function trySSO() {
 
@@ -173,14 +277,20 @@ export default function Home() {
       console.log("✅ Token is valid:", data);
       setUser(data.user.user.id)
       if(!loggedIn) setLoggedIn()
+      
+      const deviceKey = await getOrCreateDeviceKey()
+      const deviceKeyString = await cryptoKeyToBase64(deviceKey);
+      loadKeysAfterLogin(user, deviceKeyString)
+      return true;
     } else {
       console.log("❌ Invalid token:", data);
+      return false;
     }
   }
 
   useEffect(() => {
     console.log(`User has id ${user}`)
-    if(user !== -1) {
+    if(user !== "") {
       fetchData()
       fetchData2()
       fetchImages()
@@ -190,7 +300,7 @@ export default function Home() {
   }, [user])
 
   useEffect(() => {
-    if(user !== -1 && users.length !== 0) {
+    if(user !== "" && users.length !== 0) {
 
       const user_0 = users.find((elem) => {
         return user === elem.id
@@ -216,7 +326,10 @@ export default function Home() {
   useEffect(() => {
 
     /* First check with SSO if we have a token by SENDING A REQUEST */ 
-    trySSO();
+    const sso_result = trySSO();
+    // if(sso_result === true) {
+
+    // }
 
     // Function to fetch data
 
@@ -283,7 +396,7 @@ export default function Home() {
             updateUsers([]);
             updateContacts([]);
             updateImages([]);
-            setUser(-1);
+            setUser("");
             setCurrContact(null)
         }
 
@@ -512,7 +625,8 @@ export default function Home() {
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>
         }
-        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}
+        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey}></Login> : (registered === false && loggedIn === false) ? 
+                                                       <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}

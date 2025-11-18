@@ -40,6 +40,11 @@ export default function Register(props) {
             return
         }
         
+        if(username.length > 128) {
+            console.log("Username should be less than 128 characters")
+            return
+        }
+        
         if(!email.includes('@')){
             console.log("Email addresses should include `@`")
             return
@@ -49,11 +54,32 @@ export default function Register(props) {
             console.log("Password should be 8 or more characters long")
             return 
         }
+        
+        if(password.length > 128) {
+            console.log("Password should be less than 128 characters")
+            return 
+        }
+
+        // also incorporate checking whether they have at least one caps, a punctuation etc. 
+        // if(password.includes(""))
+        const deviceKey = await props.getOrCreateDeviceKey()
+        const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
+        
+        const { identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic  } = await props.generateKeysForSignup(deviceKeyString);
+
+        // console.log("identityKeyPublic: " + JSON.stringify(identityKeyPublic));
+        // console.log("signed_prekey_public: " + JSON.stringify(signedPreKeyPublic));
+        // console.log("signed_prekey_signature: " + JSON.stringify(signedPreKeySignature));
+        // console.log("oneTimePreKeys: " + JSON.stringify(oneTimePreKeysPublic));
 
         let msg = {
             username: username,
             email: email,
-            password: password
+            password: password,
+            identityKeyPublic: identityKeyPublic, 
+            signedPreKeyPublic: signedPreKeyPublic,
+            signedPreKeySignature: signedPreKeySignature,
+            oneTimePreKeysPublic: oneTimePreKeysPublic
         }
 
         let requestParams = {
@@ -61,16 +87,21 @@ export default function Register(props) {
             'headers': {'Content-Type' : 'application/json'},
             'body': JSON.stringify(msg)
         }
+        
 
         const response = await fetch("http://localhost:3002/register", requestParams);
         if(response.status === 201){
             console.log("Got registered suckas")
+            
+            // Send X3DH (public) keys to server
             return "success"
         } else {
             console.log("registration failed bitchass")
             return "error"
         }
     }
+
+
 
     return (
         <div className="absolute left-[35%] top-[25%] w-[30%] h-[50%] ">

@@ -13,8 +13,8 @@ import {
 
 export const images = pgTable("images", {
   id: serial("id").primaryKey(),
-  id_user: integer("user_id").references(() => users.id),
-  contact_id: integer("contact_id").references(() => users.id),
+  id_user: varchar("user_id", {length: 36}).references(() => users.id, {onDelete: "cascade"}),
+  contact_id: varchar("contact_id", {length: 36}).references(() => users.id, {onDelete: "cascade"}),
   // group_id: integer("group_id").references(() => contacts.id),
   image_name: text("image_name").notNull(), // To keep track of the image name
   data: text("data").notNull(), // Base64-encoded image data
@@ -22,11 +22,11 @@ export const images = pgTable("images", {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
+  id: varchar('id', {length : 36}).primaryKey(), // convert to varchar and change code to reflect change
   username: varchar('username', { length: 50 }).notNull().unique(),
   email: varchar('email', {length: 100}).notNull().unique(),
   password_hash: text('password_hash').notNull(),
-  profile_pic_id: integer("profile_pic_id").references(() => images.id),
+  profile_pic_id: integer("profile_pic_id").references(() => images.id, {onDelete: "cascade"}),
   about: varchar('about', {length : 250}),
   incoming_sounds: boolean().default(false),
   outgoing_sounds: boolean().default(false),
@@ -40,11 +40,11 @@ export const users = pgTable('users', {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
-  id: serial('id').primaryKey(),
-  sender_id: integer('sender_id').references(() => users.id), // this and contact_id are empty if group is true
+  id: serial('id').primaryKey(), // varchar('id', {length : 36}).primaryKey() // convert to varchar and change the code to reflect this
+  sender_id: varchar('sender_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}), // this and contact_id are empty if group is true
   group: boolean('is_group'),                          // assign true to this if the contact is a group 
   group_members: jsonb('members').default([]),                // this and sender_id are empty if group is true
-  contact_id: integer('contact_id').references(() => users.id),
+  contact_id: varchar('contact_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}),
   message: jsonb('message').default([]),
   group_name: varchar('group_name', {length : 50}).default(''),
   group_pic_id: integer('group_pic_id').references(() => images.id),
@@ -54,4 +54,20 @@ export const contacts = pgTable('contacts', {
   blockedAt: varchar('blockedAt', {length: 50}),
   opened_at: jsonb('opened_at').default([]),                // array with [{id_user1: {}}, {id_user2: {}}]
   closed_at: jsonb('closed_at').default([]),                // array with [{id_user1: 1, closedAt: 25.01.2025T23:22:15}, {id_user2: {}}]
+});
+
+export const user_keys = pgTable('user_keys', {
+  id: serial('id').primaryKey(),
+  user_id: varchar('user_id', {length: 36}).notNull().references(() => users.id, {onDelete: "cascade"}),
+  identity_key_public: varchar('identity_key_public', {length: 100}),
+  signed_prekey_public: varchar('signed_prekey_public', {length: 100}),
+  signed_prekey_signature:  varchar('signed_prekey_signature', {length: 100}),
+  signed_prekey_id: varchar('signed_prekey_id', {length: 100}),
+});
+
+export const one_time_prekeys = pgTable('one_time_prekeys', {
+  id: serial('id').primaryKey(),
+  user_id: varchar('user_id', {length: 36}).notNull().references(() => users.id, {onDelete: "cascade"}),
+  key_id: varchar('key_id', {length: 100}).notNull(),
+  public_key: varchar('public_key', {length: 100}).notNull()
 });
