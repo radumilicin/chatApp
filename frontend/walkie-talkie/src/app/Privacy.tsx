@@ -50,7 +50,7 @@ export function ProfilePicturePrivacy(props: any) {
         <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
             onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base xl:text-lg items-end font-medium`}>Profile picture</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base items-end font-medium`}>Profile picture</div>
                 <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base`}>{props.visibilityProfilePic}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
@@ -67,7 +67,7 @@ export function StatusPrivacy(props: any) {
         <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
             onClick={() => {props.setStatusPrivPress(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base xl:text-lg items-end font-medium`}>Status</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base items-end font-medium`}>Status</div>
                 <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm`}>{props.visibilityStatus}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
@@ -88,7 +88,7 @@ export function DisappearingMessages(props: any) {
         <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
             onClick={() => {props.setDisappearingMessagesPressed(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base xl:text-lg items-end font-medium`}>Default duration</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base items-end font-medium`}>Default duration</div>
                 {props.disappearingMessagesPeriod === -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm`}>Off</div>}
                 {props.disappearingMessagesPeriod !== -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm`}>{props.disappearingMessagesPeriod}</div>}
             </div>
@@ -105,7 +105,7 @@ export function BlockedContacts(props: any) {
         <div className={`relative flex flex-row top-[6%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
             onClick={() => {props.setBlockedContactsPressed(true); props.setPressPrivacy(false);}}>
             <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base xl:text-lg items-end font-medium`}>Blocked contacts</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base items-end font-medium`}>Blocked contacts</div>
                 <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm`}>{props.blockedContacts.length}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
