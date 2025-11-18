@@ -188,20 +188,20 @@ export function MenuDropdown (props) {
 
     return (
     (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[10%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setNewGroupPress(true); 
                 console.log("In new group div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Group</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setAddContact(true); 
                 props.setAddContact2(true); 
                 console.log("In new contact div?")
                 setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400`} onClick={(e) => {
+            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
                 props.setLogOut(true); 
