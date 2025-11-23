@@ -24,7 +24,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     credentials: true
   }
 ))
@@ -212,7 +212,7 @@ app.get('/logout', (req, res) => {
 //   };
 // }
 
-app.get('/app/keys', async(req, res) => {
+app.get('/api/keys', async(req, res) => {
   const {recipient_id} = req.query.recipient_id;
 
   if(recipient_id === null)

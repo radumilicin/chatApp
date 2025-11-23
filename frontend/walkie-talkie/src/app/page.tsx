@@ -311,7 +311,7 @@ export default function Home() {
   }, [user, users])
 
   useEffect(() => {
-    if(userObj !== null || userObj === undefined) {
+    if(userObj !== null && userObj !== undefined) {
       setVisibilityProfilePic(userObj.profile_pic_visibility)
       setVisibilityStatus(userObj.status_visibility)
       setDisappearingMessagesPeriod(userObj.disappearing_message_period)
@@ -620,7 +620,8 @@ export default function Home() {
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen}></CurrentChat> : <></>)
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
+                                                identityKey={identityKey} signedPreKey={signedPreKey} ></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>

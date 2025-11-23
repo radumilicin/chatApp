@@ -107,7 +107,7 @@ export function useX3DH() {
     }
 
     // Fetch recipient's prekey bundle
-    const response = await fetch(`http://localhost:3002/api/keys/recipient_id=${recipientId}`);
+    const response = await fetch(`http://localhost:3002/api/keys?recipient_id=${recipientId}`);
     const bundle = await response.json();
 
     // Generate ephemeral key
@@ -120,6 +120,7 @@ export function useX3DH() {
       sharedSecret: result.sharedSecret,
       ephemeralPublicKey: result.ephemeralPublicKey,
       oneTimePreKeyId: bundle.oneTimePreKey?.keyId,
+      bundle: bundle,
     };
   };
 
