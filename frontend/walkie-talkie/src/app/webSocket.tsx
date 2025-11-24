@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-export default function useWebSocket (url, setMessages, incomingSoundsEnabled, outgoingMessagesSoundsEnabled, fetchContacts) {
+export default function useWebSocket (url, setMessages, incomingSoundsEnabled, outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
     const audioRef = useRef(null);

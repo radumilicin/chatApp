@@ -1,5 +1,5 @@
 {
-  "id": "d522e7c6-614d-4e86-ae2d-38ce5c2ae624",
+  "id": "d975b1bf-21d9-404e-96f2-d4b6392623be",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -16,7 +16,7 @@
         },
         "sender_id": {
           "name": "sender_id",
-          "type": "integer",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": false
         },
@@ -35,7 +35,7 @@
         },
         "contact_id": {
           "name": "contact_id",
-          "type": "integer",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": false
         },
@@ -85,6 +85,20 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
+        },
+        "opened_at": {
+          "name": "opened_at",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
         }
       },
       "indexes": {},
@@ -99,7 +113,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "contacts_contact_id_users_id_fk": {
@@ -112,7 +126,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "contacts_group_pic_id_images_id_fk": {
@@ -147,19 +161,13 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": false
         },
         "contact_id": {
           "name": "contact_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "group_id": {
-          "name": "group_id",
-          "type": "integer",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": false
         },
@@ -188,7 +196,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "images_contact_id_users_id_fk": {
@@ -201,20 +209,121 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.one_time_prekeys": {
+      "name": "one_time_prekeys",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
         },
-        "images_group_id_contacts_id_fk": {
-          "name": "images_group_id_contacts_id_fk",
-          "tableFrom": "images",
-          "tableTo": "contacts",
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key_id": {
+          "name": "key_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "public_key": {
+          "name": "public_key",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "one_time_prekeys_user_id_users_id_fk": {
+          "name": "one_time_prekeys_user_id_users_id_fk",
+          "tableFrom": "one_time_prekeys",
+          "tableTo": "users",
           "columnsFrom": [
-            "group_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_keys": {
+      "name": "user_keys",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identity_key_public": {
+          "name": "identity_key_public",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signed_prekey_public": {
+          "name": "signed_prekey_public",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signed_prekey_signature": {
+          "name": "signed_prekey_signature",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signed_prekey_id": {
+          "name": "signed_prekey_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_keys_user_id_users_id_fk": {
+          "name": "user_keys_user_id_users_id_fk",
+          "tableFrom": "user_keys",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -230,7 +339,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(36)",
           "primaryKey": true,
           "notNull": true
         },
@@ -263,6 +372,62 @@
           "type": "varchar(250)",
           "primaryKey": false,
           "notNull": false
+        },
+        "incoming_sounds": {
+          "name": "incoming_sounds",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "outgoing_sounds": {
+          "name": "outgoing_sounds",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "notifications_enabled": {
+          "name": "notifications_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "theme": {
+          "name": "theme",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Dark'"
+        },
+        "font": {
+          "name": "font",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Sans'"
+        },
+        "profile_pic_visibility": {
+          "name": "profile_pic_visibility",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Everyone'"
+        },
+        "status_visibility": {
+          "name": "status_visibility",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Everyone'"
+        },
+        "disappearing_message_period": {
+          "name": "disappearing_message_period",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Off'"
         }
       },
       "indexes": {},
@@ -277,7 +442,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

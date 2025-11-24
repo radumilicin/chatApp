@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken'
 import path from "path";
 import { fileURLToPath } from "url";
 import { access } from 'fs';
+import {v4 as uuidv4} from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +24,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     credentials: true
   }
 ))
@@ -91,16 +92,37 @@ app.get("/verify", (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic } = req.body;
 
   console.log("username = " + username + ";  password register = " + password)
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     console.log("before query")
+
+    const user_id = uuidv4();
+
+    // const user_id = result.rows[0].id;
+    // console.log("identityKeyPublic: " + JSON.stringify(identityKeyPublic));
+    // console.log("signed_prekey_public: " + JSON.stringify(signedPreKeyPublic));
+    // console.log("signed_prekey_signature: " + JSON.stringify(signedPreKeySignature));
+    // console.log("oneTimePreKeys: " + JSON.stringify(oneTimePreKeysPublic));
+
+    // res.status(500).json("Nothing wrong bruv just debugging");
+
     const result = await pool.query(
-      'INSERT INTO users (username, email, password_hash, about) VALUES ($1, $2, $3, $4) RETURNING id',
-      [username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
+      'INSERT INTO users (id, username, email, password_hash, about) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [user_id, username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
     );
+
+    const result2 = await pool.query( 
+      'INSERT INTO user_keys (user_id, identity_key_public, signed_prekey_public, signed_prekey_signature, signed_prekey_id) VALUES ($1, $2, $3, $4, $5)', 
+      [user_id, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, 1]
+    )
+
+    for(const otpk of oneTimePreKeysPublic) {
+      const res = await pool.query('INSERT INTO one_time_prekeys (user_id, key_id, public_key) VALUES ($1, $2, $3)', [user_id, otpk.keyId, otpk.publicKey])
+    }
+
     console.log("After query")
     res.status(201).json({ userId: result.rows[0].id });
   } catch (error) {
@@ -173,17 +195,76 @@ app.get('/logout', (req, res) => {
   res.status(200).json( {message: 'Logged out successfully'} );
 });
 
-
-
 /////////////////////////////////////////////////////////////
 
 
+
+// export interface ClientPreKeyBundle {
+//   identityKey: string;
+//   signedPreKey: {
+//     keyId: number;
+//     publicKey: string;
+//     signature: string;
+//   };
+//   oneTimePreKey?: {
+//     keyId: number;
+//     publicKey: string;
+//   };
+// }
+
+app.get('/api/keys', async(req, res) => {
+
+  console.log("=========================")
+  console.log("IN API KEYS ENDPOINT")
+  console.log("=========================")
+
+  const {recipient_id} = req.query;
+
+  if(!recipient_id) {
+    res.status(400).json("Bad request");
+  }
+
+  try {
+    const resp_keys = await pool.query("SELECT * from user_keys WHERE user_id = $1", [recipient_id]);
+    const resp_ot_keys = await pool.query("SELECT * from one_time_prekeys WHERE user_id = $1", [recipient_id]);
+
+    console.log("After getting keys and ot_keys")
+
+    if(resp_keys.rows.length === 0 || resp_ot_keys.rows.length === 0) {
+      res.status(404).json("Recipient not found");
+    }
+    
+    console.log("The recipient does have keys available")
+
+    const public_keys_recipient = {
+      identityKey: resp_keys.rows[0].identity_key_public,
+      signedPreKey: {
+        key_id: resp_keys.rows[0].signed_prekey_id,
+        public_key: resp_keys.rows[0].signed_prekey_public,
+        signature: resp_keys.rows[0].signed_prekey_signature
+      }, 
+      oneTimePreKey: {
+        keyId: resp_ot_keys.rows[0].key_id,
+        publicKey: resp_ot_keys.rows[0].public_key
+      }
+    }
+  
+    console.log("=========================")
+    console.log("END API KEYS ENDPOINT")
+    console.log("=========================")
+
+    res.status(200).json(public_keys_recipient);
+  } catch (error) {
+    res.status(500).json("Error: " + error);
+  }
+});
+
 app.get('/contacts', async (req, res) => {      
     console.log("==============\n In contacts endpoint\n=============")
-    const user_id = parseInt(req.query.user); // Extract user_id query parameter
+    const user_id = req.query.user // parseInt(req.query.user); // Extract user_id query parameter
     var contact_id = null
     if (req.query.contact_id) {
-      const parsedContactId = parseInt(req.query.contact_id, 10);
+      const parsedContactId = req.query.contact_id // parseInt(req.query.contact_id, 10);
       if (!isNaN(parsedContactId)) {
         contact_id = parsedContactId;
       }
@@ -443,6 +524,254 @@ wss.on('connection', (ws, req) => {
       // if(parsedMessage)
       // console.log("parsedMessage = " + JSON.stringify(parsedMessage))
 
+      // message = {
+      //       sender_id: props.curr_user, // Replace with dynamic user ID
+      //       recipient_id: other_user, // Replace with dynamic recipient ID
+      //       ephemeralPublicKey: ephemeralPublicKey,
+      //       identityKey: props.identityKey.publicKey,
+      //       oneTimePreKeyId: oneTimePreKeyId, 
+      //       ciphertext: ciphertext,
+      //       ciphertext_sender: ciphertext_sender,
+      //       message: msg,
+      //       header: header,
+      //       timestamp: new Date().toISOString(),
+      //   };        
+
+      // Ensure the message has the required fields
+      var { sender_id, recipient_id, ephemeralPublicKey, identityKey, oneTimePreKeyId, 
+            ciphertext, ciphertext_sender, message, header, timestamp } = parsedMessage;
+      // console.log("sender_id: " + sender_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
+      if (!sender_id || !recipient_id || !message || !timestamp || !ciphertext || !ciphertext_sender) {
+        ws.send(JSON.stringify({ error: 'Invalid message format' }));
+        return;
+      }
+
+      console.log("before recipient web socket")
+
+      // const isFirstMessageEver = !!identityKey
+      const isFirstMessage = !!ephemeralPublicKey
+        
+      if(isFirstMessage) {
+        console.log("First message detected - includes X3DH parameters");
+  
+        // For first messages, store X3DH info in database
+        // The recipient will need this to perform X3DH on their side
+        
+        const messageToStore = {
+          sender_id,
+          recipient_id,
+          ciphertext: ciphertext,
+          ciphertext_sender: ciphertext_sender,
+          header: JSON.stringify(header),
+          // X3DH parameters (only for first message)
+          message: "",
+          ephemeralPublicKey,
+          identityKey,
+          oneTimePreKeyId,
+          timestamp,
+          is_first_message: true
+        };
+        
+        // Send to recipient if online
+        const recipientWs = clients.get(recipient_id);
+        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+          recipientWs.send(JSON.stringify(messageToStore));
+        } else {
+          console.log(`Recipient ${recipient_id} is not online. Message will be delivered when they connect.`);
+        }
+        
+        // Append encrypted message to contacts table
+        await pool.query(
+          `UPDATE contacts
+          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+          WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
+          [
+            JSON.stringify(messageToStore),
+            sender_id,
+            recipient_id
+          ]
+        );
+      } else {
+        console.log("Subsequent message - using existing Double Ratchet");
+  
+        const messageToStore = {
+          sender_id,
+          recipient_id,
+          message: "",
+          ciphertext: ciphertext,
+          ciphertext_sender: ciphertext_sender,
+          header: header,
+          timestamp,
+          is_first_message: false
+        };
+        
+        // Send to recipient if online
+        const recipientWs = clients.get(recipient_id);
+        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+          recipientWs.send(JSON.stringify(messageToStore));
+        } else {
+          console.log(`Recipient ${recipient_id} is not online.`);
+        }
+        
+        // Append encrypted message to contacts table
+        await pool.query(
+          `UPDATE contacts
+          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+          WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
+          [
+            JSON.stringify(messageToStore),
+            sender_id,
+            recipient_id
+          ]
+        );
+      }
+      
+      /////////////////////////////////////////////////////////////////////////
+
+      // Acknowledge receipt
+      ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+      console.log("Success sent")
+
+      // Optionally broadcast to other clients
+    //   broadcast(wss, ws, parsedMessage);
+
+    } catch (err) {
+      console.error('Error handling message:', err);
+      ws.send(JSON.stringify({ error: 'Internal server error' }));
+    }
+  });
+
+  // Handle client disconnection
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
+/*
+wss.on('connection', (ws, req) => {
+  console.log('New client connected');
+
+//   var body = req.query.json()
+
+  const queryObject = url.parse(req.url, true).query; // Parses URL and extracts query parameters
+  const userId = queryObject.userId; // Extract user ID
+  console.log("userId = " + userId)
+  clients.set(userId, ws); // Associate user with their WebSocket
+
+  // Handle incoming messages
+  ws.on('message', async (MSG) => {
+    try {
+      console.log("in try")
+      const parsedMessage = JSON.parse(MSG);
+      // console.log(`Received message: ${JSON.stringify(parsedMessage)}`);
+
+      /////////////////////////////////////////////////
+      //  This is where the group broadcast is done  //
+      /////////////////////////////////////////////////
+      // console.log("parsedMessage = " + JSON.stringify(parsedMessage))
+
+      if(parsedMessage.hasOwnProperty("group_id")){
+        console.log("trying to insert the message in the group")
+        var {sender_id, recipient_ids, group_id, message, timestamp} = parsedMessage;
+      
+        if (!sender_id || !recipient_ids || !group_id || !message || !timestamp) {
+          ws.send(JSON.stringify({ error: 'Invalid message format' }));
+          return;
+        }
+      
+        console.log("before recipient web socket")
+        // Get recipient's WebSocket
+        const recipientWs = clients.get(recipient_ids);
+
+        // Send the message to the intended recipient
+        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+          recipientWs.send(JSON.stringify({ senderId, content })); // Send message
+        } else {
+          console.log(`Recipient ${recipient_id} is not online.`);
+        }
+
+        let msg = message
+        let imgBytes = null
+
+        console.log("before testing image in server")
+
+        // to see if it's an image or not
+        const isBase64 = (str) => {
+          try {
+            return btoa(atob(str)) === str; // If the string can be re-encoded to base64, it's valid
+          } catch (err) {
+            return false; // It's not valid base64
+          }
+        };
+
+        try{
+          // Try decoding the image, but only if it's a valid base64 string
+          if (isBase64(message)) {
+            try {
+              console.log("trying to decode image?");
+              imgBytes = atob(message); // Decode base64
+              message = {
+                "image_id": Math.floor(Math.random() * 10000000) + 5
+              };
+              console.log("decoding ok");
+            } catch (err) {
+              console.error("Error decoding image:", err);
+            }
+          } else {
+            console.log("Message is not a valid base64 string");
+          }
+
+          /////////////////////////////////////////////////////////////////////////
+          // Save the message to the database
+          const messageJson = { sender_id, recipient_ids, group_id, message, timestamp };
+
+          try {
+            await pool.query(
+              `UPDATE contacts
+              SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
+              WHERE (id = $2)`,
+              [JSON.stringify(messageJson), group_id]
+            );
+          } catch(err) {
+            console.error("Error could not update contacts:" + err)
+          }
+
+          console.log("After appending message to DB")
+          if(imgBytes !== null) {
+            try {
+              await pool.query('INSERT INTO images (id, user_id, image_name, data) VALUES ($1, $2, $3, $4)', 
+                [message.image_id, sender_id, '', msg]);
+            } catch(err) {
+              console.error("Could not insert image ")
+            }
+          }
+          /////////////////////////////////////////////////////////////////////////
+
+          // Acknowledge receipt
+          ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+          console.log("done inserting image in group")
+          // Optionally broadcast to other clients
+        //   broadcast(wss, ws, parsedMessage);
+
+        } catch (err) {
+          console.error('Error handling message:', err);
+          ws.send(JSON.stringify({ error: 'Internal server error' }));
+        }      
+      }
+
+      /////////////////////////
+      // END GROUP BROADCAST
+      /////////////////////////////////////////////////
+
+      //////////////////////////////////////////////////
+      //    This is where the 1 on 1 convo is done    //
+      //////////////////////////////////////////////////
+
+      console.log("before 1 on 1 insertion in DB")
+
+      // if(parsedMessage)
+      // console.log("parsedMessage = " + JSON.stringify(parsedMessage))
+
       // Ensure the message has the required fields
       var { sender_id, recipient_id, message, timestamp } = parsedMessage;
       // console.log("sender_id: " + sender_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
@@ -524,7 +853,7 @@ wss.on('connection', (ws, req) => {
   ws.on('close', () => {
     console.log('Client disconnected');
   });
-});
+}); */
 
 // update 2 tables. for user 
 app.post('/putProfilePic', async (req, res) => {

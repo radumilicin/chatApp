@@ -9,6 +9,7 @@ export default function Conversations( props : any) {
     
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);
+    const [filteredDecryptedContacts, setFilteredDecryptedContacts] = useState([]);
     const [menuPress, setMenuPress] = useState(false)
     const [newChatPress, setNewChatPress] = useState(false)
     const [newGroupPress, setNewGroupPress] = useState(false)
@@ -26,7 +27,16 @@ export default function Conversations( props : any) {
             filterContacts(currentSearch)
             // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
         }
+        
     }, [props.contacts, currentSearch])
+    
+    useEffect(() => { 
+        if(props.decryptedContacts !== null) {
+            filterDecryptedContacts(currentSearch)
+            // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
+        }
+
+    }, [props.decryptedContacts, currentSearch])
 
     useEffect(() => {
         if(logOut === true) {
@@ -56,7 +66,7 @@ export default function Conversations( props : any) {
                 props.updateUsers([]);
                 props.updateContacts([]);
                 props.updateImages([]);
-                props.setUser(-1);
+                props.setUser("");
             }
 
         } catch (err) {
@@ -109,6 +119,46 @@ export default function Conversations( props : any) {
         setFilteredContacts(filteredContactsOrderedByTimestamp)
     }
 
+    async function filterDecryptedContacts(val : string) { 
+        console.log("In filteredContacts .. ")     
+        // console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
+        // console.log("contacts = " + JSON.stringify(props.contacts))   
+        
+        const filteredContactsUnordered = props.decryptedContacts.filter((contact) => {
+            if(contact.is_group === false) {
+                // Find the OTHER user in the contact (not the current user)
+                const otherUserId = contact.sender_id === props.curr_user 
+                    ? contact.contact_id 
+                    : contact.sender_id;
+            
+                const user = props.users.find((user) => user.id === otherUserId);
+            
+                return user?.username.includes(val); // Safely access `username` using optional chaining
+            } else {
+                return contact.group_name.includes(val);
+            }
+        });
+
+        /* GET id and timestamp of all contacts and sort based on descending timestamp */ 
+        /* Sort contacts based on the timestamp of the last message (descending - most recent first) */
+        const filteredContactsOrderedByTimestamp = filteredContactsUnordered.sort((a, b) => {
+            // Get the last message timestamp for contact a
+            const lastMessageA = a.message && a.message.length > 0 
+                ? new Date(a.message[a.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Get the last message timestamp for contact b
+            const lastMessageB = b.message && b.message.length > 0 
+                ? new Date(b.message[b.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Sort in descending order (most recent first)
+            return lastMessageB - lastMessageA;
+        });
+
+        setFilteredDecryptedContacts(filteredContactsOrderedByTimestamp)
+    }
+
     // function for adding contacts
     async function filterUsers(val: string) {
         const users_matching_filter = props.users.filter(
@@ -151,7 +201,7 @@ export default function Conversations( props : any) {
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
                                              setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdown>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
-            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
+            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredDecryptedContacts={filteredDecryptedContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
             {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
@@ -636,7 +686,7 @@ export function Contacts( props: any) {
     return (
         <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
-                { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => {
+                { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
                     const lastMessage = getLastMessage(element, idx);
                     const time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
@@ -1279,7 +1329,7 @@ export function Groups(props) {
 
 export function Contacts2( props: any) {
 
-    let curr_user = 1
+    // let curr_user = 1
 
     const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
@@ -1307,9 +1357,9 @@ export function Contacts2( props: any) {
         let lenMsgs = contact.message.length
         let last_msg = contact.message[lenMsgs - 1]
         let cnt_unread = 0
-        if(last_msg.recipient_id === curr_user) {
+        if(last_msg.recipient_id === props.curr_user) {
             for(let i = lenMsgs - 1; i > -1 ; i--){
-                if(contact.message[i].recipient_id === curr_user) cnt_unread += 1
+                if(contact.message[i].recipient_id === props.curr_user) cnt_unread += 1
                 else break
             }
         }
@@ -1370,7 +1420,7 @@ export function Contacts2( props: any) {
                                 </div>
                                 <div className="w-[20%] h-full flex flex-row justify-center">
                                     <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full text-sm">
-                                        {element.recipient_id === curr_user && getUser(element).about}
+                                        {element.recipient_id === props.curr_user && getUser(element).about}
                                     </div> 
                                 </div>
                             </div>

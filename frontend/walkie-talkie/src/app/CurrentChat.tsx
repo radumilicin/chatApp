@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import useWebSocket from './webSocket';
 import fs from "fs";
+import { DoubleRatchet } from './DoubleRatchet';
+import { ConversationManager } from './ConversationManager';
+import { X3DHClient } from './x3dh-client';
 
 export default function CurrentChat( props: any ) {
 
@@ -12,6 +15,7 @@ export default function CurrentChat( props: any ) {
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
     const image = useRef(null)
+    const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -125,6 +129,11 @@ export default function CurrentChat( props: any ) {
                 }
             }
 
+            /* 
+                HERE IF first time receiving messages from someone and MESSAGES WERE NEVER OPENED 
+                then perform the receiving end of the X3DH protocol
+            */
+
             updateAllMessages([...currMessages, ...messagesNotYetReceived])
             prevMessages.current = allMessages
 
@@ -137,17 +146,113 @@ export default function CurrentChat( props: any ) {
     }, [allMessages])
 
 
-    const handleSendMessage = (msg) => {
+    /* 
+        Check: Do I have a conversation with Bob?
+            
+            NO -> IMPLEMENT X3DH 
+    
+                1. Fetch Bob's prekey bundle
+                2. Generate ephemeral key
+                3. Compute DH1, DH2, DH3, DH4
+                4. Derive shared secret
+                5. Initialise Double Ratchet
+                6. Encrypt message
+                7. Send: {ephemeralKey, identityKey, cyphertext}
+                8. Save conversation state
+
+            YES -> Normal Path:
+
+                1. Load conversation state
+                2. Use existing Double Ratchet
+                3. Ratchet keys forward
+                4. Encrypt message
+                5. Send: {cyphertext} only
+    */
+    const handleSendMessage = async (msg) => {
         if (msg.trim() === '') return;
 
         const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
 
-        const message = {
+        var sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle, ciphertext, header = null
+        var message = {}
+
+        let currentRatchet = ratchet; 
+            
+        // 3. Encrypt the copy of the data you wanna read with your key
+        // const local_key = `key_${other_user}`
+        const key = X3DHClient.getOrCreateLocalKey();
+
+        if(allMessages.length === 0) {
+
+            // 1. Fetch Bob's prekey bundle
+            // 2. Generate ephemeral key, Compute DH's, Derive shared secret
+
+
+            console.log("There is no message here so we initiate chat");
+            
+            ({sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle} = await props.initiateChat(other_user))
+
+            console.log("After initiate chat")
+
+            currentRatchet = DoubleRatchet.initializeAsSender(
+                sharedSecret,
+                bundle.signedPreKey.publicKey
+            );
+            
+            console.log("After setting ratchet")
+
+            setRatchet(currentRatchet);
+
+            ({ciphertext, header} = currentRatchet.encrypt(msg)); 
+            
+            console.log("After encrypting message")
+
+            ConversationManager.saveConversation(other_user, {
+                ratchetState: currentRatchet.getState(),
+                theirIdentityKey: bundle.identityKey,
+            });
+
+            console.log("We're done with creating ratchet and saving conversation (+ratchet) state")
+
+        } else {
+
+            // SUBSEQUENT MESSAGES - Load existing ratchet
+            const conversation = ConversationManager.loadConversation(other_user);
+            
+            if (!conversation) {
+                throw new Error('Conversation not found!');
+            }
+            
+            currentRatchet = new DoubleRatchet(conversation.ratchetState);
+
+            setRatchet(currentRatchet);
+            
+            // Encrypt with existing ratchet
+            ({ciphertext, header} = currentRatchet.encrypt(msg));
+            
+            // Save updated ratchet state
+            ConversationManager.saveConversation(other_user, {
+                ratchetState: currentRatchet.getState(),
+                theirIdentityKey: conversation.theirIdentityKey,
+            });
+            
+            console.log("We're done with loading ratchet and saving conversation (+ratchet) state")
+        }
+
+        const ciphertext_sender = X3DHClient.encryptForSelf(msg, key)
+
+        message = {
             sender_id: props.curr_user, // Replace with dynamic user ID
             recipient_id: other_user, // Replace with dynamic recipient ID
+            ephemeralPublicKey: ephemeralPublicKey,
+            identityKey: props.identityKey.publicKey,
+            oneTimePreKeyId: oneTimePreKeyId, 
+            ciphertext: ciphertext,
+            ciphertext_sender: ciphertext_sender,
             message: msg,
+            header: header,
             timestamp: new Date().toISOString(),
-        };
+        };        
 
         props.sendMessage(message);
         if(allMessages.length === 0) {

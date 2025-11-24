@@ -37,10 +37,14 @@ import ProfileSettingsVertical from "./ProfileSettingsVertical";
 import ThemeVertical from "./ThemeVertical";
 import FontsVertical from "./FontsVertical";
 import AddPersonToGroupVertical from "./AddingToGroupVertical";
+import { useX3DH } from "./useX3DH";
+import {ConversationManager} from "./ConversationManager";
+import { DoubleRatchet } from "./DoubleRatchet";
+import { X3DHClient } from "./x3dh-client";
 
 export default function Home() {
 
-  const [user, setUser] = useState(-1);
+  const [user, setUser] = useState("");
   const [userObj, setUserObj] = useState(null);
   const [users, updateUsers] = useState([]);  // Change state to an array instead of object
   const [contacts, updateContacts] = useState([]);
@@ -62,6 +66,15 @@ export default function Home() {
   const prevPotentialContact = useRef(null);
 
   const [addContact2, setAddContact2] = useState(false);
+
+
+  /* DECRYPTED CONTACTS */
+  const [decryptedContacts, setDecryptedContacts] = useState([])
+
+  /* END DECRYPTED CONTACTS */
+
+
+
 
   /* NOTIFICATIONS */   
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -101,6 +114,7 @@ export default function Home() {
   /* END PRIVACY */
   
   const [ messages, setMessages] = useState([]); // Store received messages
+  const messagesRef = useRef(null)
   // Only initialize WebSocket when user is valid (not -1 and not null)
 
   const [display, setDisplay] = useState("Desktop");
@@ -141,6 +155,7 @@ export default function Home() {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
+      setDecryptedContacts(result);
       // console.log("contacts = " + JSON.stringify(result));
     };
 
@@ -150,14 +165,110 @@ export default function Home() {
       updateImages(result);
       // console.log(result);
     };
-  
-  const { isConnected, sendMessage } = useWebSocket(
-    user !== -1 && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
-    setMessages,
-    incomingSoundsEnabled,
-    outgoingMessagesSoundsEnabled,
-    fetchData2
-  );
+
+
+  const { identityKey, signedPreKey, isKeysLoaded, generateKeysForSignup,
+          loadKeysAfterLogin, initiateChat, clearKeys} = useX3DH(); // Xtended Diffie-Hellman for end-to-end encryption 
+
+  async function getOrCreateDeviceKey() {
+    const storedKey = await loadDeviceKeyFromIndexedDB();
+    if (storedKey) return storedKey;
+
+    // Create brand new key
+    const newKey = await crypto.subtle.generateKey(
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+    );
+
+    await storeDeviceKeyInIndexedDB(newKey);
+    return newKey;
+  }
+
+  async function storeDeviceKeyInIndexedDB(key: CryptoKey): Promise<void> {
+    const db = await openDB();
+
+    const rawKey = await crypto.subtle.exportKey("raw", key);
+
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("cryptoKeys", "readwrite");
+        const store = tx.objectStore("cryptoKeys");
+
+        store.put(rawKey, "deviceKey");
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function loadDeviceKeyFromIndexedDB(): Promise<CryptoKey | null> {
+    const db = await openDB();
+
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("cryptoKeys", "readonly");
+        const store = tx.objectStore("cryptoKeys");
+
+        const request = store.get("deviceKey");
+
+        request.onsuccess = async () => {
+        const rawKey = request.result;
+        if (!rawKey) {
+            resolve(null);
+            return;
+        }
+
+        try {
+            const key = await crypto.subtle.importKey(
+            "raw",
+            rawKey,
+            { name: "AES-GCM" },
+            true,
+            ["encrypt", "decrypt"]
+            );
+            resolve(key);
+        } catch (err) {
+            reject(err);
+        }
+        };
+
+        request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function cryptoKeyToBase64(key: CryptoKey): Promise<string> {
+    const raw = await crypto.subtle.exportKey("raw", key);
+    return btoa(String.fromCharCode(...new Uint8Array(raw)));
+  }
+
+  async function base64ToCryptoKey(str: string): Promise<CryptoKey> {
+    const binary = atob(str);
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+
+    return crypto.subtle.importKey(
+        "raw",
+        bytes,
+        { name: "AES-GCM" },
+        true,
+        ["encrypt", "decrypt"]
+    );
+  }
+
+
+  function openDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("MySecureKeyDB", 1);
+
+        request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("cryptoKeys")) {
+            db.createObjectStore("cryptoKeys");
+        }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+  }
 
   async function trySSO() {
 
@@ -173,14 +284,20 @@ export default function Home() {
       console.log("✅ Token is valid:", data);
       setUser(data.user.user.id)
       if(!loggedIn) setLoggedIn()
+      
+      const deviceKey = await getOrCreateDeviceKey()
+      const deviceKeyString = await cryptoKeyToBase64(deviceKey);
+      loadKeysAfterLogin(user, deviceKeyString)
+      return true;
     } else {
       console.log("❌ Invalid token:", data);
+      return false;
     }
   }
 
   useEffect(() => {
     console.log(`User has id ${user}`)
-    if(user !== -1) {
+    if(user !== "") {
       fetchData()
       fetchData2()
       fetchImages()
@@ -190,7 +307,7 @@ export default function Home() {
   }, [user])
 
   useEffect(() => {
-    if(user !== -1 && users.length !== 0) {
+    if(user !== "" && users.length !== 0) {
 
       const user_0 = users.find((elem) => {
         return user === elem.id
@@ -201,7 +318,7 @@ export default function Home() {
   }, [user, users])
 
   useEffect(() => {
-    if(userObj !== null || userObj === undefined) {
+    if(userObj !== null && userObj !== undefined) {
       setVisibilityProfilePic(userObj.profile_pic_visibility)
       setVisibilityStatus(userObj.status_visibility)
       setDisappearingMessagesPeriod(userObj.disappearing_message_period)
@@ -216,7 +333,10 @@ export default function Home() {
   useEffect(() => {
 
     /* First check with SSO if we have a token by SENDING A REQUEST */ 
-    trySSO();
+    const sso_result = trySSO();
+    // if(sso_result === true) {
+
+    // }
 
     // Function to fetch data
 
@@ -231,6 +351,15 @@ export default function Home() {
     console.log("user = " + user)
 
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
+
+  useEffect(() => { 
+    console.log("===================================")
+    console.log("In decrypted contacts: ")
+    for(var i = 0; i < decryptedContacts.length; i++) {
+      console.log(JSON.stringify(decryptedContacts[i]))
+    }
+    console.log("===================================")
+  }, [decryptedContacts])
 
   // Separate useEffect for handling window resize
   useEffect(() => {
@@ -283,7 +412,7 @@ export default function Home() {
             updateUsers([]);
             updateContacts([]);
             updateImages([]);
-            setUser(-1);
+            setUser("");
             setCurrContact(null)
         }
 
@@ -322,11 +451,144 @@ export default function Home() {
     }
   }
 
+    // Decrypt messages for all contacts asynchronously
+  const decryptAllMessages = async () => {
+    const updatedContacts = await Promise.all(
+      contacts.map(async (contact) => {
+        try {
+
+          const decryptedMessage = await loadConversationMessages(
+            contact.message, 
+            contact.is_group, 
+            contact.contact_id
+          );
+          
+          return {
+            ...contact,
+            message: decryptedMessage
+          };
+        } catch (error) {
+          console.error(`Failed to decrypt messages for contact ${contact.contact_id}:`, error);
+          return contact; // Return original contact if decryption fails
+        }
+      })
+    );
+    
+    setDecryptedContacts(updatedContacts)
+  };
+
   useEffect(() => {
     if(contacts.length > 0 && userObj !== null) {
       setBlockedContacts(contacts.filter((elem) => elem.blocked === true))
+      
+      decryptAllMessages();
     }
   }, [contacts, userObj])
+
+  // Client-side: Load conversation history 
+  // 
+  // Different cases for groups and users
+  async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string) {
+    // Fetch encrypted messages from DB
+     
+    let ratchet = null;
+    const decryptedMessages = [];
+    const decryption_key = X3DHClient.getOrCreateLocalKey();
+    
+    for (var i = 0; i < messages.length ; i++) {
+        
+      console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
+      
+      if (messages[i].is_first_message) {
+
+        console.log(`message #${i}: ` + JSON.stringify(messages[i]))
+        // First message - initialize ratchet
+        
+
+        if (messages[i].sender_id === user) {
+          console.log("We are the sender")
+
+          // I sent this first message - load saved ratchet state
+          var conversation = ConversationManager.loadConversation(contact_id);
+
+          if (!conversation) {
+            console.error('No ratchet state found for sent message');
+            continue;
+          }
+          ratchet = new DoubleRatchet(conversation.ratchetState);
+        } else {
+          console.log("We are NOT the sender")
+          // I received this first message - perform X3DH
+          const sharedSecret = await X3DHClient.performX3DHAsReceiver(
+            identityKey,
+            signedPreKey,
+            messages[i].ephemeralPublicKey,
+            messages[i].identityKey,
+            messages[i].oneTimePreKeyId
+          );
+
+          console.log("after deriving shared secret, before initializing ratchet")
+          
+          ratchet = DoubleRatchet.initializeAsReceiver(
+            sharedSecret,
+            signedPreKey
+          );
+          
+          console.log("after initialising ratchet, before saving conversation")
+          
+          // Save for future use
+          ConversationManager.saveConversation(contact_id, {
+            ratchetState: ratchet.getState(),
+            theirIdentityKey: messages[i].identityKey,
+          });
+        }
+      }
+      
+      if (!ratchet) {
+        console.log("No ratchet, initialising one")
+        // Load existing ratchet if not already loaded
+        const conversation = ConversationManager.loadConversation(contact_id);
+        if (conversation) {
+          ratchet = new DoubleRatchet(conversation.ratchetState);
+        }
+      }
+      
+      // Decrypt message
+      if (ratchet) {
+        try {
+          console.log("Before decryption")
+          var plaintext = ""
+          if(user === messages[i].sender_id) {
+            console.log("We're decrypting as Alice")
+            plaintext = X3DHClient.decryptForSelf(messages[i].ciphertext_sender, decryption_key);
+          } else {
+            console.log("We're decrypting as Bob")
+            plaintext = ratchet.decrypt(messages[i].ciphertext, messages[i].header);
+          }
+        
+          console.log(`After decryption with plaintext = ${plaintext}`)
+          
+          decryptedMessages.push({
+            sender_id: messages[i].sender_id,
+            recipient_id: messages[i].recipient_id,
+            message: plaintext,
+            timestamp: messages[i].timestamp
+          });
+          
+          // Update saved ratchet state
+          const conversation = ConversationManager.loadConversation(contact_id);
+          ConversationManager.saveConversation(contact_id, {
+            ratchetState: ratchet.getState(),
+            theirIdentityKey: conversation.theirIdentityKey,
+          });
+        } catch (error) {
+          console.error('Failed to decrypt message:', error);
+        }
+      }
+    }
+    
+    return decryptedMessages;
+  }
 
   useEffect(() => {
     if(userObj !== null) {
@@ -368,6 +630,15 @@ export default function Home() {
     }
       
   }, [userObj])
+
+  const { isConnected, sendMessage } = useWebSocket(
+    user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    setMessages,
+    incomingSoundsEnabled,
+    outgoingMessagesSoundsEnabled,
+    decryptAllMessages,
+    fetchData2
+  );
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
@@ -500,19 +771,22 @@ export default function Home() {
             (display === "Desktop" ? <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
+                                      closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></ConversationsVertical>)
+                                      closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} 
+                                      decryptedContacts={decryptedContacts}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen}></CurrentChat> : <></>)
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
+                                                identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages}></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>
         }
-        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync}></Login> : (registered === false && loggedIn === false) ? <Register users={users} setRegisteredAsync={setRegisteredAsync}></Register> : <></>}
+        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey}></Login> : (registered === false && loggedIn === false) ? 
+                                                       <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}

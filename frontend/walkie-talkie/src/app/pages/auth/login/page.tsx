@@ -4,6 +4,7 @@ import react, {useState, useEffect, useRef} from 'react'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../AuthProvider'
+import crypto, { sign } from 'crypto';
 
 export default function Login(props: any) {
 
@@ -68,6 +69,15 @@ export default function Login(props: any) {
         if(response.status === 200){
             console.log("Logged in")
             setLoggedInAsync();
+            
+            const deviceKey = await props.getOrCreateDeviceKey();
+            const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
+
+            if(props.loadKeysAfterLogin(user.userId, deviceKeyString)) {
+                console.log("Encrypted keys loaded")
+            } else {
+                console.log("Encrypted keys failed to load")
+            }
             // localStorage.setItem("jwt-token", user.) 
             return user
         } else {
