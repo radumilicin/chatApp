@@ -38,6 +38,9 @@ import ThemeVertical from "./ThemeVertical";
 import FontsVertical from "./FontsVertical";
 import AddPersonToGroupVertical from "./AddingToGroupVertical";
 import { useX3DH } from "./useX3DH";
+import {ConversationManager} from "./ConversationManager";
+import { DoubleRatchet } from "./DoubleRatchet";
+import { X3DHClient } from "./x3dh-client";
 
 export default function Home() {
 
@@ -63,6 +66,15 @@ export default function Home() {
   const prevPotentialContact = useRef(null);
 
   const [addContact2, setAddContact2] = useState(false);
+
+
+  /* DECRYPTED CONTACTS */
+  const [decryptedContacts, setDecryptedContacts] = useState([])
+
+  /* END DECRYPTED CONTACTS */
+
+
+
 
   /* NOTIFICATIONS */   
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -102,6 +114,7 @@ export default function Home() {
   /* END PRIVACY */
   
   const [ messages, setMessages] = useState([]); // Store received messages
+  const messagesRef = useRef(null)
   // Only initialize WebSocket when user is valid (not -1 and not null)
 
   const [display, setDisplay] = useState("Desktop");
@@ -142,6 +155,7 @@ export default function Home() {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
+      setDecryptedContacts(result);
       // console.log("contacts = " + JSON.stringify(result));
     };
 
@@ -151,14 +165,7 @@ export default function Home() {
       updateImages(result);
       // console.log(result);
     };
-  
-  const { isConnected, sendMessage } = useWebSocket(
-    user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
-    setMessages,
-    incomingSoundsEnabled,
-    outgoingMessagesSoundsEnabled,
-    fetchData2
-  );
+
 
   const { identityKey, signedPreKey, isKeysLoaded, generateKeysForSignup,
           loadKeysAfterLogin, initiateChat, clearKeys} = useX3DH(); // Xtended Diffie-Hellman for end-to-end encryption 
@@ -345,6 +352,15 @@ export default function Home() {
 
   }, []); // Empty dependency array ensures this effect runs only once (on mount)
 
+  useEffect(() => { 
+    console.log("===================================")
+    console.log("In decrypted contacts: ")
+    for(var i = 0; i < decryptedContacts.length; i++) {
+      console.log(JSON.stringify(decryptedContacts[i]))
+    }
+    console.log("===================================")
+  }, [decryptedContacts])
+
   // Separate useEffect for handling window resize
   useEffect(() => {
 
@@ -435,11 +451,144 @@ export default function Home() {
     }
   }
 
+    // Decrypt messages for all contacts asynchronously
+  const decryptAllMessages = async () => {
+    const updatedContacts = await Promise.all(
+      contacts.map(async (contact) => {
+        try {
+
+          const decryptedMessage = await loadConversationMessages(
+            contact.message, 
+            contact.is_group, 
+            contact.contact_id
+          );
+          
+          return {
+            ...contact,
+            message: decryptedMessage
+          };
+        } catch (error) {
+          console.error(`Failed to decrypt messages for contact ${contact.contact_id}:`, error);
+          return contact; // Return original contact if decryption fails
+        }
+      })
+    );
+    
+    setDecryptedContacts(updatedContacts)
+  };
+
   useEffect(() => {
     if(contacts.length > 0 && userObj !== null) {
       setBlockedContacts(contacts.filter((elem) => elem.blocked === true))
+      
+      decryptAllMessages();
     }
   }, [contacts, userObj])
+
+  // Client-side: Load conversation history 
+  // 
+  // Different cases for groups and users
+  async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string) {
+    // Fetch encrypted messages from DB
+     
+    let ratchet = null;
+    const decryptedMessages = [];
+    const decryption_key = X3DHClient.getOrCreateLocalKey();
+    
+    for (var i = 0; i < messages.length ; i++) {
+        
+      console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
+      
+      if (messages[i].is_first_message) {
+
+        console.log(`message #${i}: ` + JSON.stringify(messages[i]))
+        // First message - initialize ratchet
+        
+
+        if (messages[i].sender_id === user) {
+          console.log("We are the sender")
+
+          // I sent this first message - load saved ratchet state
+          var conversation = ConversationManager.loadConversation(contact_id);
+
+          if (!conversation) {
+            console.error('No ratchet state found for sent message');
+            continue;
+          }
+          ratchet = new DoubleRatchet(conversation.ratchetState);
+        } else {
+          console.log("We are NOT the sender")
+          // I received this first message - perform X3DH
+          const sharedSecret = await X3DHClient.performX3DHAsReceiver(
+            identityKey,
+            signedPreKey,
+            messages[i].ephemeralPublicKey,
+            messages[i].identityKey,
+            messages[i].oneTimePreKeyId
+          );
+
+          console.log("after deriving shared secret, before initializing ratchet")
+          
+          ratchet = DoubleRatchet.initializeAsReceiver(
+            sharedSecret,
+            signedPreKey
+          );
+          
+          console.log("after initialising ratchet, before saving conversation")
+          
+          // Save for future use
+          ConversationManager.saveConversation(contact_id, {
+            ratchetState: ratchet.getState(),
+            theirIdentityKey: messages[i].identityKey,
+          });
+        }
+      }
+      
+      if (!ratchet) {
+        console.log("No ratchet, initialising one")
+        // Load existing ratchet if not already loaded
+        const conversation = ConversationManager.loadConversation(contact_id);
+        if (conversation) {
+          ratchet = new DoubleRatchet(conversation.ratchetState);
+        }
+      }
+      
+      // Decrypt message
+      if (ratchet) {
+        try {
+          console.log("Before decryption")
+          var plaintext = ""
+          if(user === messages[i].sender_id) {
+            console.log("We're decrypting as Alice")
+            plaintext = X3DHClient.decryptForSelf(messages[i].ciphertext_sender, decryption_key);
+          } else {
+            console.log("We're decrypting as Bob")
+            plaintext = ratchet.decrypt(messages[i].ciphertext, messages[i].header);
+          }
+        
+          console.log(`After decryption with plaintext = ${plaintext}`)
+          
+          decryptedMessages.push({
+            sender_id: messages[i].sender_id,
+            recipient_id: messages[i].recipient_id,
+            message: plaintext,
+            timestamp: messages[i].timestamp
+          });
+          
+          // Update saved ratchet state
+          const conversation = ConversationManager.loadConversation(contact_id);
+          ConversationManager.saveConversation(contact_id, {
+            ratchetState: ratchet.getState(),
+            theirIdentityKey: conversation.theirIdentityKey,
+          });
+        } catch (error) {
+          console.error('Failed to decrypt message:', error);
+        }
+      }
+    }
+    
+    return decryptedMessages;
+  }
 
   useEffect(() => {
     if(userObj !== null) {
@@ -481,6 +630,15 @@ export default function Home() {
     }
       
   }, [userObj])
+
+  const { isConnected, sendMessage } = useWebSocket(
+    user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    setMessages,
+    incomingSoundsEnabled,
+    outgoingMessagesSoundsEnabled,
+    decryptAllMessages,
+    fetchData2
+  );
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
@@ -613,15 +771,16 @@ export default function Home() {
             (display === "Desktop" ? <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
+                                      closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts}></Conversations> : <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
-                                      closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile}></ConversationsVertical>)
+                                      closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} 
+                                      decryptedContacts={decryptedContacts}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
-                                                identityKey={identityKey} signedPreKey={signedPreKey} ></CurrentChat> : <></>)
+                                                identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages}></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>

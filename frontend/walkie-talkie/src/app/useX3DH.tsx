@@ -1,5 +1,5 @@
-// hooks/useX3DH.ts
-import { useState, useEffect } from 'react';
+// hooks/useX3DH.ts - Update to handle async methods
+import { useState } from 'react';
 import { X3DHClient, KeyPair } from './x3dh-client';
 
 interface UserKeys {
@@ -23,14 +23,20 @@ export function useX3DH() {
   const [oneTimePreKeys, setOneTimePreKeys] = useState<any[]>([]);
   const [isKeysLoaded, setIsKeysLoaded] = useState(false);
 
-  // Generate keys for NEW USER (during signup, before account exists)
+  // Generate keys for signup
   const generateKeysForSignup = async (password: string) => {
-    // 1. Generate identity key
-    const newIdentityKey = X3DHClient.generateSigningKeyPair();
+    const newIdentityKey = await X3DHClient.generateKeyPair();
+
+    X3DHClient.debugKeyFormat(newIdentityKey.publicKey, 'identityKey.publicKey')
+    X3DHClient.debugKeyFormat(newIdentityKey.privateKey, 'identityKey.privateKey')
+
+    const signedPreKeyPair = await X3DHClient.generateKeyPair();
+
+    X3DHClient.debugKeyFormat(signedPreKeyPair.publicKey, 'signedPreKeyPair.publicKey')
+    X3DHClient.debugKeyFormat(signedPreKeyPair.privateKey, 'signedPreKeyPair.privateKey')
+
+    const signature = await X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
     
-    // 2. Generate signed prekey
-    const signedPreKeyPair = X3DHClient.generateSigningKeyPair();
-    const signature = X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
     const newSignedPreKey = {
       keyId: 1,
       publicKey: signedPreKeyPair.publicKey,
@@ -38,10 +44,8 @@ export function useX3DH() {
       signature,
     };
 
-    // 3. Generate one-time prekeys
-    const newOneTimePreKeys = X3DHClient.generateOneTimePreKeys(100, 1);
+    const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
 
-    // 4. Encrypt private keys with password
     const encryptionKey = await deriveKeyFromPassword(password);
     const encryptedKeys = await encryptKeys(
       {
@@ -52,15 +56,14 @@ export function useX3DH() {
       encryptionKey
     );
 
-    // 5. Store encrypted keys locally (before signup API call)
     localStorage.setItem('encrypted_keys', encryptedKeys);
+    localStorage.setItem('one_time_prekeys', JSON.stringify(newOneTimePreKeys));
 
     setIdentityKey(newIdentityKey);
     setSignedPreKey(newSignedPreKey);
     setOneTimePreKeys(newOneTimePreKeys);
     setIsKeysLoaded(true);
 
-    // Return PUBLIC keys to send to server during signup
     return {
       identityKeyPublic: newIdentityKey.publicKey,
       signedPreKeyPublic: newSignedPreKey.publicKey,
@@ -72,49 +75,77 @@ export function useX3DH() {
     };
   };
 
-  // Load keys for EXISTING USER (after login)
+  // Load keys after login
   const loadKeysAfterLogin = async (userId: string, password: string) => {
     try {
-      // 1. Try to load encrypted keys from localStorage
       const encryptedKeys = localStorage.getItem('encrypted_keys');
       
       if (!encryptedKeys) {
-        console.error('No keys found locally. Need to restore from backup or generate new keys.');
+        console.error('No keys found locally.');
         return false;
       }
 
-      // 2. Decrypt keys using password
       const encryptionKey = await deriveKeyFromPassword(password);
       const keys = await decryptKeys(encryptedKeys, encryptionKey);
 
-      // 3. Set keys in state
       setIdentityKey(keys.identityKey);
       setSignedPreKey(keys.signedPreKey);
       setOneTimePreKeys(keys.oneTimePreKeys);
+      
+      localStorage.setItem('one_time_prekeys', JSON.stringify(keys.oneTimePreKeys));
+      
       setIsKeysLoaded(true);
 
       return true;
     } catch (error) {
-      console.error('Failed to decrypt keys. Wrong password?', error);
+      console.error('Failed to decrypt keys:', error);
       return false;
     }
   };
 
-  // Initiate chat with another user
+  // Initiate chat (async now!)
   const initiateChat = async (recipientId: string) => {
+
+    console.log("In initiate chat")
+
     if (!identityKey) {
       throw new Error('Keys not loaded. Call loadKeysAfterLogin first.');
     }
 
-    // Fetch recipient's prekey bundle
+    
     const response = await fetch(`http://localhost:3002/api/keys?recipient_id=${recipientId}`);
-    const bundle = await response.json();
+    const rawBundle = await response.json();
+    
+    console.log("After getting bundle")
 
-    // Generate ephemeral key
-    const ephemeralKey = X3DHClient.generateKeyPair();
+    const ephemeralKey = await X3DHClient.generateKeyPair();
 
-    // Perform X3DH
-    const result = X3DHClient.initiateX3DH(identityKey, ephemeralKey, bundle);
+    // Transform to consistent camelCase format
+    const bundle = {
+      identityKey: rawBundle.identityKey,
+      signedPreKey: {
+        keyId: rawBundle.signedPreKey.key_id,
+        publicKey: rawBundle.signedPreKey.public_key, // Convert snake_case to camelCase
+        signature: rawBundle.signedPreKey.signature
+      },
+      oneTimePreKey: rawBundle.oneTimePreKey ? {
+        keyId: rawBundle.oneTimePreKey.keyId,
+        publicKey: rawBundle.oneTimePreKey.publicKey
+      } : undefined
+    };
+ 
+    console.log("After calculating ephemeral key")
+    console.log(`indentityKey = ${JSON.stringify(identityKey)}, ephemeralKey = ${JSON.stringify(ephemeralKey)}, bundle = ${JSON.stringify(bundle)}`)
+
+    const result = await X3DHClient.initiateX3DH(identityKey, ephemeralKey, bundle);
+   
+    // Alice's side (after initiateX3DH)
+    console.log("=== ALICE X3DH OUTPUT ===");
+    console.log("Shared secret:", result.sharedSecret.substring(0, 30) + "...");
+    console.log("Ephemeral public key:", result.ephemeralPublicKey.substring(0, 30) + "...");
+    console.log("Using Bob's signed prekey:", bundle.signedPreKey.publicKey.substring(0, 30) + "...");
+
+    console.log("After calculating shared secret")
 
     return {
       sharedSecret: result.sharedSecret,
@@ -124,7 +155,25 @@ export function useX3DH() {
     };
   };
 
-  // Clear keys on logout
+  // Perform X3DH as receiver (async now!)
+  const performX3DHAsReceiver = async (
+    theirEphemeralKey: string,
+    theirIdentityKey: string,
+    oneTimePreKeyId?: number
+  ): Promise<string> => {
+    if (!identityKey || !signedPreKey) {
+      throw new Error('Keys not loaded. Call loadKeysAfterLogin first.');
+    }
+
+    return await X3DHClient.performX3DHAsReceiver(
+      identityKey,
+      signedPreKey,
+      theirEphemeralKey,
+      theirIdentityKey,
+      oneTimePreKeyId
+    );
+  };
+
   const clearKeys = () => {
     setIdentityKey(null);
     setSignedPreKey(null);
@@ -139,11 +188,12 @@ export function useX3DH() {
     generateKeysForSignup,
     loadKeysAfterLogin,
     initiateChat,
+    performX3DHAsReceiver,
     clearKeys,
   };
 }
 
-// Crypto helpers
+// Crypto helpers (keep existing implementations)
 async function deriveKeyFromPassword(password: string): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const passwordBuffer = encoder.encode(password);
@@ -156,7 +206,6 @@ async function deriveKeyFromPassword(password: string): Promise<CryptoKey> {
     ['deriveBits', 'deriveKey']
   );
   
-  // Use a consistent salt (in production, store this securely)
   const salt = encoder.encode('your-app-salt-v1');
   
   return await crypto.subtle.deriveKey(
@@ -184,20 +233,16 @@ async function encryptKeys(keys: UserKeys, encryptionKey: CryptoKey): Promise<st
     data
   );
   
-  // Combine IV and encrypted data
   const combined = new Uint8Array(iv.length + encryptedData.byteLength);
   combined.set(iv, 0);
   combined.set(new Uint8Array(encryptedData), iv.length);
   
-  // Convert to base64
   return btoa(String.fromCharCode(...combined));
 }
 
 async function decryptKeys(encryptedString: string, encryptionKey: CryptoKey): Promise<UserKeys> {
-  // Decode base64
   const combined = Uint8Array.from(atob(encryptedString), c => c.charCodeAt(0));
   
-  // Extract IV and encrypted data
   const iv = combined.slice(0, 12);
   const encryptedData = combined.slice(12);
   
