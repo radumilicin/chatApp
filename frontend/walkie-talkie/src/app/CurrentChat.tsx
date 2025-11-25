@@ -198,6 +198,16 @@ export default function CurrentChat( props: any ) {
                 sharedSecret,
                 bundle.signedPreKey.publicKey
             );
+
+            console.log("=== ALICE AFTER INITIALIZATION ===");
+            console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
+            console.log("Bob's signed prekey:", bundle.signedPreKey.publicKey.substring(0, 30) + "...");
+
+            const aliceState = currentRatchet.getState();
+            console.log("Alice's root key:", aliceState.rootKey.substring(0, 30) + "...");
+            console.log("Alice's sending chain key:", aliceState.sendingChainKey.substring(0, 30) + "...");
+            console.log("Alice's DH sending public key:", aliceState.dhSendingKey.publicKey.substring(0, 30) + "...");
+            console.log("Alice's DH receiving key:", aliceState.dhReceivingKey.substring(0, 30) + "...");
             
             console.log("After setting ratchet")
 

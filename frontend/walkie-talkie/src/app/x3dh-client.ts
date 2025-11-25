@@ -187,8 +187,30 @@ export class X3DHClient {
     ephemeralKey: KeyPair,
     bundle: ClientPreKeyBundle
   ): Promise<{ sharedSecret: string; ephemeralPublicKey: string }> {
-    console.log("Starting X3DH as initiator");
+    console.log("=== ALICE X3DH START ===");
+    console.log("Alice's identity private key:", myIdentityKey.privateKey.substring(0, 30) + "...");
+    console.log("Alice's identity public key:", myIdentityKey.publicKey.substring(0, 30) + "...");
+    console.log("Alice's ephemeral private key:", ephemeralKey.privateKey.substring(0, 30) + "...");
+    console.log("Alice's ephemeral public key:", ephemeralKey.publicKey.substring(0, 30) + "...");
+    console.log("Bob's identity public key (from bundle):", bundle.identityKey.substring(0, 30) + "...");
+    console.log("Bob's signed prekey public (from bundle):", bundle.signedPreKey.publicKey.substring(0, 30) + "...");
+    if (bundle.oneTimePreKey) {
+      console.log("Bob's one-time prekey public (from bundle):", bundle.oneTimePreKey.publicKey.substring(0, 30) + "...");
+    } 
     
+    // const bundle = {
+    //   identityKey: rawBundle.identityKey,
+    //   signedPreKey: {
+    //     keyId: rawBundle.signedPreKey.key_id,
+    //     publicKey: rawBundle.signedPreKey.public_key, // Convert snake_case to camelCase
+    //     signature: rawBundle.signedPreKey.signature
+    //   },
+    //   oneTimePreKey: rawBundle.oneTimePreKey ? {
+    //     keyId: rawBundle.oneTimePreKey.keyId,
+    //     publicKey: rawBundle.oneTimePreKey.publicKey
+    //   } : undefined
+    // };
+
     // Perform 4 DH operations
     const dh1 = this.diffieHellman(
       myIdentityKey.privateKey,
@@ -247,7 +269,7 @@ export class X3DHClient {
 
     // Derive key using HKDF
     const derivedKey = await this.hkdf(combinedSecret, 32);
-    console.log("Shared secret derived successfully");
+    console.log(`Shared secret derived: ${derivedKey}`);
 
     return {
       sharedSecret: encodeBase64(derivedKey),
@@ -374,7 +396,15 @@ export class X3DHClient {
     theirIdentityKey: string,
     oneTimePreKeyId?: number
   ): Promise<string> {
-    console.log("Starting X3DH as receiver");
+    console.log("=== BOB X3DH START ===");
+    console.log("Bob's identity private key:", myIdentityKey.privateKey.substring(0, 30) + "...");
+    console.log("Bob's identity public key:", myIdentityKey.publicKey.substring(0, 30) + "...");
+    console.log("Bob's signed prekey private:", mySignedPreKey.privateKey.substring(0, 30) + "...");
+    console.log("Bob's signed prekey public:", mySignedPreKey.publicKey.substring(0, 30) + "...");
+    console.log("Alice's ephemeral public key:", theirEphemeralKey.substring(0, 30) + "...");
+    console.log("Alice's identity public key:", theirIdentityKey.substring(0, 30) + "...");
+  
+  console.log("Starting X3DH as receiver");
     
     // DH1 = DH(SPKb, IKa)
     const dh1 = this.diffieHellman(
@@ -453,7 +483,7 @@ export class X3DHClient {
     // Derive key using HKDF
     const derivedKey = await this.hkdf(combinedSecret, 32);
     const sharedSecret = encodeBase64(derivedKey);
-    console.log("Shared secret derived successfully (receiver)");
+    console.log(`Shared secret derived: ${sharedSecret}`);
 
     // Bob's side (after performX3DHAsReceiver)
     console.log("=== BOB X3DH OUTPUT ===");

@@ -1,6 +1,8 @@
 // hooks/useX3DH.ts - Update to handle async methods
 import { useState } from 'react';
 import { X3DHClient, KeyPair } from './x3dh-client';
+import nacl from 'tweetnacl';
+import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
 interface UserKeys {
   identityKey: KeyPair;
@@ -23,18 +25,9 @@ export function useX3DH() {
   const [oneTimePreKeys, setOneTimePreKeys] = useState<any[]>([]);
   const [isKeysLoaded, setIsKeysLoaded] = useState(false);
 
-  // Generate keys for signup
-  const generateKeysForSignup = async (password: string) => {
+  const generateKeysForSignup = async (password: string, userId: string) => {
     const newIdentityKey = await X3DHClient.generateKeyPair();
-
-    X3DHClient.debugKeyFormat(newIdentityKey.publicKey, 'identityKey.publicKey')
-    X3DHClient.debugKeyFormat(newIdentityKey.privateKey, 'identityKey.privateKey')
-
     const signedPreKeyPair = await X3DHClient.generateKeyPair();
-
-    X3DHClient.debugKeyFormat(signedPreKeyPair.publicKey, 'signedPreKeyPair.publicKey')
-    X3DHClient.debugKeyFormat(signedPreKeyPair.privateKey, 'signedPreKeyPair.privateKey')
-
     const signature = await X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
     
     const newSignedPreKey = {
@@ -43,27 +36,28 @@ export function useX3DH() {
       privateKey: signedPreKeyPair.privateKey,
       signature,
     };
-
+    
     const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
-
-    const encryptionKey = await deriveKeyFromPassword(password);
-    const encryptedKeys = await encryptKeys(
+    
+    // ✅ Pass password directly - encryptKeys will derive the key internally
+    const encryptedKeys = encryptKeys(
       {
         identityKey: newIdentityKey,
         signedPreKey: newSignedPreKey,
         oneTimePreKeys: newOneTimePreKeys,
       },
-      encryptionKey
+      password  // Just pass the password string
     );
-
-    localStorage.setItem('encrypted_keys', encryptedKeys);
-    localStorage.setItem('one_time_prekeys', JSON.stringify(newOneTimePreKeys));
-
+    
+    // ✅ User-specific storage
+    localStorage.setItem(`encrypted_keys_${userId}`, encryptedKeys);
+    localStorage.setItem(`one_time_prekeys_${userId}`, JSON.stringify(newOneTimePreKeys));
+    
     setIdentityKey(newIdentityKey);
     setSignedPreKey(newSignedPreKey);
     setOneTimePreKeys(newOneTimePreKeys);
     setIsKeysLoaded(true);
-
+    
     return {
       identityKeyPublic: newIdentityKey.publicKey,
       signedPreKeyPublic: newSignedPreKey.publicKey,
@@ -76,32 +70,88 @@ export function useX3DH() {
   };
 
   // Load keys after login
-  const loadKeysAfterLogin = async (userId: string, password: string) => {
+  const loadKeysAfterLogin = async (userId: string, deviceKey: Uint8Array): Promise<boolean> => {
     try {
-      const encryptedKeys = localStorage.getItem('encrypted_keys');
-      
+      // ✅ Load user-specific encrypted keys
+      const encryptedKeys = localStorage.getItem(`encrypted_keys_${userId}`);
       if (!encryptedKeys) {
-        console.error('No keys found locally.');
+        console.log('No keys found locally for user:', userId);
         return false;
       }
-
-      const encryptionKey = await deriveKeyFromPassword(password);
-      const keys = await decryptKeys(encryptedKeys, encryptionKey);
+      
+      // ✅ Decrypt with device key (Uint8Array)
+      const keys = decryptKeys(encryptedKeys, deviceKey);
+      
+      console.log("=============================")
+      console.log("=== KEYS ARE SET IN STATE ===")
+      console.log("=============================")
 
       setIdentityKey(keys.identityKey);
       setSignedPreKey(keys.signedPreKey);
       setOneTimePreKeys(keys.oneTimePreKeys);
-      
-      localStorage.setItem('one_time_prekeys', JSON.stringify(keys.oneTimePreKeys));
-      
       setIsKeysLoaded(true);
-
+      
       return true;
     } catch (error) {
       console.error('Failed to decrypt keys:', error);
       return false;
     }
-  };
+  }; 
+
+  // Encrypt keys with NaCl
+  function encryptKeys(keys: any, passwordOrKey: string | Uint8Array): string {
+    // Derive encryption key from password if string, otherwise use provided key
+    const encryptionKey = typeof passwordOrKey === 'string' 
+      ? deriveKeyFromPassword(passwordOrKey)
+      : passwordOrKey; // Already a 32-byte Uint8Array
+    
+    // Convert keys object to JSON string, then to bytes
+    const plaintext = JSON.stringify(keys);
+    const encoder = new TextEncoder();
+    const plaintextBytes = encoder.encode(plaintext);
+    
+    // Generate random nonce (24 bytes for secretbox)
+    const nonce = nacl.randomBytes(24);
+    
+    // Encrypt with NaCl secretbox
+    const ciphertext = nacl.secretbox(plaintextBytes, nonce, encryptionKey);
+    
+    // Combine nonce + ciphertext
+    const combined = new Uint8Array(nonce.length + ciphertext.length);
+    combined.set(nonce, 0);
+    combined.set(ciphertext, nonce.length);
+    
+    // Encode as base64
+    return encodeBase64(combined);
+  }
+
+  // Decrypt keys with NaCl
+  function decryptKeys(encryptedKeysBase64: string, passwordOrKey: string | Uint8Array): any {
+    // Derive the same encryption key from password if string, otherwise use provided key
+    const encryptionKey = typeof passwordOrKey === 'string'
+      ? deriveKeyFromPassword(passwordOrKey)
+      : passwordOrKey; // Already a 32-byte Uint8Array
+    
+    // Decode base64
+    const combined = decodeBase64(encryptedKeysBase64);
+    
+    // Extract nonce (first 24 bytes) and ciphertext (rest)
+    const nonce = combined.slice(0, 24);
+    const ciphertext = combined.slice(24);
+    
+    // Decrypt with NaCl secretbox
+    const plaintextBytes = nacl.secretbox.open(ciphertext, nonce, encryptionKey);
+    
+    if (!plaintextBytes) {
+      throw new Error('Decryption failed - wrong password/key or corrupted data');
+    }
+    
+    // Convert bytes back to string and parse JSON
+    const decoder = new TextDecoder();
+    const plaintext = decoder.decode(plaintextBytes);
+    
+    return JSON.parse(plaintext);
+  }
 
   // Initiate chat (async now!)
   const initiateChat = async (recipientId: string) => {
@@ -120,6 +170,19 @@ export function useX3DH() {
 
     const ephemeralKey = await X3DHClient.generateKeyPair();
 
+    // const public_keys_recipient = {
+    //   identityKey: resp_keys.rows[0].identity_key_public,
+    //   signedPreKey: {
+    //     key_id: resp_keys.rows[0].signed_prekey_id,
+    //     public_key: resp_keys.rows[0].signed_prekey_public,
+    //     signature: resp_keys.rows[0].signed_prekey_signature
+    //   }, 
+    //   oneTimePreKey: {
+    //     keyId: resp_ot_keys.rows[0].key_id,
+    //     publicKey: resp_ot_keys.rows[0].public_key
+    //   }
+    // }
+
     // Transform to consistent camelCase format
     const bundle = {
       identityKey: rawBundle.identityKey,
@@ -128,10 +191,11 @@ export function useX3DH() {
         publicKey: rawBundle.signedPreKey.public_key, // Convert snake_case to camelCase
         signature: rawBundle.signedPreKey.signature
       },
-      oneTimePreKey: rawBundle.oneTimePreKey ? {
-        keyId: rawBundle.oneTimePreKey.keyId,
-        publicKey: rawBundle.oneTimePreKey.publicKey
-      } : undefined
+      oneTimePreKey: undefined
+      // oneTimePreKey: rawBundle.oneTimePreKey ? {
+      //   keyId: rawBundle.oneTimePreKey.keyId,
+      //   publicKey: rawBundle.oneTimePreKey.publicKey
+      // } : undefined
     };
  
     console.log("After calculating ephemeral key")
@@ -189,37 +253,23 @@ export function useX3DH() {
     loadKeysAfterLogin,
     initiateChat,
     performX3DHAsReceiver,
+    setIdentityKey,
+    setSignedPreKey,
+    setOneTimePreKeys,
+    encryptKeys,
+    decryptKeys,
     clearKeys,
   };
 }
 
-// Crypto helpers (keep existing implementations)
-async function deriveKeyFromPassword(password: string): Promise<CryptoKey> {
+// Derive a 32-byte key from password using NaCl hash (synchronous)
+function deriveKeyFromPassword(password: string): Uint8Array {
   const encoder = new TextEncoder();
-  const passwordBuffer = encoder.encode(password);
+  const passwordBytes = encoder.encode(password);
   
-  const importedKey = await crypto.subtle.importKey(
-    'raw',
-    passwordBuffer,
-    'PBKDF2',
-    false,
-    ['deriveBits', 'deriveKey']
-  );
-  
-  const salt = encoder.encode('your-app-salt-v1');
-  
-  return await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: salt,
-      iterations: 100000,
-      hash: 'SHA-256'
-    },
-    importedKey,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
-  );
+  // Use nacl.hash to create a 64-byte hash, then take first 32 bytes for key
+  const hash = nacl.hash(passwordBytes);
+  return hash.slice(0, 32); // NaCl secretbox needs 32-byte key
 }
 
 async function encryptKeys(keys: UserKeys, encryptionKey: CryptoKey): Promise<string> {
