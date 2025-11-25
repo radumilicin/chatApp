@@ -38,7 +38,14 @@ export default function Login(props: any) {
         return getUsernames().includes(username)
     }
 
+    // Add this helper function at the top
+    function sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async function login() {
+        console.log("In login") 
+
         if(username.length < 8) {
             console.log("Username should be 8 characters or more")
             return
@@ -65,15 +72,19 @@ export default function Login(props: any) {
 
         props.setU(user.userId)
 
+        console.log(`User: ${user.userId}`)
+        sleep(2000)
 
         if(response.status === 200){
             console.log("Logged in")
             setLoggedInAsync();
             
-            const deviceKey = await props.getOrCreateDeviceKey();
-            const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
+            const deviceKey = await props.getOrCreateDeviceKey(user.userId);
+            // const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
 
-            if(props.loadKeysAfterLogin(user.userId, deviceKeyString)) {
+            console.log("Before loading keys after login")
+
+            if(props.loadKeysAfterLogin(user.userId, deviceKey)) {
                 console.log("Encrypted keys loaded")
             } else {
                 console.log("Encrypted keys failed to load")

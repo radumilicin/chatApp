@@ -4,6 +4,7 @@ import react, {useState, useEffect, useRef} from 'react'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import {useAuth} from '../../../AuthProvider'
+import { X3DHClient } from '../../../x3dh-client';
 
 export default function Register(props) {
 
@@ -34,66 +35,112 @@ export default function Register(props) {
         return getEmails().includes(email)
     }
 
+    // Add this helper function at the top
+    function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async function register() {
         if(username.length < 8) {
             console.log("Username should be 8 characters or more")
             return
         }
-        
         if(username.length > 128) {
             console.log("Username should be less than 128 characters")
             return
         }
-        
         if(!email.includes('@')){
             console.log("Email addresses should include `@`")
             return
         } 
-        
         if(password.length < 8) {
             console.log("Password should be 8 or more characters long")
             return 
         }
-        
         if(password.length > 128) {
             console.log("Password should be less than 128 characters")
             return 
         }
-
-        // also incorporate checking whether they have at least one caps, a punctuation etc. 
-        // if(password.includes(""))
-        const deviceKey = await props.getOrCreateDeviceKey()
-        const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
         
-        const { identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic  } = await props.generateKeysForSignup(deviceKeyString);
-
-        // console.log("identityKeyPublic: " + JSON.stringify(identityKeyPublic));
-        // console.log("signed_prekey_public: " + JSON.stringify(signedPreKeyPublic));
-        // console.log("signed_prekey_signature: " + JSON.stringify(signedPreKeySignature));
-        // console.log("oneTimePreKeys: " + JSON.stringify(oneTimePreKeysPublic));
-
+        // Generate temporary keys (not saved yet)
+        const newIdentityKey = await X3DHClient.generateKeyPair();
+        const signedPreKeyPair = await X3DHClient.generateKeyPair();
+        const signature = await X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
+        
+        const newSignedPreKey = {
+            keyId: 1,
+            publicKey: signedPreKeyPair.publicKey,
+            privateKey: signedPreKeyPair.privateKey,
+            signature,
+        };
+        
+        const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
+        
         let msg = {
             username: username,
             email: email,
             password: password,
-            identityKeyPublic: identityKeyPublic, 
-            signedPreKeyPublic: signedPreKeyPublic,
-            signedPreKeySignature: signedPreKeySignature,
-            oneTimePreKeysPublic: oneTimePreKeysPublic
-        }
-
+            identityKeyPublic: newIdentityKey.publicKey, 
+            signedPreKeyPublic: newSignedPreKey.publicKey,
+            signedPreKeySignature: signature,
+            oneTimePreKeysPublic: newOneTimePreKeys.map(k => ({
+            keyId: k.keyId,
+            publicKey: k.publicKey,
+            }))
+        };
+        
         let requestParams = {
             'method': 'POST',
             'headers': {'Content-Type' : 'application/json'},
             'body': JSON.stringify(msg)
         }
         
-
         const response = await fetch("http://localhost:3002/register", requestParams);
+        
         if(response.status === 201){
             console.log("Got registered suckas")
+            await sleep(2000); // Wait 2 seconds
+
+            // Get user ID from response
+            const userData = await response.json();
+            const userId = userData.user_id; // Adjust based on your API response
             
-            // Send X3DH (public) keys to server
+            console.log("before getting device Key")
+            await sleep(2000); // Wait 2 seconds
+
+            const deviceKey = await props.getOrCreateDeviceKey(userId);
+            
+            console.log("before encrypting keys in registration")
+            await sleep(2000); // Wait 2 seconds
+
+            // ✅ Encrypt keys with password using NaCl (synchronous, no await)
+            const encryptedKeys = props.encryptKeys(
+            {
+                identityKey: newIdentityKey,
+                signedPreKey: newSignedPreKey,
+                oneTimePreKeys: newOneTimePreKeys,
+            },
+                deviceKey  // ✅ Pass password string directly
+            );
+            
+            console.log("before setting encrypted keys")
+            await sleep(2000); // Wait 2 seconds
+            
+            // ✅ Save with user ID
+            localStorage.setItem(`encrypted_keys_${userId}`, encryptedKeys);
+            
+            // Set in state
+            props.setUser(userId);
+            props.setIdentityKey(newIdentityKey);
+            props.setSignedPreKey(newSignedPreKey);
+            props.setOneTimePreKeys(newOneTimePreKeys);
+            // props.setIsKeysLoaded(true);
+            
+            console.log(`keys are loaded after registration for user: ${userId}`)
+            await sleep(2000); // Wait 2 seconds
+
+            
+
             return "success"
         } else {
             console.log("registration failed bitchass")

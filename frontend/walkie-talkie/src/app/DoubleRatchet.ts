@@ -17,7 +17,24 @@ export class DoubleRatchet {
   private state: RatchetState;
 
   constructor(state: RatchetState) {
-    this.state = state;
+    // Validate and clean up the state
+    this.state = {
+      ...state,
+      // Fix stringified null/undefined
+      dhReceivingKey: state.dhReceivingKey === 'null' || 
+                      state.dhReceivingKey === 'undefined' || 
+                      state.dhReceivingKey === '' 
+        ? null 
+        : state.dhReceivingKey,
+      // Ensure chain keys are never undefined
+      sendingChainKey: state.sendingChainKey || '',
+      receivingChainKey: state.receivingChainKey || '',
+    };
+    
+    console.log('DoubleRatchet initialized with state:', {
+      dhReceivingKey: this.state.dhReceivingKey,
+      dhSendingPublicKey: this.state.dhSendingKey.publicKey.substring(0, 20) + '...',
+    });
   }
 
   // Initialize as sender (Alice) after X3DH
@@ -123,7 +140,9 @@ export class DoubleRatchet {
       rootKey: this.state.rootKey.substring(0, 20) + "...",
       receivingChainKey: this.state.receivingChainKey.substring(0, 20) + "...",
       dhSendingPublicKey: this.state.dhSendingKey.publicKey.substring(0, 20) + "...",
-      dhReceivingKey: this.state.dhReceivingKey?.substring(0, 20) + "..."
+      dhReceivingKey: this.state.dhReceivingKey === null 
+        ? "null" 
+        : this.state.dhReceivingKey.substring(0, 20) + "..."  // ← Fixed
     });
     
     console.log("Received header:", {

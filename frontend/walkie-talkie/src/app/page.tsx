@@ -41,6 +41,8 @@ import { useX3DH } from "./useX3DH";
 import {ConversationManager} from "./ConversationManager";
 import { DoubleRatchet } from "./DoubleRatchet";
 import { X3DHClient } from "./x3dh-client";
+import nacl from 'tweetnacl';
+import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
 export default function Home() {
 
@@ -168,70 +170,68 @@ export default function Home() {
 
 
   const { identityKey, signedPreKey, isKeysLoaded, generateKeysForSignup,
-          loadKeysAfterLogin, initiateChat, clearKeys} = useX3DH(); // Xtended Diffie-Hellman for end-to-end encryption 
+          loadKeysAfterLogin, initiateChat, setIdentityKey, setSignedPreKey,
+          setOneTimePreKeys, encryptKeys, decryptKeys, clearKeys} = useX3DH(); // Xtended Diffie-Hellman for end-to-end encryption 
 
-  async function getOrCreateDeviceKey() {
-    const storedKey = await loadDeviceKeyFromIndexedDB();
+    // Returns Uint8Array (not CryptoKey)
+  async function getOrCreateDeviceKey(userId: string): Promise<Uint8Array> {
+    console.log("In getOrCreateDeviceKey for user:", userId);
+    
+    if (!userId) {
+      throw new Error("userId is required to get/create device key");
+    }
+    
+    const storedKey = await loadDeviceKeyFromIndexedDB(userId);
+    console.log(`STORED KEY for user ${userId}:`, storedKey);
+    
     if (storedKey) return storedKey;
-
-    // Create brand new key
-    const newKey = await crypto.subtle.generateKey(
-        { name: "AES-GCM", length: 256 },
-        true,
-        ["encrypt", "decrypt"]
-    );
-
-    await storeDeviceKeyInIndexedDB(newKey);
+    
+    console.log("there's no key so we create one for user:", userId);
+    // Create brand new 32-byte key for NaCl
+    const newKey = nacl.randomBytes(32); // NaCl secretbox needs 32 bytes
+    await storeDeviceKeyInIndexedDB(userId, newKey);
+    console.log("After storing key in indexedDB for user:", userId);
     return newKey;
   }
 
-  async function storeDeviceKeyInIndexedDB(key: CryptoKey): Promise<void> {
+  async function storeDeviceKeyInIndexedDB(userId: string, key: Uint8Array): Promise<void> {
     const db = await openDB();
-
-    const rawKey = await crypto.subtle.exportKey("raw", key);
-
     return new Promise((resolve, reject) => {
-        const tx = db.transaction("cryptoKeys", "readwrite");
-        const store = tx.objectStore("cryptoKeys");
-
-        store.put(rawKey, "deviceKey");
-
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
+      const tx = db.transaction("cryptoKeys", "readwrite");
+      const store = tx.objectStore("cryptoKeys");
+      // ✅ Store with user-specific key
+      store.put(key, `deviceKey_${userId}`);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
     });
   }
 
-  async function loadDeviceKeyFromIndexedDB(): Promise<CryptoKey | null> {
+  async function loadDeviceKeyFromIndexedDB(userId: string): Promise<Uint8Array | null> {
     const db = await openDB();
-
     return new Promise((resolve, reject) => {
-        const tx = db.transaction("cryptoKeys", "readonly");
-        const store = tx.objectStore("cryptoKeys");
+      const tx = db.transaction("cryptoKeys", "readonly");
+      const store = tx.objectStore("cryptoKeys");
+      // ✅ Load with user-specific key
+      const request = store.get(`deviceKey_${userId}`);
+      request.onsuccess = () => {
+        const key = request.result;
+        resolve(key ? new Uint8Array(key) : null);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
 
-        const request = store.get("deviceKey");
-
-        request.onsuccess = async () => {
-        const rawKey = request.result;
-        if (!rawKey) {
-            resolve(null);
-            return;
+  function openDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open("MySecureKeyDB", 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("cryptoKeys")) {
+          db.createObjectStore("cryptoKeys");
         }
-
-        try {
-            const key = await crypto.subtle.importKey(
-            "raw",
-            rawKey,
-            { name: "AES-GCM" },
-            true,
-            ["encrypt", "decrypt"]
-            );
-            resolve(key);
-        } catch (err) {
-            reject(err);
-        }
-        };
-
-        request.onerror = () => reject(request.error);
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
     });
   }
 
@@ -253,24 +253,9 @@ export default function Home() {
     );
   }
 
-
-  function openDB(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open("MySecureKeyDB", 1);
-
-        request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("cryptoKeys")) {
-            db.createObjectStore("cryptoKeys");
-        }
-        };
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-  }
-
   async function trySSO() {
+
+    console.log("In try SSO")
 
     const res = await fetch(`http://localhost:3002/verify`, {
         method: "GET",
@@ -285,9 +270,14 @@ export default function Home() {
       setUser(data.user.user.id)
       if(!loggedIn) setLoggedIn()
       
-      const deviceKey = await getOrCreateDeviceKey()
-      const deviceKeyString = await cryptoKeyToBase64(deviceKey);
-      loadKeysAfterLogin(user, deviceKeyString)
+      const deviceKey = await getOrCreateDeviceKey(data.user.user.id)
+
+      console.log("Before loadKeysAfterLogin SSO")
+      // const deviceKeyString = await cryptoKeyToBase64(deviceKey);
+      loadKeysAfterLogin(data.user.user.id, deviceKey)
+
+      console.log("Keys loaded after login")
+
       return true;
     } else {
       console.log("❌ Invalid token:", data);
@@ -297,7 +287,36 @@ export default function Home() {
 
   useEffect(() => {
     console.log(`User has id ${user}`)
+
+    const checkKeys = async () => {
+      // Check localStorage
+      const encryptedKeys = localStorage.getItem(`encrypted_keys_${user}`);
+      console.log("🔍 Bob's encrypted keys in localStorage:", encryptedKeys ? "EXISTS" : "NOT FOUND");
+
+      if (encryptedKeys) {
+        try {
+          const deviceKey = await getOrCreateDeviceKey(user);
+          const keys = decryptKeys(encryptedKeys, deviceKey);
+          console.log("📦 Bob's keys from localStorage:");
+          console.log("  - Identity public:", keys.identityKey.publicKey.substring(0, 30) + "...");
+          console.log("  - SignedPreKey public:", keys.signedPreKey.publicKey.substring(0, 30) + "...");
+        } catch (e) {
+          console.error("❌ Failed to decrypt Bob's keys:", e);
+        }
+      }
+
+      // Check database
+      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbKeys = await dbResponse.json();
+      console.log("🗄️ Bob's keys from database:");
+      console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
+      console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+    }
+
     if(user !== "") {
+      checkKeys()
+
+
       fetchData()
       fetchData2()
       fetchImages()
@@ -305,6 +324,10 @@ export default function Home() {
 
     }
   }, [user])
+
+  useEffect(() => {
+    console.log(`identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}`)
+  }, [identityKey, signedPreKey])
 
   useEffect(() => {
     if(user !== "" && users.length !== 0) {
@@ -337,6 +360,7 @@ export default function Home() {
     // if(sso_result === true) {
 
     // }
+
 
     // Function to fetch data
 
@@ -420,6 +444,65 @@ export default function Home() {
         console.error(JSON.stringify(err))
     }
   } 
+  // Derive a 32-byte key from password using NaCl hash
+  function deriveKeyFromPassword(password: string): Uint8Array {
+    const encoder = new TextEncoder();
+    const passwordBytes = encoder.encode(password);
+    
+    // Use nacl.hash to create a 64-byte hash, then take first 32 bytes for key
+    const hash = nacl.hash(passwordBytes);
+    return hash.slice(0, 32); // NaCl secretbox needs 32-byte key
+  }
+
+  
+  // function encryptKeys(keys: any, password: string): string {
+  //   // Derive encryption key from password
+  //   const encryptionKey = deriveKeyFromPassword(password);
+    
+  //   // Convert keys object to JSON string, then to bytes
+  //   const plaintext = JSON.stringify(keys);
+  //   const encoder = new TextEncoder();
+  //   const plaintextBytes = encoder.encode(plaintext);
+    
+  //   // Generate random nonce (24 bytes for secretbox)
+  //   const nonce = nacl.randomBytes(24);
+    
+  //   // Encrypt with NaCl secretbox
+  //   const ciphertext = nacl.secretbox(plaintextBytes, nonce, encryptionKey);
+    
+  //   // Combine nonce + ciphertext
+  //   const combined = new Uint8Array(nonce.length + ciphertext.length);
+  //   combined.set(nonce, 0);
+  //   combined.set(ciphertext, nonce.length);
+    
+  //   // Encode as base64
+  //   return encodeBase64(combined);
+  // }
+
+  // function decryptKeys(encryptedKeysBase64: string, password: string): any {
+  //   // Derive the same encryption key from password
+  //   const encryptionKey = deriveKeyFromPassword(password);
+    
+  //   // Decode base64
+  //   const combined = decodeBase64(encryptedKeysBase64);
+    
+  //   // Extract nonce (first 24 bytes) and ciphertext (rest)
+  //   const nonce = combined.slice(0, 24);
+  //   const ciphertext = combined.slice(24);
+    
+  //   // Decrypt with NaCl secretbox
+  //   const plaintextBytes = nacl.secretbox.open(ciphertext, nonce, encryptionKey);
+    
+  //   if (!plaintextBytes) {
+  //     throw new Error('Decryption failed - wrong password or corrupted data');
+  //   }
+    
+  //   // Convert bytes back to string and parse JSON
+  //   const decoder = new TextDecoder();
+  //   const plaintext = decoder.decode(plaintextBytes);
+    
+  //   return JSON.parse(plaintext);
+  // }
 
   /* UPDATE THE CLOSE TIME of the chat */
   async function closeChat(contact) {
@@ -454,14 +537,18 @@ export default function Home() {
     // Decrypt messages for all contacts asynchronously
   const decryptAllMessages = async () => {
     const updatedContacts = await Promise.all(
-      contacts.map(async (contact) => {
+      contacts.map(async (contact, idx) => {
         try {
+
+          console.log(`Working on contact ${idx}`)
 
           const decryptedMessage = await loadConversationMessages(
             contact.message, 
             contact.is_group, 
             contact.contact_id
           );
+          
+          console.log(`Conversation messages loaded`)
           
           return {
             ...contact,
@@ -481,20 +568,35 @@ export default function Home() {
     if(contacts.length > 0 && userObj !== null) {
       setBlockedContacts(contacts.filter((elem) => elem.blocked === true))
       
-      decryptAllMessages();
+      // if(identityKey && signedPreKey) {
+      //   decryptAllMessages();
+      // }
     }
   }, [contacts, userObj])
+
+  useEffect(() => {
+
+    console.log(`identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}`)
+
+    if(identityKey && signedPreKey) {
+      console.log("DECRYPTING ALL MESSAGES")
+      decryptAllMessages();
+    }
+  }, [identityKey, signedPreKey, contacts])
 
   // Client-side: Load conversation history 
   // 
   // Different cases for groups and users
   async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string) {
     // Fetch encrypted messages from DB
+    console.log("In load conversation messages")
      
     let ratchet = null;
     const decryptedMessages = [];
     const decryption_key = X3DHClient.getOrCreateLocalKey();
     
+    console.log("Before for loop")
+
     for (var i = 0; i < messages.length ; i++) {
         
       console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
@@ -517,8 +619,15 @@ export default function Home() {
           }
           ratchet = new DoubleRatchet(conversation.ratchetState);
         } else {
-          console.log("We are NOT the sender")
-          // I received this first message - perform X3DH
+          console.log("We are NOT the sender (Bob)");
+          
+          // Check what we're passing in
+          console.log('About to perform X3DH as receiver with:');
+          console.log('- ephemeralPublicKey:', messages[i].ephemeralPublicKey);
+          console.log('- identityKey:', messages[i].identityKey);
+          console.log('- My signedPreKey:', signedPreKey);
+          console.log('- My identityKey:', identityKey);
+          
           const sharedSecret = await X3DHClient.performX3DHAsReceiver(
             identityKey,
             signedPreKey,
@@ -526,21 +635,36 @@ export default function Home() {
             messages[i].identityKey,
             messages[i].oneTimePreKeyId
           );
-
-          console.log("after deriving shared secret, before initializing ratchet")
+          
+          console.log("=== BOB AFTER X3DH ===");
+          console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
+          console.log("My signed prekey:", signedPreKey.publicKey.substring(0, 30) + "...");
+          console.log("Alice's ephemeral key:", messages[i].ephemeralPublicKey.substring(0, 30) + "...");
+          console.log("Alice's identity key:", messages[i].identityKey.substring(0, 30) + "...");
           
           ratchet = DoubleRatchet.initializeAsReceiver(
             sharedSecret,
             signedPreKey
           );
           
-          console.log("after initialising ratchet, before saving conversation")
+          const initialState = ratchet.getState();
+          console.log('Bob - Initial ratchet state RIGHT AFTER CREATION:');
+          console.log('- dhReceivingKey (should be null):', initialState.dhReceivingKey);
+          console.log('- dhReceivingKey type:', typeof initialState.dhReceivingKey);
+          console.log('- dhSendingKey.publicKey:', initialState.dhSendingKey.publicKey);
+          console.log('- Full state:', JSON.stringify(initialState, null, 2));
           
           // Save for future use
           ConversationManager.saveConversation(contact_id, {
-            ratchetState: ratchet.getState(),
+            ratchetState: initialState,
             theirIdentityKey: messages[i].identityKey,
           });
+          
+          // Immediately load back to check if it's saved correctly
+          const reloaded = ConversationManager.loadConversation(contact_id);
+          console.log('RELOADED state from storage:');
+          console.log('- dhReceivingKey after reload:', reloaded.ratchetState.dhReceivingKey);
+          console.log('- dhReceivingKey type after reload:', typeof reloaded.ratchetState.dhReceivingKey);
         }
       }
       
@@ -591,7 +715,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(userObj !== null) {
+    if(userObj !== null && userObj !== undefined) {
       if(userObj.theme) {
         setThemeChosen(userObj.theme); setThemeChosenPending(userObj.theme)
       } else {      
@@ -786,7 +910,8 @@ export default function Home() {
         </div>
         }
         {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey}></Login> : (registered === false && loggedIn === false) ? 
-                                                       <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64}></Register> : <></>}
+                                                       <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64} setUser={setUser} setIdentityKey={setIdentityKey} 
+                                                       setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} isKeysLoaded={isKeysLoaded} deriveKeyFromPassword={deriveKeyFromPassword} decryptKeys={decryptKeys} encryptKeys={encryptKeys}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
       {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}

@@ -124,7 +124,11 @@ app.post('/register', async (req, res) => {
     }
 
     console.log("After query")
-    res.status(201).json({ userId: result.rows[0].id });
+
+    const responseData = { user_id: user_id };
+    console.log("📤 Sending response:", responseData); // Debug
+    
+    res.status(201).json(responseData);
   } catch (error) {
     console.error("More detailed error: " + error.message)
     res.status(400).json({ error: 'User already exists' });
@@ -243,10 +247,10 @@ app.get('/api/keys', async(req, res) => {
         public_key: resp_keys.rows[0].signed_prekey_public,
         signature: resp_keys.rows[0].signed_prekey_signature
       }, 
-      oneTimePreKey: {
-        keyId: resp_ot_keys.rows[0].key_id,
-        publicKey: resp_ot_keys.rows[0].public_key
-      }
+      // oneTimePreKey: {
+      //   keyId: resp_ot_keys.rows[0].key_id,
+      //   publicKey: resp_ot_keys.rows[0].public_key
+      // }
     }
   
     console.log("=========================")
