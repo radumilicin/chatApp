@@ -99,19 +99,19 @@ export default function Register(props) {
         
         if(response.status === 201){
             console.log("Got registered suckas")
-            await sleep(2000); // Wait 2 seconds
+            // await sleep(2000); // Wait 2 seconds
 
             // Get user ID from response
             const userData = await response.json();
             const userId = userData.user_id; // Adjust based on your API response
             
             console.log("before getting device Key")
-            await sleep(2000); // Wait 2 seconds
+            // await sleep(2000); // Wait 2 seconds
 
             const deviceKey = await props.getOrCreateDeviceKey(userId);
             
             console.log("before encrypting keys in registration")
-            await sleep(2000); // Wait 2 seconds
+            // await sleep(2000); // Wait 2 seconds
 
             // ✅ Encrypt keys with password using NaCl (synchronous, no await)
             const encryptedKeys = props.encryptKeys(
@@ -124,7 +124,7 @@ export default function Register(props) {
             );
             
             console.log("before setting encrypted keys")
-            await sleep(2000); // Wait 2 seconds
+            // await sleep(2000); // Wait 2 seconds
             
             // ✅ Save with user ID
             localStorage.setItem(`encrypted_keys_${userId}`, encryptedKeys);
@@ -137,9 +137,7 @@ export default function Register(props) {
             // props.setIsKeysLoaded(true);
             
             console.log(`keys are loaded after registration for user: ${userId}`)
-            await sleep(2000); // Wait 2 seconds
-
-            
+            // await sleep(2000); // Wait 2 seconds            
 
             return "success"
         } else {

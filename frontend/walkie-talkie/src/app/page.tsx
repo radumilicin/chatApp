@@ -382,8 +382,17 @@ export default function Home() {
     for(var i = 0; i < decryptedContacts.length; i++) {
       console.log(JSON.stringify(decryptedContacts[i]))
     }
+
+    if(curr_contact) {
+      for(var i = 0; i < decryptedContacts.length; i++) {
+        if(decryptedContacts[i].id === curr_contact.id) {
+          setCurrContact(decryptedContacts[i])
+          console.log(`current contact set to: ${JSON.stringify(decryptedContacts[i])}`)
+        }
+      }
+    }
     console.log("===================================")
-  }, [decryptedContacts])
+  }, [decryptedContacts, curr_contact])
 
   // Separate useEffect for handling window resize
   useEffect(() => {
@@ -536,16 +545,18 @@ export default function Home() {
 
     // Decrypt messages for all contacts asynchronously
   const decryptAllMessages = async () => {
+    
     const updatedContacts = await Promise.all(
       contacts.map(async (contact, idx) => {
         try {
 
+          const contact_id = contact.sender_id === user ? contact.contact_id : contact.sender_id
           console.log(`Working on contact ${idx}`)
 
           const decryptedMessage = await loadConversationMessages(
             contact.message, 
             contact.is_group, 
-            contact.contact_id
+            contact_id
           );
           
           console.log(`Conversation messages loaded`)
@@ -628,43 +639,48 @@ export default function Home() {
           console.log('- My signedPreKey:', signedPreKey);
           console.log('- My identityKey:', identityKey);
           
-          const sharedSecret = await X3DHClient.performX3DHAsReceiver(
-            identityKey,
-            signedPreKey,
-            messages[i].ephemeralPublicKey,
-            messages[i].identityKey,
-            messages[i].oneTimePreKeyId
-          );
-          
-          console.log("=== BOB AFTER X3DH ===");
-          console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
-          console.log("My signed prekey:", signedPreKey.publicKey.substring(0, 30) + "...");
-          console.log("Alice's ephemeral key:", messages[i].ephemeralPublicKey.substring(0, 30) + "...");
-          console.log("Alice's identity key:", messages[i].identityKey.substring(0, 30) + "...");
-          
-          ratchet = DoubleRatchet.initializeAsReceiver(
-            sharedSecret,
-            signedPreKey
-          );
-          
-          const initialState = ratchet.getState();
-          console.log('Bob - Initial ratchet state RIGHT AFTER CREATION:');
-          console.log('- dhReceivingKey (should be null):', initialState.dhReceivingKey);
-          console.log('- dhReceivingKey type:', typeof initialState.dhReceivingKey);
-          console.log('- dhSendingKey.publicKey:', initialState.dhSendingKey.publicKey);
-          console.log('- Full state:', JSON.stringify(initialState, null, 2));
-          
-          // Save for future use
-          ConversationManager.saveConversation(contact_id, {
-            ratchetState: initialState,
-            theirIdentityKey: messages[i].identityKey,
-          });
-          
-          // Immediately load back to check if it's saved correctly
-          const reloaded = ConversationManager.loadConversation(contact_id);
-          console.log('RELOADED state from storage:');
-          console.log('- dhReceivingKey after reload:', reloaded.ratchetState.dhReceivingKey);
-          console.log('- dhReceivingKey type after reload:', typeof reloaded.ratchetState.dhReceivingKey);
+          if(conversation) {
+            ratchet = new DoubleRatchet(conversation.ratchetState)
+          } else {
+            const sharedSecret = await X3DHClient.performX3DHAsReceiver(
+              identityKey,
+              signedPreKey,
+              messages[i].ephemeralPublicKey,
+              messages[i].identityKey,
+              messages[i].oneTimePreKeyId
+            );
+            
+            console.log("=== BOB AFTER X3DH ===");
+            console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
+            console.log("My signed prekey:", signedPreKey.publicKey.substring(0, 30) + "...");
+            console.log("Alice's ephemeral key:", messages[i].ephemeralPublicKey.substring(0, 30) + "...");
+            console.log("Alice's identity key:", messages[i].identityKey.substring(0, 30) + "...");
+            
+            ratchet = DoubleRatchet.initializeAsReceiver(
+              sharedSecret,
+              signedPreKey
+            );
+            
+            const initialState = ratchet.getState();
+            console.log('Bob - Initial ratchet state RIGHT AFTER CREATION:');
+            console.log('- dhReceivingKey (should be null):', initialState.dhReceivingKey);
+            console.log('- dhReceivingKey type:', typeof initialState.dhReceivingKey);
+            console.log('- dhSendingKey.publicKey:', initialState.dhSendingKey.publicKey);
+            console.log('- Full state:', JSON.stringify(initialState, null, 2));
+
+            // Save for future use
+            ConversationManager.saveConversation(contact_id, {
+              ratchetState: initialState,
+              theirIdentityKey: messages[i].identityKey,
+            });
+            
+            // Immediately load back to check if it's saved correctly
+            const reloaded = ConversationManager.loadConversation(contact_id);
+            console.log('RELOADED state from storage:');
+            console.log('- dhReceivingKey after reload:', reloaded.ratchetState.dhReceivingKey);
+            console.log('- dhReceivingKey type after reload:', typeof reloaded.ratchetState.dhReceivingKey);
+            console.log("loadConversations called with contact_id:", contact_id);
+          }
         }
       }
       
@@ -699,12 +715,19 @@ export default function Home() {
             timestamp: messages[i].timestamp
           });
           
-          // Update saved ratchet state
-          const conversation = ConversationManager.loadConversation(contact_id);
           ConversationManager.saveConversation(contact_id, {
             ratchetState: ratchet.getState(),
-            theirIdentityKey: conversation.theirIdentityKey,
+            theirIdentityKey: messages[i].identityKey,
           });
+          
+          // Update saved ratchet state
+          const conversation = ConversationManager.loadConversation(contact_id);
+
+          console.log("=====================================")
+          console.log("DEBUGGING RECEIVING RATCHET INCREMENT")
+          console.log(`conversation: ${JSON.stringify(conversation)}`)
+          console.log("END DEBUGGING RECEIVING RATCHET INCREMENT")
+          console.log("=====================================")
         } catch (error) {
           console.error('Failed to decrypt message:', error);
         }
@@ -757,12 +780,22 @@ export default function Home() {
 
   const { isConnected, sendMessage } = useWebSocket(
     user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    user,
+    contacts,
+    updateContacts, 
+    setDecryptedContacts,
+    identityKey,
+    signedPreKey,
     setMessages,
     incomingSoundsEnabled,
     outgoingMessagesSoundsEnabled,
     decryptAllMessages,
     fetchData2
   );
+
+  // useEffect(() => {
+  //   fetchData2()
+  // }, [messages])
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
@@ -902,9 +935,9 @@ export default function Home() {
                                       decryptedContacts={decryptedContacts}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
-                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
+                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
-                                                identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages}></CurrentChat> : <></>)
+                                                identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts}></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>

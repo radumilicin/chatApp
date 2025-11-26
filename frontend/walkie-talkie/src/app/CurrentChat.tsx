@@ -16,6 +16,7 @@ export default function CurrentChat( props: any ) {
     const contact = useRef(null)
     const image = useRef(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
+    const [decryptedContact, setDecryptedContact] = useState(null);
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -61,15 +62,16 @@ export default function CurrentChat( props: any ) {
                 try {
                     if(props.contact.is_group === false) {
 
-                        const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
-                        const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
-                        if(!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`)
-                        }
+                        // const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
+                        // const response = await fetch(`http://localhost:3002/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
+                        // if(!response.ok) {
+                        //     throw new Error(`HTTP error! status: ${response.status}`)
+                        // }
 
-                        const result = await response.json();
+                        // const result = await response.json();
                         // console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")
-                        await updateList(allMessages, result[0]?.message)
+                        // await updateList(allMessages, result[0]?.message)
+                        await updateList(allMessages, props.contact.message)
                         // console.log("allMessages after changing contact = " + JSON.stringify(allMessages));
 
                     } else {
@@ -112,6 +114,11 @@ export default function CurrentChat( props: any ) {
     }, [props.contact])
 
     useEffect(() => {
+
+        /* fetch contacts so we can update decryptedContacts */
+        // props.fetchContacts()
+
+
         if(props.contact === contact.current) {  // this only happens when the contact user stays the same
             if(props.contact !== null) {
                 
@@ -171,29 +178,37 @@ export default function CurrentChat( props: any ) {
     const handleSendMessage = async (msg) => {
         if (msg.trim() === '') return;
 
-        const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
+        const other_user = props.contact.sender_id === props.curr_user 
+            ? props.contact.contact_id 
+            : props.contact.sender_id;
 
-        var sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle, ciphertext, header = null
-        var message = {}
-
-        let currentRatchet = ratchet; 
-            
-        // 3. Encrypt the copy of the data you wanna read with your key
-        // const local_key = `key_${other_user}`
+        var sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle, ciphertext, header = null;
+        var message = {};
+        let currentRatchet;
+        
         const key = X3DHClient.getOrCreateLocalKey();
 
-        if(allMessages.length === 0) {
+        // ✅ Check if conversation exists, not UI state
+        const conversation = ConversationManager.loadConversation(other_user);
+        console.log("=====================")
+        console.log("=== RATCHET STATE ===")
+        console.log("Conversation history: " + JSON.stringify(conversation))
+        console.log("=== END RATCHET STATE ===")
+        console.log("=====================")
+        console.log("loadConversations called with contact_id:", other_user);
 
-            // 1. Fetch Bob's prekey bundle
-            // 2. Generate ephemeral key, Compute DH's, Derive shared secret
-
-
-            console.log("There is no message here so we initiate chat");
+        if (!conversation) {
+            // ========================================
+            // FIRST MESSAGE IN CONVERSATION (Initiator)
+            // ========================================
+            console.log(`🔵 No conversation found as user ${props.curr_user} - initiating new chat`);
             
-            ({sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle} = await props.initiateChat(other_user))
+            // Perform X3DH
+            ({sharedSecret, ephemeralPublicKey, oneTimePreKeyId, bundle} = await props.initiateChat(other_user));
 
-            console.log("After initiate chat")
+            console.log("After initiate chat");
 
+            // Initialize ratchet as sender
             currentRatchet = DoubleRatchet.initializeAsSender(
                 sharedSecret,
                 bundle.signedPreKey.publicKey
@@ -209,32 +224,38 @@ export default function CurrentChat( props: any ) {
             console.log("Alice's DH sending public key:", aliceState.dhSendingKey.publicKey.substring(0, 30) + "...");
             console.log("Alice's DH receiving key:", aliceState.dhReceivingKey.substring(0, 30) + "...");
             
-            console.log("After setting ratchet")
-
             setRatchet(currentRatchet);
 
+            // Encrypt message
             ({ciphertext, header} = currentRatchet.encrypt(msg)); 
             
-            console.log("After encrypting message")
+            console.log("After encrypting message");
 
+            // Save conversation state
             ConversationManager.saveConversation(other_user, {
-                ratchetState: currentRatchet.getState(),
-                theirIdentityKey: bundle.identityKey,
+            ratchetState: currentRatchet.getState(),
+            theirIdentityKey: bundle.identityKey,
             });
+            
+            var conversation_2 = ConversationManager.loadConversation(other_user)
+            console.log(`Conversation state after sending first message: ${JSON.stringify(conversation_2)}`)
 
-            console.log("We're done with creating ratchet and saving conversation (+ratchet) state")
+            console.log("Conversation state saved");
 
         } else {
-
-            // SUBSEQUENT MESSAGES - Load existing ratchet
-            const conversation = ConversationManager.loadConversation(other_user);
+            // ========================================
+            // SUBSEQUENT MESSAGE (Continue conversation)
+            // ========================================
+            console.log("🟢 Conversation found - loading existing ratchet");
+            console.log("Existing ratchet state:", {
+                sendMessageNumber: conversation.ratchetState.sendMessageNumber,
+                receiveMessageNumber: conversation.ratchetState.receiveMessageNumber,
+                hasSendingChainKey: !!conversation.ratchetState.sendingChainKey,
+                hasReceivingChainKey: !!conversation.ratchetState.receivingChainKey
+            });
             
-            if (!conversation) {
-                throw new Error('Conversation not found!');
-            }
-            
+            // Load existing ratchet
             currentRatchet = new DoubleRatchet(conversation.ratchetState);
-
             setRatchet(currentRatchet);
             
             // Encrypt with existing ratchet
@@ -242,39 +263,53 @@ export default function CurrentChat( props: any ) {
             
             // Save updated ratchet state
             ConversationManager.saveConversation(other_user, {
-                ratchetState: currentRatchet.getState(),
-                theirIdentityKey: conversation.theirIdentityKey,
+            ratchetState: currentRatchet.getState(),
+            theirIdentityKey: conversation.theirIdentityKey,
             });
             
-            console.log("We're done with loading ratchet and saving conversation (+ratchet) state")
+            var conversation_2 = ConversationManager.loadConversation(other_user)
+            console.log(`Conversation state after sending other messages: ${JSON.stringify(conversation_2)}`)
+
+            var convo_w_other = `conversation_${other_user}`
+            console.log(`conversation with ${other_user}: ${localStorage.getItem(convo_w_other)}`)
+            
+            console.log("Ratchet state updated and saved");
         }
 
-        const ciphertext_sender = X3DHClient.encryptForSelf(msg, key)
+        // Encrypt for self (so sender can read their own message)
+        const ciphertext_sender = X3DHClient.encryptForSelf(msg, key);
 
         message = {
-            sender_id: props.curr_user, // Replace with dynamic user ID
-            recipient_id: other_user, // Replace with dynamic recipient ID
+            sender_id: props.curr_user,
+            recipient_id: other_user,
+            contact_id: props.contact.id,
             ephemeralPublicKey: ephemeralPublicKey,
             identityKey: props.identityKey.publicKey,
             oneTimePreKeyId: oneTimePreKeyId, 
             ciphertext: ciphertext,
             ciphertext_sender: ciphertext_sender,
-            message: msg,
+            message: msg, // Keep plaintext for immediate display
             header: header,
             timestamp: new Date().toISOString(),
         };        
 
         props.sendMessage(message);
+        props.fetchContacts()
+        
+        // Update UI (allMessages is just for display)
         if(allMessages.length === 0) {
-            // console.log("why is this triggering now?")
-            updateAllMessages([message])    
+            updateAllMessages([message]);
+        } else {
+            updateAllMessages([...allMessages, message]);
         }
-        else {
-            // console.log("allMessages" + JSON.stringify(allMessages))
-            updateAllMessages([...allMessages, message])
-        }
-        setText(''); // Clear input
+
+        
+        setText('');
     };
+
+    // useEffect(() => {
+    //     props.fetchContacts()
+    // }, [allMessages])
 
     const handleSendMessage2 = (msg) => {
         if (msg.trim() === '') return;
@@ -355,6 +390,24 @@ export default function CurrentChat( props: any ) {
         return user || {data: ""}
     }
 
+    useEffect(() => {
+        if(props.contact !== null && props.decryptedContacts !== null && props.decryptedContacts.length > 0) {
+            // ✅ Use .find() to get the actual contact object
+            var new_contact = props.decryptedContacts.find((elem) => elem.id === props.contact.id);
+            
+            console.log("Found decrypted contact:", new_contact);
+            setDecryptedContact(new_contact);
+        }
+    }, [props.contact, props.decryptedContacts])
+
+    useEffect(() => {
+        if(decryptedContact !== null && decryptedContact !== undefined) {
+            console.log("===============================")
+            console.log(`Decrypted contact: ${JSON.stringify(decryptedContact)}`)
+            console.log("===============================")
+        }
+    }, [decryptedContact])
+
     return (
         <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg  border-2 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300"}`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
@@ -388,8 +441,8 @@ export default function CurrentChat( props: any ) {
                 }
             </div>
             <div className={`relative left-[5%] top-[18%] w-[90%] h-[68%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
-                {allMessages.length > 0 &&
-                    allMessages.map((message, idx) => {
+                {decryptedContact !== null  &&
+                    decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
 
                         // Helper function to get date label
@@ -421,7 +474,7 @@ export default function CurrentChat( props: any ) {
                         const showDateDivider = idx === 0 || 
                             (idx > 0 && 
                             new Date(message.timestamp).toDateString() !== 
-                            new Date(allMessages[idx - 1].timestamp).toDateString());
+                            new Date(decryptedContact.message[idx - 1].timestamp).toDateString());
 
                         return (
                 <div key={idx} className={`${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>
@@ -447,6 +500,9 @@ export default function CurrentChat( props: any ) {
                                 <div className={`relative flex w-full text-lg text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
                                     <div className="break-words">
+                                        {/* {
+                                            message.decrypted_message
+                                        } */}
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.message}

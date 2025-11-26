@@ -68,6 +68,8 @@ export class DoubleRatchet {
     sharedSecret: string,
     mySignedPreKey: { publicKey: string; privateKey: string }
   ): DoubleRatchet {
+
+    /* HERE TAKE FROM localStorage the send and receive numbers if they exist */
     return new DoubleRatchet({
       rootKey: sharedSecret,
       sendingChainKey: '',
@@ -119,6 +121,8 @@ export class DoubleRatchet {
     // Update state
     this.state.sendingChainKey = nextChainKey;
     this.state.sendMessageNumber++;
+
+    console.log("sendMessageNumber: ", this.state.sendMessageNumber);
 
     return { ciphertext, header };
   }
@@ -182,6 +186,8 @@ export class DoubleRatchet {
     // Update state
     this.state.receivingChainKey = nextChainKey;
     this.state.receiveMessageNumber++;
+
+    console.log(`receiveMessageNumber: ${this.state.receiveMessageNumber}`)
 
     return plaintext;
   }
