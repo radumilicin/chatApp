@@ -24,7 +24,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
     credentials: true
   }
 ))
@@ -542,7 +542,7 @@ wss.on('connection', (ws, req) => {
       //   };        
 
       // Ensure the message has the required fields
-      var { sender_id, recipient_id, ephemeralPublicKey, identityKey, oneTimePreKeyId, 
+      var { sender_id, recipient_id, contact_id, ephemeralPublicKey, identityKey, oneTimePreKeyId, 
             ciphertext, ciphertext_sender, message, header, timestamp } = parsedMessage;
       // console.log("sender_id: " + sender_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
       if (!sender_id || !recipient_id || !message || !timestamp || !ciphertext || !ciphertext_sender) {
@@ -564,6 +564,7 @@ wss.on('connection', (ws, req) => {
         const messageToStore = {
           sender_id,
           recipient_id,
+          contact_id, 
           ciphertext: ciphertext,
           ciphertext_sender: ciphertext_sender,
           header: JSON.stringify(header),
@@ -601,6 +602,7 @@ wss.on('connection', (ws, req) => {
         const messageToStore = {
           sender_id,
           recipient_id,
+          contact_id, 
           message: "",
           ciphertext: ciphertext,
           ciphertext_sender: ciphertext_sender,
