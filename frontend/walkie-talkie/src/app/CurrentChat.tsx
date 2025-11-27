@@ -272,7 +272,7 @@ export default function CurrentChat( props: any ) {
 
             var convo_w_other = `conversation_${other_user}`
             console.log(`conversation with ${other_user}: ${localStorage.getItem(convo_w_other)}`)
-            
+           
             console.log("Ratchet state updated and saved");
         }
 

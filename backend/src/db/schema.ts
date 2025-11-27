@@ -53,7 +53,11 @@ export const contacts = pgTable('contacts', {
   blocked: boolean('blocked').default(false),
   blockedAt: varchar('blockedAt', {length: 50}),
   opened_at: jsonb('opened_at').default([]),                // array with [{id_user1: {}}, {id_user2: {}}]
-  closed_at: jsonb('closed_at').default([]),                // array with [{id_user1: 1, closedAt: 25.01.2025T23:22:15}, {id_user2: {}}]
+  closed_at: jsonb('closed_at').default([]),                // array with [{id_user1: 1, closedAt: 25.01.2025T23:22:15}, {id_user2: {}}]]
+  last_message_sent_by_sender: timestamp('last_message_sent_by_sender').default(new Date(0)),
+  last_message_sent_by_recipient: timestamp('last_message_sent_by_recipient').default(new Date(0)),
+  last_message_read_by_sender: timestamp('last_message_read_by_sender'). default(new Date(0)),
+  last_message_read_by_recipient: timestamp('last_message_read_by_recipient').default(new Date(0)),
 });
 
 export const user_keys = pgTable('user_keys', {
