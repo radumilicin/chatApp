@@ -556,7 +556,8 @@ export default function Home() {
           const decryptedMessage = await loadConversationMessages(
             contact.message, 
             contact.is_group, 
-            contact_id
+            contact_id,
+            contact
           );
           
           console.log(`Conversation messages loaded`)
@@ -585,6 +586,32 @@ export default function Home() {
     }
   }, [contacts, userObj])
 
+  // by contact_id we refer to user_id/group with whom we have conversation
+  async function sendMessageStatusUpdate(timestamp: any, status: string, contact_id: string) {
+
+    const req_params = {
+      "user_id": user,
+      "contact_id": contact_id,
+      "timestamp": timestamp,
+      "status": status
+    };
+
+    const response = await fetch(`http://localhost:3002/updateMessageStatus`, { 
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(req_params)
+    })
+
+    if(response.status === 200) {
+      console.log(`Status updated successfully to ${status} for timestamp ${timestamp}`)
+    } else {
+      console.error(`Failed to update message status to ${status} for timestamp ${timestamp}`)
+    }
+  }
+
   useEffect(() => {
 
     console.log(`identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}`)
@@ -598,7 +625,7 @@ export default function Home() {
   // Client-side: Load conversation history 
   // 
   // Different cases for groups and users
-  async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string) {
+  async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string, contact: any) {
     // Fetch encrypted messages from DB
     console.log("In load conversation messages")
      
@@ -612,12 +639,20 @@ export default function Home() {
         
       console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
       
+      if(messages[i].sender_id === user){
+        if(user === contact.sender_id && messages[i].timestamp < contact.last_message_read_by_sender) {
+          continue;
+        }
+      } else {
+        if(user === contact.contact_id && messages[i].timestamp < contact.last_message_read_by_receiver) {
+          continue;
+        }
+      }
+
       if (messages[i].is_first_message) {
 
-        console.log(`message #${i}: ` + JSON.stringify(messages[i]))
+        console.log(`message #${i}: ` + JSON.stringify(messages[i]))        
         // First message - initialize ratchet
-        
-
         if (messages[i].sender_id === user) {
           console.log("We are the sender")
 
@@ -629,7 +664,9 @@ export default function Home() {
             continue;
           }
           ratchet = new DoubleRatchet(conversation.ratchetState);
+          
         } else {
+
           console.log("We are NOT the sender (Bob)");
           
           // Check what we're passing in
@@ -642,13 +679,8 @@ export default function Home() {
           if(conversation) {
             ratchet = new DoubleRatchet(conversation.ratchetState)
           } else {
-            const sharedSecret = await X3DHClient.performX3DHAsReceiver(
-              identityKey,
-              signedPreKey,
-              messages[i].ephemeralPublicKey,
-              messages[i].identityKey,
-              messages[i].oneTimePreKeyId
-            );
+            const sharedSecret = await X3DHClient.performX3DHAsReceiver(identityKey, signedPreKey, messages[i].ephemeralPublicKey, 
+                                                                        messages[i].identityKey, messages[i].oneTimePreKeyId);
             
             console.log("=== BOB AFTER X3DH ===");
             console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
@@ -656,10 +688,7 @@ export default function Home() {
             console.log("Alice's ephemeral key:", messages[i].ephemeralPublicKey.substring(0, 30) + "...");
             console.log("Alice's identity key:", messages[i].identityKey.substring(0, 30) + "...");
             
-            ratchet = DoubleRatchet.initializeAsReceiver(
-              sharedSecret,
-              signedPreKey
-            );
+            ratchet = DoubleRatchet.initializeAsReceiver(sharedSecret, signedPreKey);
             
             const initialState = ratchet.getState();
             console.log('Bob - Initial ratchet state RIGHT AFTER CREATION:');
@@ -701,10 +730,22 @@ export default function Home() {
           if(user === messages[i].sender_id) {
             console.log("We're decrypting as Alice")
             plaintext = X3DHClient.decryptForSelf(messages[i].ciphertext_sender, decryption_key);
+
+            sendMessageStatusUpdate(messages[i].timestamp, "read_by_sender", contact_id)
+
           } else {
             console.log("We're decrypting as Bob")
             plaintext = ratchet.decrypt(messages[i].ciphertext, messages[i].header);
+
+            sendMessageStatusUpdate(messages[i].timestamp, "read_by_receiver", contact_id)
           }
+
+          /*
+            SEND TO SERVER IT HAS BEEN DECRYPTED (update the status to "sent")
+            AND STORE IN LOCAL DB, encrypted, decryptable only by us
+          */
+
+
         
           console.log(`After decryption with plaintext = ${plaintext}`)
           

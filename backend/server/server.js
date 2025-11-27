@@ -24,7 +24,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     credentials: true
   }
 ))
@@ -373,6 +373,63 @@ app.get('/contactsGroup', async (req, res) => {
     }
 });
 
+app.put('/updateMessageStatus', async (req, res) => {
+  const {user_id, contact_id, timestamp, status} = req.body;
+  
+  if(!user_id || !contact_id || !timestamp || !status) {
+    res.status(400).json("Bad request");
+    return;
+  }
+
+  console.log(`user_id: ${user_id}, contact_id: ${contact_id}, timestamp: ${timestamp}, status: ${status}`)
+  
+  try {
+    // Update the specific message in the array that matches the timestamp
+    const resp = await pool.query(
+      `UPDATE contacts
+       SET message = (
+         SELECT jsonb_agg(
+           CASE 
+             WHEN elem->>'timestamp' = $3
+             THEN jsonb_set(elem, '{status}', to_jsonb($4::text))
+             ELSE elem
+           END
+         )
+         FROM jsonb_array_elements(message) elem
+       )
+       WHERE (sender_id = $1 AND contact_id = $2) 
+          OR (sender_id = $2 AND contact_id = $1)`,
+      [user_id, contact_id, timestamp, status]
+    );
+    
+    if (resp.rowCount === 0) {
+      res.status(404).json("Contact not found");
+      return;
+    }
+
+    const contact_req = await pool.query("SELECT * FROM contacts WHERE (sender_id = $1 AND contact_id = $2) OR (sender_id = $2 AND contact_id = $1)", [user_id, contact_id]);
+    const contact = contact_req.rows[0]
+
+    const timestamp_read = new Date()
+
+    var req_read_time = null
+    if(user_id === contact.sender_id) {
+      req_read_time = await pool.query("UPDATE contacts SET last_message_read_by_sender = $1 WHERE sender_id = $2 AND contact_id = $3", 
+                               [timestamp_read, user_id, contact_id])
+      console.log("Managed to update read time for original sender")
+    } else {
+      req_read_time = await pool.query("UPDATE contacts SET last_message_read_by_recipient = $1 WHERE sender_id = $3 AND contact_id = $2", 
+                               [timestamp_read, user_id, contact_id])
+      console.log("Managed to update read time for original recipient")
+    }
+
+    res.status(200).json({ success: true, message: "Status updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Error: " + error.message);
+  }
+});
+
 app.get('/images', async (req, res) => {
     // const user_id = parseInt(req.query.user); // Extract user_id query parameter
     // const image_name = req.query.image_name; // Extract user_id query parameter
@@ -554,6 +611,9 @@ wss.on('connection', (ws, req) => {
 
       // const isFirstMessageEver = !!identityKey
       const isFirstMessage = !!ephemeralPublicKey
+
+      const contact = await pool.query("SELECT * FROM contacts WHERE id=$1", [contact_id]);
+      const original_sender = contact.rows[0].sender_id;
         
       if(isFirstMessage) {
         console.log("First message detected - includes X3DH parameters");
@@ -586,16 +646,27 @@ wss.on('connection', (ws, req) => {
         }
         
         // Append encrypted message to contacts table
-        await pool.query(
-          `UPDATE contacts
-          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-          WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
-          [
-            JSON.stringify(messageToStore),
-            sender_id,
-            recipient_id
-          ]
-        );
+        if(original_sender === sender_id){
+          // Append encrypted message to contacts table
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_sender = $4
+            WHERE sender_id = $2 AND contact_id = $3
+            `,
+            [ JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+          );
+          console.log("updated last_message_sent_by_sender timestamp")
+        } else {
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_recipient = $4
+            WHERE sender_id = $3 AND contact_id = $2
+            `,
+            [ JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+          );
+          console.log("updated last_message_sent_by_recipient timestamp")
+        }
+
       } else {
         console.log("Subsequent message - using existing Double Ratchet");
   
@@ -619,17 +690,28 @@ wss.on('connection', (ws, req) => {
           console.log(`Recipient ${recipient_id} is not online.`);
         }
         
-        // Append encrypted message to contacts table
-        await pool.query(
-          `UPDATE contacts
-          SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb
-          WHERE (sender_id = $2 AND contact_id = $3) OR (sender_id = $3 AND contact_id = $2)`,
-          [
-            JSON.stringify(messageToStore),
-            sender_id,
-            recipient_id
-          ]
-        );
+        // add curr user as parameter
+        
+        if(original_sender === sender_id){
+          // Append encrypted message to contacts table
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_sender = $4
+            WHERE sender_id = $2 AND contact_id = $3
+            `,
+            [ JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+          );
+          console.log("updated last_message_sent_by_sender timestamp")
+        } else {
+          await pool.query(
+            `UPDATE contacts
+            SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_recipient = $4
+            WHERE sender_id = $3 AND contact_id = $2
+            `,
+            [ JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+          );
+          console.log("updated last_message_sent_by_recipient timestamp")
+        }
       }
       
       /////////////////////////////////////////////////////////////////////////
@@ -864,24 +946,6 @@ wss.on('connection', (ws, req) => {
 // update 2 tables. for user 
 app.post('/putProfilePic', async (req, res) => {
   
-  // export const images = pgTable("images", {
-  //   id: serial("id").primaryKey(),
-  //   id_user: integer("user_id").notNull().references(() => users.id),
-  //   contact_id: integer("contact_id").references(() => users.id),
-  //   image_name: text("image_name").notNull(), // To keep track of the image name
-  //   data: text("data").notNull(), // Base64-encoded image data
-  // });
-
-  // // Define the "users" table with columns "id", "username", and "password_hash"
-  // export const users = pgTable('users', {
-  //   id: serial('id').primaryKey(),
-  //   username: varchar('username', { length: 50 }).notNull().unique(),
-  //   password_hash: text('password_hash').notNull(),
-  //   profile_pic_id: integer("profile_pic_id").references(() => images.id)
-  // });
-
-
-
   // STEPS:
 
   // 1. get the data from the request
