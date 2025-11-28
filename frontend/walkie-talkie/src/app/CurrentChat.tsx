@@ -445,6 +445,8 @@ export default function CurrentChat( props: any ) {
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
 
+                        console.log(`DEBUG MESSAGE PRINT: ${JSON.stringify(message)}`)
+
                         // Helper function to get date label
                         const getDateLabel = (timestamp: string) => {
                             const messageDate = new Date(timestamp);
@@ -488,7 +490,7 @@ export default function CurrentChat( props: any ) {
                     )}
                     
                     {/* Message */}
-                    {(message.hasOwnProperty('recipient_id') && Object.keys(message.message).length > 0) ? (
+                    {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
@@ -505,7 +507,10 @@ export default function CurrentChat( props: any ) {
                                         } */}
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                        message.message}
+                                        message.hasOwnProperty("message") ? message.message : ''}
+                                        {/* { message.plaintext.hasownproperty("image_id") ? <img src={`data:image/jpeg;base64,${findimagebasedonid(message.message).data}`} classname="w-[300px] h-[300px]"  ></img> : 
+                                        isBase64(message.plaintext) ? <img src={`data:image/jpeg;base64,${message.plaintext}`} classname="w-[300px] h-[300px]"  ></img> :
+                                        message.plaintext} */}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
                                         {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
@@ -513,7 +518,7 @@ export default function CurrentChat( props: any ) {
                                 </div>
                             </div>
                         </div>
-                    ) : (message.hasOwnProperty('group_id') && Object.keys(message.message).length > 0) ? (
+                    ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
@@ -527,7 +532,7 @@ export default function CurrentChat( props: any ) {
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
-                                        message.message}
+                                        message.hasOwnProperty("message") ? message.message : ''}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
                                         {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}

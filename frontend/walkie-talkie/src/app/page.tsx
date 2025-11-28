@@ -632,6 +632,9 @@ export default function Home() {
     let ratchet = null;
     const decryptedMessages = [];
     const decryption_key = X3DHClient.getOrCreateLocalKey();
+
+    const convo_w_contact = localStorage.getItem(`conversation_${user}_${contact_id}`)
+    let existing_messages = convo_w_contact ? JSON.parse(convo_w_contact) : [];
     
     console.log("Before for loop")
 
@@ -641,10 +644,14 @@ export default function Home() {
       
       if(messages[i].sender_id === user){
         if(user === contact.sender_id && messages[i].timestamp < contact.last_message_read_by_sender) {
+          console.log(`we already read the message: ${JSON.stringify(existing_messages[i])}`)
+          decryptedMessages.push(existing_messages[i])
           continue;
         }
       } else {
         if(user === contact.contact_id && messages[i].timestamp < contact.last_message_read_by_receiver) {
+          console.log(`we already read the message: ${JSON.stringify(existing_messages[i])}`)
+          decryptedMessages.push(existing_messages[i])
           continue;
         }
       }
@@ -732,12 +739,65 @@ export default function Home() {
             plaintext = X3DHClient.decryptForSelf(messages[i].ciphertext_sender, decryption_key);
 
             sendMessageStatusUpdate(messages[i].timestamp, "read_by_sender", contact_id)
+            
+            /*
+              HERE WE SAVE MESSAGES TO LOCAL STORAGE ENCRYPTED (we decrypt with our key)
+              to an array .. 
+            */
+            // Get existing conversation and parse it
+            const convo_til_now = localStorage.getItem(`conversation_${user}_${contact_id}`);
+            let existing_messages = convo_til_now ? JSON.parse(convo_til_now) : [];
+
+            console.log(`convo_til_now before adding new message:`, existing_messages);
+
+            let message_details = {
+              "sender_id": messages[i].sender_id,
+              "recipient_id": messages[i].recipient_id,
+              "message": plaintext,
+              "timestamp": messages[i].timestamp
+            };
+
+            // Now spread the PARSED array
+            let convo_after_dec = [...existing_messages, message_details];
+
+            localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
+
+            console.log(`localStorage after adding new message in Alice:`, convo_after_dec);
 
           } else {
             console.log("We're decrypting as Bob")
             plaintext = ratchet.decrypt(messages[i].ciphertext, messages[i].header);
+            
+            /*
+              HERE WE SAVE MESSAGES TO LOCAL STORAGE ENCRYPTED (we decrypt with our key)
+            */
 
             sendMessageStatusUpdate(messages[i].timestamp, "read_by_receiver", contact_id)
+
+            // Get existing conversation and parse it
+            const convo_til_now = localStorage.getItem(`conversation_${user}_${contact_id}`);
+            let existing_messages = convo_til_now ? JSON.parse(convo_til_now) : [];
+
+            console.log(`convo_til_now before adding new message in Bob:`, existing_messages);
+            
+            console.log(`Before adding to localStorage... plaintext: ${plaintext}`)
+            console.log(`Before adding to localStorage... timestamp: ${messages[i].timestamp}`)
+            console.log(`Before adding to localStorage... sender_id: ${messages[i].sender_id}`)
+            console.log(`Before adding to localStorage... recipient_id: ${messages[i].recipient_id}`)
+
+            let message_details = {
+              "sender_id": messages[i].sender_id,
+              "recipient_id": messages[i].recipient_id,
+              "message": plaintext,
+              "timestamp": messages[i].timestamp
+            };
+
+            // Now spread the PARSED array
+            let convo_after_dec = [...existing_messages, message_details];
+
+            localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
+
+            console.log(`localStorage after adding new message:`, convo_after_dec);
           }
 
           /*
