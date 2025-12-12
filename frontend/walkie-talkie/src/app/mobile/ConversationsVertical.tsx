@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
-import { Theme } from './AppearanceSettings';
+import { Theme } from './AppearanceSettingsVertical';
 
 export default function ConversationsVertical( props : any) {
     
@@ -482,11 +482,6 @@ export function Contacts( props: any) {
         let closed_curr_user = contact.closed_at.find((elem) => elem.id === props.curr_user)
         let opened_curr_user = contact.opened_at.find((elem) => elem.id === props.curr_user)
         if(!closed_curr_user) return 0;
-        // console.log()t
-
-        // console.log("opened curr user: " + JSON.stringify(opened_curr_user) + ", contact = " + JSON.stringify(contact.id))
-        // console.log("closed curr user: " + JSON.stringify(closed_curr_user) + ", contact = " + JSON.stringify(contact.id))
-        // console.log("last message time: " + JSON.stringify(contact.message[contact.message.length - 1].timestamp) + ", contact = " + JSON.stringify(contact.id))
 
         let nr_unread_messages = 0
 
@@ -1323,7 +1318,7 @@ export function Contacts2( props: any) {
     }
 
     function getImage(contact: any) {
-        console.log("contact = " + JSON.stringify(contact))
+        // console.log("contact = " + JSON.stringify(contact))
         if(contact.is_group === false) {
             const image = props.images.find((image: any) => image.sender_id === contact.contact_id);
             return image || { data: "" }; // Ensure we return a fallback value

@@ -3,6 +3,8 @@ import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
 export interface RatchetState {
+  user: string;
+  conversation_id: string;
   rootKey: string;              // Root key (RK)
   sendingChainKey: string;      // Chain key for sending (CKs)
   receivingChainKey: string;    // Chain key for receiving (CKr)
@@ -39,6 +41,8 @@ export class DoubleRatchet {
 
   // Initialize as sender (Alice) after X3DH
   static initializeAsSender(
+    user: string, 
+    conversation_id: string,
     sharedSecret: string,
     theirSignedPreKey: string
   ): DoubleRatchet {
@@ -52,6 +56,8 @@ export class DoubleRatchet {
     );
 
     return new DoubleRatchet({
+      user: user,
+      conversation_id: conversation_id,
       rootKey,
       sendingChainKey: chainKey,
       receivingChainKey: '', // Will be set when we receive their first message
@@ -65,12 +71,16 @@ export class DoubleRatchet {
 
   // Initialize as receiver (Bob) after X3DH
   static initializeAsReceiver(
+    user: string,
+    conversation_id: string,
     sharedSecret: string,
     mySignedPreKey: { publicKey: string; privateKey: string }
   ): DoubleRatchet {
 
     /* HERE TAKE FROM localStorage the send and receive numbers if they exist */
     return new DoubleRatchet({
+      user: user,
+      conversation_id: conversation_id,
       rootKey: sharedSecret,
       sendingChainKey: '',
       receivingChainKey: '',
@@ -91,6 +101,11 @@ export class DoubleRatchet {
       previousChainLength: number;
     };
   } {
+    
+    const time1 = new Date()
+    console.log(`in user ${this.state.user} before encrypt sendMessageNumber: ` + this.state.sendMessageNumber + 
+                "receiveMessageNumber: " + this.state.receiveMessageNumber +
+                ", time: " + time1.getHours() + ":" + time1.getMinutes() + ":" + time1.getSeconds());
 
     console.log("=== ALICE ENCRYPT ===");
     console.log("Alice's ratchet state:", {
@@ -122,19 +137,30 @@ export class DoubleRatchet {
     this.state.sendingChainKey = nextChainKey;
     this.state.sendMessageNumber++;
 
-    console.log("sendMessageNumber: ", this.state.sendMessageNumber);
+    this.updateRatchetState();
+
+    const time = new Date()
+    console.log(`in user ${this.state.user} after encrypt sendMessageNumber: ` + this.state.sendMessageNumber + 
+                "receiveMessageNumber: " + this.state.receiveMessageNumber +
+                ", time: " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
 
     return { ciphertext, header };
   }
 
-  decrypt(
+  async decrypt(
     ciphertext: string,
     header: {
       dhPublicKey: string;
       messageNumber: number;
       previousChainLength: number;
     } | string // Accept both object and string
-  ): string {
+  ): Promise<string> {
+
+    const time1 = new Date()
+    console.log(`in user ${this.state.user} before decrypt sendMessageNumber: ` + this.state.sendMessageNumber + 
+                "receiveMessageNumber: " + this.state.receiveMessageNumber +
+                ", time: " + time1.getHours() + ":" + time1.getMinutes() + ":" + time1.getSeconds());
+
     // Parse header if it's a string
     const parsedHeader = typeof header === 'string' ? JSON.parse(header) : header;
     
@@ -187,9 +213,49 @@ export class DoubleRatchet {
     this.state.receivingChainKey = nextChainKey;
     this.state.receiveMessageNumber++;
 
-    console.log(`receiveMessageNumber: ${this.state.receiveMessageNumber}`)
+    await this.updateRatchetState();
+
+    const time = new Date()
+    console.log(`in user ${this.state.user} after decrypt receiveMessageNumber: ` + this.state.receiveMessageNumber + 
+                "sendMessageNumber: " + this.state.sendMessageNumber +
+                ", time: " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
+    // console.log(`receiveMessageNumber: ${this.state.receiveMessageNumber}`)
 
     return plaintext;
+  }
+
+  // Add this helper method to the class
+  private async updateRatchetState(): Promise<void> {
+    try {
+      const resp = await fetch('http://localhost:3002/updateRatchetState', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: this.state.user,
+          conversation_id: this.state.conversation_id,
+          send_message_number: this.state.sendMessageNumber,
+          receive_message_number: this.state.receiveMessageNumber,
+          send_chain_key: this.state.sendingChainKey,
+          receive_chain_key: this.state.receivingChainKey,
+          root_key: this.state.rootKey,
+          dh_sending_key: JSON.stringify(this.state.dhSendingKey),
+          dh_receiving_key: this.state.dhReceivingKey || '',
+          previous_sending_chain_length: this.state.previousSendingChainLength,
+        }),
+      });
+
+      if(resp.ok) {
+        console.log("Ratchet state updated successfully")
+      } else {
+        console.log(`Ratchet state could not be updated err ${resp.status}`);
+      }
+
+    } catch (error) {
+      console.error('Failed to update ratchet state:', error);
+      // Don't throw - crypto operations should succeed even if persistence fails
+    }
   }
 
   // Perform DH ratchet step (when receiving new DH key from other party)

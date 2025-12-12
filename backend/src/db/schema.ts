@@ -7,7 +7,8 @@ import {
   timestamp,
   json,
   boolean,
-  jsonb
+  jsonb,
+  unique
 } from "drizzle-orm/pg-core";
 
 
@@ -74,4 +75,18 @@ export const one_time_prekeys = pgTable('one_time_prekeys', {
   user_id: varchar('user_id', {length: 36}).notNull().references(() => users.id, {onDelete: "cascade"}),
   key_id: varchar('key_id', {length: 100}).notNull(),
   public_key: varchar('public_key', {length: 100}).notNull()
+});
+
+export const ratchetState = pgTable('ratchet_state', {
+  id: serial('id').primaryKey(),
+  user: varchar('user_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}).unique(),
+  conversation_id: integer('conversation_id').references(() => contacts.id, {onDelete: "cascade"}).unique(),
+  send_message_number: integer('send_message_number').notNull().default(0),
+  receive_message_number: integer('receive_message_number').notNull().default(0),
+  send_chain_key: text('send_chain_key').notNull(),
+  receive_chain_key: text('receive_chain_key').notNull(),
+  root_key: text('root_key').notNull(),
+  dh_sending_key: text('dh_sending_key').notNull(),
+  dh_receiving_key: text('dh_receiving_key').notNull().default(''),
+  previous_sending_chain_length: integer('previous_sending_chain_length').notNull().default(0)
 });

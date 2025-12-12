@@ -497,9 +497,17 @@ export function Contacts( props: any) {
     }
      
     function getLastMessage(contact : any, idx: number) {
+        if(contact === null || contact === undefined) return {}
+
         let lenMsgs = contact.message.length
         if(contact.message.length === 0) return {"message" : "", "timestamp": "T     .", "curr_user": contact.sender_id, "recipient_id": contact.recipient_id}
         let last_msg = contact.message[lenMsgs - 1]
+
+        if(!last_msg) {
+            console.log(`last message doesn't exist... printing contact: ${JSON.stringify(last_msg)}`)
+            return {}
+        }
+
         console.log(`this is the ${idx}th contact in the list with the message = ${last_msg.message}`)
         return last_msg
     }
@@ -534,8 +542,10 @@ export function Contacts( props: any) {
 
         let nr_unread_messages = 0
 
+        if(!contact || !contact.message) return 0
+
         for(let i = contact.message.length - 1; i >= 0; i--) {
-            if(contact.message[i].sender_id !== props.curr_user && ((Date.parse(contact.message[i].timestamp) > Date.parse(closed_curr_user.closed_at)) && 
+            if(contact.message[i] && contact.message[i].sender_id !== props.curr_user && ((Date.parse(contact.message[i].timestamp) > Date.parse(closed_curr_user.closed_at)) && 
                                                                    (Date.parse(contact.message[i].timestamp) > Date.parse(opened_curr_user.opened_at)))) {
                 nr_unread_messages += 1
             }
@@ -681,7 +691,7 @@ export function Contacts( props: any) {
     
     console.log("Initial rendering")
 
-    console.log("contact: " + JSON.stringify(props.contact))
+    // console.log("contact: " + JSON.stringify(props.contact))
 
     return (
         <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
@@ -700,8 +710,14 @@ export function Contacts( props: any) {
                         key={idx}
                         className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
                        onClick={(e) => {
+                        //  e.stopPropagation();
                         console.log("==============\nFIRST DIV PRESSED\n================")
                         console.log("CLICKED BY USER?", e.isTrusted);
+                        if(!e.isTrusted) {
+                            console.log("Synthetic click: ignore")
+                            return
+                        }
+
                         props.setPressed(element); 
 
                         let contact = {...element};

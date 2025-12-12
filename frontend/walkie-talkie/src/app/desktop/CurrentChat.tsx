@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import useWebSocket from './webSocket';
+import useWebSocket from '../webSocket';
 import fs from "fs";
-import { DoubleRatchet } from './DoubleRatchet';
-import { ConversationManager } from './ConversationManager';
-import { X3DHClient } from './x3dh-client';
+import { DoubleRatchet } from '../DoubleRatchet';
+import { ConversationManager } from '../ConversationManager';
+import { X3DHClient } from '../x3dh-client';
 
 export default function CurrentChat( props: any ) {
 
@@ -88,14 +88,6 @@ export default function CurrentChat( props: any ) {
                 }
             };
             fetchMessages()
-
-            // const updateContactAndMessages = async () => {
-            //     // setContact(props.contact)
-            //     props.setMessages([])
-            // }
-            // updateContactAndMessages()
-
-            // console.log("props.contact = " + props.contact)
         }
         else {
             if(contact.current !== null && props.contact.group_name !== contact.current.group_name){
@@ -107,17 +99,9 @@ export default function CurrentChat( props: any ) {
         // console.log("current contact in CurrentChat: " + JSON.stringify(contact.current))
 
         image.current = getImage(props.contact)
-        // }
-
-        // if(props.contact !== null)
-        //     updateAllMessages(props.contact.message)
     }, [props.contact])
 
     useEffect(() => {
-
-        /* fetch contacts so we can update decryptedContacts */
-        // props.fetchContacts()
-
 
         if(props.contact === contact.current) {  // this only happens when the contact user stays the same
             if(props.contact !== null) {
@@ -188,16 +172,22 @@ export default function CurrentChat( props: any ) {
         
         const key = X3DHClient.getOrCreateLocalKey();
 
-        // ✅ Check if conversation exists, not UI state
-        const conversation = ConversationManager.loadConversation(other_user);
-        console.log("=====================")
-        console.log("=== RATCHET STATE ===")
-        console.log("Conversation history: " + JSON.stringify(conversation))
-        console.log("=== END RATCHET STATE ===")
-        console.log("=====================")
-        console.log("loadConversations called with contact_id:", other_user);
+        if(!props.curr_user || !props.contact.id) return
+        console.log(`before loading ratchet in sendMessage; curr_user: ${props.curr_user}, id convo: ${props.contact.id}`)
+        const ratchet = await props.loadConversationRatchetStateDB(props.curr_user, props.contact)
 
-        if (!conversation) {
+
+        console.log(`RATCHET IN CURRENT CHAT ${props.curr_user}, with convo_id: ${props.contact.id}: ${JSON.stringify(ratchet)}`)
+        // ✅ Check if conversation exists, not UI state
+        // const conversation = ConversationManager.loadConversation(other_user);
+        // console.log("=====================")
+        // console.log("=== RATCHET STATE ===")
+        // console.log("Conversation history: " + JSON.stringify(conversation))
+        // console.log("=== END RATCHET STATE ===")
+        // console.log("=====================")
+        // console.log("loadConversations called with contact_id:", other_user);
+
+        if (!ratchet) {
             // ========================================
             // FIRST MESSAGE IN CONVERSATION (Initiator)
             // ========================================
@@ -210,6 +200,8 @@ export default function CurrentChat( props: any ) {
 
             // Initialize ratchet as sender
             currentRatchet = DoubleRatchet.initializeAsSender(
+                props.curr_user,
+                props.contact.id,
                 sharedSecret,
                 bundle.signedPreKey.publicKey
             );
@@ -232,30 +224,32 @@ export default function CurrentChat( props: any ) {
             console.log("After encrypting message");
 
             // Save conversation state
-            ConversationManager.saveConversation(other_user, {
-            ratchetState: currentRatchet.getState(),
-            theirIdentityKey: bundle.identityKey,
-            });
+            // ConversationManager.saveConversation(other_user, {
+            // ratchetState: currentRatchet.getState(),
+            // theirIdentityKey: bundle.identityKey,
+            // });
             
-            var conversation_2 = ConversationManager.loadConversation(other_user)
-            console.log(`Conversation state after sending first message: ${JSON.stringify(conversation_2)}`)
+            // var conversation_2 = ConversationManager.loadConversation(other_user)
+            // console.log(`Conversation state after sending first message: ${JSON.stringify(conversation_2)}`)
 
-            console.log("Conversation state saved");
+            // console.log("Conversation state saved");
 
         } else {
+
+            currentRatchet = ratchet
             // ========================================
             // SUBSEQUENT MESSAGE (Continue conversation)
             // ========================================
             console.log("🟢 Conversation found - loading existing ratchet");
             console.log("Existing ratchet state:", {
-                sendMessageNumber: conversation.ratchetState.sendMessageNumber,
-                receiveMessageNumber: conversation.ratchetState.receiveMessageNumber,
-                hasSendingChainKey: !!conversation.ratchetState.sendingChainKey,
-                hasReceivingChainKey: !!conversation.ratchetState.receivingChainKey
+                sendMessageNumber: ratchet.state.sendMessageNumber,
+                receiveMessageNumber: ratchet.state.receiveMessageNumber,
+                hasSendingChainKey: ratchet.state.sendingChainKey,
+                hasReceivingChainKey: ratchet.state.receivingChainKey
             });
             
             // Load existing ratchet
-            currentRatchet = new DoubleRatchet(conversation.ratchetState);
+            // currentRatchet = new DoubleRatchet(conversation.ratchetState);
             setRatchet(currentRatchet);
             
             // Encrypt with existing ratchet
@@ -264,7 +258,7 @@ export default function CurrentChat( props: any ) {
             // Save updated ratchet state
             ConversationManager.saveConversation(other_user, {
             ratchetState: currentRatchet.getState(),
-            theirIdentityKey: conversation.theirIdentityKey,
+            theirIdentityKey: currentRatchet.theirIdentityKey,
             });
             
             var conversation_2 = ConversationManager.loadConversation(other_user)
@@ -293,6 +287,7 @@ export default function CurrentChat( props: any ) {
             timestamp: new Date().toISOString(),
         };        
 
+        console.log(`Sending message ${msg}`)
         props.sendMessage(message);
         props.fetchContacts()
         
@@ -355,7 +350,6 @@ export default function CurrentChat( props: any ) {
 
     function getNameContact(contact: any) {
         if(contact.is_group === true){
-            console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
         } else {
             return props.users.find((user) => (contact.contact_id === user.id && contact.sender_id === props.curr_user) || 

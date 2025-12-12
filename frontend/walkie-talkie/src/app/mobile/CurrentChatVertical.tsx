@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import useWebSocket from './webSocket';
+import useWebSocket from '../webSocket';
 import fs from "fs";
 
 export default function CurrentChatVertical( props: any ) {
@@ -205,7 +205,6 @@ export default function CurrentChatVertical( props: any ) {
 
     function getNameContact(contact: any) {
         if(contact.is_group === true){
-            console.log("contact name = " + JSON.stringify(contact.group_name))
             return contact.group_name 
         } else {
             return props.users.find((user) => (contact.contact_id === user.id && contact.sender_id === props.curr_user) || 

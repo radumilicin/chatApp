@@ -1,0 +1,2 @@
+ALTER TABLE "ratchet_state" ADD CONSTRAINT "ratchet_state_user_id_unique" UNIQUE("user_id");--> statement-breakpoint
+ALTER TABLE "ratchet_state" ADD CONSTRAINT "ratchet_state_conversation_id_unique" UNIQUE("conversation_id");
