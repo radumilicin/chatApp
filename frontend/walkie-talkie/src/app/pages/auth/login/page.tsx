@@ -98,7 +98,11 @@ export default function Login(props: any) {
     }
 
     return (
-        <div className="absolute left-[35%] top-[30%] w-[30%] h-[40%] ">
+        <div className="absolute left-[35%] top-[30%] w-[30%] h-[40%] " onKeyDown={async (e) => {
+            if(e.key === 'Enter') {
+                const resp = await login(); 
+                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered) 
+            }}}>
             <div className="relative left-0 top-0 h-full w-full flex flex-col gap-2 rounded-xl bg-gray-800">
                 <div className="flex flex-col h-[20%] justify-center items-center text-2xl font-sans font-semibold text-[#3B7E9B]">Login to SocialiseIt</div>
                 <div className="flex flex-row w-full h-[25%]">

@@ -4,7 +4,7 @@ import { ConversationManager } from './ConversationManager';
 import { DoubleRatchet } from './DoubleRatchet';
 
 export default function useWebSocket (url, user, contacts, setDecryptedContacts, updateContacts, identityKey, signedPreKey, setMessages, incomingSoundsEnabled, 
-                                        outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts) {
+                                        outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts, loadConversationRatchetStateDB) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
     const audioRef = useRef(null);
@@ -21,30 +21,57 @@ export default function useWebSocket (url, user, contacts, setDecryptedContacts,
             setIsConnected(true);
         };
 
+        // ✅ 2. Fix WebSocket to update state properly
+        // this gets triggered both when WE send message and when they send 
         ws.current.onmessage = async (event) => {
-            const message = JSON.parse(event.data);
-            console.log('Message received:', message);
-            setMessages((prev) => [...prev, message]);
+          const message = JSON.parse(event.data);
+          console.log('Message received:', message);
+          
+          const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
+          const decrypted_message = await decryptMessage(message, false, contact_id);
 
-            const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id
-            const decrypted_message = await decryptMessage(message, false, contact_id)
-            const new_contacts = contacts.map((elem) => {
-                                                          if(elem.id === message.contact_id){
-                                                              return {
-                                                                ...elem,
-                                                                message: decrypted_message
-                                                              }
-                                                          }
-                                                          return elem
-                                                        })
+          console.log(`Message received & decrypted is:`, decrypted_message);
+          
+          // ✅ Check if decryption succeeded
+          if (!decrypted_message && !decrypted_message.hasOwnProperty("sender_id")) {
+            console.error('Failed to decrypt message, not updating state');
+            return;
+          }
+          
+          // ✅ Update decryptedContacts, not contacts
+          setDecryptedContacts((prev) => {
+            console.log('🔵 PREV state:', prev);
             
-            setDecryptedContacts(new_contacts)
-            // fetchContacts()
-            if(incomingSoundsEnabled) {
-              audioRef.current.play().catch(err => {
-                console.error("Error playing notification wawaweewa:", err)
-              }); 
-            }
+            if (!prev) return prev;
+            
+            const updated = prev.map((elem) => {
+              if (elem.sender_id === user && elem.recipient_id === contact_id || elem.sender_id === contact_id && elem.contact_id === user) {
+                console.log(`🟢 Found contact ${elem.id}, current messages:`, elem.message);
+                
+                // ✅ Append to existing messages array
+                const currentMessages = Array.isArray(elem.message) ? elem.message : [];
+                
+                const newMessages = [...currentMessages, decrypted_message];
+                
+                console.log(`🟢 New messages array:`, newMessages);
+                
+                return {
+                  ...elem,
+                  message: newMessages
+                };
+              }
+              return elem;
+            });
+            
+            console.log('🔵 UPDATED state:', updated);
+            return updated;
+          });
+          
+          if (incomingSoundsEnabled) {
+            audioRef.current.play().catch(err => {
+              console.error("Error playing notification wawaweewa:", err);
+            }); 
+          }
         };
 
         ws.current.onclose = () => {
@@ -62,66 +89,92 @@ export default function useWebSocket (url, user, contacts, setDecryptedContacts,
         };
     }, [url, incomingSoundsEnabled]);
 
-  const sendMessage = async (message) => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(message));
-        
-      const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id
-      const decrypted_message = await decryptMessage(message, false, contact_id)
-      const new_contacts = contacts.map((elem) => {
-                                                    if(elem.id === message.contact_id){
-                                                        return {
-                                                          ...elem,
-                                                          message: decrypted_message
-                                                        }
-                                                    }
-                                                    return elem
-                                                  })
-      
-      setDecryptedContacts(new_contacts)
+    const sendMessage = async (message) => {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send(JSON.stringify(message));
 
-      if(audioRef.current !== null && outgoingMessagesSoundsEnabled) {
-        audioRef.current.play().catch(err => {
-          console.error("Error playing notification wawaweewa:", err)
-        }); 
+        const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
+        const decrypted_message = await decryptMessage(message, false, contact_id);
+        
+        console.log(`Message received & decrypted is:`, decrypted_message);
+        
+        // ✅ Check if decryption succeeded
+        if (!decrypted_message) {
+          console.error('Failed to decrypt message, not updating state');
+          return;
+        }
+        
+        // ✅ Update decryptedContacts, not contacts
+        setDecryptedContacts((prev) => {
+          console.log('🔵 PREV state:', prev);
+          
+          if (!prev) return prev;
+          
+          const updated = prev.map((elem) => {
+            if (elem.sender_id === user && elem.recipient_id === contact_id || elem.sender_id === contact_id && elem.contact_id === user) {
+              console.log(`🟢 Found contact ${elem.id}, current messages:`, elem.message);
+              
+              // ✅ Append to existing messages array
+              const currentMessages = Array.isArray(elem.message) ? elem.message : [];
+              
+              const newMessages = [...currentMessages, decrypted_message];
+              
+              console.log(`🟢 New messages array:`, newMessages);
+              
+              return {
+                ...elem,
+                message: newMessages
+              };
+            }
+            return elem;
+          });
+          
+          console.log('🔵 UPDATED state:', updated);
+          return updated;
+        });
+        
+        if (audioRef.current !== null && outgoingMessagesSoundsEnabled) {
+          audioRef.current.play().catch(err => {
+            console.error("Error playing notification wawaweewa:", err);
+          }); 
+        }
+      } else {
+        console.error('WebSocket is not open');
       }
-    } else {
-      console.error('WebSocket is not open');
-    }
-  };
+    };
 
   async function decryptMessage(message: any, is_group: boolean, contact_id: string) {
-    // Fetch encrypted messages from DB
-    console.log("In load conversation messages")
-     
-    let ratchet = null;
-    const decryptedMessages = [];
+    console.log("In decryptMessage (WebSocket)")
+    
     const decryption_key = X3DHClient.getOrCreateLocalKey();
     
-    console.log("Before for loop")
-    var decryptedMessage = null
-      
-    if (message?.is_first_message) {
+    // ✅ Load ratchet from DB
+    const contact = contacts.find((elem) => 
+      (elem.sender_id === user && elem.contact_id === contact_id) || 
+      (elem.contact_id === user && elem.sender_id === contact_id)
+    );
+    
+    if (!contact) {
+      console.error('Contact not found');
+      return null;
+    }
 
-      // console.log(`message #${i}: ` + JSON.stringify(message))
-      // First message - initialize ratchet
-      
+    let ratchet = await loadConversationRatchetStateDB(user, contact);
+    
+    // Handle first message
+    if (message?.is_first_message) {
+      console.log("First message detected");
 
       if (message?.sender_id === user) {
-        console.log("We are the sender")
-
-        // I sent this first message - load saved ratchet state
-        var conversation = ConversationManager.loadConversation(contact_id);
-
-        if (!conversation) {
+        console.log("We are the sender (Alice) - ratchet already loaded from DB");
+        // Ratchet should already be loaded, if not something went wrong
+        if (!ratchet) {
           console.error('No ratchet state found for sent message');
-          // continue;
+          return null;
         }
-        ratchet = new DoubleRatchet(conversation.ratchetState);
       } else {
-        console.log("We are NOT the sender (Bob)");
+        console.log("We are the receiver (Bob) - initializing ratchet");
         
-        // Check what we're passing in
         console.log('About to perform X3DH as receiver with:');
         console.log('- ephemeralPublicKey:', message.ephemeralPublicKey);
         console.log('- identityKey:', message.identityKey);
@@ -138,86 +191,66 @@ export default function useWebSocket (url, user, contacts, setDecryptedContacts,
         
         console.log("=== BOB AFTER X3DH ===");
         console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
-        console.log("My signed prekey:", signedPreKey.publicKey.substring(0, 30) + "...");
-        console.log("Alice's ephemeral key:", message.ephemeralPublicKey.substring(0, 30) + "...");
-        console.log("Alice's identity key:", message.identityKey.substring(0, 30) + "...");
         
         ratchet = DoubleRatchet.initializeAsReceiver(
+          user, 
+          contact.id,
           sharedSecret,
           signedPreKey
         );
         
         const initialState = ratchet.getState();
-        console.log('Bob - Initial ratchet state RIGHT AFTER CREATION:');
-        console.log('- dhReceivingKey (should be null):', initialState.dhReceivingKey);
-        console.log('- dhReceivingKey type:', typeof initialState.dhReceivingKey);
-        console.log('- dhSendingKey.publicKey:', initialState.dhSendingKey.publicKey);
-        console.log('- Full state:', JSON.stringify(initialState, null, 2));
+        console.log('Bob - Initial ratchet state:', JSON.stringify(initialState, null, 2));
         
-        // Save for future use
-        ConversationManager.saveConversation(contact_id, {
-          ratchetState: initialState,
-          theirIdentityKey: message.identityKey,
-        });
-        
-        // Immediately load back to check if it's saved correctly
-        const reloaded = ConversationManager.loadConversation(contact_id);
-        console.log('RELOADED state from storage:');
-        console.log('- dhReceivingKey after reload:', reloaded.ratchetState.dhReceivingKey);
-        console.log('- dhReceivingKey type after reload:', typeof reloaded.ratchetState.dhReceivingKey);
+        // ✅ Ratchet will auto-save to DB on first decrypt
       }
     }
     
+    // Load ratchet from DB if not already loaded
     if (!ratchet) {
-      console.log("No ratchet, initialising one")
-      // Load existing ratchet if not already loaded
-      const conversation = ConversationManager.loadConversation(contact_id);
-      if (conversation) {
-        ratchet = new DoubleRatchet(conversation.ratchetState);
+      console.log("No ratchet, loading from DB");
+      ratchet = await loadConversationRatchetStateDB(user, contact);
+      
+      if (!ratchet) {
+        console.error('Failed to load ratchet state');
+        return null;
       }
     }
     
     // Decrypt message
     if (ratchet) {
       try {
-        console.log("Before decryption")
-        var plaintext = ""
-        if(user === message.sender_id) {
-          console.log("We're decrypting as Alice")
+        console.log("Before decryption");
+        let plaintext = "";
+        
+        if (user === message.sender_id) {
+          console.log("We're decrypting as Alice (our own sent message)");
           plaintext = X3DHClient.decryptForSelf(message.ciphertext_sender, decryption_key);
         } else {
-          console.log("We're decrypting as Bob")
-          plaintext = ratchet.decrypt(message.ciphertext, message.header);
+          console.log("We're decrypting as Bob (received message)");
+          plaintext = await ratchet.decrypt(message.ciphertext, message.header);
+          // ✅ ratchet.decrypt() automatically saves updated state to DB
         }
       
-        console.log(`After decryption with plaintext = ${plaintext}`)
+        console.log(`After decryption with plaintext = ${plaintext}`);
         
-        // decryptedMessages.push({
-        //   sender_id: message.sender_id,
-        //   recipient_id: message.recipient_id,
-        //   message: plaintext,
-        //   timestamp: message.timestamp
-        // });
-        decryptedMessage = ({
+        return {
           sender_id: message.sender_id,
           recipient_id: message.recipient_id,
           message: plaintext,
           timestamp: message.timestamp
-        })
+        };
         
-        // Update saved ratchet state
-        const conversation = ConversationManager.loadConversation(contact_id);
-        ConversationManager.saveConversation(contact_id, {
-          ratchetState: ratchet.getState(),
-          theirIdentityKey: conversation.theirIdentityKey,
-        });
+        // ❌ REMOVED all ConversationManager calls - DB handles it now
+        
       } catch (error) {
         console.error('Failed to decrypt message:', error);
+        return null;
       }
     }
 
-    return decryptedMessage
-  }    
+    return null;
+  }
 
   return { isConnected, sendMessage };
 };

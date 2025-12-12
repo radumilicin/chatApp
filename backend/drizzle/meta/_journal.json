@@ -29,6 +29,41 @@
       "when": 1764273012608,
       "tag": "0003_chubby_the_professor",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765477889578,
+      "tag": "0004_fancy_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765482102696,
+      "tag": "0005_steep_deadpool",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765482715451,
+      "tag": "0006_narrow_cammi",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765488277165,
+      "tag": "0007_high_sister_grimm",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765488480700,
+      "tag": "0008_real_darkhawk",
+      "breakpoints": true
     }
   ]
 }

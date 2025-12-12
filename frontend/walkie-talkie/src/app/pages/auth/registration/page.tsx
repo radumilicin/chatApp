@@ -149,7 +149,11 @@ export default function Register(props) {
 
 
     return (
-        <div className="absolute left-[35%] top-[25%] w-[30%] h-[50%] ">
+        <div className="absolute left-[35%] top-[25%] w-[30%] h-[50%]" onKeyDown={async (e) => {
+            if(e.key === 'Enter') {
+                const resp = await register(); 
+                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered) 
+            }}}>
             <div className="relative left-0 top-0 h-full w-full flex flex-col gap-2 rounded-xl bg-gray-800">
                 <div className="flex flex-col h-[20%] justify-center items-center text-2xl font-sans font-semibold text-[#3B7E9B]">Register to SocialiseIt</div>
                 <div className="flex flex-row w-full h-[20%]">

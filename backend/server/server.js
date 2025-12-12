@@ -24,7 +24,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
     credentials: true
   }
 ))
@@ -372,6 +372,98 @@ app.get('/contactsGroup', async (req, res) => {
       res.status(500).send("Internal Server Error");
     }
 });
+
+app.get('/getRatchetState', async (req, res) => {
+  const {user_id, conversation_id} = req.query;
+  
+  if(!user_id || !conversation_id) {
+    return res.status(400).json("Bad request");
+  }
+
+  try {
+    const state = await pool.query("SELECT * FROM ratchet_state WHERE user_id = $1 AND conversation_id = $2", [user_id, conversation_id]);
+
+    if (state.rows.length === 0) {
+      return res.status(404).json({ error: "Ratchet state not found" });
+    } else {
+      console.log("=====================================")
+      console.log("=== GOT RATCHET STATE (NOICE) ===")
+      console.log("=====================================")
+      return res.json(state.rows[0]);
+    }
+
+
+  } catch (error) {
+    console.error('Error fetching ratchet state:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
+})
+
+app.post('/updateRatchetState', async (req, res) => {
+  const {
+    user_id,
+    conversation_id,
+    send_message_number,
+    receive_message_number,
+    send_chain_key,
+    receive_chain_key,
+    root_key,
+    dh_sending_key,
+    dh_receiving_key,
+    previous_sending_chain_length,
+  } = req.body;
+
+  if (!user_id || !conversation_id) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    // Check if record exists
+    const existing = await pool.query(
+      'SELECT id FROM ratchet_state WHERE user_id = $1 AND conversation_id = $2',
+      [user_id, conversation_id]
+    );
+
+    if (existing.rows.length > 0) {
+      // UPDATE
+      await pool.query(
+        `UPDATE ratchet_state SET
+          send_message_number = $3,
+          receive_message_number = $4,
+          send_chain_key = $5,
+          receive_chain_key = $6,
+          root_key = $7,
+          dh_sending_key = $8,
+          dh_receiving_key = $9,
+          previous_sending_chain_length = $10
+        WHERE user_id = $1 AND conversation_id = $2`,
+        [user_id, conversation_id, send_message_number, receive_message_number, 
+        send_chain_key, receive_chain_key, root_key, dh_sending_key, 
+        dh_receiving_key, previous_sending_chain_length]
+      );
+    } else {
+      // INSERT
+      await pool.query(
+        `INSERT INTO ratchet_state (
+          user_id, conversation_id, send_message_number, receive_message_number,
+          send_chain_key, receive_chain_key, root_key, dh_sending_key,
+          dh_receiving_key, previous_sending_chain_length
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [user_id, conversation_id, send_message_number, receive_message_number,
+        send_chain_key, receive_chain_key, root_key, dh_sending_key,
+        dh_receiving_key, previous_sending_chain_length]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating ratchet state:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 app.put('/updateMessageStatus', async (req, res) => {
   const {user_id, contact_id, timestamp, status} = req.body;
