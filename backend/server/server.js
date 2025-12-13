@@ -653,7 +653,7 @@ wss.on('connection', (ws, req) => {
           /////////////////////////////////////////////////////////////////////////
 
           // Acknowledge receipt
-          ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+          ws.send(JSON.stringify({ status: 'ack', message: 'Message saved' }));
           console.log("done inserting image in group")
           // Optionally broadcast to other clients
         //   broadcast(wss, ws, parsedMessage);
@@ -809,7 +809,7 @@ wss.on('connection', (ws, req) => {
       /////////////////////////////////////////////////////////////////////////
 
       // Acknowledge receipt
-      ws.send(JSON.stringify({ status: 'success', message: 'Message saved' }));
+      ws.send(JSON.stringify({ type: 'ack', message: 'Message saved' }));
       console.log("Success sent")
 
       // Optionally broadcast to other clients

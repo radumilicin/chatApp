@@ -3,7 +3,20 @@ import { X3DHClient } from './x3dh-client';
 import { ConversationManager } from './ConversationManager';
 import { DoubleRatchet } from './DoubleRatchet';
 
-export default function useWebSocket (url, user, contacts, setDecryptedContacts, updateContacts, identityKey, signedPreKey, setMessages, incomingSoundsEnabled, 
+// user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+//     user,
+//     contacts,
+//     updateContacts, 
+//     setDecryptedContacts,
+//     identityKey,
+//     signedPreKey,
+//     setMessages,
+//     incomingSoundsEnabled,
+//     outgoingMessagesSoundsEnabled,
+//     decryptAllMessages,
+//     fetchData2,
+//     loadConversationRatchetStateDB
+export default function useWebSocket (url, user, contacts, updateContacts, setDecryptedContacts, identityKey, signedPreKey, setMessages, incomingSoundsEnabled, 
                                         outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts, loadConversationRatchetStateDB) {
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
@@ -25,46 +38,62 @@ export default function useWebSocket (url, user, contacts, setDecryptedContacts,
         // this gets triggered both when WE send message and when they send 
         ws.current.onmessage = async (event) => {
           const message = JSON.parse(event.data);
+          
+          // ✅ Ignore acknowledgments
+          if (message.type === 'ack') {
+            console.log('Message acknowledged by server');
+            return;
+          }
+
           console.log('Message received:', message);
+          console.log('🔴 RAW MESSAGE FROM WEBSOCKET:', message);
+          console.log('🔴 Has ciphertext?', !!message.ciphertext);
+          console.log('🔴 Has plaintext message?', !!message.message);
           
           const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
           const decrypted_message = await decryptMessage(message, false, contact_id);
 
           console.log(`Message received & decrypted is:`, decrypted_message);
           
+  
+
           // ✅ Check if decryption succeeded
-          if (!decrypted_message && !decrypted_message.hasOwnProperty("sender_id")) {
+          if (!decrypted_message || !decrypted_message.hasOwnProperty("sender_id")) {
             console.error('Failed to decrypt message, not updating state');
+            return;
+          }
+        
+          if(decrypted_message.sender_id !== contact_id && decrypted_message.recipient_id !== user) {
+            console.error("Malformed decrypted message: sender does not match current id?");
             return;
           }
           
           // ✅ Update decryptedContacts, not contacts
-          setDecryptedContacts((prev) => {
-            console.log('🔵 PREV state:', prev);
+          setDecryptedContacts((currArr) => {
+            console.log('🔵 PREV state:', currArr);
             
-            if (!prev) return prev;
-            
-            const updated = prev.map((elem) => {
-              if (elem.sender_id === user && elem.recipient_id === contact_id || elem.sender_id === contact_id && elem.contact_id === user) {
-                console.log(`🟢 Found contact ${elem.id}, current messages:`, elem.message);
-                
-                // ✅ Append to existing messages array
-                const currentMessages = Array.isArray(elem.message) ? elem.message : [];
-                
-                const newMessages = [...currentMessages, decrypted_message];
-                
-                console.log(`🟢 New messages array:`, newMessages);
-                
+            if (!currArr) return currArr;
+
+            var updated_state = null
+            var updated_message = null
+
+
+
+            updated_state = currArr.map((elem) => {
+              if((elem.contact_id === user && elem.sender_id === contact_id) || (elem.sender_id === user && elem.sender_id === contact_id)){
+                updated_message = [...elem.message, decrypted_message];
+
                 return {
                   ...elem,
-                  message: newMessages
-                };
+                  message: updated_message
+                }
               }
+
               return elem;
-            });
+            })
             
-            console.log('🔵 UPDATED state:', updated);
-            return updated;
+            console.log('🔵 UPDATED state:', updated_state);
+            return updated_state;
           });
           
           if (incomingSoundsEnabled) {
@@ -99,38 +128,43 @@ export default function useWebSocket (url, user, contacts, setDecryptedContacts,
         console.log(`Message received & decrypted is:`, decrypted_message);
         
         // ✅ Check if decryption succeeded
-        if (!decrypted_message) {
+        if (!decrypted_message || !decrypted_message.hasOwnProperty("sender_id")) {
           console.error('Failed to decrypt message, not updating state');
+          return;
+        }
+
+        if(decrypted_message.sender_id !== user || decrypted_message.recipient_id !== contact_id) {
+          console.error("Malformed decrypted message: sender does not match current id?");
           return;
         }
         
         // ✅ Update decryptedContacts, not contacts
-        setDecryptedContacts((prev) => {
-          console.log('🔵 PREV state:', prev);
+        // currArr is an array of decryptedContacts.
+        // So contacts, but with the added "message" attribute (if it doesn't exist)
+        // if it does exist, then just append to the already existing array
+        setDecryptedContacts((currArr) => {
+          console.log('🔵 PREV state:', currArr);
           
-          if (!prev) return prev;
-          
-          const updated = prev.map((elem) => {
-            if (elem.sender_id === user && elem.recipient_id === contact_id || elem.sender_id === contact_id && elem.contact_id === user) {
-              console.log(`🟢 Found contact ${elem.id}, current messages:`, elem.message);
-              
-              // ✅ Append to existing messages array
-              const currentMessages = Array.isArray(elem.message) ? elem.message : [];
-              
-              const newMessages = [...currentMessages, decrypted_message];
-              
-              console.log(`🟢 New messages array:`, newMessages);
-              
+          if (!currArr) return currArr;
+
+          var updated_state = null
+          var updated_message = null
+
+          updated_state = currArr.map((elem) => {
+            if((elem.sender_id === user && elem.contact_id === contact_id) || (elem.sender_id === contact_id && elem.contact_id === user)){
+              updated_message = [...elem.message, decrypted_message];
+
               return {
                 ...elem,
-                message: newMessages
-              };
+                message: updated_message
+              }
             }
+
             return elem;
-          });
+          })
           
-          console.log('🔵 UPDATED state:', updated);
-          return updated;
+          console.log('🔵 UPDATED state:', updated_state);
+          return updated_state;
         });
         
         if (audioRef.current !== null && outgoingMessagesSoundsEnabled) {
