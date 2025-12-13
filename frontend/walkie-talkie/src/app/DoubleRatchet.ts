@@ -133,6 +133,13 @@ export class DoubleRatchet {
       previousChainLength: this.state.previousSendingChainLength,
     };
 
+    console.log("Header for encryption:", {
+      dhPublicKey: header.dhPublicKey.substring(0, 20) + "...",
+      messageNumber: header.messageNumber,
+      previousChainLength: header.previousChainLength
+    });
+
+
     // Update state
     this.state.sendingChainKey = nextChainKey;
     this.state.sendMessageNumber++;
@@ -175,7 +182,7 @@ export class DoubleRatchet {
         : this.state.dhReceivingKey.substring(0, 20) + "..."  // ← Fixed
     });
     
-    console.log("Received header:", {
+    console.log("Header in decryption:", {
       dhPublicKey: parsedHeader.dhPublicKey.substring(0, 20) + "...",
       messageNumber: parsedHeader.messageNumber,
       previousChainLength: parsedHeader.previousChainLength

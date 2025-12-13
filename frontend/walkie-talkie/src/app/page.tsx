@@ -502,12 +502,13 @@ export default function Home() {
     // Decrypt messages for all contacts asynchronously
   const decryptAllMessages = async () => {
     
+    const user_o = users.find((elem) => user === elem.id);
     const updatedContacts = await Promise.all(
       contacts.map(async (contact, idx) => {
         try {
 
           const contact_id = contact.sender_id === user ? contact.contact_id : contact.sender_id
-          console.log(`Working on contact ${contact.id}, as user: ${user}`)
+          // console.log(`Working on contact ${contact.id}, as user: ${user_o.username}`)
 
           const decryptedMessages = await loadConversationMessages(
             contact.message, 
@@ -525,7 +526,7 @@ export default function Home() {
             message: decryptedMessages
           };
         } catch (error) {
-          console.error(`Failed to decrypt messages for contact ${contact.contact_id}:`, error);
+          console.error(`Failed to decrypt messages for contact ${contact.id} with user: ${user_o.username}`, error);
           return contact; // Return original contact if decryption fails
         }
       })
@@ -573,10 +574,20 @@ export default function Home() {
 
   useEffect(() => {
 
-    console.log(`identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}`)
+    console.log(`INITIAL CHECK BEFORE DECRYPT ALL MESSAGES user = ${user}, identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}, 
+                contacts = ${JSON.stringify(contacts)}, hasDecryptedInitial.current = ${hasDecryptedInitial.current}`)
+
+      if (!user || user === "") {
+        console.log("❌ User is empty, skipping");
+        return;
+      }
 
     if(identityKey && signedPreKey && user && contacts.length > 0 && !hasDecryptedInitial.current) {
-      console.log("DECRYPTING ALL MESSAGES")
+      if(users) {
+        const user_o = users.find((u) => u.id === user)
+        console.log(`DECRYPTING ALL MESSAGES as user ${user_o.username}`)
+      }
+      console.log(`DECRYPTING ALL MESSAGES as user ${user}`)
 
       /* debugging here*/
       decryptAllMessages();
@@ -584,6 +595,8 @@ export default function Home() {
       hasDecryptedInitial.current = true
     }
   }, [identityKey, signedPreKey, user, contacts.length])
+
+
 
   async function loadConversationRatchetStateDB(user, contact) {
     var conversation = null
@@ -632,7 +645,7 @@ export default function Home() {
   // 
   // Different cases for groups and users
   async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string, contact: any) {
-    console.log(`In load conversation messages at ${new Date()}`)
+    console.log(`In load conversation messages at ${new Date()} with ${user}`)
 
     const decryptedMessages = [];
     const decryption_key = X3DHClient.getOrCreateLocalKey();
@@ -642,12 +655,15 @@ export default function Home() {
 
     var user_o = null
     if(user) {
-      user_o = users.find((elem) => {elem.id === user})
+      user_o = users.find((elem) => elem.id === user)
+      console.log(`Before load ratchet in loadConversationMessages with user: ${user_o.username}`)
+      console.log(`before loading ratchet in sendMessage; curr_user: ${user_o.username}, id convo: ${contact.id}`)
+    } else {
+      console.log(`Before load ratchet in loadConversationMessages with user: ${user}`)
+      console.log(`before loading ratchet in sendMessage; curr_user: ${user}, id convo: ${contact.id}`)
     }
     
     // ✅ Load ratchet from DB
-    console.log("Before load ratchet in loadConversationMessages")
-    console.log(`before loading ratchet in sendMessage; curr_user: ${user}, id convo: ${contact.id}`)
     var ratchet = await loadConversationRatchetStateDB(user, contact);
 
     // if(!ratchet || !ratchet.state) return existing_messages
@@ -656,10 +672,7 @@ export default function Home() {
       console.log(`Ratchet ${user_o.username} with convo_id ${contact.id}: ${JSON.stringify(ratchet.getState())}`)
     }
 
-    if(user_o){
-      console.log("Before for with user")
-
-    }
+    console.log(`Before for with user ${user} with messages.length: ${messages.length}`)
 
     for (var i = 0; i < messages.length; i++) {
       console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
@@ -684,10 +697,12 @@ export default function Home() {
         console.log(`message #${i}: ` + JSON.stringify(messages[i]))
 
         if (messages[i].sender_id === user) {
-          console.log("We are the sender (Alice) - ratchet already loaded from DB")
+          if(user_o) console.log(`We are the sender (Alice) ${user_o.username} - ratchet already loaded from DB`)
+          else console.log(`We are the sender (Alice) ${user} - ratchet already loaded from DB`)
           // Ratchet already loaded from DB, no action needed
         } else {
-          console.log(`We are the receiver (Bob) ${user_o.username} - initializing ratchet`);
+          if(user_o) console.log(`We are the receiver (Bob) ${user_o.username} - initializing ratchet`);
+          else console.log(`We are the sender (Alice) ${user} - ratchet already loaded from DB`)
 
           const sharedSecret = await X3DHClient.performX3DHAsReceiver(
             identityKey, 
@@ -697,7 +712,7 @@ export default function Home() {
             messages[i].oneTimePreKeyId
           );
 
-          console.log("=== BOB AFTER X3DH ===");
+          console.log(`=== BOB AFTER X3DH ${user} ===`);
           console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
 
           ratchet = DoubleRatchet.initializeAsReceiver(user, contact.id, sharedSecret, signedPreKey);
@@ -716,10 +731,10 @@ export default function Home() {
           var plaintext = ""
           
           if(user === messages[i].sender_id) {
-            console.log("We're decrypting as Alice (our own sent message)")
+            console.log(`We're decrypting as Alice (our own sent message) with user = ${user_o.username}`)
             plaintext = X3DHClient.decryptForSelf(messages[i].ciphertext_sender, decryption_key);
             
-            console.log(`plaintext: ${plaintext}`)
+            console.log(`plaintext in user ${user} (sender): ${plaintext}`)
             sendMessageStatusUpdate(messages[i].timestamp, "read_by_sender", contact_id)
 
             // Save to localStorage
@@ -737,11 +752,13 @@ export default function Home() {
             localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
 
           } else {
-            console.log("We're decrypting as Bob (received message)")
+            console.log(`We're decrypting as Bob (received message) with user = ${user_o.username}`)
             plaintext = await ratchet.decrypt(messages[i].ciphertext, messages[i].header);
             // ✅ ratchet.decrypt() automatically saves updated state to DB
 
-            console.log(`plaintext: ${plaintext}`)
+            if(user_o) console.log(`plaintext in user ${user_o.username} (receiver) : ${plaintext}`)
+            else console.log(`plaintext in user ${user} (receiver) : ${plaintext}`)
+
             sendMessageStatusUpdate(messages[i].timestamp, "read_by_receiver", contact_id)
 
             // Save to localStorage
@@ -759,7 +776,9 @@ export default function Home() {
             localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
           }
 
-          console.log(`After decryption with plaintext = ${plaintext}`)
+          if(user_o) console.log(`After decryption with plaintext = ${plaintext} with user ${user_o.username}`)
+          else console.log(`After decryption with plaintext = ${plaintext} with user ${user}`)
+
 
           decryptedMessages.push({
             sender_id: messages[i].sender_id,
@@ -776,6 +795,8 @@ export default function Home() {
         }
       }
     }
+
+    await ratchet.updateRatchetState()
 
     return decryptedMessages;
   }
@@ -977,12 +998,12 @@ export default function Home() {
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
                                       closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts}
-                                      loadConversationRatchetStateDB={loadConversationRatchetStateDB}></Conversations> : 
+                                      loadConversationRatchetStateDB={loadConversationRatchetStateDB} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts}></Conversations> : 
                                       <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
                                       closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} 
-                                      decryptedContacts={decryptedContacts}></ConversationsVertical>)
+                                      decryptedContacts={decryptedContacts} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}

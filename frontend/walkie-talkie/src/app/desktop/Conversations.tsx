@@ -57,24 +57,29 @@ export default function Conversations( props : any) {
     }, [props.settingsPressed, props.pressedProfile])
 
     async function logOutNow() {
-
         try {
             const res = await fetch(`http://localhost:3002/logout`, {
-                method: 'GET',
-                credentials: "include",
+            method: 'GET',
+            credentials: "include",
             });
             
-            if(res.ok) {
-                props.updateUsers([]);
-                props.updateContacts([]);
-                props.updateImages([]);
-                props.setUser("");
+            if (res.ok) {
+            props.updateUsers([]);
+            props.updateContacts([]);
+            props.updateImages([]);
+            props.setUser("");
+            props.setDecryptedContacts([]);
+            setFilteredDecryptedContacts([]);
+            props.hasDecryptedInitial.current = false;
+            } else {
+            console.error('Logout failed with status:', res.status);
             }
-
         } catch (err) {
-            console.error(JSON.stringify(err))
+            console.error('Logout error:', err); // ✅ Don't use JSON.stringify on Error objects
+            console.error('Error message:', err.message);
+            console.error('Error stack:', err.stack);
         }
-    }
+        }
 
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -205,7 +210,7 @@ export default function Conversations( props : any) {
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredDecryptedContacts={filteredDecryptedContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
-            {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts}
+            {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} fetchContacts={props.fetchContacts} addContact={addContact} filteredContacts={filteredContacts}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
     );
@@ -413,6 +418,7 @@ export function UsersToAddToContacts (props : any) {
 
         props.setPotentialContact(row);
         props.setCurrContact(row);
+        props.fetchContacts();
         // props.setAddContact(false);
         props.filterUsers(props.currentSearch)
         // return null;
