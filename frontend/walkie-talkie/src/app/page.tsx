@@ -158,7 +158,6 @@ export default function Home() {
       const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
-      setDecryptedContacts(result);
       // console.log("contacts = " + JSON.stringify(result));
     };
 
@@ -371,7 +370,7 @@ export default function Home() {
       fetchData()
       fetchData2()
       fetchImages()
-      decryptAllMessages()
+      // decryptAllMessages()
 
       console.log("======================================")
       console.log(`=== new user: ${user} ===`)
@@ -510,7 +509,7 @@ export default function Home() {
           const contact_id = contact.sender_id === user ? contact.contact_id : contact.sender_id
           console.log(`Working on contact ${contact.id}, as user: ${user}`)
 
-          const decryptedMessage = await loadConversationMessages(
+          const decryptedMessages = await loadConversationMessages(
             contact.message, 
             contact.is_group, 
             contact_id,
@@ -519,10 +518,11 @@ export default function Home() {
           
           console.log(`Conversation messages loaded`)
           console.log(`Exited working on contact ${contact.id}, as user: ${user}`)
+         
           
           return {
             ...contact,
-            message: decryptedMessage
+            message: decryptedMessages
           };
         } catch (error) {
           console.error(`Failed to decrypt messages for contact ${contact.contact_id}:`, error);
@@ -575,9 +575,12 @@ export default function Home() {
 
     console.log(`identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}`)
 
-    if(identityKey && signedPreKey && user && contacts.length > 0 && !hasDecryptedInitial) {
+    if(identityKey && signedPreKey && user && contacts.length > 0 && !hasDecryptedInitial.current) {
       console.log("DECRYPTING ALL MESSAGES")
+
+      /* debugging here*/
       decryptAllMessages();
+
       hasDecryptedInitial.current = true
     }
   }, [identityKey, signedPreKey, user, contacts.length])
@@ -765,6 +768,7 @@ export default function Home() {
             timestamp: messages[i].timestamp
           });
 
+
           // ❌ REMOVE ALL ConversationManager calls - DB handles it now
           
         } catch (error) {
@@ -836,6 +840,10 @@ export default function Home() {
   // useEffect(() => {
   //   fetchData2()
   // }, [messages])
+
+  useEffect(() => {
+    console.log(`Decrypted contacts after updating: ${JSON.stringify(decryptedContacts)}`)
+  }, [decryptedContacts])
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">

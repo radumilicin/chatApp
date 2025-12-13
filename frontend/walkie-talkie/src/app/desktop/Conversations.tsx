@@ -31,7 +31,9 @@ export default function Conversations( props : any) {
     }, [props.contacts, currentSearch])
     
     useEffect(() => { 
+        console.log(`decrypted contacts in conversations: ${JSON.stringify(props.decryptedContacts)}`)
         if(props.decryptedContacts !== null) {
+            console.log(`decrypted contacts in conversations: ${JSON.stringify(props.decryptedContacts)}`)
             filterDecryptedContacts(currentSearch)
             // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
         }
@@ -119,10 +121,10 @@ export default function Conversations( props : any) {
         setFilteredContacts(filteredContactsOrderedByTimestamp)
     }
 
-    async function filterDecryptedContacts(val : string) { 
-        console.log("In filteredContacts .. ")     
+    function filterDecryptedContacts(val : string) { 
+        console.log(`In filteredContacts with decrypted contacts = ${props.decryptedContacts}`)     
         // console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
-        // console.log("contacts = " + JSON.stringify(props.contacts))   
+        // console.log("contacts = " + JSON.stringify(props.contacts))  
         
         const filteredContactsUnordered = props.decryptedContacts.filter((contact) => {
             if(contact.is_group === false) {
@@ -581,6 +583,11 @@ export function Contacts( props: any) {
        // console.log("contacts in conversations = " + JSON.stringify(props.filteredContacts))
     }, [props.filteredContacts])
 
+    useEffect(() => {
+       console.log("decrypted contacts in conversations = " + JSON.stringify(props.filteredDecryptedContacts))
+    }, [props.filteredDecryptedContacts])
+
+
     // type user is either current or other (0,1)
     function getProfileImage(contact: any, type_user : number) {
         const user = props.users.find((user) => {
@@ -659,44 +666,19 @@ export function Contacts( props: any) {
         if(props.contact) {
             console.log("================\n\n\n CONTACT = " + JSON.stringify(props.contact) + "\n\n\n=================")
         }
-
-        // const updateAccess = async () => {
-        //     if(props.contact && props.contact.opened_at) {
-        //         for(let elem of props.contact.opened_at){
-        //             if(elem.id === props.curr_user) {
-        //                 // console.log("============\nupdating access time for chat\n==========")
-        //                 // console.log("Sending timestamp:", elem.opened_at); // Add this log
-        //                 await updateAccessedOnChat(elem.opened_at);
-        //             }
-        //         }
-
-        //         if(prevContact.current !== null) {
-        //             await props.closeChat(prevContact.current);
-        //         }
-                
-        //         // console.log("ABOUT TO FETCH CONTACTS");
-        //         await props.fetchContacts();
-        //         // console.log("CONTACTS FETCHED, should re-render now");
-                
-        //         prevContact.current = props.contact;
-        //     }
-        // };
-        
-        // if(props.contact) updateAccess();
     }, [props.contact])
 
     useEffect(() => {
-        // console.log("props.filteredContacts: " + JSON.stringify(props.filteredContacts))
     }, [props.filteredContacts])
     
     console.log("Initial rendering")
 
-    // console.log("contact: " + JSON.stringify(props.contact))
 
     return (
         <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
+                    
                     const lastMessage = getLastMessage(element, idx);
                     const time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
