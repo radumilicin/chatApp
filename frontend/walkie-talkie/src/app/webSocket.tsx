@@ -121,47 +121,72 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
     const sendMessage = async (message) => {
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify(message));
-
+        
         const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
-        const decrypted_message = await decryptMessage(message, false, contact_id);
+        let msg = {
+          "sender_id": message.sender_id,
+          "recipient_id": message.recipient_id,
+          "message": message.message,
+          "timestamp": message.timestamp
+        };
         
-        console.log(`Message received & decrypted is:`, decrypted_message);
-        
-        // ✅ Check if decryption succeeded
-        if (!decrypted_message || !decrypted_message.hasOwnProperty("sender_id")) {
-          console.error('Failed to decrypt message, not updating state');
-          return;
-        }
-
-        if(decrypted_message.sender_id !== user || decrypted_message.recipient_id !== contact_id) {
-          console.error("Malformed decrypted message: sender does not match current id?");
-          return;
-        }
-        
-        // ✅ Update decryptedContacts, not contacts
-        // currArr is an array of decryptedContacts.
-        // So contacts, but with the added "message" attribute (if it doesn't exist)
-        // if it does exist, then just append to the already existing array
         setDecryptedContacts((currArr) => {
           console.log('🔵 PREV state:', currArr);
           
-          if (!currArr) return currArr;
-
-          var updated_state = null
-          var updated_message = null
-
-          updated_state = currArr.map((elem) => {
-            if((elem.sender_id === user && elem.contact_id === contact_id) || (elem.sender_id === contact_id && elem.contact_id === user)){
-              updated_message = [...elem.message, decrypted_message];
-
+          // ✅ Handle empty array - initialize from contacts
+          if (!currArr || currArr.length === 0) {
+            console.log('🔵 Empty array - initializing from contacts');
+            
+            const contact = contacts.find((elem) => 
+              (elem.sender_id === user && elem.contact_id === contact_id) || 
+              (elem.sender_id === contact_id && elem.contact_id === user)
+            );
+            
+            if (contact) {
+              console.log('🔵 Found contact, creating initial state');
+              return [{
+                ...contact,
+                message: [msg]  // ✅ Initialize message array with first message
+              }];
+            }
+            
+            console.log('🔵 Contact not found');
+            return currArr;
+          }
+          
+          // ✅ Handle existing array - update or add contact
+          const contactExists = currArr.some((elem) => 
+            (elem.sender_id === user && elem.contact_id === contact_id) || 
+            (elem.sender_id === contact_id && elem.contact_id === user)
+          );
+          
+          if (!contactExists) {
+            // Contact not in decryptedContacts yet, add it from contacts
+            const contact = contacts.find((elem) => 
+              (elem.sender_id === user && elem.contact_id === contact_id) || 
+              (elem.sender_id === contact_id && elem.contact_id === user)
+            );
+            
+            if (contact) {
+              console.log('🔵 Adding new contact to decryptedContacts');
+              return [...currArr, {
+                ...contact,
+                message: [msg]
+              }];
+            }
+          }
+          
+          // Contact exists, update it
+          const updated_state = currArr.map((elem) => {
+            if ((elem.sender_id === user && elem.contact_id === contact_id) || 
+                (elem.sender_id === contact_id && elem.contact_id === user)) {
               return {
                 ...elem,
-                message: updated_message
-              }
+                message: [...elem.message, msg]
+              };
             }
-
             return elem;
-          })
+          });
           
           console.log('🔵 UPDATED state:', updated_state);
           return updated_state;
@@ -263,6 +288,7 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         } else {
           console.log("We're decrypting as Bob (received message)");
           plaintext = await ratchet.decrypt(message.ciphertext, message.header);
+          console.log("IN WEB SOCKET WE GOT THE PLAINTEXT")
           // ✅ ratchet.decrypt() automatically saves updated state to DB
         }
       
@@ -282,6 +308,8 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         return null;
       }
     }
+
+    await ratchet.updateRatchetState();
 
     return null;
   }
