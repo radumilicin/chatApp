@@ -47,18 +47,24 @@ export class DoubleRatchet {
     theirSignedPreKey: string
   ): DoubleRatchet {
     // Generate our first DH ratchet key (using same method as X3DHClient)
-    const dhKeyPair = DoubleRatchet.generateKeyPair();
-
-    // Derive root key and sending chain key from shared secret
-    const { rootKey, chainKey } = DoubleRatchet.kdfRootKey(
-      sharedSecret,
-      DoubleRatchet.dh(dhKeyPair.privateKey, theirSignedPreKey)
-    );
+     const dhKeyPair = DoubleRatchet.generateKeyPair();
+  
+    console.log('🔴 ALICE INIT - X3DH sharedSecret:', sharedSecret.substring(0, 20));
+    console.log('🔴 ALICE INIT - Bob signed prekey:', theirSignedPreKey.substring(0, 20));
+    console.log('🔴 ALICE INIT - Alice DH private:', dhKeyPair.privateKey.substring(0, 20));
+    console.log('🔴 ALICE INIT - Alice DH public:', dhKeyPair.publicKey.substring(0, 20));
+    
+    const dhOutput = DoubleRatchet.dh(dhKeyPair.privateKey, theirSignedPreKey);
+    console.log('🔴 ALICE INIT - DH output:', dhOutput.substring(0, 20));
+    
+    const { rootKey, chainKey } = DoubleRatchet.kdfRootKey(sharedSecret, dhOutput);
+    console.log('🔴 ALICE INIT - New root key:', rootKey.substring(0, 20));
+    console.log('🔴 ALICE INIT - Sending chain key:', chainKey); // FULL KEY!
 
     return new DoubleRatchet({
       user: user,
       conversation_id: conversation_id,
-      rootKey,
+      rootKey: rootKey,
       sendingChainKey: chainKey,
       receivingChainKey: '', // Will be set when we receive their first message
       dhSendingKey: dhKeyPair,
@@ -121,7 +127,7 @@ export class DoubleRatchet {
       this.state.sendingChainKey
     );
     
-    console.log("Message key:", messageKey.substring(0, 20) + "...");
+    console.log("Message key in Alice:", messageKey.substring(0, 20) + "...");
 
     // Encrypt the message
     const ciphertext = DoubleRatchet.encryptMessage(plaintext, messageKey);
@@ -134,7 +140,7 @@ export class DoubleRatchet {
     };
 
     console.log("Header for encryption:", {
-      dhPublicKey: header.dhPublicKey.substring(0, 20) + "...",
+      dhPublicKey: header.dhPublicKey + "...",
       messageNumber: header.messageNumber,
       previousChainLength: header.previousChainLength
     });
@@ -182,15 +188,16 @@ export class DoubleRatchet {
         : this.state.dhReceivingKey.substring(0, 20) + "..."  // ← Fixed
     });
     
-    console.log("Header in decryption:", {
-      dhPublicKey: parsedHeader.dhPublicKey.substring(0, 20) + "...",
+
+    console.log("Header in decryption:", {            // THIS IS CORRECT (HEADERS MATCH)
+      dhPublicKey: parsedHeader.dhPublicKey + "...",
       messageNumber: parsedHeader.messageNumber,
       previousChainLength: parsedHeader.previousChainLength
-    });
+    }); 
     
     // Check if we need to perform DH ratchet step
-    if (parsedHeader.dhPublicKey !== this.state.dhReceivingKey) {
-      console.log('DH keys dont match, Performing DH ratchet step...');
+    if (this.state.dhReceivingKey === null || parsedHeader.dhPublicKey !== this.state.dhReceivingKey) {
+      console.log('First message or DH keys changed - performing DH ratchet step');
       this.dhRatchetStep(parsedHeader);
     }
 
@@ -198,18 +205,21 @@ export class DoubleRatchet {
       receivingChainKey: this.state.receivingChainKey.substring(0, 20) + "...",
     });
 
+
     // Derive the message key
     let chainKey = this.state.receivingChainKey;
+    console.log(`receiving chain key in receiver: ${chainKey}`)
     for (let i = this.state.receiveMessageNumber; i < parsedHeader.messageNumber; i++) {
       const result = DoubleRatchet.kdfChainKey(chainKey);
       chainKey = result.nextChainKey;
     }
+    console.log(`receiving chain key in receiver after for: ${chainKey}`)
     
     console.log("Before deriving chain key")
 
     const { messageKey, nextChainKey } = DoubleRatchet.kdfChainKey(chainKey);
     
-    console.log("Before deriving message key")
+    console.log(`After deriving message key in Bob: ${messageKey}`)
 
     // Decrypt the message
     const plaintext = DoubleRatchet.decryptMessage(ciphertext, messageKey);
@@ -271,39 +281,52 @@ export class DoubleRatchet {
     messageNumber: number;
     previousChainLength: number;
   }): void {
-    // Store previous chain length
+    console.log('🟢 dhRatchetStep START');
+    
+    console.log('🔵 BOB RATCHET - X3DH sharedSecret (rootKey):', this.state.rootKey.substring(0, 20));
+    console.log('🔵 BOB RATCHET - Alice DH public (from header):', header.dhPublicKey.substring(0, 20));
+    console.log('🔵 BOB RATCHET - Bob signed prekey private:', this.state.dhSendingKey.privateKey.substring(0, 20));
+    console.log('🔵 BOB RATCHET - Bob signed prekey public:', this.state.dhSendingKey.publicKey.substring(0, 20));
+    
     this.state.previousSendingChainLength = this.state.sendMessageNumber;
-
-    // Reset receive message number
     this.state.receiveMessageNumber = 0;
-
-    // Update their DH key
     this.state.dhReceivingKey = header.dhPublicKey;
-
-    // Derive new receiving chain
-    const { rootKey: newRootKey1, chainKey: receivingChainKey } =
-      DoubleRatchet.kdfRootKey(
-        this.state.rootKey,
-        DoubleRatchet.dh(this.state.dhSendingKey.privateKey, header.dhPublicKey)
-      );
+    
+    const dhOutput1 = DoubleRatchet.dh(this.state.dhSendingKey.privateKey, header.dhPublicKey);
+    console.log('🔵 BOB RATCHET - DH output 1:', dhOutput1.substring(0, 20));
+    
+    const { rootKey: newRootKey1, chainKey: receivingChainKey } = 
+      DoubleRatchet.kdfRootKey(this.state.rootKey, dhOutput1);
+    
+    console.log('🔵 BOB RATCHET - New root key 1:', newRootKey1.substring(0, 20));
+    console.log('🔵 BOB RATCHET - Receiving chain key:', receivingChainKey); // FULL KEY!
+    
     this.state.rootKey = newRootKey1;
     this.state.receivingChainKey = receivingChainKey;
-
-    // Generate new DH key pair
+    
+    // ✅ Generate new DH key pair for next sending ratchet
     this.state.dhSendingKey = DoubleRatchet.generateKeyPair();
-
-    // Derive new sending chain
-    const { rootKey: newRootKey2, chainKey: sendingChainKey } =
-      DoubleRatchet.kdfRootKey(
-        this.state.rootKey,
-        DoubleRatchet.dh(
-          this.state.dhSendingKey.privateKey,
-          header.dhPublicKey
-        )
-      );
+    console.log('🟢 Generated new DH sending key:', this.state.dhSendingKey.publicKey.substring(0, 20));
+    
+    // ✅ Second DH: Derive sending chain from our new key + their key
+    const dhOutput2 = DoubleRatchet.dh(this.state.dhSendingKey.privateKey, header.dhPublicKey);
+    console.log('🟢 DH output 2:', dhOutput2.substring(0, 20));
+    
+    const { rootKey: newRootKey2, chainKey: sendingChainKey } = 
+      DoubleRatchet.kdfRootKey(this.state.rootKey, dhOutput2);
+    
+    console.log('🟢 New root key 2:', newRootKey2.substring(0, 20));
+    console.log('🟢 Sending chain key:', sendingChainKey.substring(0, 20));
+    
     this.state.rootKey = newRootKey2;
     this.state.sendingChainKey = sendingChainKey;
     this.state.sendMessageNumber = 0;
+    
+    console.log('🟢 dhRatchetStep END - Final state:', {
+      rootKey: this.state.rootKey.substring(0, 20),
+      receivingChainKey: this.state.receivingChainKey.substring(0, 20),
+      sendingChainKey: this.state.sendingChainKey.substring(0, 20)
+    });
   }
 
   // Get current state (for saving)
@@ -358,31 +381,67 @@ export class DoubleRatchet {
     };
   }
 
+  // Add this helper function to your DoubleRatchet class
+  private static hmacSha256(key: Uint8Array, message: Uint8Array): Uint8Array {
+    const blockSize = 64; // SHA-256 block size
+    
+    // If key is longer than block size, hash it first
+    let keyBytes = key;
+    if (key.length > blockSize) {
+      keyBytes = nacl.hash(key).subarray(0, 32);
+    }
+    
+    // Pad key to block size
+    const paddedKey = new Uint8Array(blockSize);
+    paddedKey.set(keyBytes);
+    
+    // Create inner and outer padded keys
+    const innerPad = new Uint8Array(blockSize);
+    const outerPad = new Uint8Array(blockSize);
+    
+    for (let i = 0; i < blockSize; i++) {
+      innerPad[i] = paddedKey[i] ^ 0x36;
+      outerPad[i] = paddedKey[i] ^ 0x5c;
+    }
+    
+    // HMAC = hash(outerPad || hash(innerPad || message))
+    const innerInput = new Uint8Array(blockSize + message.length);
+    innerInput.set(innerPad);
+    innerInput.set(message, blockSize);
+    const innerHash = nacl.hash(innerInput);
+    
+    const outerInput = new Uint8Array(blockSize + innerHash.length);
+    outerInput.set(outerPad);
+    outerInput.set(innerHash, blockSize);
+    const outerHash = nacl.hash(outerInput);
+    
+    // Return first 32 bytes
+    return outerHash.subarray(0, 32);
+  }
+
   private static kdfChainKey(chainKey: string): {
     messageKey: string;
     nextChainKey: string;
   } {
     const chainKeyBytes = decodeBase64(chainKey);
     
-    // Message key - HMAC-SHA512 with input "message" (using nacl.hash)
-    const messageInput = new Uint8Array(chainKeyBytes.length + 7); // "message".length = 7
-    messageInput.set(chainKeyBytes, 0);
-    messageInput.set(new TextEncoder().encode('message'), chainKeyBytes.length);
-    const messageHash = nacl.hash(messageInput);
-    const messageKeyBytes = messageHash.subarray(0, 32);
+    // Message key - HMAC(chainKey, "message")
+    const messageKeyBytes = DoubleRatchet.hmacSha256(
+      chainKeyBytes,
+      new TextEncoder().encode('message')
+    );
     
-    // Next chain key - HMAC-SHA512 with input "chain"
-    const chainInput = new Uint8Array(chainKeyBytes.length + 5); // "chain".length = 5
-    chainInput.set(chainKeyBytes, 0);
-    chainInput.set(new TextEncoder().encode('chain'), chainKeyBytes.length);
-    const chainHash = nacl.hash(chainInput);
-    const nextChainKeyBytes = chainHash.subarray(0, 32);
+    // Next chain key - HMAC(chainKey, "chain")  
+    const nextChainKeyBytes = DoubleRatchet.hmacSha256(
+      chainKeyBytes,
+      new TextEncoder().encode('chain')
+    );
     
     return {
       messageKey: encodeBase64(messageKeyBytes),
       nextChainKey: encodeBase64(nextChainKeyBytes),
     };
-  }
+  } 
 
   private static encryptMessage(plaintext: string, messageKey: string): string {
     const key = decodeBase64(messageKey);

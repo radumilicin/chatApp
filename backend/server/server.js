@@ -234,9 +234,14 @@ app.get('/api/keys', async(req, res) => {
 
     console.log("After getting keys and ot_keys")
 
+
     if(resp_keys.rows.length === 0 || resp_ot_keys.rows.length === 0) {
       res.status(404).json("Recipient not found");
     }
+    
+    console.log("🔴 FETCHED FROM DB:");
+    console.log("🔴 user_id:", resp_keys.rows[0].user_id);
+    console.log("🔴 signed_prekey_public:", resp_keys.rows[0].signed_prekey_public);
     
     console.log("The recipient does have keys available")
 

@@ -181,17 +181,25 @@ export default function Home() {
       throw new Error("userId is required to get/create device key");
     }
     
-    const storedKey = await loadDeviceKeyFromIndexedDB(userId);
-    console.log(`STORED KEY for user ${userId}:`, storedKey);
-    
-    if (storedKey) return storedKey;
-    
-    console.log("there's no key so we create one for user:", userId);
-    // Create brand new 32-byte key for NaCl
-    const newKey = nacl.randomBytes(32); // NaCl secretbox needs 32 bytes
-    await storeDeviceKeyInIndexedDB(userId, newKey);
-    console.log("After storing key in indexedDB for user:", userId);
-    return newKey;
+    try {
+      const storedKey = await loadDeviceKeyFromIndexedDB(userId);
+      
+      console.log(`STORED KEY for user ${userId}:`, storedKey);
+      
+      if (storedKey) return storedKey;
+      
+      console.log("there's no key so we create one for user:", userId);
+      // Create brand new 32-byte key for NaCl
+      const newKey = nacl.randomBytes(32); // NaCl secretbox needs 32 bytes
+      
+      await storeDeviceKeyInIndexedDB(userId, newKey);
+      console.log("After storing key in indexedDB for user:", userId);
+      return newKey;
+
+    } catch (err) {
+      console.error("Could not create device key", err)
+      return null;
+    }
   }
 
   async function storeDeviceKeyInIndexedDB(userId: string, key: Uint8Array): Promise<void> {
@@ -272,13 +280,23 @@ export default function Home() {
       
       const deviceKey = await getOrCreateDeviceKey(data.user.user.id)
 
+      if(!deviceKey) {
+        console.error("Could not create keys properly")
+        return false
+      }
+
       console.log("Before loadKeysAfterLogin SSO")
       // const deviceKeyString = await cryptoKeyToBase64(deviceKey);
-      loadKeysAfterLogin(data.user.user.id, deviceKey)
+      const loaded = await loadKeysAfterLogin(data.user.user.id, deviceKey)
 
-      console.log("Keys loaded after login")
+      if(loaded === true) {
+        console.log("Keys loaded after login")
+        return true;
+      } else {
+        console.error("KEYS NOT LOADED CORRECTLY")
+      }
 
-      return true;
+      return false;
     } else {
       console.log("❌ Invalid token:", data);
       return false;
@@ -302,6 +320,7 @@ export default function Home() {
           console.log("  - SignedPreKey public:", keys.signedPreKey.publicKey.substring(0, 30) + "...");
         } catch (e) {
           console.error("❌ Failed to decrypt Bob's keys:", e);
+          return;
         }
       }
 
@@ -311,6 +330,9 @@ export default function Home() {
       console.log("🗄️ Bob's keys from database:");
       console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
       console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+
+      /* FORGOT TO PUT THESE WTF??? */
+
     }
 
     if(user !== "") {
