@@ -330,6 +330,8 @@ export default function Home() {
       console.log("🗄️ Bob's keys from database:");
       console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
       console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+      console.log(`  local storage SignedPreKey public:`, signedPreKey.public_key.substring(0, 30) + "...");
+
 
       /* FORGOT TO PUT THESE WTF??? */
 
@@ -388,11 +390,45 @@ export default function Home() {
 
     console.log("Logged in = " + loggedIn + " registered = " + registered)
 
+    const checkKeys = async () => {
+      // Check localStorage
+      const encryptedKeys = localStorage.getItem(`encrypted_keys_${user}`);
+      console.log("🔍 Bob's encrypted keys in localStorage:", encryptedKeys ? "EXISTS" : "NOT FOUND");
+
+      if (encryptedKeys) {
+        try {
+          const deviceKey = await getOrCreateDeviceKey(user);
+          const keys = decryptKeys(encryptedKeys, deviceKey);
+          console.log("📦 Bob's keys from localStorage:");
+          console.log("  - Identity public:", keys.identityKey.publicKey.substring(0, 30) + "...");
+          console.log("  - SignedPreKey public:", keys.signedPreKey.publicKey.substring(0, 30) + "...");
+        } catch (e) {
+          console.error("❌ Failed to decrypt Bob's keys:", e);
+          return;
+        }
+      }
+
+      // Check database
+      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbKeys = await dbResponse.json();
+      console.log("🗄️ Bob's keys from database:");
+      console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
+      console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+      console.log(`  local storage SignedPreKey public:`, signedPreKey.public_key.substring(0, 30) + "...");
+
+
+      /* FORGOT TO PUT THESE WTF??? */
+
+    }
+
+
     if(user) {
       fetchData()
       fetchData2()
       fetchImages()
       // decryptAllMessages()
+
+      checkKeys()
 
       console.log("======================================")
       console.log(`=== new user: ${user} ===`)
@@ -553,9 +589,13 @@ export default function Home() {
         }
       })
     );
+
     
     console.log(`decrypted contacts should be set to = ${JSON.stringify(updatedContacts)}`)
     setDecryptedContacts(updatedContacts)
+    
+    if(updatedContacts.length === contacts.length) return true;
+    else return false;
   };
 
   useEffect(() => {
@@ -594,29 +634,91 @@ export default function Home() {
     }
   }
 
+
   useEffect(() => {
+  const checkAndDecrypt = async () => {
+    const db_check_signedPrekey = async (currSignedPreKey) => {
+      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbKeys = await dbResponse.json();
+      console.log("🗄️ Bob's keys from database:");
+      return dbKeys.signedPreKey.public_key === currSignedPreKey.publicKey;
+    };
 
     console.log(`INITIAL CHECK BEFORE DECRYPT ALL MESSAGES user = ${user}, identityKey = ${JSON.stringify(identityKey)}, signedPreKey = ${JSON.stringify(signedPreKey)}, 
-                contacts = ${JSON.stringify(contacts)}, hasDecryptedInitial.current = ${hasDecryptedInitial.current}`)
-
-      if (!user || user === "") {
-        console.log("❌ User is empty, skipping");
-        return;
-      }
-
-    if(identityKey && signedPreKey && user && contacts.length > 0 && !hasDecryptedInitial.current) {
-      if(users) {
-        const user_o = users.find((u) => u.id === user)
-        console.log(`DECRYPTING ALL MESSAGES as user ${user_o.username}`)
-      }
-      console.log(`DECRYPTING ALL MESSAGES as user ${user}`)
-
-      /* debugging here*/
-      decryptAllMessages();
-
-      hasDecryptedInitial.current = true
+                  contacts = ${JSON.stringify(contacts)}, hasDecryptedInitial.current = ${hasDecryptedInitial.current}`);
+    
+    if (!user || user === "") {
+      console.log("❌ User is empty, skipping");
+      hasDecryptedInitial.current = false; // Reset when no user
+      return;
     }
-  }, [identityKey, signedPreKey, user, contacts.length])
+    
+    if (!identityKey || !signedPreKey) {
+      console.log("⏳ Waiting for keys to load...");
+      return;
+    }
+    
+    if (contacts.length === 0) {
+      console.log("⏳ No contacts to decrypt");
+      return;
+    }
+    
+    if (hasDecryptedInitial.current) {
+      console.log("✅ Already decrypted, skipping");
+      return;
+    }
+
+    // Check if signedPreKey matches database
+    const check_preKeyIsCorrect = await db_check_signedPrekey(signedPreKey);
+    if (!check_preKeyIsCorrect) {
+      console.log("❌ SignedPreKey mismatch! Not decrypting.");
+      return;
+    }
+
+    if (users) {
+      const user_o = users.find((u) => u.id === user);
+      console.log(`DECRYPTING ALL MESSAGES as user ${user_o.username}`);
+    }
+    
+    console.log(`DECRYPTING ALL MESSAGES as user ${user}`);
+    
+    // Decrypt all messages
+    const decryptedAll = await decryptAllMessages();
+    
+    if (decryptedAll) {
+      hasDecryptedInitial.current = true;
+      console.log("✅ Successfully decrypted all messages");
+    } else {
+      console.log("❌ Failed to decrypt all messages");
+    }
+  };
+
+  // Call the async function
+  checkAndDecrypt();
+}, [identityKey, signedPreKey, user, contacts.length]);
+
+
+
+
+  useEffect(() => {
+    
+    const checkKeys = async () => {
+      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbKeys = await dbResponse.json();
+
+      const user_o = users.find((elem) => user === elem.id)
+
+      console.log("🔍 COMPARISON:");
+      console.log(`CHECK localStorage signedPreKey user ${user_o.username}:`, signedPreKey.publicKey);
+      console.log(`CHECK database signedPreKey user ${user_o.username} :`, dbKeys.signedPreKey.public_key);
+      console.log("CHECK DO THEY MATCH?", signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
+    }
+
+    if(signedPreKey !== undefined && user !== "" && users.length !== 0) {
+      checkKeys()
+    }
+
+  }, [signedPreKey, user, users])
 
 
 
@@ -1036,7 +1138,7 @@ export default function Home() {
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>
         }
-        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey}></Login> : (registered === false && loggedIn === false) ? 
+        {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey} signedPreKey={signedPreKey}></Login> : (registered === false && loggedIn === false) ? 
                                                        <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64} setUser={setUser} setIdentityKey={setIdentityKey} 
                                                        setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} isKeysLoaded={isKeysLoaded} deriveKeyFromPassword={deriveKeyFromPassword} decryptKeys={decryptKeys} encryptKeys={encryptKeys}></Register> : <></>}
       </div>

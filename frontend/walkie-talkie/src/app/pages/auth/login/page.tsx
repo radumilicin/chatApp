@@ -90,6 +90,16 @@ export default function Login(props: any) {
             } else {
                 console.log("Encrypted keys failed to load")
             }
+
+            // Fetch what's in the database
+            const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user.userId}`);
+            const dbKeys = await dbResponse.json();
+
+            console.log("🔍 COMPARISON:");
+            console.log(`🔍 Bob localStorage signedPreKey user ${user.userId}:`, props.signedPreKey.publicKey);
+            console.log(`🔍 Bob database signedPreKey user ${user.userId} :`, dbKeys.signedPreKey.public_key);
+            console.log("🔍 DO THEY MATCH?", props.signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
+
             // localStorage.setItem("jwt-token", user.) 
             return user
         } else {
@@ -97,6 +107,11 @@ export default function Login(props: any) {
             return {}
         }
     }
+
+    // useEffect(() => {
+    //     checkPreKeys()
+
+    // }, [props.signedPreKey])
 
     return (
         <div className="absolute left-[35%] top-[30%] w-[30%] h-[40%] " onKeyDown={async (e) => {
