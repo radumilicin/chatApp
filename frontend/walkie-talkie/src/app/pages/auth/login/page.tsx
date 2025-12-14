@@ -84,7 +84,8 @@ export default function Login(props: any) {
 
             console.log("Before loading keys after login")
 
-            if(props.loadKeysAfterLogin(user.userId, deviceKey)) {
+            const loaded = await props.loadKeysAfterLogin(user.userId, deviceKey)
+            if(loaded) {
                 console.log("Encrypted keys loaded")
             } else {
                 console.log("Encrypted keys failed to load")

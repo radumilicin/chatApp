@@ -81,6 +81,11 @@ export function useX3DH() {
       
       // ✅ Decrypt with device key (Uint8Array)
       const keys = decryptKeys(encryptedKeys, deviceKey);
+
+      console.log("🔵 BOB LOADED KEYS FROM LOCALSTORAGE:");
+      console.log("🔵 Bob's signed prekey public:", keys.signedPreKey.publicKey);
+      console.log("🔵 Bob's signed prekey private:", keys.signedPreKey.privateKey.substring(0, 20));
+    
       
       console.log("=============================")
       console.log("=== KEYS ARE SET IN STATE ===")
@@ -197,6 +202,9 @@ export function useX3DH() {
       //   publicKey: rawBundle.oneTimePreKey.publicKey
       // } : undefined
     };
+
+    console.log("🔴 TRANSFORMED BUNDLE:", JSON.stringify(bundle));
+    console.log("🔴 Bob's signed prekey we're using:", bundle.signedPreKey.publicKey);
  
     console.log("After calculating ephemeral key")
     console.log(`indentityKey = ${JSON.stringify(identityKey)}, ephemeralKey = ${JSON.stringify(ephemeralKey)}, bundle = ${JSON.stringify(bundle)}`)
