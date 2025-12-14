@@ -47,7 +47,7 @@ export class DoubleRatchet {
     theirSignedPreKey: string
   ): DoubleRatchet {
     // Generate our first DH ratchet key (using same method as X3DHClient)
-     const dhKeyPair = DoubleRatchet.generateKeyPair();
+    const dhKeyPair = DoubleRatchet.generateKeyPair();
   
     console.log('🔴 ALICE INIT - X3DH sharedSecret:', sharedSecret.substring(0, 20));
     console.log('🔴 ALICE INIT - Bob signed prekey:', theirSignedPreKey.substring(0, 20));

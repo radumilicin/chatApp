@@ -204,7 +204,7 @@ export function useX3DH() {
     };
 
     console.log("🔴 TRANSFORMED BUNDLE:", JSON.stringify(bundle));
-    console.log("🔴 Bob's signed prekey we're using:", bundle.signedPreKey.publicKey);
+    console.log(`🔴 Bob's signed prekey we're using with recipient_id ${recipientId} :`, bundle.signedPreKey.publicKey);
  
     console.log("After calculating ephemeral key")
     console.log(`indentityKey = ${JSON.stringify(identityKey)}, ephemeralKey = ${JSON.stringify(ephemeralKey)}, bundle = ${JSON.stringify(bundle)}`)
