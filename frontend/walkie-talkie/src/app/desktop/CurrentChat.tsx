@@ -219,7 +219,7 @@ export default function CurrentChat( props: any ) {
             setRatchet(currentRatchet);
 
             // Encrypt message
-            ({ciphertext, header} = currentRatchet.encrypt(msg)); 
+            ({ciphertext, header} = await currentRatchet.encrypt(msg)); 
             
             console.log("After encrypting message");
 
@@ -253,7 +253,7 @@ export default function CurrentChat( props: any ) {
             setRatchet(currentRatchet);
             
             // Encrypt with existing ratchet
-            ({ciphertext, header} = currentRatchet.encrypt(msg));
+            ({ciphertext, header} = await currentRatchet.encrypt(msg));
             
             // Save updated ratchet state
             ConversationManager.saveConversation(other_user, {

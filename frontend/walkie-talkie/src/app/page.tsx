@@ -559,44 +559,44 @@ export default function Home() {
 
     // Decrypt messages for all contacts asynchronously
   const decryptAllMessages = async () => {
-    
     const user_o = users.find((elem) => user === elem.id);
-    const updatedContacts = await Promise.all(
-      contacts.map(async (contact, idx) => {
-        try {
-
-          const contact_id = contact.sender_id === user ? contact.contact_id : contact.sender_id
-          // console.log(`Working on contact ${contact.id}, as user: ${user_o.username}`)
-
-          const decryptedMessages = await loadConversationMessages(
-            contact.message, 
-            contact.is_group, 
-            contact_id,
-            contact
-          );
-          
-          console.log(`Conversation messages loaded`)
-          console.log(`Exited working on contact ${contact.id}, as user: ${user}`)
-         
-          
-          return {
-            ...contact,
-            message: decryptedMessages
-          };
-        } catch (error) {
-          console.error(`Failed to decrypt messages for contact ${contact.id} with user: ${user_o.username}`, error);
-          return contact; // Return original contact if decryption fails
-        }
-      })
-    );
-
+    const updatedContacts = [];
     
-    console.log(`decrypted contacts should be set to = ${JSON.stringify(updatedContacts)}`)
-    setDecryptedContacts(updatedContacts)
+    // ✅ Process contacts ONE AT A TIME
+    for (const contact of contacts) {
+      try {
+        const contact_id = contact.sender_id === user ? contact.contact_id : contact.sender_id;
+        
+        console.log(`Working on contact ${contact.id}, as user: ${user_o?.username || user}`);
+        
+        const decryptedMessages = await loadConversationMessages(
+          contact.message, 
+          contact.is_group, 
+          contact_id,
+          contact
+        );
+        
+        console.log(`Conversation messages loaded`);
+        console.log(`Exited working on contact ${contact.id}, as user: ${user}`);
+        
+        updatedContacts.push({
+          ...contact,
+          message: decryptedMessages
+        });
+      } catch (error) {
+        console.error(`Failed to decrypt messages for contact ${contact.id} with user: ${user_o?.username}`, error);
+        updatedContacts.push(contact);
+      }
+    }
     
-    if(updatedContacts.length === contacts.length) return true;
-    else return false;
+    console.log("==================================\nAFTER SHOWING PLAINTEXT FOR ALL MESSAGES\n================================\n")
+    
+    console.log(`decrypted contacts should be set to = ${JSON.stringify(updatedContacts)}`);
+    setDecryptedContacts(updatedContacts);
+    
+    return updatedContacts.length === contacts.length;
   };
+
 
   useEffect(() => {
     if(contacts.length > 0 && userObj !== null) {
@@ -733,7 +733,16 @@ export default function Home() {
     
       if (response.ok) {
         const serverState = await response.json();
-        console.log('Loaded ratchet state from SERVER:', serverState);
+
+        if(users.length > 0) {
+          const user_o = users.find((elem) => elem.id === user)
+          console.log(`Loaded ratchet state from SERVER : ${user_o.username}`, serverState);
+          console.log(`🔍 RAW SERVER STATE ${user_o.username}:`, serverState);
+          console.log(`🔍 dh_receiving_key from DB ${user_o.username}:`, serverState.dh_receiving_key);
+          console.log(`🔍 dh_receiving_key type: ${user_o.username}`, typeof serverState.dh_receiving_key);
+          console.log(`🔍 dh_receiving_key length: ${user_o.username}`, serverState.dh_receiving_key?.length);
+        }
+
         
         conversation = {
           ratchetState: {
@@ -790,30 +799,49 @@ export default function Home() {
     // ✅ Load ratchet from DB
     var ratchet = await loadConversationRatchetStateDB(user, contact);
 
+    if(ratchet && user !== "" && user !== null) {
+      console.log(`Ratchet state exists in user: ${user}`, ratchet)
+      // console.log("Sending message number in "ratchet.ratchetState.
+    }
+
     // if(!ratchet || !ratchet.state) return existing_messages
 
     if(ratchet && ratchet.state && user_o){
-      console.log(`Ratchet ${user_o.username} with convo_id ${contact.id}: ${JSON.stringify(ratchet.getState())}`)
+      console.log(`Ratchet ${user_o.username} with convo_id ${contact.id} before decrypting messages: ${JSON.stringify(ratchet.getState())}`)
     }
 
     console.log(`Before for with user ${user} with messages.length: ${messages.length}`)
 
+    console.log(`==========\nmessage time:\n===========`)
     for (var i = 0; i < messages.length; i++) {
       console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
 
+      const messageTime = new Date(messages[i].timestamp);
+      const lastRead_sender = contact.last_message_read_by_sender;
+      const lastRead_receiver = contact.last_message_read_by_recipient;
+
+      console.log(`message time: ${messageTime},\n lastRead_sender: ${lastRead_sender},\n lastRead_receiver: ${lastRead_receiver},\n with username: ${user_o.username}`)
       // Skip already read messages
-      if(messages[i].sender_id === user){
-        if(user === contact.sender_id && messages[i].timestamp < contact.last_message_read_by_sender) {
-          console.log(`we already read the message: ${JSON.stringify(existing_messages[i])}`)
-          decryptedMessages.push(existing_messages[i])
-          continue;
-        }
-      } else {
-        if(user === contact.contact_id && messages[i].timestamp < contact.last_message_read_by_receiver) {
-          console.log(`we already read the message: ${JSON.stringify(existing_messages[i])}`)
-          decryptedMessages.push(existing_messages[i])
-          continue;
-        }
+       // I SENT the message → check sender read time
+      if (
+        messages[i].sender_id === contact.sender_id && user === messages[i].sender_id &&
+        lastRead_sender &&
+        messageTime <= lastRead_sender
+      ) {
+        console.log("we already read the message (recipient read)");
+        decryptedMessages.push(existing_messages[i]);
+        continue;
+      }
+
+      // Message sent by ORIGINAL RECIPIENT → check SENDER read time
+      if (
+        messages[i].sender_id === contact.contact_id && user === messages[i].recipient_id &&
+        contact.last_message_read_by_sender &&
+        messageTime <= contact.last_message_read_by_sender
+      ) {
+        console.log("we already read the message (sender read)");
+        decryptedMessages.push(existing_messages[i]);
+        continue;
       }
 
       // Handle first message
@@ -878,6 +906,9 @@ export default function Home() {
           } else {
             console.log(`We're decrypting as Bob (received message) with user = ${user_o.username}`)
             plaintext = await ratchet.decrypt(messages[i].ciphertext, messages[i].header);
+
+            console.log("checking Ratchet state after decryption in loadConvMessages")
+            await loadConversationRatchetStateDB(user, contact)
             // ✅ ratchet.decrypt() automatically saves updated state to DB
 
             if(user_o) console.log(`plaintext in user ${user_o.username} (receiver) : ${plaintext}`)
@@ -896,8 +927,11 @@ export default function Home() {
               "timestamp": messages[i].timestamp
             };
 
+
             let convo_after_dec = [...existing_messages, message_details];
             localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
+
+            console.log(`Convo after decrypting messages in receiver ${user_o.username}`, convo_after_dec)
           }
 
           if(user_o) console.log(`After decryption with plaintext = ${plaintext} with user ${user_o.username}`)
@@ -921,6 +955,8 @@ export default function Home() {
     }
 
     await ratchet.updateRatchetState()
+
+    console.log("Decrypted messages: ", decryptedMessages)
 
     return decryptedMessages;
   }

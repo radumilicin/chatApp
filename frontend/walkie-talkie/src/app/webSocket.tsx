@@ -180,17 +180,31 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           const updated_state = currArr.map((elem) => {
             if ((elem.sender_id === user && elem.contact_id === contact_id) || 
                 (elem.sender_id === contact_id && elem.contact_id === user)) {
-              return {
-                ...elem,
-                message: [...elem.message, msg]
-              };
+                
+                let msgs_contact = [...elem.message, msg]
+                localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(msgs_contact));
+                console.log(`🔵 localStorage conversation with user ${user} :`, msgs_contact);
+
+                return {
+                  ...elem,
+                  message: [...elem.message, msg]
+                };
             }
             return elem;
           });
           
           console.log('🔵 UPDATED state:', updated_state);
+
           return updated_state;
         });
+
+        const found_contact = contacts.find((elem) => (user === elem.sender_id && contact_id === elem.contact_id) || (contact_id === elem.sender_id && user === elem.contact_id))
+        if(found_contact) {
+          const ratchetState = await loadConversationRatchetStateDB(user, found_contact)
+          if(ratchetState) {
+            console.log("Ratchet state after sending message (webSocket): ", ratchetState);
+          }
+        }
         
         if (audioRef.current !== null && outgoingMessagesSoundsEnabled) {
           audioRef.current.play().catch(err => {
@@ -293,12 +307,27 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         }
       
         console.log(`After decryption with plaintext = ${plaintext}`);
-        
-        return {
-          sender_id: message.sender_id,
-          recipient_id: message.recipient_id,
-          message: plaintext,
-          timestamp: message.timestamp
+
+        if(plaintext) {
+          let message_details = {
+              "sender_id": message.sender_id,
+              "recipient_id": message.recipient_id,
+              "message": plaintext,
+              "timestamp": message.timestamp
+            };
+            
+            let existing_messages = localStorage.getItem(`conversation_${user}_${contact_id}`);
+            let convo_after_dec = [...existing_messages, message_details];
+            localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
+            
+            console.log("conversation in webSockets after decryption: " + localStorage.getItem(`conversation_${user}_${contact_id}`));
+          
+          return message_details;
+        } else return {
+          "sender_id": message.sender_id,
+          "recipient_id": message.recipient_id,
+          "message": "",
+          "timestamp": message.timestamp
         };
         
         // ❌ REMOVED all ConversationManager calls - DB handles it now
@@ -310,6 +339,8 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
     }
 
     await ratchet.updateRatchetState();
+
+    console.log("conversation in webSockets after decryption: " + localStorage.getItem(`conversation_${user}_${contact_id}`));
 
     return null;
   }

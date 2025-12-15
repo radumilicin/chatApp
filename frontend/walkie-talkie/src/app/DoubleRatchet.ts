@@ -99,14 +99,14 @@ export class DoubleRatchet {
   }
 
   // Encrypt a message
-  encrypt(plaintext: string): {
+  async encrypt(plaintext: string): Promise<{
     ciphertext: string;
     header: {
       dhPublicKey: string;
       messageNumber: number;
       previousChainLength: number;
     };
-  } {
+  }> {
     
     const time1 = new Date()
     console.log(`in user ${this.state.user} before encrypt sendMessageNumber: ` + this.state.sendMessageNumber + 
@@ -150,7 +150,7 @@ export class DoubleRatchet {
     this.state.sendingChainKey = nextChainKey;
     this.state.sendMessageNumber++;
 
-    this.updateRatchetState();
+    await this.updateRatchetState();
 
     const time = new Date()
     console.log(`in user ${this.state.user} after encrypt sendMessageNumber: ` + this.state.sendMessageNumber + 
@@ -174,6 +174,8 @@ export class DoubleRatchet {
                 "receiveMessageNumber: " + this.state.receiveMessageNumber +
                 ", time: " + time1.getHours() + ":" + time1.getMinutes() + ":" + time1.getSeconds());
 
+
+    const time_ = time1.getHours() + ":" + time1.getMinutes() + ":" + time1.getSeconds();
     // Parse header if it's a string
     const parsedHeader = typeof header === 'string' ? JSON.parse(header) : header;
     
@@ -194,10 +196,12 @@ export class DoubleRatchet {
       messageNumber: parsedHeader.messageNumber,
       previousChainLength: parsedHeader.previousChainLength
     }); 
+
+    console.log(`this.state.dhReceivingKey = ${this.state.dhReceivingKey}, parsedHeader.dhPublicKey = ${parsedHeader.dhPublicKey} at time: ${time_} with user: ${this.state.user} \n 🔍 Are they equal? ${parsedHeader.dhPublicKey === this.state.dhReceivingKey}`)
     
     // Check if we need to perform DH ratchet step
-    if (this.state.dhReceivingKey === null || parsedHeader.dhPublicKey !== this.state.dhReceivingKey) {
-      console.log('First message or DH keys changed - performing DH ratchet step');
+    if (this.state.dhReceivingKey === null  || parsedHeader.dhPublicKey !== this.state.dhReceivingKey) {
+      console.log(`First message or DH keys changed - performing DH ratchet step ${this.state.user}`);
       this.dhRatchetStep(parsedHeader);
     }
 
@@ -281,7 +285,8 @@ export class DoubleRatchet {
     messageNumber: number;
     previousChainLength: number;
   }): void {
-    console.log('🟢 dhRatchetStep START');
+
+    console.log(`🟢 dhRatchetStep START ${this.state.user}`);
     
     console.log('🔵 BOB RATCHET - X3DH sharedSecret (rootKey):', this.state.rootKey.substring(0, 20));
     console.log('🔵 BOB RATCHET - Alice DH public (from header):', header.dhPublicKey.substring(0, 20));
@@ -321,8 +326,10 @@ export class DoubleRatchet {
     this.state.rootKey = newRootKey2;
     this.state.sendingChainKey = sendingChainKey;
     this.state.sendMessageNumber = 0;
+   
+    const time = new Date()
     
-    console.log('🟢 dhRatchetStep END - Final state:', {
+    console.log(`🟢 dhRatchetStep END - Final state at ${time.getHours()}::${time.getMinutes()}::${time.getSeconds()}:`, {
       rootKey: this.state.rootKey.substring(0, 20),
       receivingChainKey: this.state.receivingChainKey.substring(0, 20),
       sendingChainKey: this.state.sendingChainKey.substring(0, 20)
