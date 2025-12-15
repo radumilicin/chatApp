@@ -817,30 +817,38 @@ export default function Home() {
       console.log(`message sender_id: ${messages[i].sender_id}, receiver_id: ${messages[i].recipient_id}`)
 
       const messageTime = new Date(messages[i].timestamp);
-      const lastRead_sender = contact.last_message_read_by_sender;
-      const lastRead_receiver = contact.last_message_read_by_recipient;
+      const lastRead_sender = new Date(contact.last_message_read_by_sender);
+      const lastRead_receiver = new Date(contact.last_message_read_by_recipient);
 
-      console.log(`message time: ${messageTime},\n lastRead_sender: ${lastRead_sender},\n lastRead_receiver: ${lastRead_receiver},\n with username: ${user_o.username}`)
+      /*
+        if message.sender_id 
+      */
+
+      console.log(`message time: ${messageTime}, type of message: ${typeof messageTime}\n lastRead_sender: ${lastRead_sender}, type of sender: ${typeof lastRead_sender}\n lastRead_receiver: ${lastRead_receiver}, type of receiver: ${typeof lastRead_receiver}\n with username: ${user_o.username}`)
       // Skip already read messages
        // I SENT the message → check sender read time
+      
+       // Message sent by original sender → original recipient may have read it
       if (
-        messages[i].sender_id === contact.sender_id && user === messages[i].sender_id &&
+        user === contact.sender_id &&
         lastRead_sender &&
         messageTime <= lastRead_sender
       ) {
-        console.log("we already read the message (recipient read)");
-        decryptedMessages.push(existing_messages[i]);
+        console.log(`already read by recipient: `, existing_messages[i].message);
+        decryptedMessages.push(existing_messages[i])
+        console.log("Decrypted messages after checking already read sender: ", decryptedMessages)
         continue;
       }
 
-      // Message sent by ORIGINAL RECIPIENT → check SENDER read time
+      // Message sent by original recipient → original sender may have read it
       if (
-        messages[i].sender_id === contact.contact_id && user === messages[i].recipient_id &&
-        contact.last_message_read_by_sender &&
-        messageTime <= contact.last_message_read_by_sender
+        user === contact.contact_id &&
+        lastRead_receiver &&
+        messageTime <= lastRead_receiver
       ) {
-        console.log("we already read the message (sender read)");
-        decryptedMessages.push(existing_messages[i]);
+        console.log(`already read by sender: `, existing_messages[i].message);
+        decryptedMessages.push(existing_messages[i])
+        console.log("Decrypted messages after checking already read sender: ", decryptedMessages)
         continue;
       }
 
@@ -1169,7 +1177,7 @@ export default function Home() {
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
                                                 identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts} 
-                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB}></CurrentChat> : <></>)
+                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate}></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>
