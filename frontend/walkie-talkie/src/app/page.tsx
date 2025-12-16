@@ -829,24 +829,16 @@ export default function Home() {
        // I SENT the message → check sender read time
       
        // Message sent by original sender → original recipient may have read it
-      if (
-        user === contact.sender_id &&
-        lastRead_sender &&
-        messageTime <= lastRead_sender
-      ) {
-        console.log(`already read by recipient: `, existing_messages[i].message);
+      if (user === contact.sender_id && lastRead_sender && messageTime <= lastRead_sender) {
+        console.log(`already read by sender: `, existing_messages[i].message);
         decryptedMessages.push(existing_messages[i])
         console.log("Decrypted messages after checking already read sender: ", decryptedMessages)
         continue;
       }
 
       // Message sent by original recipient → original sender may have read it
-      if (
-        user === contact.contact_id &&
-        lastRead_receiver &&
-        messageTime <= lastRead_receiver
-      ) {
-        console.log(`already read by sender: `, existing_messages[i].message);
+      if (user === contact.contact_id && lastRead_receiver && messageTime <= lastRead_receiver) {
+        console.log(`already read by recipient: `, existing_messages[i].message);
         decryptedMessages.push(existing_messages[i])
         console.log("Decrypted messages after checking already read sender: ", decryptedMessages)
         continue;
