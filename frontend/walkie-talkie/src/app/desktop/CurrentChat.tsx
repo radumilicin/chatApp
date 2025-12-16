@@ -288,8 +288,11 @@ export default function CurrentChat( props: any ) {
         };        
 
         console.log(`Sending message ${msg}`)
-        props.sendMessage(message);
-        props.fetchContacts()
+        await props.sendMessage(message);
+
+        await props.sendMessageStatusUpdate((message as any).timestamp, "read_by_sender", other_user)
+
+        await props.fetchContacts()
         
         // Update UI (allMessages is just for display)
         if(allMessages.length === 0) {
