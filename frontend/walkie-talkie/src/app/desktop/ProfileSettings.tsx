@@ -216,62 +216,66 @@ export default function ProfileSettings(props) {
                     }}
                 />
             </div>
-            <div className={`relative flex flex-col top-[0%] left-0 w-full h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
-                <div className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
-                    <div className={`relative flex flex-row ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 w-full h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center justify-start`}>Name</div>
-                    <div ref={divRef} className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
-                        {
-                        stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center md:indent-[20px] lg:indent-[30px] xl:indent-[40px] md:text-lg xl:text-xl font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
-                                                : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
-                                                            value={username} onChange={(e) => {
-                                                                setUsername(e.target.value)
-                                                            }}    
-                                                            onKeyDown={(e) => {
-                                                                if(e.key === "Enter"){
-                                                                    changeUsername(username)
-                                                                    setStateUsername("fixed")
-                                                                }
-                                                            }}></input>
-                                                
-                        }
-                        <div className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {setStateUsername("input")}}>
-                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
-                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
+            <div className={`relative flex flex-col top-[5%] left-0 w-full h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
+                <div className="absolute top-0 h-full w-full">
+                    <div className="flex flex-col w-full h-full items-center"> 
+                        <div className="relative flex flex-col top-[10%] w-[80%] h-[30%]">
+                            <div className={`relative flex flex-row ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] top-[10%] left-0 w-full h-[30%] md:text-lg font-medium items-center justify-start`}>Name</div>
+                            <div ref={divRef} className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
+                                {
+                                stateUsername === "fixed" ? <p className={`flex flex-row w-[80%] h-full items-center md:indent-[20px] text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
+                                                        : <input className={`flex flex-row w-[80%] h-full items-center text-base font-medium outline-none border-b-2 border-black bg-transparent`}
+                                                                    value={username} onChange={(e) => {
+                                                                        setUsername(e.target.value)
+                                                                    }}    
+                                                                    onKeyDown={(e) => {
+                                                                        if(e.key === "Enter"){
+                                                                            changeUsername(username)
+                                                                            setStateUsername("fixed")
+                                                                        }
+                                                                    }}></input>
+                                                        
+                                }
+                                <div className={`flex flex-row w-[20%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {setStateUsername("input")}}>
+                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
+                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ref={divRef2} className="relative flex flex-col top-[10%] w-[80%] h-[30%]">
+                            <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] top-[10%] left-0 h-[30%] md:text-lg lg:text-xl font-medium items-center`}>About</div>
+                            <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
+                                {
+                                    stateAbout === "fixed" ? (
+                                        <p className={`flex flex-row w-[70%] h-full items-center md:text-sm lg:text-base md:indent-[20px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
+                                    ) : (
+                                        <input
+                                            className="flex flex-row w-[70%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
+                                            value={about}
+                                            onChange={(e) => setAbout(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    changeAbout(about);
+                                                    setStateAbout("fixed");
+                                                }
+                                            }}
+                                        />
+                                    )
+                                }
+                                <div
+                                    className={`flex flex-row w-[30%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
+                                    onClick={() => setStateAbout("input")}
+                                >
+                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
+                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div ref={divRef2} className="relative flex flex-col top-[10%] w-[60%] h-[30%]">
-                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 md:indent-[20px] lg:indent-[30px] xl:indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>About</div>
-                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
-                        {
-                            stateAbout === "fixed" ? (
-                                <p className={`flex flex-row w-[50%] h-full items-center md:text-lg xl:text-xl md:indent-[20px] lg:indent-[30px] xl:indent-[40px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
-                            ) : (
-                                <input
-                                    className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
-                                    value={about}
-                                    onChange={(e) => setAbout(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            changeAbout(about);
-                                            setStateAbout("fixed");
-                                        }
-                                    }}
-                                />
-                            )
-                        }
-                        <div
-                            className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
-                            onClick={() => setStateAbout("input")}
-                        >
-                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
-                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                            
+                    
+                </div>      
             </div>
         </div>
     );
