@@ -271,7 +271,7 @@ export function MenuDropdown (props) {
 
 export function OtherOptions (props) {
     return (
-        <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
+        <div className={`absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
             {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
                 </div>} 
@@ -681,7 +681,7 @@ export function Contacts( props: any) {
 
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
+        <div className={`absolute left-0 top-[16%] w-full h-[84%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
                     
@@ -747,8 +747,9 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
-                                        {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs lg:text-sm xl:text-base 
+                                            ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis`}>
+                                        {lastMessage.hasOwnProperty("image_id") || isBase64(lastMessage) ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
@@ -760,7 +761,7 @@ export function Contacts( props: any) {
                                         }
                                     </div>
                                 </div>
-                        </div>
+                            </div>
                     </div>
                     </div> : 
                         // otherwise group conversation so check if the members is not null
