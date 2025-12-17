@@ -97,7 +97,8 @@ export function CurrUserDiv (props: any) {
             <div className="relative flex flex-col w-[75%] h-full">
                 {!user && <div className="relative flex flex-row h-[50%]"></div>} 
                 {user && <div className={`relative flex flex-row justify-start items-end h-[50%] text-base xl:text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.username}</div>}
-                {user && <div className={`relative flex flex-row justify-start items-start h-[50%] text-xs lg:text-sm xl:text-base font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.about}</div>}
+                {user && <div className={`relative flex flex-row justify-start items-start h-[50%] w-[90%] text-xs lg:text-sm xl:text-base 
+                                            font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} overflow-x-auto whitespace-nowrap text-ellipsis`}>{user.about}</div>}
             </div>
         </div>
     );

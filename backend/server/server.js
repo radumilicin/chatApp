@@ -697,7 +697,7 @@ wss.on('connection', (ws, req) => {
 
       // Ensure the message has the required fields
       var { sender_id, recipient_id, contact_id, ephemeralPublicKey, identityKey, oneTimePreKeyId, 
-            ciphertext, ciphertext_sender, header, timestamp } = parsedMessage;
+            ciphertext, ciphertext_sender, message, header, timestamp } = parsedMessage;
       // console.log("sender_id: " + sender_id + "\nrecipient_id: " + recipient_id + "\nmessage:" + message + "\ntimestamp:" + timestamp)
       if (!sender_id || !recipient_id || !timestamp || !ciphertext || !ciphertext_sender) {
         ws.send(JSON.stringify({ error: 'Invalid message format' }));

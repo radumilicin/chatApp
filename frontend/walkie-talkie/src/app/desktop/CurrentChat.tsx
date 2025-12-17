@@ -282,7 +282,7 @@ export default function CurrentChat( props: any ) {
             oneTimePreKeyId: oneTimePreKeyId, 
             ciphertext: ciphertext,
             ciphertext_sender: ciphertext_sender,
-            // message: msg, // Keep plaintext for immediate display
+            message: msg, // Keep plaintext for immediate display
             header: header,
             timestamp: new Date().toISOString(),
         };        
