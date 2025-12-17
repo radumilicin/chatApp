@@ -1123,7 +1123,8 @@ export function Groups(props) {
         <div className={`absolute left-0 top-0 w-full h-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 
+                                    ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] left-0 indent-[20px] h-full text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
@@ -1134,11 +1135,11 @@ export function Groups(props) {
                     <div className="absolute w-full h-full">
                     <div className="relative w-full h-full flex flex-col justify-center items-center">
                         <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" /*onClick={() => {document.getElementById("groupImageInput")?.click()}}*/ onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
-                        {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-60'}`}/>}
+                        {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'blur-sm' : 'opacity-60'}`}/>}
                         {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
                         <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
                             {hoveringGroupIcon && <img src="/camera-icon.png" className="relative flex flex-row w-[60%] h-[60%] justify-center items-center"/>}
-                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] text-center justify-center items-center">Upload group picture..</div>}
+                            {hoveringGroupIcon && <div className={`relative top-[15%] flex flex-row w-full h-[40%] text-center justify-center items-center text-black`}>Upload group picture..</div>}
                         </div>
                         {/* Hidden file input */}
                         <input
@@ -1203,7 +1204,8 @@ export function Groups(props) {
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
                 <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 
+                                    ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Add group members</div>
@@ -1303,7 +1305,7 @@ export function Groups(props) {
                 </div>))}
             </div>}
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
-                <div className={`relative flex flex-row justify-center items-center w-[10%] h-[60%] hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"} hover:rounded-xl hover:cursor-pointer rounded-xl`}>
+                <div className={`relative flex flex-row justify-center items-center w-[10%] h-[60%] hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer rounded-xl`}>
                     <img
                         src={`${finishingSettingUpGroup ? (props.themeChosen === "Dark" ? '/forward-nobg.png' : "forward-black.png") : (props.themeChosen === "Dark" ? './plus-sign-2.png' : './plus-icon-black.png')}`}
                         className="h-[40%] flex items-center"
