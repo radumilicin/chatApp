@@ -406,7 +406,7 @@ export default function CurrentChat( props: any ) {
     }, [decryptedContact])
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg  border-2 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300"}`}>
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg border-y-4 border-r-4 border-l-[3px] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300"}`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[10%] h-[100%] justify-end items-center">
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
