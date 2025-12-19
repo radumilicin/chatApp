@@ -51,7 +51,7 @@ export function ProfilePicturePrivacy(props: any) {
             onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}>
             <div className="relative flex flex-col w-[80%] h-full">
                 <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base items-end font-medium`}>Profile picture</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm xl:text-base`}>{props.visibilityProfilePic}</div>
+                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs lg:text-sm`}>{props.visibilityProfilePic}</div>
             </div>
             <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
                 <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "next-arrow-black-nobg.png"}`} className="w-2 h-4 xl:w-3 xl:h-5"></img>
