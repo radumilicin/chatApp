@@ -188,7 +188,7 @@ export default function ProfileInfo( props ) {
     }
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-2 border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hidden`}>
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-y-4 border-r-4 border-x-[3px] border-[#0D1317] rounded-r-xl flex-col overflow-y-scroll scrollbar-hidden`}>
             <div className={`relative left-0 h-[60%] w-[full] flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : ""} `}>
                 <div className="relative left-0 flex h-[15%] w-full flex-row items-center">
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
@@ -640,7 +640,7 @@ function OptionsChat(props) {
         <div className={`relative left-0 top-[0%] h-[25%] w-full flex-col ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } overflow-scroll scrollbar-hide`}>
             {props.contact.blocked === false && <div className={`relative flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {blockContact('block'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./denied2.png" className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 aspect-square"></img>
+                    <img src="./denied2.png" className="w-6 h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="absolute text-base lg:text-lg xl:text-xl text-red-500 font-semibold font-sans">Block user</div>
@@ -648,7 +648,7 @@ function OptionsChat(props) {
             </div>}
             {props.contact.blocked === true && <div className={`flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {blockContact('unblock'); }}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./unblock2.png" className="w-10 h-10 xl:w-12 xl:h-12 aspect-square"></img>
+                    <img src="./unblock2.png" className="w-6 h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="text-base lg:text-lg xl:text-xl text-green-700 font-semibold font-sans">Unblock user</div>
@@ -656,7 +656,7 @@ function OptionsChat(props) {
             </div>}
             <div className={`flex flex-row w-full h-[50%] ${props.themeChosen === "Dark" ? "hover:bg-slate-300 hover:bg-opacity-10" : "hover:bg-gray-500 hover:bg-opacity-30"} hover:cursor-pointer`} onClick ={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
                 <div className="flex flex-row h-full w-[15%] items-center justify-center">
-                    <img src="./trash-icon-red.png" className="w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 aspect-square"></img>
+                    <img src="./trash-icon-red.png" className="w-6 h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 aspect-square"></img>
                 </div>
                 <div className="flex flex-row h-full w-[85%] items-center justify-start">
                     <div className="text-base lg:text-lg xl:text-xl text-red-500 font-semibold font-sans">Delete chat</div>

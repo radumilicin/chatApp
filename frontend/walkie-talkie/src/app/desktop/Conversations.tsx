@@ -200,7 +200,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
@@ -292,25 +292,28 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-2 ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99]" : "bg-gray-500 bg-opacity-60 border-gray-500" } `}>
-            <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                    <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
-                </div>
-                <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className={`absolute left-0 top-0 w-full h-full outline-none ${props.themeChosen === "Dark" ? "text-white" : "text-black"} bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl`} 
-                        value={props.currentSearch}
-                        // placeholder='Add a contact..' // replace later
-                        onChange={async (e) => {props.setCurrSearch(e.target.value); 
-                                                if(props.addContact) {
-                                                    console.log("Filtering users in Search")
-                                                    props.filterUsers(e.target.value)
-                                                }
-                                                else {
-                                                    props.filterContacts(e.target.value)
-                                                }}} // Update `currentSearch`
-                    >
-                    </input>
+        
+        <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl border-[2px] ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"}`}>
+                <div className="relative top-0 left-0 h-full w-full flex flex-row">
+                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
+                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
+                    </div>
+                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none ${props.themeChosen === "Dark" ? "text-white" : "text-black"} bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl`} 
+                            value={props.currentSearch}
+                            // placeholder='Add a contact..' // replace later
+                            onChange={async (e) => {props.setCurrSearch(e.target.value); 
+                                                    if(props.addContact) {
+                                                        console.log("Filtering users in Search")
+                                                        props.filterUsers(e.target.value)
+                                                    }
+                                                    else {
+                                                        props.filterContacts(e.target.value)
+                                                    }}} // Update `currentSearch`
+                        >
+                        </input>
+                    </div>
                 </div>
             </div>
         </div>
@@ -425,7 +428,7 @@ export function UsersToAddToContacts (props : any) {
     }
 
     return ( 
-        <div className="absolute left-0 top-[16%] w-full h-[84%]">
+        <div className={`absolute left-0 top-[16%] w-full h-[84%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
                 { props.filteredUsers !== null && props.filteredUsers.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
@@ -1117,10 +1120,11 @@ export function Groups(props) {
     } 
 
     return (
-        <div className="absolute left-0 top-0 w-full h-full">
+        <div className={`absolute left-0 top-0 w-full h-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 
+                                    ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] left-0 indent-[20px] h-full text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
@@ -1131,11 +1135,11 @@ export function Groups(props) {
                     <div className="absolute w-full h-full">
                     <div className="relative w-full h-full flex flex-col justify-center items-center">
                         <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" /*onClick={() => {document.getElementById("groupImageInput")?.click()}}*/ onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
-                        {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-60'}`}/>}
+                        {!newGroupImage && <img src="/group_icon-nobg.png" className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'blur-sm' : 'opacity-60'}`}/>}
                         {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
                         <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
                             {hoveringGroupIcon && <img src="/camera-icon.png" className="relative flex flex-row w-[60%] h-[60%] justify-center items-center"/>}
-                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] text-center justify-center items-center">Upload group picture..</div>}
+                            {hoveringGroupIcon && <div className={`relative top-[15%] flex flex-row w-full h-[40%] text-center justify-center items-center text-black`}>Upload group picture..</div>}
                         </div>
                         {/* Hidden file input */}
                         <input
@@ -1200,7 +1204,8 @@ export function Groups(props) {
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
                 <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
+                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 
+                                    ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
                     </div>
                     <div className="flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Add group members</div>
@@ -1227,31 +1232,35 @@ export function Groups(props) {
                     </div>
                 </div>
             </div>}
-            {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
-                <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center w-[80%] overflow-y-scroll scrollbar-hide">
-                {props.contactsInNewGroup.map((contact, idx) => (
-                    <div key={idx} className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
-                        <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden">{getNameUser(contact)}</div>
-                        <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
-                            <img
-                                src="./xicon.png"
-                                className="w-6 h-6"
-                                onClick={() => {
-                                    props.removeContactFromGroup(contact);
-                                setToRemoveFromAddingToGroup(contact)
-                                }}
-                            ></img>
-                        </div>
+            {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 && 
+                <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
+                    <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center justify-center w-[80%] overflow-y-scroll scrollbar-hide">
+                        {props.contactsInNewGroup.map((contact, idx) => (
+                            <div key={idx} className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
+                                <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden">
+                                    {getNameUser(contact)}
+                                </div>
+                                <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
+                                    <img
+                                        src="./xicon.png"
+                                        className="w-6 h-6 cursor-pointer"
+                                        onClick={() => {
+                                            props.removeContactFromGroup(contact);
+                                            setToRemoveFromAddingToGroup(contact);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
                 </div>
-            </div>}
-            {!finishingSettingUpGroup && <div className={`relative flex top-[2%] flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[58%]' : 'h-[73%]' } justify-center items-center overflow-y-scroll`}>
+            }
+            {!finishingSettingUpGroup && <div className={`relative flex top-[2%] flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[58%]' : 'h-[73%]' } justify-start items-center overflow-y-scroll`}>
                 { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}
+                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-xl hover:bg-gray-500 hover:cursor-pointer ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}
                     onClick={async () => { await props.setContactsInNewGroup([...props.contactsInNewGroup, element]); console.log("clicked")}}
                 >
                     <div className="relative flex w-[15%] h-full justify-center items-center">
@@ -1296,14 +1305,17 @@ export function Groups(props) {
                 </div>))}
             </div>}
             <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
-                <div className={`relative flex flex-row justify-center items-center w-[10%] h-[60%] hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"} hover:rounded-xl hover:cursor-pointer rounded-xl`}>
+                <div className={`relative flex flex-row justify-center items-center w-[10%] h-[60%] hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer rounded-xl`}>
                     <img
                         src={`${finishingSettingUpGroup ? (props.themeChosen === "Dark" ? '/forward-nobg.png' : "forward-black.png") : (props.themeChosen === "Dark" ? './plus-sign-2.png' : './plus-icon-black.png')}`}
                         className="h-[40%] flex items-center"
                         onClick={
                             async () => 
                                 { 
-                                    if(!finishingSettingUpGroup) setFinishingSettingUpGroupAsync(true); 
+                                    if(!finishingSettingUpGroup) {
+                                        console.log("contactsInNewGroup size: ", props.contactsInNewGroup.length)
+                                        if(props.contactsInNewGroup.length > 0) setFinishingSettingUpGroupAsync(true); 
+                                    }
                                     else {
                                         props.fetchContacts();
                                         const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === groupName)})

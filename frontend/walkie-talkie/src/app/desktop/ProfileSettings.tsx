@@ -137,7 +137,7 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} flex flex-col`}>
             <div className={`absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"}  hover:rounded-xl hover:cursor-pointer`}
                         onClick={() => {
@@ -157,23 +157,23 @@ export default function ProfileSettings(props) {
             </div>
             <div className={`absolute left-0 top-[6%] w-full h-[44%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
                 <div
-                    className={`relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center hover:opacity-50 rounded-full`}
+                    className={`relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center rounded-full`}
                     onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
                     onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
                 >
                     {currImageData.data !== "" ? (
                         <img
                             src={`data:image/jpeg;base64,${currImageData.data}`}
-                            className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 hover:blur-sm rounded-full border-8 border-gray-600"
+                            className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600 ${hoveredProfilePic ? 'blur-sm' : ""}`}
                         />
                     ) : (
-                        <img src="./profilePic2.png" className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 hover:blur-sm rounded-full border-8 border-gray-600"></img>
+                        <img src="./profilePic2.png" className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600  ${hoveredProfilePic ? 'blur-sm' : ""}`}></img>
                     )}
 
                     {hoveredProfilePic && (
                         <div className="absolute h-[70%] w-[70%] flex flex-col items-center justify-center z-20">
                             <img src="./camera-icon-white2.png" className="h-20 w-20" />
-                            <p className="h-[30%] w-[100%] text-white text-center">
+                            <p className="h-[30%] w-[100%] text-white font-medium text-center">
                                 Change profile picture
                             </p>
                         </div>
@@ -254,7 +254,7 @@ export default function ProfileSettings(props) {
                             <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
                                 {
                                     stateAbout === "fixed" ? (
-                                        <p className={`flex flex-row w-[80%] h-full items-center md:text-sm lg:text-base md:indent-[20px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
+                                        <p className={`flex flex-row w-[80%] h-full items-center md:text-sm lg:text-base md:indent-[20px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} overflow-hidden whitespace-nowrap`}>{getCurrUser().about}</p>
                                     ) : (
                                         <input
                                             className="flex flex-row w-[80%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"

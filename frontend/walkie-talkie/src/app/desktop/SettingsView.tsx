@@ -5,9 +5,9 @@ export default function SettingsView(props) {
     const [searchedSettings, setSearchedSetting] = useState("");
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} flex flex-col`}>
+            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+                <div className={`relative indent-[30px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
                             props.setPressedSettings(false); 
                             props.setPressProfile(false); 
@@ -23,9 +23,11 @@ export default function SettingsView(props) {
 
             <SearchBar searchedSetting={searchedSettings} setSearchedSetting={setSearchedSetting} themeChosen={props.themeChosen}></SearchBar>
 
-            <div className="absolute left-0 w-full top-[20%] h-[70%] flex flex-col items-center">
+            <div className={`absolute left-0 w-full top-[20%] h-[80%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images} themeChosen={props.themeChosen}></CurrUserDiv>
+                    <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} 
+                                setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance} 
+                                setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress}></CurrUserDiv>
                     <AccountOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} 
                         setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress} themeChosen={props.themeChosen}></AccountOption>
                     <PrivacyOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications}
@@ -78,16 +80,25 @@ export function CurrUserDiv (props: any) {
     }, [props.curr_user])
 
     return (
-        <div className={`relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`}>
+        <div className={`relative flex flex-row justify-center items-center left-[2%] w-[96%] h-[15%] rounded-xl hover:bg-gray-500 
+            ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:cursor-pointer`} onClick={() => {
+                            props.setPressedSettings(false); 
+                            props.setPressProfile(true); 
+                            props.setProfilePicPrivPress(false); 
+                            props.setStatusPrivPress(false);
+                            props.setDisappearingMessagesPressed(false);
+                            props.setBlockedContactsPressed(false);
+                        }}>
             <div className="relative flex flex-row w-[25%] h-[70%] justify-center items-center">
-                {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-14 h-14 hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
-                                               : <img src="./profilePic2.png" className="flex w-14 h-14 hover:bg-gray-500 rounded-full"></img>
+                {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-14 h-14 rounded-full" onClick={() => {}}></img>
+                                               : <img src="./profilePic2.png" className="flex w-14 h-14 rounded-full"></img>
                 }
             </div>
             <div className="relative flex flex-col w-[75%] h-full">
                 {!user && <div className="relative flex flex-row h-[50%]"></div>} 
-                {user && <div className={`relative flex flex-row items-end h-[50%] text-base xl:text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.username}</div>}
-                {user && <div className={`relative flex flex-row items-center h-[40%] text-xs lg:text-sm xl:text-base font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.about}</div>}
+                {user && <div className={`relative flex flex-row justify-start items-end h-[50%] text-base xl:text-lg font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>{user.username}</div>}
+                {user && <div className={`relative flex flex-row justify-start items-start h-[50%] w-[90%] text-xs lg:text-sm xl:text-base 
+                                            font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} overflow-x-auto whitespace-nowrap text-ellipsis`}>{user.about}</div>}
             </div>
         </div>
     );
@@ -199,20 +210,22 @@ export function LogOutOption( props: any ){
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-[1px] ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"}`}>
-            <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                    <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
-                </div>
-                <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-white' : 'text-gray-600 placeholder:text-gray-600'}`} 
-                        value={props.searchedSetting}
-                        placeholder="Search for a setting.."
-                        onChange={async (e) => {
-                            props.setSearchedSetting(e.target.value)                            
-                        }} 
-                    >
-                    </input>
+        <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl border-[2px] ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"}`}>
+                <div className="relative top-0 left-0 h-full w-full flex flex-row">
+                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
+                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
+                    </div>
+                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-white' : 'text-gray-600 placeholder:text-gray-600'}`} 
+                            value={props.searchedSetting}
+                            placeholder="Search for a setting.."
+                            onChange={async (e) => {
+                                props.setSearchedSetting(e.target.value)                            
+                            }} 
+                        >
+                        </input>
+                    </div>
                 </div>
             </div>
         </div>
