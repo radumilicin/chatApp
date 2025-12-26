@@ -1124,8 +1124,8 @@ export function Groups(props) {
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
                     <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 
-                                    ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+                                    hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center max-h-[70%] aspect-square ${props.themeChosen === "Dark" ? "hover:bg-opactity-40" : "hover:bg-opacity-30"}`}></img>
                     </div>
                     <div className="flex w-[80%] left-0 indent-[20px] h-full text-lg xl:text-xl font-semibold flex-col justify-center items-start text-white font-sans">Create group</div>
                 </div>
