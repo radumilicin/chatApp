@@ -48,7 +48,7 @@ export function Settings(props) {
             <div className="w-full h-[20%] top-[60%] hover:rounded-bl-xl relative flex flex-col items-center justify-center hover:cursor-pointer" onClick={() => {props.setPressProfile(true)}}>
                 <div className={`flex w-[70%] h-[70%] justify-center items-center flex-col hover:bg-gray-500 ${props.themeChosen === "Light" ? "hover:bg-opacity-30" : "hover:bg-opacity-40"} rounded-2xl`}>
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-[70%] h-[70%] hover:bg-gray-500 rounded-full" onClick={() => {}}></img>
-                                               : <img src="./profilePic2.png" className="flex w-[70%] h-[70%] rounded-full"></img>
+                                               : <img src={`${props.themeChosen === "Dark" ? "./profilePic2.png" : "./profilePic_black.png"}`} className="flex w-[70%] h-[70%] rounded-full"></img>
                 }
                 </div>
             </div>

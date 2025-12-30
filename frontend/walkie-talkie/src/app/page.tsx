@@ -471,10 +471,10 @@ export default function Home() {
       
       if(window.innerWidth < window.innerHeight && window.innerWidth < 760) {
         setDisplay("Mobile")
-        console.log("display set to mobile")
+        console.log(`display set to mobile`) // , with decryptedContacts: ${JSON.stringify(decryptedContacts)}`)
       } else {
         setDisplay("Desktop")
-        console.log("desktop set to mobile")
+        console.log("desktop set to desktop")
       }
     }
     
@@ -1151,8 +1151,10 @@ export default function Home() {
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} setCurrContact={setCurrContact}></ProfileInfoVertical> 
                                     :
             curr_contact !== null && profileInfo === false && display === "Mobile" ? <CurrentChatVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
-                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} 
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} setCurrContact={setCurrContact}></CurrentChatVertical> 
+                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
+                                                identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts} 
+                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate}></CurrentChatVertical> 
                                     :
             (display === "Desktop" ? <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
