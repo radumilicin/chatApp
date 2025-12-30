@@ -138,8 +138,8 @@ export default function ProfileSettings(props) {
 
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} flex flex-col`}>
-            <div className={`absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "bg-opacity-30"}  hover:rounded-xl hover:cursor-pointer`}
+            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+                <div className={`relative indent-[30px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
                             props.setPressPrivacy(false)
                             props.setPressNotifications(false)
@@ -152,7 +152,7 @@ export default function ProfileSettings(props) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}></img>
                 </div>
             </div>
             <div className={`absolute left-0 top-[6%] w-full h-[44%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>

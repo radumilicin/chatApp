@@ -6,9 +6,11 @@ import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettingsVertical';
 
 export default function ConversationsVertical( props : any) {
+   
     
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);
+    const [filteredDecryptedContacts, setFilteredDecryptedContacts] = useState([]);
     const [menuPress, setMenuPress] = useState(false)
     const [newChatPress, setNewChatPress] = useState(false)
     const [newGroupPress, setNewGroupPress] = useState(false)
@@ -26,7 +28,18 @@ export default function ConversationsVertical( props : any) {
             filterContacts(currentSearch)
             // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
         }
+        
     }, [props.contacts, currentSearch])
+    
+    useEffect(() => { 
+        console.log(`decrypted contacts in conversations mobile: ${JSON.stringify(props.decryptedContacts)}`)
+        if(props.decryptedContacts !== null) {
+            console.log(`decrypted contacts in conversations mobile 2: ${JSON.stringify(props.decryptedContacts)}`)
+            filterDecryptedContacts(currentSearch)
+            // console.log("filteredContacts = " + JSON.stringify(filteredContacts))
+        }
+
+    }, [props.decryptedContacts, currentSearch])
 
     useEffect(() => {
         if(logOut === true) {
@@ -45,24 +58,29 @@ export default function ConversationsVertical( props : any) {
     }, [props.settingsPressed, props.pressedProfile])
 
     async function logOutNow() {
-
         try {
             const res = await fetch(`http://localhost:3002/logout`, {
-                method: 'GET',
-                credentials: "include",
+            method: 'GET',
+            credentials: "include",
             });
             
-            if(res.ok) {
-                props.updateUsers([]);
-                props.updateContacts([]);
-                props.updateImages([]);
-                props.setUser(-1);
+            if (res.ok) {
+            props.updateUsers([]);
+            props.updateContacts([]);
+            props.updateImages([]);
+            props.setUser("");
+            props.setDecryptedContacts([]);
+            setFilteredDecryptedContacts([]);
+            props.hasDecryptedInitial.current = false;
+            } else {
+            console.error('Logout failed with status:', res.status);
             }
-
         } catch (err) {
-            console.error(JSON.stringify(err))
+            console.error('Logout error:', err); // ✅ Don't use JSON.stringify on Error objects
+            console.error('Error message:', err.message);
+            console.error('Error stack:', err.stack);
         }
-    }
+        }
 
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -109,6 +127,46 @@ export default function ConversationsVertical( props : any) {
         setFilteredContacts(filteredContactsOrderedByTimestamp)
     }
 
+    function filterDecryptedContacts(val : string) { 
+        console.log(`In filteredContacts with decrypted contacts mobile = ${JSON.stringify(props.decryptedContacts)}`)     
+        // console.log("users = " + JSON.stringify(props.users) + " type users = " + typeof(props.users))     
+        // console.log("contacts = " + JSON.stringify(props.contacts))  
+        
+        const filteredContactsUnordered = props.decryptedContacts.filter((contact) => {
+            if(contact.is_group === false) {
+                // Find the OTHER user in the contact (not the current user)
+                const otherUserId = contact.sender_id === props.curr_user 
+                    ? contact.contact_id 
+                    : contact.sender_id;
+            
+                const user = props.users.find((user) => user.id === otherUserId);
+            
+                return user?.username.includes(val); // Safely access `username` using optional chaining
+            } else {
+                return contact.group_name.includes(val);
+            }
+        });
+
+        /* GET id and timestamp of all contacts and sort based on descending timestamp */ 
+        /* Sort contacts based on the timestamp of the last message (descending - most recent first) */
+        const filteredContactsOrderedByTimestamp = filteredContactsUnordered.sort((a, b) => {
+            // Get the last message timestamp for contact a
+            const lastMessageA = a.message && a.message.length > 0 
+                ? new Date(a.message[a.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Get the last message timestamp for contact b
+            const lastMessageB = b.message && b.message.length > 0 
+                ? new Date(b.message[b.message.length - 1].timestamp).getTime()
+                : 0; // If no messages, use 0 (will be sorted to the end)
+            
+            // Sort in descending order (most recent first)
+            return lastMessageB - lastMessageA;
+        });
+
+        setFilteredDecryptedContacts(filteredContactsOrderedByTimestamp)
+    }
+
     // function for adding contacts
     async function filterUsers(val: string) {
         const users_matching_filter = props.users.filter(
@@ -152,7 +210,8 @@ export default function ConversationsVertical( props : any) {
                                              setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings}></MenuDropdownVertical>}
             {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen}></SearchBar>}
             {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
-                                                        setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
+                                                        setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}
+                                                        decryptedContacts={props.decryptedContacts} filteredDecryptedContacts={filteredDecryptedContacts}></Contacts>}
             {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} addContact={addContact} filteredContacts={filteredContacts}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
@@ -637,7 +696,7 @@ export function Contacts( props: any) {
     return (
         <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
-                { props.filteredContacts !== null && props.filteredContacts.map((element: any, idx: number) => {
+                { props.filteredContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
                     const lastMessage = getLastMessage(element, idx);
                     const time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)

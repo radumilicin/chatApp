@@ -444,8 +444,8 @@ export default function CurrentChat( props: any ) {
                     <div className="absolute left-0 top-[30%] h-[40%] w-full flex flex-col justify-center items-center gap-4">
                         <img src={`${props.themeChosen === "Dark" ? "walkie-talkie-white.png" : "Walkie-talkie.png"}`} className="w-[200px] h-[200px]"></img>
                         <div className="flex flex-col justify-center items-center">
-                            <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "text-white" : ""} font-sans`}>Walk-n-talk</div>
-                            <div className={`text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with whoever you want</div>
+                            <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} font-sans`}>Walk-n-talk</div>
+                            <div className={`md:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with whoever you want</div>
 
                         </div>
                     </div>
@@ -557,18 +557,20 @@ export default function CurrentChat( props: any ) {
                     })}
             </div>}
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
-            {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+            {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
                 <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
                             border-2 flex flex-row`}>
-                    <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] hover:bg-gray-500 ml-2 rounded-2xl" >
+                    <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] ml-2 rounded-2xl" >
                         {/* Wrapper for Image and Input */}
                         <div className="relative flex items-center justify-center w-full h-full">
-                            <img
-                                src="/attach2-1.png"
-                                className="h-[50%] aspect-square hover:bg-slate-500 cursor-pointer z-0"
-                                alt="Upload"
-                                // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
-                            />
+                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center ${props.themeChosen === "Dark" ? "hover:bg-gray-500 hover:bg-opacity-40" : "hover:bg-slate-300"} rounded-xl`}>
+                                <img
+                                    src={`${props.themeChosen === "Dark" ? "/attach2-1.png" : "attach-black.png"}`}
+                                    className="absolute w-6 h-6 aspect-square cursor-pointer z-20"
+                                    alt="Upload"
+                                    // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
+                                />
+                            </div>
                             <input 
                                 type="file" accept="image/*"
                                 className="absolute top-0 left-0 w-full z-10 h-full opacity-0 cursor-pointer"
@@ -619,9 +621,12 @@ export default function CurrentChat( props: any ) {
                                     else handleSendMessage(text); 
                                     setText("")}}}></input>
                     </div>
-                    <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center " >
-                        <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl mr-2 w-full hover:bg-slate-500" onClick={() => {handleSendMessage(text); setText("")}}>
-                            <img src="/sendIcon3-1.png" className="h-[50%] max-w-[60%]"></img>
+                    <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center mr-2" >
+                        <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl w-full" onClick={() => {handleSendMessage(text); setText("")}}>
+                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center ${props.themeChosen === "Dark" ? "hover:bg-gray-500 hover:bg-opacity-40" : "hover:bg-slate-300"} rounded-xl`}>
+                                <img src={`${props.themeChosen === "Dark" ? "sendIcon3-1.png" : "sendIcon-black.png"}`} className="absolute w-6 h-6 aspect-square cursor-pointer z-20"></img>
+
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -91,7 +91,7 @@ export function CurrUserDiv (props: any) {
                         }}>
             <div className="relative flex flex-row w-[25%] h-[70%] justify-center items-center">
                 {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-14 h-14 rounded-full" onClick={() => {}}></img>
-                                               : <img src="./profilePic2.png" className="flex w-14 h-14 rounded-full"></img>
+                                               : <img src={`${props.themeChosen === "Dark" ? "./profilePic2.png" : "profilePic_black.png"}`} className="flex w-14 h-14 rounded-full"></img>
                 }
             </div>
             <div className="relative flex flex-col w-[75%] h-full">
@@ -214,7 +214,7 @@ export function SearchBar( props : any ) {
             <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl border-[2px] ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"}`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
                     <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
+                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"} `}></img>
                     </div>
                     <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
                         <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-white' : 'text-gray-600 placeholder:text-gray-600'}`} 
