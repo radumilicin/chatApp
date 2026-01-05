@@ -4,7 +4,7 @@ export default function NotificationSettings( props: any ) {
 
     return (
         <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
+            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
                             props.setPressNotifications(false)
@@ -15,18 +15,18 @@ export default function NotificationSettings( props: any ) {
                         }}>
                     <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px] xss:w-6 xss:h-6 aspect-square"></img>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-lg xss:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Notifications</div>
+                <div className={`relative indent-[10px] left-[2%] w-[40%] text-lg xss:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Notifications</div>
             </div>
 
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row left-[6%] h-[6%] w-[96%] text-lg xss:text-xl ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"} font-medium`}>Messages</div>
+                    <div className={`relative flex flex-row left-[6%] h-[6%] w-[96%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"} font-medium`}>Messages</div>
                     <EnableNotifications user={props.user} userObj={props.userObj} users={props.users} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
                                         setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}    
                                         setOutgoingMessagesSoundsEnabled={props.setOutgoingMessagesSoundsEnabled} outgoingMessagesSoundsEnabled={props.outgoingMessagesSoundsEnabled}
                                         fetchUsers={props.fetchUsers} themeChosen={props.themeChosen}
                     ></EnableNotifications>
-                    <div className={`relative flex flex-row top-[4%] left-[6%] h-[6%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"} text-lg xss:text-xl font-medium`}>Message sounds</div>
+                    <div className={`relative flex flex-row top-[4%] left-[6%] h-[6%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"} text-base xss:text-lg font-medium`}>Message sounds</div>
                     <IncomingSounds user={props.user} userObj={props.userObj} users={props.users} setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}
                                     incomingSoundsEnabledPending={props.incomingSoundsEnabledPending} setIncomingSoundsEnabledPending={props.setIncomingSoundsEnabledPending} fetchUsers={props.fetchUsers}
                                     setUserObj={props.setUserObj} themeChosen={props.themeChosen}
@@ -92,7 +92,7 @@ export function EnableNotifications(props: any) {
                 <img src={`${props.themeChosen === "Dark" ? "bell-icon.png" : "bell-icon-black-nobg.png"}`} className="w-[28px] h-[28px] xss:w-8 xss:h-8"></img>
             </div>
             <div className="relative flex flex-col justify-begin w-[70%]">
-                <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium  ${props.themeChosen === "Dark" ? "" : "text-black"} `}>Message notifications</div>
+                <div className={`relative flex flex-row w-full h-[50%] items-end text-sm xss:text-base font-medium  ${props.themeChosen === "Dark" ? "" : "text-black"} `}>Message notifications</div>
                 <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"} `}>Enable notification sound</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
@@ -156,7 +156,7 @@ export function IncomingSounds(props: any) {
                 <img src={`${props.themeChosen === "Dark" ? "./arrow_incoming.png" : "arrow_incoming_black.png"}`} className="w-[28px] h-[28px] xss:w-8 xss:h-8"></img>
             </div>
             <div className="relative flex flex-col justify-begin w-[70%] h-full">
-                <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Incoming sounds</div>
+                <div className={`relative flex flex-row w-full h-[50%] items-end text-sm xss:text-base font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Incoming sounds</div>
                 <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when receiving a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">
@@ -217,7 +217,7 @@ export function OutgoingSounds(props: any) {
                 <img src={`${props.themeChosen === "Dark" ? "./arrow_outgoing.png" : "arrow_outgoing_black.png"}`} className="w-8 h-8"></img>
             </div>
             <div className="relative flex flex-col justify-begin w-[70%] h-full">
-                <div className={`relative flex flex-row w-full h-[50%] items-end text-base xss:text-lg font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Outgoing sounds</div>
+                <div className={`relative flex flex-row w-full h-[50%] items-end text-sm xss:text-base font-medium ${props.themeChosen === "Dark" ? "" : "text-black"}`}>Outgoing sounds</div>
                 <div className={`relative flex flex-row w-full h-[50%] text-xs xss:text-sm font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Play sound when sending a message</div>
             </div>
             <div className="relative flex flex-row items-center w-[15%] h-full">

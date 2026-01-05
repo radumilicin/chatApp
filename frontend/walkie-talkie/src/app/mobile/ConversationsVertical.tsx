@@ -6,7 +6,6 @@ import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettingsVertical';
 
 export default function ConversationsVertical( props : any) {
-   
     
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);

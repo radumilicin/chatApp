@@ -18,7 +18,7 @@ export default function SettingsViewVertical(props) {
                         }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center w-5 h-5 xss:w-6 xss:h-6 aspect-square"></img>
                     </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-lg xss:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Settings</div>
+                <div className={`relative indent-[10px] left-[2%] w-[40%] text-lg xss:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Settings</div>
             </div>
 
             <SearchBar searchedSetting={searchedSettings} setSearchedSetting={setSearchedSetting} themeChosen={props.themeChosen}></SearchBar>
