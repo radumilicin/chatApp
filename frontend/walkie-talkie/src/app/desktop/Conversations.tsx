@@ -439,11 +439,11 @@ export function UsersToAddToContacts (props : any) {
                     >
                         <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
-                            {getImageUser(element).data !== "" ? <img
+                            {getImageUser(element).data !== "" && element.profile_pic_visibility === "Everyone" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"
-                            /> : getImageUser(element).data !== "" ? <img
+                            /> : (getImageUser(element).data) !== "" && element.profile_pic_visibility === "Everyone" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
@@ -464,9 +464,12 @@ export function UsersToAddToContacts (props : any) {
                             <div className="relative flex w-full h-[50%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
+                                    {element.status_visibility === "Everyone" && <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
                                         {element.about}
-                                    </div>
+                                    </div>}
+                                    {element.status_visibility !== "Everyone" && <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
+                                        Hey there I'm using Walkie Talkie!
+                                    </div>}
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
