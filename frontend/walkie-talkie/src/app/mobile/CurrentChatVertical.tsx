@@ -409,8 +409,8 @@ export default function CurrentChatVertical( props: any ) {
     return (
         <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { 
-                    props.setProfileInfo(true) 
-                    console.log("profile info set to true")
+                    // props.setProfileInfo(true) 
+                    // console.log("profile info set to true")
                 }}>
                 <div className="flex flex-row w-[10%] h-[100%] justify-center items-center" onClick={() => {
                         props.setCurrContact(null)

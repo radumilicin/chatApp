@@ -48,7 +48,7 @@ export default function DisappearingMessagesViewVertical(props: any) {
 
     return (
         <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
+            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
                         onClick={() => {
                             props.setPressPrivacy(true)
@@ -63,21 +63,21 @@ export default function DisappearingMessagesViewVertical(props: any) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px] xss:w-6 xss:h-6 aspect-square"></img>
                 </div>
-                <div className={`relative indent-[10px] left-[2%] w-[70%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Disappearing messages</div>
+                <div className={`relative indent-[10px] left-[2%] w-[70%] text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Disappearing messages</div>
             </div>
 
             <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-base xss:text-lg ${props.themeChosen === "Dark" ? "text-[#CBD4E0]" : "text-black"} font-medium text-[#CBD4E0]`}>Time after messages disappear</div>
+                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-[#CBD4E0]" : "text-black"} font-medium text-[#CBD4E0]`}>Time after messages disappear</div>
                     <div className="relative flex flex-col left-[6%] w-[88%] h-[40%]">
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setDisappearingMessagesPeriod("Day") }}>
-                                    {props.disappearingMessagesPeriod !== "Day" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Day" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Day" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod !== "Day" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Day" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Day" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
                             <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Day</div>
@@ -85,9 +85,9 @@ export default function DisappearingMessagesViewVertical(props: any) {
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setDisappearingMessagesPeriod("Week") }}>
-                                    {props.disappearingMessagesPeriod !== "Week" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Week" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Week" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod !== "Week" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Week" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Week" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
                             <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Week</div>
@@ -95,9 +95,9 @@ export default function DisappearingMessagesViewVertical(props: any) {
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setDisappearingMessagesPeriod("Month") }}>
-                                   {props.disappearingMessagesPeriod !== "Month" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Month" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Month" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>} 
+                                    {props.disappearingMessagesPeriod !== "Month" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Month" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Month" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
                             <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Month</div>
@@ -105,9 +105,9 @@ export default function DisappearingMessagesViewVertical(props: any) {
                         <div className="relative flex flex-row w-full h-[20%]">
                             <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
                                 <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setDisappearingMessagesPeriod("Off") }}>
-                                    {props.disappearingMessagesPeriod !== "Off" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Off" && <div className="absolute flex flex-row w-2 h-2 xss:w-3 xss:h-3 bg-green-500 rounded-full"></div>}
-                                    {props.disappearingMessagesPeriod === "Off" && <div className="absolute flex flex-row w-5 h-5 xss:w-6 xss:h-6 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod !== "Off" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Off" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
+                                    {props.disappearingMessagesPeriod === "Off" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
                                 </div>
                             </div>
                             <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Off</div>

@@ -49,7 +49,7 @@ export default function BlockedContactsViewVertical(props: any) {
 
     return (
         <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
+            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
                 <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:cursor-pointer hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-xl`} 
                         onClick={() => {
                             props.setPressPrivacy(true)
@@ -64,9 +64,9 @@ export default function BlockedContactsViewVertical(props: any) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px] xss:w-6 xss:h-6 aspect-square"></img>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-full text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
+                <div className={`relative indent-[10px] left-[2%] w-full text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
             </div>
             <div className="relative top-[15%] flex flex-col left-[2%] w-[96%] h-[80%]">
                 { props.blockedContacts.map((elem, idx) => {
