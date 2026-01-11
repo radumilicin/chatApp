@@ -405,11 +405,44 @@ export default function CurrentChat( props: any ) {
         }
     }, [decryptedContact])
 
+    // Filter messages based on disappearingMessagesPeriod
+    const filterMessagesByPeriod = (messages: any[]) => {
+        if (!messages || messages.length === 0) return [];
+
+        const period = props.disappearingMessagesPeriod;
+
+        // If "Off", show all messages
+        if (period === "Off") return messages;
+
+        const cutoffDate = new Date();
+
+        // Calculate cutoff date based on period
+        switch (period) {
+            case "Day":
+                cutoffDate.setDate(cutoffDate.getDate() - 1);
+                break;
+            case "Week":
+                cutoffDate.setDate(cutoffDate.getDate() - 7);
+                break;
+            case "Month":
+                cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+                break;
+            default:
+                return messages; // If unknown period, show all
+        }
+
+        // Filter messages that are newer than the cutoff date
+        return messages.filter((message) => {
+            const messageDate = new Date(message.timestamp);
+            return messageDate >= cutoffDate;
+        });
+    };
+
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg border-y-4 border-r-4 border-l-[3px] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300"}`}>
-            {!props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" } flex flex-row hover:cursor-pointer 
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg border-y-4 border-r-4 border-l-[3px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+            {!props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer 
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}></div>}
-            {props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
+            {props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
                 <div className="flex w-[10%] h-[100%] justify-end items-center">
                     {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
                         <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
@@ -453,7 +486,7 @@ export default function CurrentChat( props: any ) {
             }
             {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
-                    decryptedContact.message.map((message, idx) => {
+                    filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);
 
                         console.log(`DEBUG MESSAGE PRINT: ${JSON.stringify(message)}`)
@@ -484,11 +517,13 @@ export default function CurrentChat( props: any ) {
                         };
                         
                         // Check if we need to show a date divider
-                        const showDateDivider = idx === 0 || 
-                            (idx > 0 && 
-                            new Date(message.timestamp).toDateString() !== 
-                            new Date(decryptedContact.message[idx - 1].timestamp).toDateString());
+                        const showDateDivider = idx === 0 ||
+                            (idx > 0 &&
+                            new Date(message.timestamp).toDateString() !==
+                            new Date(filteredMessages[idx - 1].timestamp).toDateString());
 
+                        
+                        
                         return (
                 <div key={idx} className={`${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>
                     {/* Date Divider */}
@@ -502,15 +537,14 @@ export default function CurrentChat( props: any ) {
                     
                     {/* Message */}
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
-                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent" }`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? 'bg-green-500 text-white mr-8'
-                                        : 'bg-blue-600 text-white ml-8'
-                                }`}
+                                        ? `${props.themeChosen === "Dark" ? "border-[#3F8F63] bg-[#3F8F63]/10 ring-[0.5] ring-[#3F8F63]" : "bg-gray-100 border-gray-300"} transition-all`
+                                        : `${props.themeChosen === "Dark" ? "border-[#3B7E9B] bg-[#3B7E9B]/10 ring-[0.5] ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-lg text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-lg text-black font-semibold text-white`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
                                     <div className="break-words">
                                         {/* {
@@ -558,12 +592,12 @@ export default function CurrentChat( props: any ) {
             </div>}
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
-                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
+                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20 
                             border-2 flex flex-row`}>
-                    <div className="relative left-[0%] flex basis-[8%] top-[15%] h-[70%] ml-2 rounded-2xl" >
+                    <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
                         {/* Wrapper for Image and Input */}
                         <div className="relative flex items-center justify-center w-full h-full">
-                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center ${props.themeChosen === "Dark" ? "hover:bg-gray-500 hover:bg-opacity-40" : "hover:bg-slate-300"} rounded-xl`}>
+                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                                 <img
                                     src={`${props.themeChosen === "Dark" ? "/attach2-1.png" : "attach-black.png"}`}
                                     className="absolute w-6 h-6 aspect-square cursor-pointer z-20"
@@ -621,11 +655,10 @@ export default function CurrentChat( props: any ) {
                                     else handleSendMessage(text); 
                                     setText("")}}}></input>
                     </div>
-                    <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center mr-2" >
+                    <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center mr-1" >
                         <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl w-full" onClick={() => {handleSendMessage(text); setText("")}}>
-                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center ${props.themeChosen === "Dark" ? "hover:bg-gray-500 hover:bg-opacity-40" : "hover:bg-slate-300"} rounded-xl`}>
+                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95 rounded-xl`}>
                                 <img src={`${props.themeChosen === "Dark" ? "sendIcon3-1.png" : "sendIcon-black.png"}`} className="absolute w-6 h-6 aspect-square cursor-pointer z-20"></img>
-
                             </div>
                         </div>
                     </div>

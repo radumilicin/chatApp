@@ -1,0 +1,1 @@
+ALTER TABLE "contacts" RENAME COLUMN "blockedAt" TO "blocked_at";

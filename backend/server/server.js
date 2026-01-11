@@ -1322,7 +1322,7 @@ app.put('/blockContact', async (req, res) => {
       // Insert the group into the "contacts" table
       if(status === "block") {
         await pool.query(
-            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
+            `UPDATE contacts SET blocked_at=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
           [curr_user, contact_id, timestamp, true] // Bind variables
         );
       } else if(status === "unblock") {
@@ -1330,7 +1330,7 @@ app.put('/blockContact', async (req, res) => {
         console.log("In server before unblocking")
 
         await pool.query(
-            `UPDATE contacts SET blockedat=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
+            `UPDATE contacts SET blocked_at=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
           [curr_user, contact_id, '', false] // Bind variables
         );
       }

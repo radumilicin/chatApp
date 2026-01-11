@@ -44,7 +44,7 @@ export default function Theme(props: any) {
     }
 
     return (
-        <div className={`absolute left-[35%] top-[35%] w-[30%] h-[30%] ${props.themeChosen === "Dark" ? "bg-gray-800" : "bg-gray-400"} rounded-xl z-50 blur-none border-gray-700 border-[1px]`}>
+        <div className={`absolute left-[35%] top-[35%] w-[30%] h-[30%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/95 to-gray-900/95" : "bg-gradient-to-b from-gray-100/95 to-gray-200/95"} backdrop-blur-lg rounded-2xl z-50 shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             <div className="relative flex flex-col left-0 w-full h-full">
                 <div className={`relative flex flex-row items-center indent-[20px] text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-semibold h-[20%] w-full`}>Choose Theme</div>
                 <div className="left-[20px] relative top-[15%] flex flex-row w-full h-[15%] text-white text-base">
@@ -80,8 +80,8 @@ export default function Theme(props: any) {
                 <div className="left-[20px] relative top-[35%] flex flex-row w-full h-[10%]">
                     <div className="absolute flex flex-row items-center md:left-[42%] lg:left-[48%] 2xl:left-[55%] top-0 w-[45%] h-full gap-[4%]">
                         <div className="relative flex flex-row left-0 top-0 w-full h-full gap-[12px] lg:gap-0">
-                            <div className={`relative flex flex-row w-[45%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-medium hover:cursor-pointer text-sm xl:text-base justify-center items-center`} onClick={() => {props.setThemePressed(false)}}>Cancel</div>
-                            <div className={`relative flex flex-row w-[55%] lg:w-[40%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} hover:cursor-pointer text-sm xl:text-base font-medium justify-center items-center bg-green-600 rounded-md`} onClick={ async () => { setConfirm(true) }}>Confirm</div>
+                            <div className={`relative flex flex-row w-[45%] ${props.themeChosen === "Dark" ? "text-white hover:bg-gray-700/50" : "text-black hover:bg-gray-300/50"} font-medium hover:cursor-pointer text-sm xl:text-base justify-center items-center rounded-lg transition-all hover:scale-105 active:scale-95 py-2`} onClick={() => {props.setThemePressed(false)}}>Cancel</div>
+                            <div className={`relative flex flex-row w-[55%] lg:w-[40%] text-white hover:cursor-pointer text-sm xl:text-base font-medium justify-center items-center bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] rounded-lg shadow-lg hover:shadow-[#3B7E9B]/50 transition-all hover:scale-105 active:scale-95 py-2`} onClick={ async () => { setConfirm(true) }}>Confirm</div>
                         </div>
                     </div>
                 </div>
