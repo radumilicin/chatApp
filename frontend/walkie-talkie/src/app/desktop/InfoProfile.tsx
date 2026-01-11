@@ -93,9 +93,11 @@ export default function ProfileInfo( props ) {
         if(contact === null || contact === undefined) return ""
         if(contact.is_group === true){
             // console.log("contact name = " + JSON.stringify(contact.group_name))
-            return contact.group_name 
+            return contact.group_name
         } else {
-            return props.users.find((user) => { return contact.contact_id === user.id}).username
+            // Get the OTHER user (not the current user)
+            const otherUserId = contact.sender_id === props.curr_user ? contact.contact_id : contact.sender_id;
+            return props.users.find((user) => { return otherUserId === user.id}).username
         }
     }
 
@@ -103,7 +105,9 @@ export default function ProfileInfo( props ) {
         if(contact === null || contact === undefined) return {data: ""}
         // console.log("Is contact group or not: " + contact.is_group)
         if(contact.is_group === false){
-            return props.users.find((id) => { return id.id === contact.contact_id})   
+            // Get the OTHER user (not the current user)
+            const otherUserId = contact.sender_id === props.curr_user ? contact.contact_id : contact.sender_id;
+            return props.users.find((id) => { return id.id === otherUserId})
         }
     }
 
@@ -210,7 +214,7 @@ export default function ProfileInfo( props ) {
                         onMouseLeave={() => {setHoverStatusProfilePic(false); console.log("out of profile pic")}}
                     >
                         {/* Profile Picture */}
-                        {((props.contact !== undefined && props.contact !== null) && getImage(props.contact).data !== "") ? (
+                        {((props.contact !== undefined && props.contact !== null) && getImage(props.contact).data !== "" && (!props.contact.is_group && getUser(props.contact).profile_pic_visibility !== 'Nobody')) ? (
                             <img
                                 src={getImage(props.contact).data.startsWith('data:image') 
                                     ? `${getImage(props.contact).data}` 
@@ -357,7 +361,7 @@ function AboutProfile(props) {
                             (props.contact !== null) ? 
                                 (props.contact.is_group === true && props.descriptionPressed === false ? ((props.contact.group_description === '') ? 'Add group description' 
                                                                                                             : props.contact.group_description) 
-                                                                 : (props.contact.is_group === false) ? props.getUser(props.contact).about : '') : ''}
+                                                                 : (props.contact.is_group === false && props.getUser(props.contact).status_visibility !== "Nobody") ? props.getUser(props.contact).about : `Hey there I'm using Walkie Talkie`) : ''}
                         {
                             (props.contact !== null) ? 
                                 ((props.contact.is_group === true && props.descriptionPressed === true) ? 
@@ -566,6 +570,8 @@ function OptionsGroup(props) {
 
 function OptionsChat(props) {
 
+    const cnt = useRef(0)
+
     async function deleteChat() {
         console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
 
@@ -599,8 +605,7 @@ function OptionsChat(props) {
 
     function setCurrContactAfterChange() {
         props.setCurrContact(
-            props.contacts.find((elem) => (elem.sender_id === props.contact.sender_id && elem.contact_id === props.contact.contact_id) || 
-                                          (elem.contact_id === props.contact.sender_id && elem.sender_id === props.contact.contact_id))
+            props.contacts.find((elem) => elem.id === props.contact.id)
         )
     }
 
@@ -619,17 +624,18 @@ function OptionsChat(props) {
                 body: JSON.stringify(msg)
             }
 
-            console.log("curr_user: " + JSON.stringify(props.contact.sender_id) + " contact_id: " + JSON.stringify(props.contact.contact_id) + " status: " + status)
+            console.log(`Trying to block contact attempt ${cnt.current} with curr_user: ` + JSON.stringify(props.contact.sender_id) + " contact_id: " + JSON.stringify(props.contact.contact_id) + " status: " + status)
 
             const response = await fetch('http://localhost:3002/blockContact', requestOptions)
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
                 await props.fetchContacts()
-                setCurrContactAfterChange
+                setCurrContactAfterChange()
             } else {
                 console.log("Error blocking chat " + JSON.stringify(props.contact.id))
             }
         }
+        cnt.current += 1
     }
 
     useEffect(() => {

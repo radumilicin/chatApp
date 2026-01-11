@@ -124,9 +124,9 @@ export default function NotificationSettings( props: any ) {
     }
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}> 
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
+                <div className={`relative left-[2%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                         onClick={() => {
                             props.setPressNotifications(false)
                             props.setPressAccount(false)
@@ -134,12 +134,12 @@ export default function NotificationSettings( props: any ) {
                             props.setPressAppearance(false)
                             props.setPressedSettings(true)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}></img>
+                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square opacity-90`}></img>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-base lg:text-lg xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Notifications</div>
+                <div className={`relative indent-[20px] left-[2%] w-[40%] text-base lg:text-lg xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} font-sans flex flex-row justify-start items-center`}>Notifications</div>
             </div>
-            <div className={`absolute left-0 w-full top-[6%] h-[9%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>
-            <div className={`absolute left-0 w-full top-[15%] h-[85%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+            <div className={`absolute left-0 w-full top-[6%] h-[9%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}></div>
+            <div className={`absolute left-0 w-full top-[15%] h-[85%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
                     <div className={`relative flex flex-row left-[6%] h-[6%] w-[96%] text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"} font-medium`}>Messages</div>
                     <EnableNotifications user={props.user} userObj={props.userObj} users={props.users} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
@@ -178,7 +178,7 @@ export function EnableNotifications(props: any) {
 
 
     return (
-        <div className={`relative flex flex-row justify-row h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"}`}>
+        <div className={`relative flex flex-row justify-row h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98]`}>
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src={`${props.themeChosen === "Dark" ? "bell-icon.png" : "bell-icon-black-nobg.png"}`} className="w-[24px] h-[24px] lg:w-[28px] lg:h-[28px] xl:w-8 xl:h-8"></img>
             </div>
@@ -220,7 +220,7 @@ export function IncomingSounds(props: any) {
 
     
     return (
-        <div className={`relative flex flex-row justify-row top-[4%] h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"}`}>
+        <div className={`relative flex flex-row justify-row top-[4%] h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98]`}>
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src={`${props.themeChosen === "Dark" ? "./arrow_incoming.png" : "arrow_incoming_black.png"}`} className="w-[24px] h-[24px] lg:w-[28px] lg:h-[28px] xl:w-8 xl:h-8"></img>
             </div>
@@ -261,7 +261,7 @@ export function OutgoingSounds(props: any) {
     }, [props.outgoingMessagesSoundsEnabled])
 
     return (
-        <div className={`relative flex flex-row justify-row top-[4%] h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"}`}>
+        <div className={`relative flex flex-row justify-row top-[4%] h-[15%] lg:h-[12%] left-[2%] w-[96%] rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98]`}>
             <div className="relative flex flex-row justify-center items-center w-[15%] h-full">
                 <img src={`${props.themeChosen === "Dark" ? "./arrow_outgoing.png" : "arrow_outgoing_black.png"}`} className="w-[24px] h-[24px] lg:w-[28px] lg:h-[28px] xl:w-8 xl:h-8"></img>
             </div>

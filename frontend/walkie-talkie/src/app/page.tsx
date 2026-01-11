@@ -1154,7 +1154,7 @@ export default function Home() {
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
                                                 identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts} 
-                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate}></CurrentChatVertical> 
+                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate} disappearingMessagesPeriod={disappearingMessagesPeriod}></CurrentChatVertical> 
                                     :
             (display === "Desktop" ? <Conversations users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
@@ -1171,7 +1171,7 @@ export default function Home() {
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} initiateChat={initiateChat}
                                                 identityKey={identityKey} signedPreKey={signedPreKey} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts} 
-                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate}></CurrentChat> : <></>)
+                                                loadConversationRatchetStateDB={loadConversationRatchetStateDB} sendMessageStatusUpdate={sendMessageStatusUpdate} disappearingMessagesPeriod={disappearingMessagesPeriod}></CurrentChat> : <></>)
                                 : (display === "Desktop" ? <ProfileInfo setProfileInfo={setProfileInfo} contact={curr_contact} users={users} curr_user={user} contacts={contacts} images={images} fetchContacts={fetchData2} fetchUsers={fetchData} 
                                       fetchImages={fetchImages} setCurrContact={setCurrContact} setAddToGroup={setAddToGroup} addingToGroup={addingToGroup} themeChosen={themeChosen}></ProfileInfo> : <></>) }
         </div>

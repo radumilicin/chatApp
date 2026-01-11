@@ -200,7 +200,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317]" : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
@@ -294,7 +294,7 @@ export function SearchBar( props : any ) {
     return (
         
         <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
-            <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl border-[2px] ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"}`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl border-[1px] ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
                     <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
                         <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
@@ -439,11 +439,11 @@ export function UsersToAddToContacts (props : any) {
                     >
                         <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
-                            {getImageUser(element).data !== "" ? <img
+                            {getImageUser(element).data !== "" && element.profile_pic_visibility === "Everyone" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"
-                            /> : getImageUser(element).data !== "" ? <img
+                            /> : (getImageUser(element).data) !== "" && element.profile_pic_visibility === "Everyone" ? <img
                                 src={`data:image/jpg;base64,${getImageUser(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
@@ -464,9 +464,12 @@ export function UsersToAddToContacts (props : any) {
                             <div className="relative flex w-full h-[50%] items-center">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
+                                    {element.status_visibility === "Everyone" && <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
                                         {element.about}
-                                    </div>
+                                    </div>}
+                                    {element.status_visibility !== "Everyone" && <div className={`indent-[10px] flex flex-row h-full w-full items-start text-[11px] lg:text-xs xl:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium truncate`}>
+                                        Hey there I'm using Walkie Talkie!
+                                    </div>}
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[20%]">
@@ -684,7 +687,7 @@ export function Contacts( props: any) {
 
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
+        <div className={`absolute left-0 top-[16%] w-full h-[84%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
                     
@@ -694,12 +697,16 @@ export function Contacts( props: any) {
                     : "";
                     const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
 
+                    // Define other_user BEFORE using it in JSX
+                    const other_user = props.users.find((user) => ((user.id === element.sender_id && props.curr_user === element.contact_id) ||
+                                                                    (user.id === element.contact_id && props.curr_user === element.sender_id)));
+
                     return (
                     // this is the normal conversation (1 on 1)
-                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
+                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
+                        className={`relative flex-none flex flex-row h-[12%] w-[92%] text-[#FFD166] transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98] rounded-2xl mt-2 hover:cursor-pointer`}
                        onClick={(e) => {
                         //  e.stopPropagation();
                         console.log("==============\nFIRST DIV PRESSED\n================")
@@ -709,7 +716,7 @@ export function Contacts( props: any) {
                             return
                         }
 
-                        props.setPressed(element); 
+                        props.setPressed(element);
 
                         let contact = {...element};
                         let timestamp = new Date().toISOString()
@@ -717,18 +724,17 @@ export function Contacts( props: any) {
                             if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at = timestamp;
                         }
 
-                        props.setCurrContact(contact); 
-                        // props.setCurrContact(element); 
+                        props.setCurrContact(contact);
                         // console.log("clicked")
-                    }}  // <--- Only TWO closing braces needed 
+                    }}  // <--- Only TWO closing braces needed
                     >
                         <div className="relative flex w-[15%] h-full justify-center items-center">
                             {/* Use base64 data for image */}
-                            {getImage(element).data !== "" ? <img
+                            {(getImage(element).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"
-                            /> : getProfileImage(element, 1).data !== "" ? <img
+                            /> : (getProfileImage(element, 1).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
                                 className="h-10 w-10 rounded-full"
                                 alt="Profile"></img> : 
@@ -1265,11 +1271,11 @@ export function Groups(props) {
                 >
                     <div className="relative flex w-[15%] h-full justify-center items-center">
                         {/* Use base64 data for image */}
-                        {getImageUser(element).data !== "" ? <img
+                        {(getImageUser(element).data !== "" && element.profile_pic_visibility !== "Nobody") ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
                             className="h-10 w-10 rounded-full"
                             alt="Profile"
-                        /> : getImageUser(element).data !== "" ? <img
+                        /> : (getImageUser(element).data !== "" && element.profile_pic_visibility !== "Nobody") ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
                             className="h-10 w-10 rounded-full"
                             alt="Profile"></img> : 

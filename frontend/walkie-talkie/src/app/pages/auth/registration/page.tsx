@@ -149,55 +149,80 @@ export default function Register(props) {
 
 
     return (
-        <div className="absolute left-[35%] top-[25%] w-[30%] h-[50%]" onKeyDown={async (e) => {
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
             if(e.key === 'Enter') {
-                const resp = await register(); 
-                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered) 
+                const resp = await register();
+                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered)
             }}}>
-            <div className="relative left-0 top-0 h-full w-full flex flex-col gap-2 rounded-xl bg-gray-800">
-                <div className="flex flex-col h-[20%] justify-center items-center text-2xl font-sans font-semibold text-[#3B7E9B]">Register to SocialiseIt</div>
-                <div className="flex flex-row w-full h-[20%]">
-                    <div className="relative flex flex-col h-[80%] w-[80%] left-[10%]">
-                        <div className="flex h-[30%] w-[20%] text-2xl font-sans text-gray-400 justify-start indent-3">Username</div>
-                        <input type="text" required={true} placeholder="Enter your username" value={username} 
-                               onChange={(e) => { setUsername(e.target.value); 
-                                                  if(usernameExistsF()) setUsernameExists(true)  }}
-                               className="flex indent-[10px] w-full h-[50%] flex-row justify-center items-center outline-none bg-gray-600 rounded-xl border-2 border-gray-400 focus:bg-gray-600"></input>
-                        {usernameExists && <div className="flex flex-row items-center justify-center text-red-500 h-[30%] w-[50%]">Username already exists</div>}
-                    </div>
+            <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
+                <div className="flex flex-col mb-8 text-center">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Create Account</h1>
+                    <p className="text-gray-400 mt-2 text-sm">Register to SocialiseIt</p>
                 </div>
-                <div className="flex flex-row w-full h-[20%]">
-                    <div className="relative flex flex-col h-[80%] w-[80%] left-[10%]">
-                        <div className="flex h-[30%] w-[20%] text-2xl font-sans text-gray-400 justify-start indent-3">Email</div>
-                        <input type="email" required={true} placeholder="Enter your email" value={email} 
-                               onChange={(e) => {setEmail(e.target.value)
-                                                 if(emailExistsF()) setEmailExists(true)  }}
-                                className="flex indent-[10px] w-full h-[50%] flex-row justify-center items-center outline-none bg-gray-600 rounded-xl border-2 border-gray-400"></input>
-                        {emailExists && <div className="flex flex-row items-center justify-center text-red-500 h-[30%] w-[50%]">Email already exists</div>}
+                <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-300 pl-1">Username</label>
+                        <input
+                            type="text"
+                            required={true}
+                            placeholder="Enter your username"
+                            value={username}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                if(usernameExistsF()) setUsernameExists(true)
+                            }}
+                            className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
+                        />
+                        {usernameExists && <p className="text-red-400 text-xs pl-1 -mt-1">Username already exists</p>}
                     </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-300 pl-1">Email</label>
+                        <input
+                            type="email"
+                            required={true}
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if(emailExistsF()) setEmailExists(true)
+                            }}
+                            className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
+                        />
+                        {emailExists && <p className="text-red-400 text-xs pl-1 -mt-1">Email already exists</p>}
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-300 pl-1">Password</label>
+                        <input
+                            type="password"
+                            required={true}
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => {setPassword(e.target.value)}}
+                            className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={async () => {
+                            const resp = await register();
+                            if(resp === "success") {
+                                await props.setRegisteredAsync();
+                            }
+                        }}
+                        className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        Create Account
+                    </button>
                 </div>
-                <div className="flex flex-row w-full h-[20%]">
-                    <div className="relative flex flex-col h-[80%] w-[80%] left-[10%]">
-                        <div className="flex h-[30%] w-[20%] text-2xl font-sans text-gray-400 justify-start indent-3">Password</div>
-                        <input type="password" required={true} placeholder="Enter your password" value={password} 
-                               onChange={(e) => {setPassword(e.target.value)}}
-                                className="flex indent-[10px] w-full h-[50%] flex-row justify-center items-center outline-none bg-gray-600 rounded-xl border-2 border-gray-400"></input>
-                    </div>
-                </div>
-                <div className="flex flex-row w-full h-[12%] justify-center items-start">
-                    <div className="w-[40%] h-[50%] bg-gray-600 rounded-xl flex flex-row justify-center items-center text-xl font-semibold font-sans hover:cursor-pointer"
-                         onClick={async () => { const resp = await register(); 
-                                                if(resp === "success") { await props.setRegisteredAsync() ; 
-                                                                        //  router.push("/pages/auth/login")
-                                                                        } 
-                         }}>
-                            Submit
-                    </div>
-                </div>
-                <div className="flex flex-row left-0 w-full h-[8%] justify-center">
-                    <div className="flex flex-row w-[80%] h-[30%] text-lg justify-center items-center">
-                    <div className='flex justify-center hover:border-b-2 hover:border-blue-600 hover:cursor-pointer' onClick={async () => {await props.setRegisteredAsync()}}>If you have an account log in!</div>
-                    </div>
+                <div className="mt-6 text-center">
+                    <p className="text-gray-400 text-sm">
+                        Already have an account?{' '}
+                        <span
+                            className='text-[#3B7E9B] hover:text-[#5BA3C5] cursor-pointer font-medium transition-colors'
+                            onClick={async () => {await props.setRegisteredAsync()}}
+                        >
+                            Login here
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>

@@ -137,9 +137,9 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} flex flex-col`}>
-            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
-                <div className={`relative indent-[30px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
+                <div className={`relative left-[2%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                         onClick={() => {
                             props.setPressPrivacy(false)
                             props.setPressNotifications(false)
@@ -152,10 +152,10 @@ export default function ProfileSettings(props) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}></img>
+                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square opacity-90`}></img>
                 </div>
             </div>
-            <div className={`absolute left-0 top-[6%] w-full h-[44%] ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
+            <div className={`absolute left-0 top-[6%] w-full h-[44%] ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent" }`}>
                 <div
                     className={`relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center rounded-full`}
                     onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
@@ -164,10 +164,10 @@ export default function ProfileSettings(props) {
                     {currImageData.data !== "" ? (
                         <img
                             src={`data:image/jpeg;base64,${currImageData.data}`}
-                            className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600 ${hoveredProfilePic ? 'blur-sm' : ""}`}
+                            className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-4 ${props.themeChosen === "Dark" ? "border-[#3B7E9B]/50" : "border-gray-400"} shadow-xl ${hoveredProfilePic ? 'blur-sm' : ""} transition-all`}
                         />
                     ) : (
-                        <img src="./profilePic2.png" className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600  ${hoveredProfilePic ? 'blur-sm' : ""}`}></img>
+                        <img src="./profilePic2.png" className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-4 ${props.themeChosen === "Dark" ? "border-[#3B7E9B]/50" : "border-gray-400"} shadow-xl ${hoveredProfilePic ? 'blur-sm' : ""} transition-all`}></img>
                     )}
 
                     {hoveredProfilePic && (
@@ -238,13 +238,13 @@ export default function ProfileSettings(props) {
                                                                     }}></input>
                                                         
                                 }
-                                <div className={`flex flex-row w-[20%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} 
+                                <div className={`flex flex-row w-[20%] h-full items-center justify-center hover:cursor-pointer`}
                                                 onClick={() => {if(stateUsername === "fixed") {
                                                                     setStateUsername("input")
                                                                 } else setStateUsername("fixed")
                                                                 }}>
-                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
-                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
+                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-110 active:scale-95`}>
+                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px] opacity-90"></img>
                                     </div>
                                 </div>
                             </div>
@@ -270,15 +270,15 @@ export default function ProfileSettings(props) {
                                     )
                                 }
                                 <div
-                                    className={`flex flex-row w-[20%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
+                                    className={`flex flex-row w-[20%] h-full items-center justify-center hover:cursor-pointer`}
                                     onClick={() => {if(stateAbout === "fixed"){
                                                         setStateAbout("input")
                                                     } else {
                                                         setStateAbout("fixed")
                                                     }}}
                                 >
-                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}>
-                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />
+                                    <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-110 active:scale-95`}>
+                                        <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px] opacity-90" />
                                     </div>
                                 </div>
                             </div>
