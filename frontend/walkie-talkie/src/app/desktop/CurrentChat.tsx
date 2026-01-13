@@ -439,7 +439,7 @@ export default function CurrentChat( props: any ) {
     };
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] rounded-r-lg border-y-4 border-r-4 border-l-[3px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-r-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {!props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer 
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}></div>}
             {props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>

@@ -2,27 +2,44 @@ import {useState, useEffect} from 'react';
 
 export default function AppearanceSettings(props: any) {
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
-            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
-                <div className={`relative left-[2%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
-                        onClick={() => {
-                            props.setPressNotifications(false)
-                            props.setPressAccount(false)
-                            props.setPressProfile(false)
-                            props.setPressAppearance(false)
-                            props.setPressedSettings(true)
-                        }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square opacity-90`}></img>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressNotifications(false)
+                                props.setPressAccount(false)
+                                props.setPressProfile(false)
+                                props.setPressAppearance(false)
+                                props.setPressedSettings(true)
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
+                    </div>
+                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-[#3B7E9B] to-[#5BA3C5]" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                        Appearance
+                    </h1>
                 </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} font-sans flex flex-row justify-start items-center`}>Appearance</div>
             </div>
-            <div className={`absolute left-0 top-[6%] h-[9%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}></div>
-            <div className={`absolute left-0 w-full top-[15%] h-[85%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
-                <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"}`}>Overall appearance</div>
-                    <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen} setThemeChosen={props.setThemeChosen}></Theme>
-                    <div className={`relative flex flex-row top-[4%] h-[6%] left-[6%] w-[96%] text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? "text-gray-200" : "text-black"}`}>Message</div>
-                    <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen} themeChosen={props.themeChosen}></Fonts>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="flex flex-col gap-6">
+                    {/* Overall Appearance Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Overall appearance
+                        </h2>
+                        <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen} setThemeChosen={props.setThemeChosen}></Theme>
+                    </div>
+
+                    {/* Message Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Message
+                        </h2>
+                        <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen} themeChosen={props.themeChosen}></Fonts>
+                    </div>
                 </div>
             </div>
         </div>
@@ -32,20 +49,23 @@ export default function AppearanceSettings(props: any) {
 export function Theme(props: any) {
 
     return (
-        <div className={`relative flex flex-row left-[6%] w-[88%] h-[12%] rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98]`}
+        <div className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
             onClick={() => {props.setThemePressed(!props.themePressed)}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} 
-                                text-base lg:text-lg items-end font-medium`}>Theme</div>
-                <div className={`relative flex flex-row h-[50%] w-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base`}>
-                    <div className="relative flex flex-row indent-[20px] h-full text-sm lg:text-base">{props.themeChosen} mode</div>
-                    <div className="relative flex flex-row w-[20%] left-[2%] h-full items-center lg:items-start">
-                        <img src={`${props.themeChosen === "Dark" ? './crescent_moon_nobg.png' : './sun_icon_black.png'}`} className="flex w-4 h-4 lg:w-6 lg:h-6"></img>
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Theme
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                        {props.themeChosen} mode
                     </div>
+                    <img src={`${props.themeChosen === "Dark" ? './crescent_moon_nobg.png' : './sun_icon_black.png'}`} className="w-4 h-4" alt={props.themeChosen} />
                 </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "./next-arrow-black-nobg.png"}`} className={`w-[10px] h-4 lg:w-3 lg:h-5`}></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );
@@ -53,15 +73,20 @@ export function Theme(props: any) {
 
 export function Fonts(props: any) {
     return (
-        <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98]`}
+        <div className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
             onClick={() => {props.setFontPressed(!props.fontPressed)}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base lg:text-lg items-end font-medium`}>Fonts</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm lg:text-base 
-                    ${props.fontChosen === "Sans" ? 'font-sans' : props.fontChosen === "Mono" ? 'font-mono' : 'font-serif'}`}>{props.fontChosen}</div>
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Fonts
+                </div>
+                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium ${props.fontChosen === "Sans" ? 'font-sans' : props.fontChosen === "Mono" ? 'font-mono' : 'font-serif'}`}>
+                    {props.fontChosen}
+                </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "./next-arrow-black-nobg.png"}`} className={`w-[10px] h-4 lg:w-3 lg:h-5`}></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );

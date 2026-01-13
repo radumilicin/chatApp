@@ -200,7 +200,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] border-y-4 ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
@@ -278,10 +278,10 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-base xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
             {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
+                <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
                 </div>
-                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
+                <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center ${props.themeChosen === "Dark" ? "w-6 h-6" : "w-6 h-6"}`}></img>
                 </div>
             </div>
