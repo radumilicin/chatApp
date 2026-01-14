@@ -440,38 +440,145 @@ export default function CurrentChat( props: any ) {
 
     return (
         <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-r-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
-            {!props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer 
-                        ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}></div>}
-            {props.contact && <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { props.setProfileInfo(true) }}>
-                <div className="flex w-[10%] h-[100%] justify-end items-center">
-                    {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
-                        (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
-                     (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> :
-                        (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 rounded-full"></img> : <></>                        
-                    }
-                </div>
-                {props.contact !== null && props.contact.is_group === true &&
-                    <div className={`relative flex w-[80%] h-[100%] flex-col`}>
-                        <div className={`relative flex justify-start items-end h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                            {props.contact !== null && <div className="top-0 flex flex-col text-lg xl:text-xl font-semibold">{getNameContact(props.contact)}</div>}
-                        </div>
-                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px] text-xs lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"} truncate`}>
-                            {props.contact !== null && props.contact.members.map((ctc, idx) => (
-                                idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
-                            ))}
-                        </div>
-                </div>}
-                {props.contact !== null && props.contact.is_group === false && 
-                    <div className={`flex flex-row indent-[20px] w-[90%] h-[100%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-sm lg:text-base xl:text-lg font-semibold indent-[20px] 
-                                                        `}>{getNameContact(props.contact)}</div>}
+            {/* Empty contact header - futuristic style */}
+            {!props.contact && (
+                <div
+                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden
+                        bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
+                        border-b border-cyan-500/20 backdrop-blur-xl
+                        hover:cursor-pointer group transition-all duration-300
+                        ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
+                    onClick={() => { props.setProfileInfo(true) }}
+                >
+                    {/* Animated gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                    group-hover:via-cyan-500/10 transition-all duration-500" />
+                    {/* Glow effect on hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
                     </div>
-                }
-            </div>}
+                </div>
+            )}
+
+            {/* Contact header - futuristic style */}
+            {props.contact && (
+                <div
+                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden
+                        bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
+                        border-b border-cyan-500/20 backdrop-blur-xl
+                        hover:cursor-pointer group transition-all duration-300 flex flex-row
+                        ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
+                    onClick={() => { props.setProfileInfo(true) }}
+                >
+                    {/* Animated gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                    group-hover:via-cyan-500/10 transition-all duration-500" />
+
+                    {/* Top glow line on hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+                    </div>
+
+                    {/* Profile picture container */}
+                    <div className="relative flex w-[15%] h-full justify-center items-center z-10">
+                        <div className="relative group/avatar">
+                            {/* Glowing ring around avatar */}
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
+
+                            {/* Avatar image */}
+                            {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                             group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
+                                             transition-all duration-300"
+                                    alt="Profile"
+                                /> :
+                                (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                             group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
+                                             transition-all duration-300"
+                                    alt="Profile"
+                                /> :
+                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`${getImage(props.contact).data}`}
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                             group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
+                                             transition-all duration-300"
+                                    alt="Group"
+                                /> :
+                                (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                             group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
+                                             transition-all duration-300"
+                                    alt="Group"
+                                /> : <></>
+                            }
+                        </div>
+                    </div>
+
+                    {/* Group contact info */}
+                    {props.contact !== null && props.contact.is_group === true && (
+                        <div className="relative flex w-[85%] h-full flex-col justify-center pl-2 z-10">
+                            {/* Group name */}
+                            <div className="flex justify-start items-center">
+                                {props.contact !== null && (
+                                    <div className="flex flex-col">
+                                        <div className={`text-lg xl:text-xl font-bold tracking-wide
+                                            bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                                            group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
+                                            transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                                            {getNameContact(props.contact)}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Group members list */}
+                            <div className={`flex flex-row text-xs lg:text-sm xl:text-base truncate mt-1
+                                ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
+                                group-hover:text-cyan-200/90 transition-colors duration-300`}>
+                                {props.contact !== null && props.contact.members.map((ctc, idx) => (
+                                    <span key={ctc} className="inline-flex items-center">
+                                        <span className="text-cyan-400/60 mr-1">•</span>
+                                        {idx === props.contact.members.length - 1
+                                            ? `${getUserWithId(ctc).username} `
+                                            : `${getUserWithId(ctc).username}, `}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Individual contact info */}
+                    {props.contact !== null && props.contact.is_group === false && (
+                        <div className="relative flex w-[85%] h-full items-center pl-2 z-10">
+                            {props.contact !== null && (
+                                <div className={`text-lg lg:text-xl xl:text-2xl font-bold tracking-wide
+                                    bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                                    group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
+                                    transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                                    {getNameContact(props.contact)}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
             {!props.contact && 
                 <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" } justify-center items-center`}>
                     <div className="absolute left-0 top-[30%] h-[40%] w-full flex flex-col justify-center items-center gap-4">
@@ -541,8 +648,8 @@ export default function CurrentChat( props: any ) {
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? `${props.themeChosen === "Dark" ? "border-[#3F8F63] bg-[#3F8F63]/10 ring-[0.5] ring-[#3F8F63]" : "bg-gray-100 border-gray-300"} transition-all`
-                                        : `${props.themeChosen === "Dark" ? "border-[#3B7E9B] bg-[#3B7E9B]/10 ring-[0.5] ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`}`}
+                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
+                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
                                 <div className={`relative flex w-full text-lg text-black font-semibold text-white`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-2 items-start">
@@ -553,9 +660,7 @@ export default function CurrentChat( props: any ) {
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
-                                        {/* { message.plaintext.hasownproperty("image_id") ? <img src={`data:image/jpeg;base64,${findimagebasedonid(message.message).data}`} classname="w-[300px] h-[300px]"  ></img> : 
-                                        isBase64(message.plaintext) ? <img src={`data:image/jpeg;base64,${message.plaintext}`} classname="w-[300px] h-[300px]"  ></img> :
-                                        message.plaintext} */}
+
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
                                         {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
@@ -572,9 +677,9 @@ export default function CurrentChat( props: any ) {
                                         : 'bg-blue-600 text-white'
                                 }`}
                             >
-                                <div className={`relative flex w-full text-sm font-semibold text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-sm font-semibold text-black tracking-tightest ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className="relative flex flex-col gap-1 items-start">
-                                    <div className="break-words">
+                                    <div className="break-words tracking-tight">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
@@ -593,7 +698,7 @@ export default function CurrentChat( props: any ) {
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
                 <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20 
-                            border-2 flex flex-row`}>
+                            border-[1px] flex flex-row`}>
                     <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
                         {/* Wrapper for Image and Input */}
                         <div className="relative flex items-center justify-center w-full h-full">
