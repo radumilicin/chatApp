@@ -226,10 +226,9 @@ export default function ProfileInfo( props ) {
                         </div>
                     </div>
                     <div className={`h-full flex w-[80%] flex-col justify-center items-start px-4
-                        ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
-                        font-bold text-xl xl:text-2xl 2xl:text-3xl font-sans tracking-wide
-                        bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
-                        drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]`}>
+                        ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]" : "text-black"}
+                        font-bold text-xl xl:text-2xl font-sans tracking-wide
+                        `}>
                         Contact info
                     </div>
                 </div>
@@ -344,10 +343,10 @@ export default function ProfileInfo( props ) {
                                 placeholder={getNameContact(props.contact)}>
                             </input>)
                             :
-                            <div className={`flex flex-row justify-center items-center text-xl lg:text-2xl 2xl:text-3xl
-                                font-bold font-sans h-full w-full tracking-wide
-                                bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent
-                                drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]`}>
+                            <div className={`flex flex-row justify-center items-center text-xl lg:text-2xl
+                                font-bold font-sans h-full w-full tracking-wide ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" 
+                                    : "text-black"}
+                                `}>
                                 {getNameContact(props.contact)}
                             </div>)
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
@@ -430,9 +429,9 @@ function AboutProfile(props) {
             border-y-[1px] backdrop-blur-sm`}>
 
             {/* About Title */}
-            <div className={`flex text-lg lg:text-xl 2xl:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center
+            <div className={`flex text-lg lg:text-xl 2xl:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center bg-gradient-to-r
                 ${props.themeChosen === "Dark"
-                    ? "text-cyan-300/90"
+                    ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                     : "text-gray-800"}`}>
                 About
             </div>

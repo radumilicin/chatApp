@@ -444,15 +444,13 @@ export default function CurrentChat( props: any ) {
             {!props.contact && (
                 <div
                     className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden
-                        bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
-                        border-b border-cyan-500/20 backdrop-blur-xl
-                        hover:cursor-pointer group transition-all duration-300
+                        ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300" 
+                            : "bg-slate-200"} 
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
-                    onClick={() => { props.setProfileInfo(true) }}
+                    onClick={() => {}}
                 >
                     {/* Animated gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
-                                    group-hover:via-cyan-500/10 transition-all duration-500" />
+                    <div className={`absolute inset-0 ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent group-hover:via-cyan-500/10 transition-all duration-500" : "bg-slate-200"} `} />
                     {/* Glow effect on hover */}
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
@@ -463,21 +461,20 @@ export default function CurrentChat( props: any ) {
             {/* Contact header - futuristic style */}
             {props.contact && (
                 <div
-                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden
-                        bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95
-                        border-b border-cyan-500/20 backdrop-blur-xl
-                        hover:cursor-pointer group transition-all duration-300 flex flex-row
+                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden flex flex-row
+                        ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300"
+                            : "bg-gray-100/80 border-b border-gray-300"}
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
                     onClick={() => { props.setProfileInfo(true) }}
                 >
                     {/* Animated gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
-                                    group-hover:via-cyan-500/10 transition-all duration-500" />
+                                    group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />
 
                     {/* Top glow line on hover */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
                         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-                    </div>
+                    </div> 
 
                     {/* Profile picture container */}
                     <div className="relative flex w-[15%] h-full justify-center items-center z-10">
@@ -569,9 +566,9 @@ export default function CurrentChat( props: any ) {
                         <div className="relative flex w-[85%] h-full items-center pl-2 z-10">
                             {props.contact !== null && (
                                 <div className={`text-lg lg:text-xl xl:text-2xl font-bold tracking-wide
-                                    bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
-                                    group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
-                                    transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                                    ${props.themeChosen === "Dark"
+                                        ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                                        : "text-gray-900"}`}>
                                     {getNameContact(props.contact)}
                                 </div>
                             )}
@@ -584,8 +581,8 @@ export default function CurrentChat( props: any ) {
                     <div className="absolute left-0 top-[30%] h-[40%] w-full flex flex-col justify-center items-center gap-4">
                         <img src={`${props.themeChosen === "Dark" ? "walkie-talkie-white.png" : "Walkie-talkie.png"}`} className="w-[200px] h-[200px]"></img>
                         <div className="flex flex-col justify-center items-center">
-                            <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} font-sans`}>Walk-n-talk</div>
-                            <div className={`md:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with whoever you want</div>
+                            <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-blue-300 to-green-400 bg-clip-text text-transparent" : "text-gray-800"} font-sans`}>Walk-n-talk</div>
+                            <div className={`md:text-base xl:text-lg ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-blue-300 to-green-400 bg-clip-text text-transparent" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with whoever you want</div>
 
                         </div>
                     </div>
@@ -651,8 +648,8 @@ export default function CurrentChat( props: any ) {
                                         ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
                                         : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-lg text-black font-semibold text-white`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-2 items-start">
+                                <div className={`relative flex w-full text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                                     <div className="break-words">
                                         {/* {
                                             message.decrypted_message
@@ -705,53 +702,53 @@ export default function CurrentChat( props: any ) {
                             <div className={`relative flex flex-col w-16 h-12 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                                 <img
                                     src={`${props.themeChosen === "Dark" ? "/attach2-1.png" : "attach-black.png"}`}
-                                    className="absolute w-6 h-6 aspect-square cursor-pointer z-20"
+                                    className="w-6 h-6 aspect-square pointer-events-none"
                                     alt="Upload"
                                     // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
                                 />
-                            </div>
-                            <input 
-                                type="file" accept="image/*"
-                                className="absolute top-0 left-0 w-full z-10 h-full opacity-0 cursor-pointer"
-                                // onClick={(event) => {
-                                //     event.preventDefault();
-                                // }}
-                                onChange={(event) => {
-                                    console.log("File input triggered");
-                                    const file = event.target.files[0];
-                                    if (file) {
-                                        console.log("File selected:", file.name);
-                                        const reader = new FileReader();
-                                        // console.log("FileReader created");
-                                        reader.onload = (e) => {
-                                            // console.log("File loaded");
-                                            let base64Image = e.target.result as string;
-                                            const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
-                                            if (base64Regex.test(base64Image)) {
-                                                // Remove the data URL prefix
-                                                base64Image = base64Image.replace(base64Regex, '');
-                                            }
+                                <input
+                                    type="file" accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    // onClick={(event) => {
+                                    //     event.preventDefault();
+                                    // }}
+                                    onChange={(event) => {
+                                        console.log("File input triggered");
+                                        const file = event.target.files[0];
+                                        if (file) {
+                                            console.log("File selected:", file.name);
+                                            const reader = new FileReader();
+                                            // console.log("FileReader created");
+                                            reader.onload = (e) => {
+                                                // console.log("File loaded");
+                                                let base64Image = e.target.result as string;
+                                                const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+                                                if (base64Regex.test(base64Image)) {
+                                                    // Remove the data URL prefix
+                                                    base64Image = base64Image.replace(base64Regex, '');
+                                                }
 
-                                            console.log("Base64 Image (stripped):", base64Image);
-                                            
-                                            // Send the base64 image
-                                            if(props.contact.is_group === true) handleSendMessage2(base64Image)
-                                            handleSendMessage(base64Image);
-                                        };
-                                        reader.onerror = (error) => console.error("Error reading file:", error);
-                                        reader.readAsDataURL(file);
-                                        console.log("Started reading file");
-                                    } else {
-                                        console.log("No file selected");
-                                    }
-                                    // Reset the file input to allow re-selection
-                                    event.target.value = '';
-                                }}
-                            />
+                                                console.log("Base64 Image (stripped):", base64Image);
+
+                                                // Send the base64 image
+                                                if(props.contact.is_group === true) handleSendMessage2(base64Image)
+                                                handleSendMessage(base64Image);
+                                            };
+                                            reader.onerror = (error) => console.error("Error reading file:", error);
+                                            reader.readAsDataURL(file);
+                                            console.log("Started reading file");
+                                        } else {
+                                            console.log("No file selected");
+                                        }
+                                        // Reset the file input to allow re-selection
+                                        event.target.value = '';
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
-                    <div className="relative left-0 flex basis-[80%] h-full">
-                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white text-xl
+                    <div className={`relative left-0 flex basis-[80%] h-full`}>
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl
                                                                                                             ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} 
                             onKeyDown={(e) => { 

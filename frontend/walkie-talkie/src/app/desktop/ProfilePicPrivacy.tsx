@@ -62,7 +62,7 @@ export default function ProfilePicPrivacy(props: any) {
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
                     </div>
-                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-[#3B7E9B] to-[#5BA3C5]" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
                         Profile Picture Privacy
                     </h1>
                 </div>
@@ -110,9 +110,6 @@ function RadioOption(props: { label: string, selected: boolean, onClick: () => v
             onClick={props.onClick}
         >
             <div className="relative flex items-center justify-center w-8 h-8">
-                {!props.selected && (
-                    <div className={`w-5 h-5 rounded-full border-[3px] ${props.themeChosen === "Dark" ? "border-gray-600" : "border-gray-400"}`}></div>
-                )}
                 {props.selected && (
                     <>
                         <div className="absolute w-8 h-8 bg-[#3B7E9B]/20 rounded-full blur-md animate-pulse"></div>
