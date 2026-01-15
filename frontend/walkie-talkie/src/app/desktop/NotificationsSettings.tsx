@@ -138,7 +138,7 @@ export default function NotificationSettings( props: any ) {
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
                     </div>
-                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-[#3B7E9B] to-[#5BA3C5]" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
                         Notifications
                     </h1>
                 </div>
@@ -210,7 +210,11 @@ export function EnableNotifications(props: any) {
                 </div>
             </div>
             <div className="relative flex items-center">
-                <div className={`w-12 h-6 ${props.notificationsEnabled ? 'bg-[#3B7E9B]' : 'bg-gray-600'} rounded-full transition-all duration-300 cursor-pointer ${props.notificationsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : ''}`}
+                <div className={`w-12 h-6 bg-gradient-to-r ${(props.notificationsEnabled && props.themeChosen === "Dark") ? 'from-cyan-400 via-blue-400 to-cyan-600' :
+                                                             (props.notificationsEnabled && props.themeChosen === "Light") ? 'from-cyan-600 via-blue-600 to-cyan-900' :
+                                                             (!props.notificationsEnabled && props.themeChosen === "Dark") ? 'bg-gray-400' :
+
+                'bg-gray-900'} rounded-full transition-all duration-300 cursor-pointer ${props.notificationsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : 'shadow-sm'}`}
                     onClick={() => {
                         props.prevEnableNotifications.current = props.notificationsEnabled
                         props.setNotificationsEnabled(!props.notificationsEnabled)
@@ -258,7 +262,11 @@ export function IncomingSounds(props: any) {
                 </div>
             </div>
             <div className="relative flex items-center">
-                <div className={`w-12 h-6 ${props.incomingSoundsEnabled ? 'bg-[#3B7E9B]' : 'bg-gray-600'} rounded-full transition-all duration-300 cursor-pointer ${props.incomingSoundsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : ''}`}
+                <div className={`w-12 h-6 bg-gradient-to-r ${(props.incomingSoundsEnabled && props.themeChosen === "Dark") ? 'from-cyan-400 via-blue-400 to-cyan-600' :
+                                                             (props.incomingSoundsEnabled && props.themeChosen === "Light") ? 'from-cyan-600 via-blue-600 to-cyan-900' :
+                                                             (!props.incomingSoundsEnabled && props.themeChosen === "Dark") ? 'bg-gray-400' :
+
+                'bg-gray-900'} rounded-full transition-all duration-300 cursor-pointer ${props.incomingSoundsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : 'shadow-sm'}`}
                     onClick={() => {
                         props.prevEnableIncomingSounds.current = props.incomingSoundsEnabled
                         props.setIncomingSoundsEnabled(!props.incomingSoundsEnabled)
@@ -305,7 +313,11 @@ export function OutgoingSounds(props: any) {
                 </div>
             </div>
             <div className="relative flex items-center">
-                <div className={`w-12 h-6 ${props.outgoingMessagesSoundsEnabled ? 'bg-[#3B7E9B]' : 'bg-gray-600'} rounded-full transition-all duration-300 cursor-pointer ${props.outgoingMessagesSoundsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : ''}`}
+                <div className={`w-12 h-6 bg-gradient-to-r ${(props.outgoingMessagesSoundsEnabled && props.themeChosen === "Dark") ? 'from-cyan-400 via-blue-400 to-cyan-600' :
+                                                             (props.outgoingMessagesSoundsEnabled && props.themeChosen === "Light") ? 'from-cyan-600 via-blue-600 to-cyan-900' :
+                                                             (!props.outgoingMessagesSoundsEnabled && props.themeChosen === "Dark") ? 'bg-gray-800' :
+
+                'bg-gray-900'} rounded-full transition-all duration-300 cursor-pointer ${props.outgoingMessagesSoundsEnabled ? 'shadow-[0_0_12px_rgba(59,126,155,0.6)]' : 'shadow-sm'}`}
                     onClick={() => {
                         props.prevEnableOutgoingSounds.current = props.outgoingMessagesSoundsEnabled
                         props.setOutgoingMessagesSoundsEnabled(!props.outgoingMessagesSoundsEnabled)

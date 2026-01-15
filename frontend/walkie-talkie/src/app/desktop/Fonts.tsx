@@ -42,19 +42,19 @@ export default function Fonts(props: any) {
     return (
         <>
             {/* Backdrop overlay with blur */}
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-40" onClick={() => props.setFontPressed(false)} />
+            <div className={`fixed inset-0 ${props.themeChosen === "Dark" ? "bg-black/60" : "bg-gray-900/40"} backdrop-blur-md z-40`} onClick={() => props.setFontPressed(false)} />
 
             {/* Modal */}
             <div className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[450px] h-auto
                 ${props.themeChosen === "Dark"
                     ? "bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-slate-900/98"
-                    : "bg-gradient-to-br from-gray-50/98 to-gray-100/95"}
+                    : "bg-gradient-to-b from-gray-100 to-gray-200"}
                 backdrop-blur-xl rounded-3xl z-50 shadow-2xl
                 border-2 ${props.themeChosen === "Dark" ? "border-cyan-500/30" : "border-gray-300"}
                 animate-in fade-in-0 zoom-in-95 duration-200`}>
 
                 {/* Animated glow effect */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-purple-500/10 opacity-50" />
+                <div className={`absolute inset-0 rounded-3xl ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-purple-500/10 opacity-50" : "bg-gradient-to-br from-cyan-400/15 via-blue-400/10 to-purple-400/15 opacity-40"}`} />
 
                 <div className="relative flex flex-col left-0 w-full h-full p-6 gap-6">
                     {/* Header with gradient text */}
@@ -70,10 +70,10 @@ export default function Fonts(props: any) {
                             ${props.fontChosenPending === "Sans"
                                 ? props.themeChosen === "Dark"
                                     ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
-                                    : "bg-blue-500/20 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
                                 : props.themeChosen === "Dark"
                                     ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
-                                    : "border-2 border-gray-300 hover:border-blue-400/30 hover:bg-blue-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
                             }
                             hover:scale-[1.02] active:scale-[0.98]`}
                             onClick={() => {
@@ -103,10 +103,10 @@ export default function Fonts(props: any) {
                             ${props.fontChosenPending === "Serif"
                                 ? props.themeChosen === "Dark"
                                     ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
-                                    : "bg-blue-500/20 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
                                 : props.themeChosen === "Dark"
                                     ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
-                                    : "border-2 border-gray-300 hover:border-blue-400/30 hover:bg-blue-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
                             }
                             hover:scale-[1.02] active:scale-[0.98]`}
                             onClick={() => {
@@ -136,10 +136,10 @@ export default function Fonts(props: any) {
                             ${props.fontChosenPending === "Mono"
                                 ? props.themeChosen === "Dark"
                                     ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
-                                    : "bg-blue-500/20 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
                                 : props.themeChosen === "Dark"
                                     ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
-                                    : "border-2 border-gray-300 hover:border-blue-400/30 hover:bg-blue-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
                             }
                             hover:scale-[1.02] active:scale-[0.98]`}
                             onClick={() => {

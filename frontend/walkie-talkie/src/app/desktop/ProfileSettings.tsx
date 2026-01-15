@@ -138,42 +138,63 @@ export default function ProfileSettings(props) {
 
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
-            {/* Header with back button */}
-            <div className="relative w-full pt-4 px-4">
-                <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
-                        onClick={() => {
-                            props.setPressPrivacy(false)
-                            props.setPressNotifications(false)
-                            props.setPressAccount(false)
-                            props.setPressProfile(false)
-                            props.setPressAppearance(false)
-                            props.setPressedSettings(false)
-                            props.setProfilePicPrivPress(false)
-                            props.setStatusPrivPress(false)
-                            props.setDisappearingMessagesPressed(false)
-                            props.setBlockedContactsPressed(false)
-                        }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressPrivacy(false)
+                                props.setPressNotifications(false)
+                                props.setPressAccount(false)
+                                props.setPressProfile(false)
+                                props.setPressAppearance(false)
+                                props.setPressedSettings(false)
+                                props.setProfilePicPrivPress(false)
+                                props.setStatusPrivPress(false)
+                                props.setDisappearingMessagesPressed(false)
+                                props.setBlockedContactsPressed(false)
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
+                    </div>
+                    <h1 className={`text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                        Profile Settings
+                    </h1>
                 </div>
             </div>
 
             {/* Profile Picture Section */}
             <div className="relative w-full flex flex-col items-center justify-center py-8">
                 <div
-                    className="relative flex items-center justify-center"
+                    className="relative flex items-center justify-center group/profile"
                     onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
                     onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
                 >
+                    {/* Glowing ring effect around profile picture */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                        blur-xl group-hover/profile:blur-2xl transition-all duration-500 scale-110 animate-pulse" />
+
+                    {/* Secondary glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-300/20 via-transparent to-purple-300/20
+                        blur-lg transition-all duration-300 scale-105" />
+
                     {currImageData.data !== "" ? (
                         <img
                             src={`data:image/jpeg;base64,${currImageData.data}`}
-                            className={`w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 xl:w-52 xl:h-52 z-0 rounded-full border-4 ${props.themeChosen === "Dark" ? "border-[#3B7E9B]/50" : "border-gray-400"} shadow-xl ${hoveredProfilePic ? 'blur-sm' : ""} transition-all`}
+                            className={`relative w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 xl:w-52 xl:h-52 z-10 rounded-full
+                                border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
+                                shadow-2xl shadow-cyan-500/20
+                                group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                ${hoveredProfilePic ? 'blur-sm' : ""} transition-all duration-300`}
                             alt="Profile"
                         />
                     ) : (
                         <img
                             src="./profilePic2.png"
-                            className={`w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 xl:w-52 xl:h-52 z-0 rounded-full border-4 ${props.themeChosen === "Dark" ? "border-[#3B7E9B]/50" : "border-gray-400"} shadow-xl ${hoveredProfilePic ? 'blur-sm' : ""} transition-all`}
+                            className={`relative w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 xl:w-52 xl:h-52 z-10 rounded-full
+                                border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
+                                shadow-2xl shadow-cyan-500/20
+                                group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                ${hoveredProfilePic ? 'blur-sm' : ""} transition-all duration-300`}
                             alt="Default Profile"
                         />
                     )}
@@ -181,7 +202,7 @@ export default function ProfileSettings(props) {
                     {hoveredProfilePic && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-2">
                             <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : "./camera.png"}`} className="h-16 w-16" alt="Camera" />
-                            <p className="text-white font-medium text-sm text-center px-4">
+                            <p className={`font-medium text-sm text-center px-4 ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"}`}>
                                 Change profile picture
                             </p>
                         </div>
@@ -226,12 +247,12 @@ export default function ProfileSettings(props) {
                 <div className="flex flex-col gap-8">
                     {/* Name Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} uppercase tracking-wide`}>
+                        <label className={`text-sm font-medium bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600"} uppercase tracking-wide`}>
                             Name
                         </label>
                         <div ref={divRef} className="flex items-center gap-3">
                             {stateUsername === "fixed" ? (
-                                <p className={`flex-1 text-lg font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} truncate`}>
+                                <p className={`flex-1 text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} truncate`}>
                                     {getCurrUser().username}
                                 </p>
                             ) : (
@@ -269,7 +290,7 @@ export default function ProfileSettings(props) {
 
                     {/* About Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} uppercase tracking-wide`}>
+                        <label className={`text-sm font-medium bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600"} uppercase tracking-wide`}>
                             About
                         </label>
                         <div ref={divRef2} className="flex items-center gap-3">
