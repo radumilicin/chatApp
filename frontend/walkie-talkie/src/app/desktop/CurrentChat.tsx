@@ -443,8 +443,8 @@ export default function CurrentChat( props: any ) {
             {/* Empty contact header - futuristic style */}
             {!props.contact && (
                 <div
-                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden
-                        ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300" 
+                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden hover:cursor-pointer
+                        ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl group transition-all duration-300" 
                             : "bg-slate-200"} 
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
                     onClick={() => {}}

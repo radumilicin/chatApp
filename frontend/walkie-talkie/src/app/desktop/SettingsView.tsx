@@ -3,6 +3,19 @@ import {useState, useRef, useEffect} from 'react'
 export default function SettingsView(props) {
  
     const [searchedSettings, setSearchedSetting] = useState("");
+    const profileSettings = ["Profile", "Account"]
+    const privacySettings = ["Privacy", "Blocked contacts", "Disappearing messages", "Profile picture privacy", "Status privacy"]
+    const notificationsSettings = ["Notifications", "All notifications", "Receiving notifications", "Sending notifications", "Outgoing notifications"]
+    const appearanceSettings = ["Appearance", "Fonts", "Themes", "Background"]
+    const logOutSettings = ["Log out"]
+
+    const searchLower = searchedSettings.toLowerCase();
+    const showProfile = searchedSettings === "" || profileSettings.some(s => s.toLowerCase().includes(searchLower));
+    const showPrivacy = searchedSettings === "" || privacySettings.some(s => s.toLowerCase().includes(searchLower));
+    const showNotifications = searchedSettings === "" || notificationsSettings.some(s => s.toLowerCase().includes(searchLower));
+    const showAppearance = searchedSettings === "" || appearanceSettings.some(s => s.toLowerCase().includes(searchLower));
+    const showLogOut = searchedSettings === "" || logOutSettings.some(s => s.toLowerCase().includes(searchLower));
+
 
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-scroll no-scrollbar`}>
@@ -25,18 +38,18 @@ export default function SettingsView(props) {
 
             <div className={`absolute left-0 w-full top-[20%] h-[80%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                 <div className="relative top-0 left-0 flex flex-col w-full h-full gap-2">
-                    <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} 
+                    {showProfile && <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} 
                                 setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance} 
-                                setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress}></CurrUserDiv>
-                    <PrivacyOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications}
+                                setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress}></CurrUserDiv>}
+                    {showPrivacy && <PrivacyOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications}
                      setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress}
                      disappearingMessagesPeriod={props.disappearingMessagesPeriod} themeChosen={props.themeChosen}
-                     ></PrivacyOption>
-                    <NotificationsOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} 
-                        setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress} themeChosen={props.themeChosen}></NotificationsOption>
-                    <AppearanceOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} 
-                        setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress} themeChosen={props.themeChosen}></AppearanceOption>
-                    <LogOutOption loggedIn={props.loggedIn} logOutNow={props.logOutNow} setLoggedIn={props.setLoggedIn} themeChosen={props.themeChosen}></LogOutOption>
+                     ></PrivacyOption>}
+                    {showNotifications && <NotificationsOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications}
+                        setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress} themeChosen={props.themeChosen}></NotificationsOption>}
+                    {showAppearance && <AppearanceOption setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile} setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications}
+                        setPressAppearance={props.setPressAppearance} setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress} themeChosen={props.themeChosen}></AppearanceOption>}
+                    {showLogOut && <LogOutOption loggedIn={props.loggedIn} logOutNow={props.logOutNow} setLoggedIn={props.setLoggedIn} themeChosen={props.themeChosen}></LogOutOption>}
                     {/* <div className="">Account</div>
                     <div className="">Appearance</div>
                     <div className="">Notifications</div> */}
