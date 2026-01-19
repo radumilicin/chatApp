@@ -308,12 +308,20 @@ export function MenuDropdown (props) {
 
 export function OtherOptions (props) {
     return (
-        <div className={`absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
-            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 transition-all ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/20" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
-                </div>} 
-            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-base xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl font-semibold ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
+        <div className={`absolute left-0 top-0 h-[7.5%] w-[98%] flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
+            {props.addContact && <div className={`group relative left-[2%] w-[8%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+                                    transition-all duration-300 rounded-xl hover:cursor-pointer
+                                    ${props.themeChosen === "Dark"
+                                        ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30"
+                                        : "hover:bg-gray-300/50"}
+                                    hover:scale-105 active:scale-95`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
+                </div>}
+            {props.addContact && <div className={`flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-bold flex-col justify-center items-start font-sans
+                        bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>Add contact</div>}
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/addUser-white.png" : "add-user.png"}`} className="justify-end items-center w-5 h-5 group-hover:scale-[1.2]"></img>
@@ -476,13 +484,13 @@ export function UsersToAddToContacts (props : any) {
             ${props.themeChosen === "Dark"
                 ? "bg-transparent"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}
-            backdrop-blur-xl shadow-2xl overflow-hidden`}>
+            backdrop-blur-xl shadow-x-2xl overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-y-auto scrollbar-hidden">
                 { props.filteredUsers !== null && props.filteredUsers.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`group/user relative flex-none left-[2%] flex flex-row h-[12%] w-[96%] overflow-hidden
+                        className={`group/user relative flex-none left-[2%] flex flex-row h-[12%] w-[92%] overflow-hidden
                             transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                             ${props.themeChosen === "Dark"
                                 ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-green-500/20 border border-green-500/10 hover:border-green-500/30"
@@ -756,7 +764,7 @@ export function Contacts( props: any) {
 
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%] ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-xl rounded-2xl flex flex-col shadow-2xl overflow-hidden`}>
+        <div className={`absolute left-0 top-[16%] w-full h-[84%] bg-transparent backdrop-blur-xl flex flex-col shadow-x-2xl overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
@@ -826,9 +834,9 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans tracking-wide
+                                    <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans
                                         ${props.themeChosen === "Dark"
-                                            ? "bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(34,211,238,0.3)]"
+                                            ? "text-gray-200"
                                             : "text-gray-900"}`}>
                                         {getNameWithUserId(element)}
                                     </div>
@@ -1249,7 +1257,7 @@ export function Groups(props) {
         <div className={`absolute left-0 top-0 w-full h-full
             ${props.themeChosen === "Dark"
                 ? "bg-gradient-to-b from-slate-900/95 via-slate-800/90 to-slate-900/95"
-                : "bg-gradient-to-b from-gray-100 to-gray-200"}
+                : "bg-transparent"}
             backdrop-blur-xl`}>
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%] border-b border-cyan-500/10">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
@@ -1260,7 +1268,7 @@ export function Groups(props) {
                             : "hover:bg-gray-300/50"}
                         hover:scale-105 active:scale-95`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
-                             className="justify-center items-center max-h-[70%] aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
+                             className="justify-center items-center w-6 h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
                     </div>
                     <div className={`flex w-[80%] left-0 indent-[20px] h-full text-lg xl:text-xl font-bold flex-col justify-center items-start font-sans
                         bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent`}>
@@ -1385,26 +1393,25 @@ export function Groups(props) {
                         Group name already exists!
                     </div>}
             </div>}
-            {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%] border-b border-cyan-500/10">
-                <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className={`group relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+            {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[16%]">
+                <div className={`relative left-0 top-0 h-[35%] w-full flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent"}`}>
+                    <div className={`group relative left-[2%] w-[8%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
                                     transition-all duration-300 rounded-xl hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
                                         ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30"
                                         : "hover:bg-gray-300/50"}
                                     hover:scale-105 active:scale-95`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
-                             className="justify-center items-center max-h-[70%] aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
+                             className="w-6 h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
                     </div>
-                    <div className={`flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-bold flex-col justify-center items-start font-sans
+                    <div className={`flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-bold flex-row items-center font-sans
                         bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
                         Add group members
                     </div>
                 </div>
-                <div className="relative left-0 top-0 h-[50%] flex flex-row justify-center items-center">
-                    {/* Search bar */}
-                    <div className={`absolute left-[2%] top-[6%] w-[96%] h-full rounded-2xl overflow-hidden
+                <div className={`relative left-0 top-0 h-[65%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
                         transition-all duration-300
                         ${props.themeChosen === "Dark"
                             ? "border-2 border-slate-700/50 bg-slate-800/60 focus-within:border-[#3B7E9B] focus-within:shadow-[0_0_12px_rgba(59,126,155,0.4)]"
@@ -1412,10 +1419,10 @@ export function Groups(props) {
                         backdrop-blur-sm`}>
                         <div className="relative top-0 left-0 h-full w-full flex flex-row">
                             <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                             </div>
                             <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg xl:text-xl font-medium
+                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg font-medium
                                     ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
                                     value={usernameSearch} placeholder="Search user to add.."
                                     onChange={async (e) => {
@@ -1434,7 +1441,7 @@ export function Groups(props) {
                 <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
                     <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center justify-center w-[80%] overflow-y-scroll scrollbar-hide">
                         {props.contactsInNewGroup.map((contact, idx) => (
-                            <div key={idx} className={`group/chip relative text-md w-full h-[40px] flex flex-row justify-center items-center rounded-full
+                            <div key={idx} className={`group/chip relative text-md w-[92%] h-[40px] flex flex-row justify-center items-center rounded-full
                                 transition-all duration-300 overflow-hidden
                                 ${props.themeChosen === "Dark"
                                     ? "bg-gradient-to-r from-cyan-500/90 to-blue-500/90 shadow-lg shadow-blue-700"
@@ -1458,12 +1465,12 @@ export function Groups(props) {
                     </div>
                 </div>
             }
-            {!finishingSettingUpGroup && <div className={`relative flex top-[2%] flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[58%]' : 'h-[73%]' } justify-start items-center overflow-y-scroll scrollbar-hidden`}>
+            {!finishingSettingUpGroup && <div className={`relative flex top-0 flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[55%]' : 'h-[70%]' } justify-start items-center overflow-y-scroll scrollbar-hidden`}>
                 { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`group/groupuser relative flex-none flex flex-row h-[15%] w-[96%] top-0 overflow-hidden
+                    className={`group/groupuser relative flex-none flex flex-row h-[15%] w-[92%] mt-2 top-0 overflow-hidden
                         transition-all duration-300 rounded-xl hover:cursor-pointer
                         ${props.themeChosen === "Dark"
                             ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border border-cyan-500/10 hover:border-cyan-500/30"

@@ -247,7 +247,7 @@ export default function ProfileSettings(props) {
                 <div className="flex flex-col gap-8">
                     {/* Name Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600"} uppercase tracking-wide`}>
+                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
                             Name
                         </label>
                         <div ref={divRef} className="flex items-center gap-3">
@@ -290,7 +290,7 @@ export default function ProfileSettings(props) {
 
                     {/* About Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600"} uppercase tracking-wide`}>
+                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
                             About
                         </label>
                         <div ref={divRef2} className="flex items-center gap-3">
