@@ -953,7 +953,7 @@ export function Contacts( props: any) {
                                             <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs lg:text-sm
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
+                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user 
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
                                                 }

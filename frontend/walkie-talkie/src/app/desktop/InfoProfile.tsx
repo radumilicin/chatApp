@@ -446,11 +446,13 @@ function AboutProfile(props) {
                     onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
                     {
                         (props.contact !== null) ?
-                            (props.contact.is_group === true && props.descriptionPressed === false ?
-                                ((props.contact.group_description === '') ?
-                                    <span className="text-cyan-400/60 italic">Add group description</span>
-                                    : props.contact.group_description)
-                                : (props.contact.is_group === false && props.getUser(props.contact).status_visibility !== "Nobody") ?
+                            (props.contact.is_group === true ?
+                                (props.descriptionPressed === false ?
+                                    ((props.contact.group_description === '') ?
+                                        <span className="text-cyan-400/60 italic">Add group description</span>
+                                        : props.contact.group_description)
+                                    : null)
+                                : (props.getUser(props.contact).status_visibility !== "Nobody") ?
                                     props.getUser(props.contact).about : `Hey there I'm using Walkie Talkie`) : ''}
                     {
                         (props.contact !== null) ?
@@ -507,13 +509,18 @@ function Members(props) {
 
     const [pressed, setPressed] = useState([])
     const [userToAddAsAdmin, setUserToAddAsAdmin] = useState(-1)
-    
+    const menuRef = useRef<HTMLDivElement>(null)
+
     const updatePressedAsync = async (arr : any) => {
         setPressed(arr)
     }
 
+    const closeAllMenus = () => {
+        setPressed(prev => prev.map(() => false))
+    }
+
     const updatePressedIndex = async (idx: number) => {
-        const filteredPressed = pressed.map((elem, i) => 
+        const filteredPressed = pressed.map((elem, i) =>
             i === idx ? ((elem === true) ? false : true) : false
         );
         console.log("filteredPressed after press" + JSON.stringify(filteredPressed));
@@ -524,12 +531,24 @@ function Members(props) {
         const user = props.users.find((user) => {return user.id === user_id})
         return user || {data: ""}
     }
-    
-    function getProfilePic(user: any) { 
+
+    function getProfilePic(user: any) {
         console.log("HERE?")
         const image = props.images.find((image: any) => image.id === user.profile_pic_id);
         return image || { data: "" }; // Ensure we return a fallback value
     }
+
+    // Click outside handler to close menus
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                closeAllMenus()
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     useEffect(() => {
         console.log("members = " + props.contact.members)
@@ -585,7 +604,7 @@ function Members(props) {
     }
 
     return (
-        <div className={`relative left-0 top-0 w-full flex flex-col justify-center
+        <div ref={menuRef} className={`relative left-0 top-0 w-full flex flex-col justify-center
             ${props.themeChosen === "Dark"
                 ? "bg-slate-800/20 border-cyan-500/20"
                 : "bg-gray-100/30 border-gray-300"}
