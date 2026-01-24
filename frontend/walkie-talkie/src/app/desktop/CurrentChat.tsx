@@ -178,15 +178,7 @@ export default function CurrentChat( props: any ) {
 
 
         console.log(`RATCHET IN CURRENT CHAT ${props.curr_user}, with convo_id: ${props.contact.id}: ${JSON.stringify(ratchet)}`)
-        // ✅ Check if conversation exists, not UI state
-        // const conversation = ConversationManager.loadConversation(other_user);
-        // console.log("=====================")
-        // console.log("=== RATCHET STATE ===")
-        // console.log("Conversation history: " + JSON.stringify(conversation))
-        // console.log("=== END RATCHET STATE ===")
-        // console.log("=====================")
-        // console.log("loadConversations called with contact_id:", other_user);
-
+        
         if (!ratchet) {
             // ========================================
             // FIRST MESSAGE IN CONVERSATION (Initiator)
@@ -222,18 +214,6 @@ export default function CurrentChat( props: any ) {
             ({ciphertext, header} = await currentRatchet.encrypt(msg)); 
             
             console.log("After encrypting message");
-
-            // Save conversation state
-            // ConversationManager.saveConversation(other_user, {
-            // ratchetState: currentRatchet.getState(),
-            // theirIdentityKey: bundle.identityKey,
-            // });
-            
-            // var conversation_2 = ConversationManager.loadConversation(other_user)
-            // console.log(`Conversation state after sending first message: ${JSON.stringify(conversation_2)}`)
-
-            // console.log("Conversation state saved");
-
         } else {
 
             currentRatchet = ratchet
@@ -247,9 +227,7 @@ export default function CurrentChat( props: any ) {
                 hasSendingChainKey: ratchet.state.sendingChainKey,
                 hasReceivingChainKey: ratchet.state.receivingChainKey
             });
-            
-            // Load existing ratchet
-            // currentRatchet = new DoubleRatchet(conversation.ratchetState);
+
             setRatchet(currentRatchet);
             
             // Encrypt with existing ratchet
@@ -582,8 +560,7 @@ export default function CurrentChat( props: any ) {
                         <img src={`${props.themeChosen === "Dark" ? "walkie-talkie-white.png" : "Walkie-talkie.png"}`} className="w-[200px] h-[200px]"></img>
                         <div className="flex flex-col justify-center items-center">
                             <div className={`flex text-2xl ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-blue-300 to-green-400 bg-clip-text text-transparent" : "text-gray-800"} font-sans`}>Walk-n-talk</div>
-                            <div className={`md:text-base xl:text-lg ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-blue-300 to-green-400 bg-clip-text text-transparent" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with whoever you want</div>
-
+                            <div className={`md:text-base xl:text-lg ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-blue-300 to-green-400 bg-clip-text text-transparent" : "text-gray-800"} font-sans`}>End-2-end encrypted chat application to talk with anyone</div>
                         </div>
                     </div>
                 </div>
@@ -666,18 +643,17 @@ export default function CurrentChat( props: any ) {
                             </div>
                         </div>
                     ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
-                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? 'bg-green-500 text-white bg-opacity-80'
-                                        : 'bg-blue-600 text-white'
-                                }`}
+                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
+                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-sm font-semibold text-black tracking-tightest ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-1 items-start">
-                                    <div className="break-words tracking-tight">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                <div className={`relative flex w-full text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <div className="break-words">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
                                     </div>

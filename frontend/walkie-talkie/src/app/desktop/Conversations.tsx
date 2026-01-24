@@ -1282,7 +1282,7 @@ export function Groups(props) {
                     <div className="relative w-full h-full flex flex-col justify-center items-center">
                         <div className="group/icon relative flex flex-col w-44 h-36 aspect-square justify-center items-center hover:cursor-pointer
                             transition-all duration-300"
-                            /*onClick={() => {document.getElementById("groupImageInput")?.click()}}*/
+                            onClick={() => {document.getElementById("groupImageInput")?.click()}}
                             onMouseEnter={() => {setHoveringGroupIcon(true)}}
                             onMouseLeave={() => {setHoveringGroupIcon(false)}}>
 

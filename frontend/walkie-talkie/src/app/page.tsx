@@ -1028,7 +1028,7 @@ export default function Home() {
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">
-      <div className={`relative left-0 top-0 w-full h-full flex flex-row ${themeChosen === "Dark" ? "bg-[#101D42]" : "bg-slate-400"} ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
+      <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
         {themePressed ? (display === "Desktop" ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
                         ></Theme> : <ThemeVertical curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
@@ -1039,7 +1039,8 @@ export default function Home() {
                         ></Fonts> : <FontsVertical curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} fontChosenPending={fontChosenPending} setFontChosenPending={setFontChosenPending}
                         ></FontsVertical>) : <></>}
-        {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-[#101D42] ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
+        {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br ${themeChosen === "Dark" ? "from-[#181c25] via-[#01050c] to-[#0d1018]" : "from-[#258ebe] via-[#7823a8] to-[#10bb79]"} 
+                                              ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
           {display === "Mobile" && <OptionsBarVerticalView curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} 
                                     setPressedSettings={setPressedSettings} themeChosen={themeChosen} setPressAccount={setPressAccount} setPressPrivacy={setPressPrivacy} setDisappearingMessagesPressed={setDisappearingMessagesPressed}
