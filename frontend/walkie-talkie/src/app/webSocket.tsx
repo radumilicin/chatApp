@@ -35,10 +35,10 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         };
 
         // ✅ 2. Fix WebSocket to update state properly
-        // this gets triggered both when WE send message and when they send 
+        // this gets triggered both when WE send message and when they send
         ws.current.onmessage = async (event) => {
           const message = JSON.parse(event.data);
-          
+
           // ✅ Ignore acknowledgments
           if (message.type === 'ack') {
             console.log('Message acknowledged by server');
@@ -47,41 +47,80 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
 
           console.log('Message received:', message);
           console.log('🔴 RAW MESSAGE FROM WEBSOCKET:', message);
+          console.log('🔴 Has group_id?', !!message.group_id);
           console.log('🔴 Has ciphertext?', !!message.ciphertext);
           console.log('🔴 Has plaintext message?', !!message.message);
-          
+          console.log('Time:', Date.now().toString())
+
+          // Handle group messages (no decryption)
+          if (message.hasOwnProperty("group_id")) {
+            console.log('🔴 Group message received - no decryption needed');
+
+            const group_message = {
+              sender_id: message.sender_id,
+              recipient_ids: message.recipient_ids,
+              group_id: message.group_id,
+              message: message.message,
+              timestamp: message.timestamp
+            };
+
+            setDecryptedContacts((currArr) => {
+              console.log('🔵 PREV state (group):', currArr);
+
+              if (!currArr) return currArr;
+
+              const updated_state = currArr.map((elem) => {
+                if (elem.id === message.group_id) {
+                  const msgs_group = [...(elem.message || []), group_message];
+                  localStorage.setItem(`group_conversation_${user}_${message.group_id}`, JSON.stringify(msgs_group));
+                  console.log(`🔵 localStorage group conversation ${message.group_id}:`, msgs_group);
+
+                  return {
+                    ...elem,
+                    message: msgs_group
+                  };
+                }
+                return elem;
+              });
+
+              console.log('🔵 UPDATED state (group):', updated_state);
+              return updated_state;
+            });
+
+            if (incomingSoundsEnabled) {
+              audioRef.current.play().catch(err => {
+                console.error("Error playing notification wawaweewa:", err);
+              });
+            }
+            return;
+          }
+
+          // Handle individual messages (with decryption)
           const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
           const decrypted_message = await decryptMessage(message, false, contact_id);
 
           console.log(`Message received & decrypted is:`, decrypted_message);
-          
-  
 
           // ✅ Check if decryption succeeded
           if (!decrypted_message || !decrypted_message.hasOwnProperty("sender_id")) {
             console.error('Failed to decrypt message, not updating state');
             return;
           }
-        
+
           if(decrypted_message.sender_id !== contact_id && decrypted_message.recipient_id !== user) {
             console.error("Malformed decrypted message: sender does not match current id?");
             return;
           }
-          
-          // ✅ Update decryptedContacts, not contacts
+
+          // ✅ Update decryptedContacts for individual messages
           setDecryptedContacts((currArr) => {
             console.log('🔵 PREV state:', currArr);
-            
+
             if (!currArr) return currArr;
 
-            var updated_state = null
-            var updated_message = null
-
-
-
-            updated_state = currArr.map((elem) => {
+            const updated_state = currArr.map((elem) => {
               if((elem.contact_id === user && elem.sender_id === contact_id) || (elem.sender_id === user && elem.sender_id === contact_id)){
-                updated_message = [...elem.message, decrypted_message];
+                const updated_message = [...(elem.message || []), decrypted_message];
 
                 return {
                   ...elem,
@@ -91,15 +130,15 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
 
               return elem;
             })
-            
+
             console.log('🔵 UPDATED state:', updated_state);
             return updated_state;
           });
-          
+
           if (incomingSoundsEnabled) {
             audioRef.current.play().catch(err => {
               console.error("Error playing notification wawaweewa:", err);
-            }); 
+            });
           }
         };
 
@@ -121,15 +160,27 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
     const sendMessage = async (message) => {
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify(message));
-        
-        const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
-        let msg = {
-          "sender_id": message.sender_id,
-          "recipient_id": message.recipient_id,
-          "message": message.message,
-          "timestamp": message.timestamp
-        };
-        
+
+        var contact_id = null
+        var msg = null
+        if(message.hasOwnProperty("group_id")) {
+          msg = {
+            "sender_id": message.sender_id,
+            "recipient_ids": message.recipient_ids,
+            "group_id": message.group_id,
+            "message": message.message,
+            "timestamp": message.timestamp
+          };
+        } else {
+          contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
+          msg = {
+            "sender_id": message.sender_id,
+            "recipient_id": message.recipient_id,
+            "message": message.message,
+            "timestamp": message.timestamp
+          };
+        }
+        // check whether message is intended for group or for user
         setDecryptedContacts((currArr) => {
           console.log('🔵 PREV state:', currArr);
           
@@ -137,10 +188,13 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           if (!currArr || currArr.length === 0) {
             console.log('🔵 Empty array - initializing from contacts');
             
-            const contact = contacts.find((elem) => 
-              (elem.sender_id === user && elem.contact_id === contact_id) || 
-              (elem.sender_id === contact_id && elem.contact_id === user)
-            );
+            var contact = null
+            if(message.hasOwnProperty("group_id")){
+              contact = contacts.find((elem) => elem.id === message.group_id)
+            } else {
+              contact = contacts.find((elem) => (elem.sender_id === user && elem.contact_id === contact_id) || 
+                                                (elem.sender_id === contact_id && elem.contact_id === user));
+            }
             
             if (contact) {
               console.log('🔵 Found contact, creating initial state');
@@ -155,22 +209,28 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           }
           
           // ✅ Handle existing array - update or add contact
-          const contactExists = currArr.some((elem) => 
-            (elem.sender_id === user && elem.contact_id === contact_id) || 
-            (elem.sender_id === contact_id && elem.contact_id === user)
-          );
+          var contactExists = null
+          if(message.hasOwnProperty("group_id")){
+            contactExists = currArr.some((elem) => elem.id === message.group_id);
+          } else {
+            contactExists = currArr.some((elem) => (elem.sender_id === user && elem.contact_id === contact_id) || 
+                                                   (elem.sender_id === contact_id && elem.contact_id === user));
+          }
           
           if (!contactExists) {
-            // Contact not in decryptedContacts yet, add it from contacts
-            const contact = contacts.find((elem) => 
-              (elem.sender_id === user && elem.contact_id === contact_id) || 
-              (elem.sender_id === contact_id && elem.contact_id === user)
-            );
-            
-            if (contact) {
+            var contact_2 = null
+            if(message.hasOwnProperty("group_id")){
+              contact_2 = contacts.find((elem) => elem.id === message.group_id);
+            } else {
+              // Contact not in decryptedContacts yet, add it from contacts
+              contact_2 = contacts.find((elem) => (elem.sender_id === user && elem.contact_id === contact_id) ||
+                                                  (elem.sender_id === contact_id && elem.contact_id === user));
+            }
+
+            if (contact_2) {
               console.log('🔵 Adding new contact to decryptedContacts');
               return [...currArr, {
-                ...contact,
+                ...contact_2,
                 message: [msg]
               }];
             }
@@ -178,16 +238,32 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           
           // Contact exists, update it
           const updated_state = currArr.map((elem) => {
-            if ((elem.sender_id === user && elem.contact_id === contact_id) || 
-                (elem.sender_id === contact_id && elem.contact_id === user)) {
-                
-                let msgs_contact = [...elem.message, msg]
-                localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(msgs_contact));
-                console.log(`🔵 localStorage conversation with user ${user} :`, msgs_contact);
+            // Handle group messages
+            if (message.hasOwnProperty("group_id")) {
+              if (elem.id === message.group_id) {
+                let msgs_group = [...(elem.message || []), msg];
+                localStorage.setItem(`group_conversation_${user}_${message.group_id}`, JSON.stringify(msgs_group));
+                console.log(`🔵 localStorage group conversation ${message.group_id}:`, msgs_group);
 
                 return {
                   ...elem,
-                  message: [...elem.message, msg]
+                  message: msgs_group
+                };
+              }
+              return elem;
+            }
+
+            // Handle individual messages
+            if ((elem.sender_id === user && elem.contact_id === contact_id) ||
+                (elem.sender_id === contact_id && elem.contact_id === user)) {
+
+                let msgs_contact = [...(elem.message || []), msg];
+                localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(msgs_contact));
+                console.log(`🔵 localStorage conversation with user ${user}:`, msgs_contact);
+
+                return {
+                  ...elem,
+                  message: msgs_contact
                 };
             }
             return elem;
@@ -198,14 +274,17 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           return updated_state;
         });
 
-        const found_contact = contacts.find((elem) => (user === elem.sender_id && contact_id === elem.contact_id) || (contact_id === elem.sender_id && user === elem.contact_id))
-        if(found_contact) {
-          const ratchetState = await loadConversationRatchetStateDB(user, found_contact)
-          if(ratchetState) {
-            console.log("Ratchet state after sending message (webSocket): ", ratchetState);
+        // Only load ratchet state for individual (encrypted) messages, not group messages
+        if (!message.hasOwnProperty("group_id")) {
+          const found_contact = contacts.find((elem) => (user === elem.sender_id && contact_id === elem.contact_id) || (contact_id === elem.sender_id && user === elem.contact_id))
+          if(found_contact) {
+            const ratchetState = await loadConversationRatchetStateDB(user, found_contact)
+            if(ratchetState) {
+              console.log("Ratchet state after sending message (webSocket): ", ratchetState);
+            }
           }
-        }
-        
+        }   
+      
         if (audioRef.current !== null && outgoingMessagesSoundsEnabled) {
           audioRef.current.play().catch(err => {
             console.error("Error playing notification wawaweewa:", err);
