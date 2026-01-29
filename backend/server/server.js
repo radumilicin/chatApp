@@ -995,7 +995,14 @@ app.post('/createGroup', async (req, res) => {
         );
 
         console.log("After inserting group into contacts");
-        res.sendStatus(200);
+
+        // Fetch the inserted group to return it
+        const insertedGroup = await pool.query(
+          `SELECT * FROM contacts WHERE id = $1`,
+          [rdm]
+        );
+
+        res.status(200).json({ data: insertedGroup.rows[0] });
       }
 
     } catch (err) {
@@ -1023,15 +1030,14 @@ app.post('/exitGroup', async (req, res) => {
           SET members = (
               SELECT jsonb_agg(elem)
               FROM jsonb_array_elements(members) AS elem
-              WHERE elem::int <> $1
+              WHERE elem <> to_jsonb($1::text)
           )
           WHERE is_group = true
             AND id = $2
-            AND members @> to_jsonb($1::int);
+            AND members ? $1;
           `,
         [curr_user, group_id] // Bind variables
       );
-
 
       console.log("After deleting member from group");
       res.sendStatus(200);

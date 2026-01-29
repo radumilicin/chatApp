@@ -41,7 +41,7 @@ export const users = pgTable('users', {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
-  id: serial('id').primaryKey(), // varchar('id', {length : 36}).primaryKey() // convert to varchar and change the code to reflect this
+  id: varchar('id', {length : 36}).primaryKey(), // convert to varchar and change code to reflect change
   sender_id: varchar('sender_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}), // this and contact_id are empty if group is true
   group: boolean('is_group'),                          // assign true to this if the contact is a group 
   group_members: jsonb('members').default([]),                // this and sender_id are empty if group is true
@@ -80,7 +80,7 @@ export const one_time_prekeys = pgTable('one_time_prekeys', {
 export const ratchetState = pgTable('ratchet_state', {
   id: serial('id').primaryKey(),
   user: varchar('user_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}),
-  conversation_id: integer('conversation_id').references(() => contacts.id, {onDelete: "cascade"}),
+  conversation_id: varchar('conversation_id', {length: 36}).references(() => contacts.id, {onDelete: "cascade"}),
   send_message_number: integer('send_message_number').notNull().default(0),
   receive_message_number: integer('receive_message_number').notNull().default(0),
   send_chain_key: text('send_chain_key').notNull(),

@@ -407,47 +407,127 @@ export default function CurrentChatVertical( props: any ) {
 
 
     return (
-        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
-            <div className={`absolute left-0 top-0 w-[100%] h-[15%] rounded-tr-lg ${props.themeChosen === "Dark" ? "bg-[#0D1317]" : "border-gray-400 border-b-[2px] shadow-lg"} flex flex-row hover:cursor-pointer ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} onClick={() => { 
-                    // props.setProfileInfo(true) 
+        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
+            <div className={`absolute left-0 top-0 w-[100%] h-[15%] overflow-hidden flex flex-row
+                ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl" : "bg-gray-100/80 border-b border-gray-300"}
+                hover:cursor-pointer group transition-all duration-300
+                ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
+                onClick={() => {
+                    // props.setProfileInfo(true)
                     // console.log("profile info set to true")
                 }}>
-                <div className="flex flex-row w-[10%] h-[100%] justify-center items-center" onClick={() => {
-                        props.setCurrContact(null)
+                {/* Animated gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />
+
+                {/* Top glow line on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+                </div>
+
+                {/* Back button */}
+                <div className="relative flex flex-row w-[8%] h-[100%] justify-center items-center z-10" onClick={() => {
+                        if (props.setCurrContact) {
+                            props.setCurrContact(null)
+                        }
                     }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 object-contain`}></img>
+                    <div className={`flex w-8 h-8 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"}`}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 object-contain`} 
+                            onClick={() => {
+                                props.setCurrContact(null)
+                            }}></img>
+                    </div>
                 </div>
-                <div className="flex w-[10%] h-[100%] justify-end items-center">
-                    {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id} src={`data:image/jpeg;base64,${getImage(props.contact).data}`} className="w-12 h-12 rounded-full"></img> :
-                        (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-12 h-12 rounded-full"></img> :
-                     (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${getImage(props.contact).data}`} className="w-12 h-12 rounded-full"></img> :
-                        (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ? 
-                        <img key={props.contact?.group_pic_id || props.contact?.contact_id}  src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="w-12 h-12 rounded-full"></img> : <></>                        
-                    }
+
+                {/* Profile picture container */}
+                <div className="relative flex w-[12%] h-full justify-center items-center z-10">
+                    <div className="relative group/avatar">
+                        {/* Glowing ring around avatar */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                        blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
+
+                        {/* Avatar image */}
+                        {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
+                            <img
+                                key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                alt="Profile"
+                            /> :
+                            (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
+                            <img
+                                key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                alt="Profile"
+                            /> :
+                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ?
+                            <img
+                                key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                src={`${getImage(props.contact).data}`}
+                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                alt="Group"
+                            /> :
+                            (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ?
+                            <img
+                                key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                alt="Group"
+                            /> : <></>
+                        }
+                    </div>
                 </div>
+
+                {/* Group contact info */}
                 {props.contact !== null && props.contact.is_group === true &&
-                    <div className={`relative flex w-[80%] h-[100%] flex-col`}>
-                        <div className={`relative flex justify-start items-end h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                            {props.contact !== null && <div className="top-0 flex flex-col text-xl font-semibold">{getNameContact(props.contact)}</div>}
+                    <div className="relative flex w-[75%] h-full flex-col justify-center pl-2 z-10">
+                        {/* Group name */}
+                        <div className="flex justify-start items-center">
+                            {props.contact !== null && (
+                                <div className={`text-base xss:text-lg font-bold tracking-wide
+                                    ${props.themeChosen === "Dark"
+                                        ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                                        : "text-gray-900"}`}>
+                                    {getNameContact(props.contact)}
+                                </div>
+                            )}
                         </div>
-                        <div className={`flex flex-row justify-start h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                            {props.contact !== null && props.contact.members.map((ctc, idx) => (
-                                idx === props.contact.members.length - 1 ? `${getUserWithId(ctc).username} ` : `${getUserWithId(ctc).username}, `
+
+                        {/* Group members list */}
+                        <div className={`flex flex-row text-xs xss:text-sm truncate mt-1
+                            ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
+                            group-hover:text-cyan-200/90 transition-colors duration-300`}>
+                            {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
+                                <span key={ctc} className="inline-flex items-center">
+                                    {getUserWithId(ctc).username}
+                                    {idx < Math.min(props.contact.members.length, 3) - 1 && <span>,&nbsp;</span>}
+                                </span>
                             ))}
+                            {props.contact.members.length > 3 && <span><span>&nbsp;</span>..</span>}
                         </div>
                     </div>
                 }
-                {props.contact !== null && props.contact.is_group === false && 
-                    <div className={`flex flex-row indent-[20px] w-[90%] h-[100%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                        {props.contact !== null && <div className={`top-0 flex flex-row items-center text-base font-semibold indent-[20px] 
-                                                        `}>{getNameContact(props.contact)}</div>}
+
+                {/* Individual contact info */}
+                {props.contact !== null && props.contact.is_group === false &&
+                    <div className="relative flex w-[75%] h-full items-center pl-2 z-10">
+                        {props.contact !== null && (
+                            <div className={`text-base xss:text-lg font-bold tracking-wide
+                                ${props.themeChosen === "Dark"
+                                    ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                                    : "text-gray-900"}`}>
+                                {getNameContact(props.contact)}
+                            </div>
+                        )}
                     </div>
                 }
             </div>
-            <div className={`relative left-[5%] top-[18%] w-[90%] h-[70%] bg-transparent bg-opacity-50 flex flex-col gap-1 overflow-y-auto`}>
+            <div className={`relative left-[2%] top-[18%] w-[96%] h-[70%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-4`}>
                 {decryptedContact !== null  &&
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
@@ -496,19 +576,18 @@ export default function CurrentChatVertical( props: any ) {
                     
                     {/* Message */}
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
-                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-blue-600 text-white'
-                                }`}
+                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
+                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-base text-black font-semibold`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-2 items-start">
+                                <div className={`relative flex w-full text-sm xss:text-base text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                                     <div className="break-words text-sm">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
@@ -518,19 +597,18 @@ export default function CurrentChatVertical( props: any ) {
                             </div>
                         </div>
                     ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
-                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 border-black flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? 'bg-green-500 text-white bg-opacity-80'
-                                        : 'bg-blue-600 text-white'
-                                }`}
+                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
+                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-sm font-semibold text-black ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className="relative flex flex-col gap-1 items-start">
-                                    <div className="break-words">
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
-                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
+                                <div className={`relative flex w-full text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"} ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-1 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <div className="break-words text-sm">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
+                                        isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
                                     </div>
                                     <div className="text-xs whitespace-nowrap self-end">
@@ -544,71 +622,68 @@ export default function CurrentChatVertical( props: any ) {
             );
                     })}
             </div>
-            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
-            {props.contact && <div className={`absolute left-[2%] top-[90%] w-[96%] h-[8%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99] text-white" : "bg-gray-500 bg-opacity-60 border-gray-500 text-black"} 
-                            border-2 flex flex-row`}>
-                <div className="relative left-0 flex basis-[8%] top-[15%] h-[70%] hover:bg-gray-500 ml-2 rounded-2xl" >
-                    {/* Wrapper for Image and Input */}
-                    <div className="relative flex items-center justify-center w-full h-full">
-                        <img
-                            src="/attach2-1.png"
-                            className="h-[50%] aspect-square hover:bg-slate-500 cursor-pointer z-0"
-                            alt="Upload"
-                            // onClick={() => document.getElementById('fileInput').click()} // Manually trigger input
-                        />
-                        <input 
-                            type="file" accept="image/*"
-                            className="absolute top-0 left-0 w-full z-10 h-full opacity-0 cursor-pointer"
-                            // onClick={(event) => {
-                            //     event.preventDefault();
-                            // }}
-                            onChange={(event) => {
-                                console.log("File input triggered");
-                                const file = event.target.files[0];
-                                if (file) {
-                                    console.log("File selected:", file.name);
-                                    const reader = new FileReader();
-                                    // console.log("FileReader created");
-                                    reader.onload = (e) => {
-                                        // console.log("File loaded");
-                                        let base64Image = e.target.result as string;
-                                        const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
-                                        if (base64Regex.test(base64Image)) {
-                                            // Remove the data URL prefix
-                                            base64Image = base64Image.replace(base64Regex, '');
-                                        }
+            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}></div>}
+            {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}>
+                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-transparent border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
+                            border-[1px] flex flex-row`}>
+                    <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
+                        {/* Wrapper for Image and Input */}
+                        <div className="relative flex items-center justify-center w-full h-full">
+                            <div className={`relative flex flex-col w-12 h-10 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
+                                <img
+                                    src={`${props.themeChosen === "Dark" ? "/attach2-1.png" : "attach-black.png"}`}
+                                    className="w-5 h-5 aspect-square pointer-events-none"
+                                    alt="Upload"
+                                />
+                                <input
+                                    type="file" accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={(event) => {
+                                        console.log("File input triggered");
+                                        const file = event.target.files[0];
+                                        if (file) {
+                                            console.log("File selected:", file.name);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                let base64Image = e.target.result as string;
+                                                const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+                                                if (base64Regex.test(base64Image)) {
+                                                    base64Image = base64Image.replace(base64Regex, '');
+                                                }
 
-                                        console.log("Base64 Image (stripped):", base64Image);
-                                        
-                                        // Send the base64 image
-                                        if(props.contact.is_group === true) handleSendMessage2(base64Image)
-                                        handleSendMessage(base64Image);
-                                    };
-                                    reader.onerror = (error) => console.error("Error reading file:", error);
-                                    reader.readAsDataURL(file);
-                                    console.log("Started reading file");
-                                } else {
-                                    console.log("No file selected");
-                                }
-                                // Reset the file input to allow re-selection
-                                event.target.value = '';
-                            }}
-                        />
+                                                console.log("Base64 Image (stripped):", base64Image);
+
+                                                if(props.contact.is_group === true) handleSendMessage2(base64Image)
+                                                handleSendMessage(base64Image);
+                                            };
+                                            reader.onerror = (error) => console.error("Error reading file:", error);
+                                            reader.readAsDataURL(file);
+                                            console.log("Started reading file");
+                                        } else {
+                                            console.log("No file selected");
+                                        }
+                                        event.target.value = '';
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="relative left-0 flex basis-[80%] h-full">
-                    <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-white text-xl
-                                                                                                        ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
-                                                                                                            ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} 
-                        onKeyDown={(e) => { 
-                            if(e.key === "Enter") {
-                                if(props.contact.is_group === true) handleSendMessage2(text)
-                                else handleSendMessage(text); 
-                                setText("")}}}></input>
-                </div>
-                <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center " >
-                    <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl mr-2 w-full hover:bg-slate-500" onClick={() => {handleSendMessage(text); setText("")}}>
-                        <img src="/sendIcon3-1.png" className="h-[50%] max-w-[60%]"></img>
+                    <div className={`relative left-0 flex basis-[80%] h-full`}>
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-base
+                                                                                                            ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
+                                                                                                                ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
+                            onKeyDown={(e) => {
+                                if(e.key === "Enter") {
+                                    if(props.contact.is_group === true) handleSendMessage2(text)
+                                    else handleSendMessage(text);
+                                    setText("")}}}></input>
+                    </div>
+                    <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center mr-1" >
+                        <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl w-full" onClick={() => {handleSendMessage(text); setText("")}}>
+                            <div className={`relative flex flex-col w-12 h-10 justify-center items-center transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95 rounded-xl`}>
+                                <img src={`${props.themeChosen === "Dark" ? "sendIcon3-1.png" : "sendIcon-black.png"}`} className="absolute w-5 h-5 aspect-square cursor-pointer z-20"></img>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>}
