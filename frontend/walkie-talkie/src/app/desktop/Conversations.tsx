@@ -202,8 +202,9 @@ export default function Conversations( props : any) {
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
-                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
-                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
+                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
+                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
+                setDecryptedContacts={props.setDecryptedContacts}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
             {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
                                              setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdown>}
@@ -490,7 +491,7 @@ export function UsersToAddToContacts (props : any) {
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`group/user relative flex-none left-[2%] flex flex-row h-[12%] w-[92%] overflow-hidden
+                        className={`group/user relative flex-none left-[3%] flex flex-row h-[12%] w-[94%] overflow-hidden
                             transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                             ${props.themeChosen === "Dark"
                                 ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-green-500/20 border border-green-500/10 hover:border-green-500/30"
@@ -1219,29 +1220,30 @@ export function Groups(props) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         };
-        
+
         console.log("Before request to server")
 
         try {
             const response = await fetch('http://localhost:3002/createGroup', requestOptions)
 
             if(response.status === 200) {
-                console.log("Group created successfully")
-                return 200;
+                const result = await response.json()
+                console.log("Group created successfully:", result.data)
+                return { status: 200, data: result.data };
             }
             else {
                 if(response.status === 409) {
                     console.log("Group with the same name already exists")
-                    return 409;
+                    return { status: 409, data: null };
                 }
                 else if(response.status === 500) {
                     console.log("Server error")
-                    return 500;
+                    return { status: 500, data: null };
                 }
             }
         } catch(err) {
             console.error("Group creation failed")
-            return -1;
+            return { status: -1, data: null };
         }
     }
 
@@ -1558,12 +1560,14 @@ export function Groups(props) {
                                         console.log("group_w_name = " + JSON.stringify(group_w_name))
                                         if(group_w_name.length === 0) {
                                             console.log("Did not find group with name = " + JSON.stringify(groupName))
-                                            let success = await createGroup()
-                                            if(success === 200) {
+                                            let result = await createGroup()
+                                            if(result.status === 200 && result.data) {
+                                                // Append the new group to decryptedContacts
+                                                props.setDecryptedContacts((currArr) => [...currArr, { ...result.data, message: [] }])
                                                 props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages();
                                                 setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
                                             } else {
-                                                if(success === 409) alert("Group with same name already exists")
+                                                if(result.status === 409) alert("Group with same name already exists")
                                                 else alert("Error! Could not create group!")
                                             }
                                         } else {

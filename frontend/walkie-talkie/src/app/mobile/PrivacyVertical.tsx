@@ -1,43 +1,63 @@
-import {useState, useEffect} from 'react'
+import {useEffect} from 'react'
 
 export default function Privacy(props: any) {
 
     return (
-        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} 
-                        onClick={() => {
-                            props.setPressedSettings(true)
-                            props.setPressPrivacy(false)
-                            props.setPressNotifications(false)
-                            props.setPressAccount(false)
-                            props.setPressProfile(false)
-                            props.setPressAppearance(false)
-                            props.setPressedSettings(false)
-                            props.setProfilePicPrivPress(false)
-                            props.setStatusPrivPress(false)
-                            props.setDisappearingMessagesPressed(false)
-                            props.blockedContactsPressed(false)
-                        }}>
-                    <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px]  xss:w-6 xss:h-6 aspect-square"></img>
+        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-auto no-scrollbar`}>
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressedSettings(true)
+                                props.setPressPrivacy(false)
+                                props.setPressNotifications(false)
+                                props.setPressAccount(false)
+                                props.setPressProfile(false)
+                                props.setPressAppearance(false)
+                                props.setPressedSettings(false)
+                                props.setProfilePicPrivPress(false)
+                                props.setStatusPrivPress(false)
+                                props.setDisappearingMessagesPressed(false)
+                                props.blockedContactsPressed(false)
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
+                    </div>
+                    <h1 className={`text-xl xss:text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                        Privacy
+                    </h1>
                 </div>
-                <div className={`relative indent-[10px] left-[2%] w-[40%] text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Privacy</div>
             </div>
 
-            <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
-                <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row h-[2%] left-[6%] w-[96%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-[#CBD4E0]" : "text-black"}`}>Who can see my personal info</div>
-                    <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityProfilePic={props.visibilityProfilePic} themeChosen={props.themeChosen}></ProfilePicturePrivacy>
-                    <StatusPrivacy setStatusPrivPress={props.setStatusPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityStatus={props.visibilityStatus} themeChosen={props.themeChosen}></StatusPrivacy>
-                    <div className={`relative flex flex-row top-[6%] h-[6%] left-[6%] w-[96%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-[#CBD4E0]" : "text-black"} my-4`}>Disappearing messages</div>
-                    <DisappearingMessages disappearingMessagesPeriod={props.disappearingMessagesPeriod} setDisappearingMessagesPressed={props.setDisappearingMessagesPressed}
-                                          setPressPrivacy={props.setPressPrivacy} disappearingMessagesPressed={props.disappearingMessagesPressed} themeChosen={props.themeChosen}
-                    ></DisappearingMessages>
-                    {/* <Theme userObj={props.userObj} themePressed={props.themePressed} setThemePressed={props.setThemePressed} themeChosen={props.themeChosen}></Theme> */}
-                    {/* <div className="relative flex flex-row top-[8%] h-[6%] left-[6%] w-[96%] text-xl text-[#CBD4E0]">Blocked contacts</div> */}
-                    <div className="relative top-[4%] left-[4%] w-[92%] h-[2px] bg-gray-500 bg-opacity-60"></div>
-                    <BlockedContacts blockedContacts={props.blockedContacts} setBlockedContactsPressed={props.setBlockedContactsPressed} setPressPrivacy={props.setPressPrivacy} themeChosen={props.themeChosen}></BlockedContacts>
-                    {/* <Fonts userObj={props.userObj} fontPressed={props.fontPressed} setFontPressed={props.setFontPressed} fontChosen={props.fontChosen}></Fonts> */}
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="flex flex-col gap-6">
+                    {/* Personal Info Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Personal Information
+                        </h2>
+                        <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityProfilePic={props.visibilityProfilePic} themeChosen={props.themeChosen}></ProfilePicturePrivacy>
+                        <StatusPrivacy setStatusPrivPress={props.setStatusPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityStatus={props.visibilityStatus} themeChosen={props.themeChosen}></StatusPrivacy>
+                    </div>
+
+                    {/* Messages Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Messages
+                        </h2>
+                        <DisappearingMessages disappearingMessagesPeriod={props.disappearingMessagesPeriod} setDisappearingMessagesPressed={props.setDisappearingMessagesPressed}
+                                              setPressPrivacy={props.setPressPrivacy} disappearingMessagesPressed={props.disappearingMessagesPressed} themeChosen={props.themeChosen}
+                        ></DisappearingMessages>
+                    </div>
+
+                    {/* Blocked Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Blocked
+                        </h2>
+                        <BlockedContacts blockedContacts={props.blockedContacts} setBlockedContactsPressed={props.setBlockedContactsPressed} setPressPrivacy={props.setPressPrivacy} themeChosen={props.themeChosen}></BlockedContacts>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,14 +67,22 @@ export default function Privacy(props: any) {
 export function ProfilePicturePrivacy(props: any) {
 
     return (
-        <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
-            onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm xss:text-base items-end font-medium`}>Profile picture</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs xss:text-sm`}>{props.visibilityProfilePic}</div>
+        <div
+            className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
+            onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}
+        >
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Profile picture
+                </div>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    {props.visibilityProfilePic}
+                </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "next-arrow-black-nobg.png"}`} className="w-[10px] h-4 xss:w-3 xss:h-5"></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );
@@ -64,14 +92,22 @@ export function ProfilePicturePrivacy(props: any) {
 export function StatusPrivacy(props: any) {
 
     return (
-        <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
-            onClick={() => {props.setStatusPrivPress(true); props.setPressPrivacy(false)}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm xss:text-base items-end font-medium`}>Status</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs xss:text-sm`}>{props.visibilityStatus}</div>
+        <div
+            className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
+            onClick={() => {props.setStatusPrivPress(true); props.setPressPrivacy(false)}}
+        >
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Status
+                </div>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    {props.visibilityStatus}
+                </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "next-arrow-black-nobg.png"}`} className="w-[10px] h-4 xss:w-3 xss:h-5"></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );
@@ -85,15 +121,22 @@ export function DisappearingMessages(props: any) {
     }, [props.disappearingMessagesPressed])
 
     return (
-        <div className={`relative flex flex-row top-[4%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
-            onClick={() => {props.setDisappearingMessagesPressed(true); props.setPressPrivacy(false)}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm xss:text-base items-end font-medium`}>Default duration</div>
-                {props.disappearingMessagesPeriod === -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs xss:text-sm`}>Off</div>}
-                {props.disappearingMessagesPeriod !== -1 && <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs xss:text-sm`}>{props.disappearingMessagesPeriod}</div>}
+        <div
+            className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
+            onClick={() => {props.setDisappearingMessagesPressed(true); props.setPressPrivacy(false)}}
+        >
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Default duration
+                </div>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    {props.disappearingMessagesPeriod === -1 ? "Off" : props.disappearingMessagesPeriod}
+                </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "next-arrow-black-nobg.png"}`} className="w-3 h-5"></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );
@@ -102,14 +145,22 @@ export function DisappearingMessages(props: any) {
 export function BlockedContacts(props: any) {
 
     return (
-        <div className={`relative flex flex-row top-[6%] left-[6%] w-[88%] h-[12%] rounded-xl hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40 " : "border-gray-400 border-2 hover:bg-opacity-30"} hover:cursor-pointer`}
-            onClick={() => {props.setBlockedContactsPressed(true); props.setPressPrivacy(false);}}>
-            <div className="relative flex flex-col w-[80%] h-full">
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-sm xss:text-base items-end font-medium`}>Blocked contacts</div>
-                <div className={`relative flex flex-row h-[50%] w-full indent-[20px] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-xs xss:text-sm`}>{props.blockedContacts.length}</div>
+        <div
+            className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
+            onClick={() => {props.setBlockedContactsPressed(true); props.setPressPrivacy(false);}}
+        >
+            <div className="flex-1 flex flex-col gap-1">
+                <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                    Blocked contacts
+                </div>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    {props.blockedContacts.length} {props.blockedContacts.length === 1 ? "contact" : "contacts"}
+                </div>
             </div>
-            <div className="relative flex flex-col left-[10%] w-[10%] h-full justify-center items-center">
-                <img src={`${props.themeChosen === "Dark" ? "./next-arrow-wout-tail-nobg.png" : "next-arrow-black-nobg.png"}`} className="w-3 h-5"></img>
+            <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${props.themeChosen === "Dark" ? "text-[#3B7E9B]" : "text-gray-700"}`}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 3l7 7-7 7"/>
+                </svg>
             </div>
         </div>
     );

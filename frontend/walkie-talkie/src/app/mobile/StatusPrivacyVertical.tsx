@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 
 export default function StatusPrivacyVertical(props: any) {
 
@@ -17,11 +17,9 @@ export default function StatusPrivacyVertical(props: any) {
     useEffect(() => {
         if(props.userObj !== null) {
             props.setVisibilityStatus(props.userObj.status_visibility)
-            // prevStatus.current = props.visibilityStatus
         }
         else {
             props.setVisibilityStatus("Everyone")
-            // prevStatus.current = props.visibilityStatus
         }
     }, [props.userObj])
 
@@ -44,69 +42,89 @@ export default function StatusPrivacyVertical(props: any) {
         if(resp.ok){
             console.log("Visibility changed successfuly in the server")
             props.fetchUsers()
-            // prevStatus.current = props.visibilityStatus
         } else {
             console.error("Error could not update ")
-            // props.setVisibilityStatus(prevStatus.current)
         }
     }
 
     return (
-        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className={`relative indent-[10px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`}
-                        onClick={() => {
-                            props.setPressPrivacy(true)
-                            props.setStatusPrivPress(false)
-                            props.setPressNotifications(false)
-                            props.setPressAccount(false)
-                            props.setPressProfile(false)
-                            props.setPressAppearance(false)
-                            props.setPressedSettings(false)
-                            props.setProfilePicPrivPress(false)
-                            props.setDisappearingMessagesPressed(false)
-                            props.setBlockedContactsPressed(false)
-                        }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-auto no-scrollbar`}>
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressPrivacy(true)
+                                props.setStatusPrivPress(false)
+                                props.setPressNotifications(false)
+                                props.setPressAccount(false)
+                                props.setPressProfile(false)
+                                props.setPressAppearance(false)
+                                props.setPressedSettings(false)
+                                props.setProfilePicPrivPress(false)
+                                props.setDisappearingMessagesPressed(false)
+                                props.setBlockedContactsPressed(false)
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
+                    </div>
+                    <h1 className={`text-xl xss:text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                        Status Privacy
+                    </h1>
                 </div>
-                <div className={`relative indent-[10px] left-[2%] w-[70%] text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Status privacy</div>
             </div>
-            <div className="absolute left-0 w-full top-[15%] h-[70%] flex flex-col items-center">
-                <div className="relative top-0 left-0 flex flex-col w-full h-full gap-4">
-                    <div className={`relative flex flex-row h-[6%] left-[6%] w-[96%] text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-[#CBD4E0]" : "text-black"}`}>Who can see your status:</div>
-                    <div className="relative flex flex-col left-[6%] w-[88%] h-[40%]">
-                        <div className="relative flex flex-row w-full h-[20%]">
-                            <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
-                                <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityStatus("Everyone") }}>
-                                    {props.visibilityStatus !== "Everyone" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityStatus === "Everyone" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
-                                    {props.visibilityStatus === "Everyone" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
-                                </div>
-                            </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Everyone</div>
-                        </div>
-                        <div className="relative flex flex-row w-full h-[20%]">
-                            <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
-                                <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityStatus("Contacts") }}>
-                                    {props.visibilityStatus !== "Contacts" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityStatus === "Contacts" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
-                                    {props.visibilityStatus === "Contacts" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
-                                </div>
-                            </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Contacts</div>
-                        </div>
-                        <div className="relative flex flex-row w-full h-[20%]">
-                            <div className="relative flex flex-row justify-center items-center w-[10%] h-full">
-                                <div className="relative flex flex-row justify-center items-center w-6 h-6 hover:cursor-pointer" onClick={() => { props.setVisibilityStatus("Nobody") }}>
-                                    {props.visibilityStatus !== "Nobody" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                                    {props.visibilityStatus === "Nobody" && <div className="absolute flex flex-row w-2 h-2 xss:w-2.5 xss:h-2.5 bg-green-500 rounded-full"></div>}
-                                    {props.visibilityStatus === "Nobody" && <div className="absolute flex flex-row w-4 h-4 xss:w-5 xss:h-5 bg-transparent border-[2px] xss:border-[3px] border-green-500 rounded-full"></div>}
-                                </div>
-                            </div>
-                            <div className={`relative flex flex-row items-center indent-[5px] text-sm xss:text-base w-[90%] h-full ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>Nobody</div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="flex flex-col gap-6">
+                    {/* Visibility Section */}
+                    <div className="flex flex-col gap-3">
+                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            Who can see your status
+                        </h2>
+                        <div className="flex flex-col gap-[2px]">
+                            <RadioOption
+                                label="Everyone"
+                                selected={props.visibilityStatus === "Everyone"}
+                                onClick={() => props.setVisibilityStatus("Everyone")}
+                                themeChosen={props.themeChosen}
+                            />
+                            <RadioOption
+                                label="Contacts"
+                                selected={props.visibilityStatus === "Contacts"}
+                                onClick={() => props.setVisibilityStatus("Contacts")}
+                                themeChosen={props.themeChosen}
+                            />
+                            <RadioOption
+                                label="Nobody"
+                                selected={props.visibilityStatus === "Nobody"}
+                                onClick={() => props.setVisibilityStatus("Nobody")}
+                                themeChosen={props.themeChosen}
+                            />
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function RadioOption(props: { label: string, selected: boolean, onClick: () => void, themeChosen: string }) {
+    return (
+        <div
+            className={`group flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}
+            onClick={props.onClick}
+        >
+            <div className="relative flex items-center justify-center w-8 h-8">
+                {props.selected && (
+                    <>
+                        <div className="absolute w-8 h-8 bg-[#3B7E9B]/20 rounded-full blur-md animate-pulse"></div>
+                        <div className="absolute w-3 h-3 bg-[#3B7E9B] rounded-full shadow-[0_0_20px_rgba(59,126,155,0.8)]"></div>
+                        <div className="absolute w-6 h-6 rounded-full border-[3px] border-[#3B7E9B] shadow-[0_0_15px_rgba(59,126,155,0.6)]"></div>
+                    </>
+                )}
+            </div>
+            <div className={`flex-1 text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                {props.label}
             </div>
         </div>
     );

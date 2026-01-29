@@ -200,10 +200,11 @@ export default function ConversationsVertical( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"}`}>
+        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
-                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact} 
-                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}></Groups>}
+                removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
+                fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
+                setDecryptedContacts={props.setDecryptedContacts}></Groups>}
             {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
             {!newGroupPress && <MenuDropdownVertical menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
                                              setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings}></MenuDropdownVertical>}
@@ -245,79 +246,127 @@ export function MenuDropdownVertical (props) {
     }, [props.onOutsideClick]);
 
     return (
-    (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[16%] flex flex-col rounded-md ${props.themeChosen === "Dark" ? "bg-gray-600" : "bg-gray-300 border-[1px] border-gray-600"} z-10`} onMouseDown={(e) => {e.stopPropagation()}}>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-t-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
+    (props.menuPress && <div ref={divRef} className={`absolute left-[62%] top-[6%] w-[36%] h-[20%] flex flex-col rounded-xl overflow-hidden z-10
+        ${props.themeChosen === "Dark"
+            ? "bg-gradient-to-b from-slate-800/95 to-slate-900/95 border border-cyan-500/30 shadow-2xl shadow-cyan-500/20"
+            : "bg-gradient-to-b from-gray-100 to-gray-200 border border-gray-400 shadow-xl"}
+        backdrop-blur-xl`} onMouseDown={(e) => {e.stopPropagation()}}>
+            <div className={`group relative flex flex-row justify-center items-center left-0 w-full rounded-t-xl h-[25%]
+                ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-black"}
+                text-sm font-semibold transition-all duration-300
+                ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/70"}
+                hover:cursor-pointer hover:scale-[1.02] active:scale-[0.98]`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
-                props.setNewGroupPress(true); 
+                props.setNewGroupPress(true);
                 console.log("In new group div?")
-                setTimeout(() => props.setMenuPress(false), 0);}}>New Group</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
+                setTimeout(() => props.setMenuPress(false), 0);}}>
+                <span className="relative z-10">New Group</span>
+            </div>
+            <div className={`group relative flex flex-row justify-center items-center left-0 w-full h-[25%]
+                ${props.themeChosen === "Dark" ? "text-cyan-200 border-y border-cyan-500/20" : "text-black border-y border-gray-300"}
+                text-sm font-semibold transition-all duration-300
+                ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/70"}
+                hover:cursor-pointer hover:scale-[1.02] active:scale-[0.98]`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
-                props.setAddContact(true); 
-                props.setAddContact2(true); 
+                props.setAddContact(true);
+                props.setAddContact2(true);
                 console.log("In new contact div?")
-                setTimeout(() => props.setMenuPress(false), 0);}}>New Contact</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
+                setTimeout(() => props.setMenuPress(false), 0);}}>
+                <span className="relative z-10">New Contact</span>
+            </div>
+            <div className={`group relative flex flex-row justify-center items-center left-0 w-full h-[25%]
+                ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-black"}
+                text-sm font-semibold transition-all duration-300
+                ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/70"}
+                hover:cursor-pointer hover:scale-[1.02] active:scale-[0.98]`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
-                props.setPressedSettings(true); 
+                props.setPressedSettings(true);
                 setTimeout(() => props.setMenuPress(false), 0);
-                console.log("In logout div?")
-                }}>Settings</div>
-            <div className={`relative flex flex-row justify-center items-center left-0 w-full rounded-b-md h-[50%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base hover:bg-slate-400 hover:bg-opacity-40`} onClick={(e) => {
+                console.log("In settings div?")
+                }}>
+                <span className="relative z-10">Settings</span>
+            </div>
+            <div className={`group relative flex flex-row justify-center items-center left-0 w-full rounded-b-xl h-[25%]
+                ${props.themeChosen === "Dark" ? "text-red-300" : "text-red-600"}
+                text-sm font-semibold transition-all duration-300
+                ${props.themeChosen === "Dark" ? "hover:bg-red-500/20 hover:shadow-lg hover:shadow-red-500/30" : "hover:bg-red-100/70"}
+                hover:cursor-pointer hover:scale-[1.02] active:scale-[0.98]`} onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
-                props.setLogOut(true); 
+                props.setLogOut(true);
                 setTimeout(() => props.setMenuPress(false), 0);
                 console.log("In logout div?")
-                }}>Log out</div>
+                }}>
+                <span className="relative z-10">Log out</span>
+            </div>
         </div>)
     );
 }
 
 export function OtherOptions (props) {
     return (
-        <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-6 h-6"></img>
-                </div>} 
-            {props.addContact && <div className={`relative indent-[20px] left-[2%] w-[40%] text-lg xss:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl font-semibold ${props.themeChosen === "Dark" ? "text-slate-200" : "text-black"} font-sans flex flex-row justify-start items-center`}>Chats</div>}
+        <div className={`absolute left-0 top-0 h-[7%] w-[98%] flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent"}`}>
+            {props.addContact && <div className={`group relative left-[2%] w-[10%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+                                    transition-all duration-300 rounded-xl hover:cursor-pointer
+                                    ${props.themeChosen === "Dark"
+                                        ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30"
+                                        : "hover:bg-gray-300/50"}
+                                    hover:scale-105 active:scale-95`} onClick={() => {props.setAddContact(false); props.setAddContact2(false);}}>
+                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
+                </div>}
+            {props.addContact && <div className={`flex w-[70%] indent-[20px] h-full text-lg xss:text-xl font-bold flex-col justify-center items-start font-sans
+                        bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>Add contact</div>}
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xss:text-2xl font-semibold font-sans flex flex-row justify-start items-center
+                        ${props.themeChosen === "Dark"
+                            ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                            : "text-black"}`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[100%] max-w-[100%]"></img>
+                <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
+                    <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[80%] max-w-[80%]"></img>
                 </div>
-                <div className={`relative left-0 w-[50%] h-full hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
-                    <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center ${props.themeChosen === "Dark" ? "w-6 h-6" : "w-6 h-6"}`}></img>
+                <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
+                    <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className="justify-end items-center w-6 h-6"></img>
                 </div>
             </div>
         </div>
-    ); 
+    );
 }
 
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-[2%] top-[7%] w-[96%] h-[7%] rounded-2xl border-2 ${props.themeChosen === "Dark" ? "bg-[#0D1317] border-[#57CC99]" : "bg-gray-500 bg-opacity-60 border-gray-500" } `}>
-            <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                    <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
-                </div>
-                <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                    <input className={`absolute left-0 top-0 w-full h-full outline-none ${props.themeChosen === "Dark" ? "text-white" : "text-black"} bg-transparent overflow-x-auto text-2xl`} 
-                        value={props.currentSearch}
-                        onChange={async (e) => {props.setCurrSearch(e.target.value); 
-                                                if(props.addContact) {
-                                                    console.log("Filtering users in Search")
-                                                    props.filterUsers(e.target.value)
-                                                }
-                                                else {
-                                                    props.filterContacts(e.target.value)
-                                                }}} // Update `currentSearch`
-                    >
-                    </input>
+        <div className={`absolute left-0 top-[6%] h-[12%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+            <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
+                transition-all duration-300
+                ${props.themeChosen === "Dark"
+                    ? "border-2 border-cyan-500/30 bg-slate-800/60 shadow-lg shadow-cyan-500/10 focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(34,211,238,0.3)]"
+                    : "border-2 border-gray-300 bg-gray-100 shadow-md focus-within:border-[#3B7E9B] focus-within:shadow-lg"}
+                backdrop-blur-sm`}>
+                <div className="relative top-0 left-0 h-full w-full flex flex-row">
+                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
+                        <img className={`absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110 transition-all`}
+                        src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                    </div>
+                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg font-medium
+                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
+                            value={props.currentSearch}
+                            placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`}
+                            onChange={async (e) => {props.setCurrSearch(e.target.value);
+                                                    if(props.addContact) {
+                                                        console.log("Filtering users in Search")
+                                                        props.filterUsers(e.target.value)
+                                                    }
+                                                    else {
+                                                        props.filterContacts(e.target.value)
+                                                    }}}
+                        >
+                        </input>
+                    </div>
                 </div>
             </div>
         </div>
@@ -430,54 +479,57 @@ export function UsersToAddToContacts (props : any) {
         // return null;
     }
 
-    return ( 
-        <div className="absolute left-0 top-[16%] w-full h-[84%]">
-            <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-scroll">
+    return (
+        <div className={`absolute left-0 top-[16%] w-full h-[84%]
+            ${props.themeChosen === "Dark"
+                ? "bg-transparent"
+                : "bg-gradient-to-b from-gray-100 to-gray-200"}
+            backdrop-blur-xl shadow-x-2xl overflow-hidden`}>
+            <div className="relative top-0 left-0 h-full w-full flex flex-col overflow-y-auto scrollbar-hidden">
                 { props.filteredUsers !== null && props.filteredUsers.map((element: any, idx: number) => (
                     // this is the normal conversation (1 on 1)
                     <div
                         key={idx}
-                        className={`relative flex-none left-[2%] flex flex-row h-[12%] w-[96%] text-white bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
+                        className={`group/user relative flex flex-row h-16 left-[3%] w-[94%] overflow-hidden
+                            transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
+                            ${props.themeChosen === "Dark"
+                                ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-green-500/20 border border-green-500/10 hover:border-green-500/30"
+                                : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
+                            hover:scale-[1.02] active:scale-[0.98]`}
                         onClick={async () => { await makeTemporaryContact(element); console.log("clicked")}}
                     >
-                        <div className="relative flex w-[15%] h-full justify-center items-center">
-                            {/* Use base64 data for image */}
-                            {getImageUser(element).data !== "" ? <img
-                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                                className="h-10 w-10 rounded-full"
-                                alt="Profile"
-                            /> : getImageUser(element).data !== "" ? <img
-                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                                className="h-10 w-10 rounded-full"
-                                alt="Profile"></img> : 
-                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
-                        </div>
-                        <div className="relative flex w-[85%] flex-col">
-                            <div className="relative flex flex-row h-[50%] w-full items-center">
-                                <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-base xss:text-lg font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800" }`}>
-                                        {getNameUser2(element)}
-                                    </div>
-                                </div>
-                                <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
-                                    </div> 
-                                </div>
-                            </div>
-                            <div className="relative flex w-full h-[50%] items-center">
-                                {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium`}>
-                                        {element.about}
-                                    </div>
-                                </div>
-                                {/* Right time container */}
-                                <div className="relative flex flex-row h-full w-[20%]">
-                                    <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
-                                        
-                                    </div>
+                        {/* Animated gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/5 to-transparent
+                                        opacity-0 group-hover/user:opacity-100 transition-opacity duration-500" />
 
-                                </div>
+                        <div className="relative flex w-[15%] h-full justify-center items-center group/useravatar">
+                            {/* Glowing ring around avatar */}
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/20 via-cyan-500/20 to-blue-500/20
+                                            blur-md group-hover/useravatar:blur-lg transition-all duration-300 scale-75" />
+
+                            {/* Use base64 data for image */}
+                            {getImageUser(element).data !== "" && element.profile_pic_visibility === "Everyone" ? <img
+                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                                className="relative h-10 w-10 rounded-full border border-green-500/30 group-hover/useravatar:border-green-400/60 transition-all duration-300"
+                                alt="Profile"
+                            /> : (getImageUser(element).data) !== "" && element.profile_pic_visibility === "Everyone" ? <img
+                                src={`data:image/jpg;base64,${getImageUser(element).data}`}
+                                className="relative h-10 w-10 rounded-full border border-green-500/30 group-hover/useravatar:border-green-400/60 transition-all duration-300"
+                                alt="Profile"></img> :
+                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`}
+                                     className="relative h-10 w-10 rounded-full opacity-80 group-hover/useravatar:opacity-100 transition-all duration-300"></img>}
+                        </div>
+                        <div className="relative flex w-[85%] flex-col justify-center py-2">
+                            <div className={`flex text-sm xss:text-base font-semibold font-sans tracking-wide
+                                ${props.themeChosen === "Dark"
+                                    ? "bg-gradient-to-r from-green-200 via-cyan-200 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(34,197,94,0.3)]"
+                                    : "text-gray-900"}`}>
+                                {getNameUser2(element)}
+                            </div>
+                            <div className={`flex text-xs xss:text-sm font-medium truncate
+                                ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/user:text-gray-300" : "text-gray-700"}
+                                transition-colors duration-300`}>
+                                {element.status_visibility === "Everyone" ? element.about : "Hey there I'm using Walkie Talkie!"}
                             </div>
                         </div>
                     </div>))}
@@ -693,8 +745,10 @@ export function Contacts( props: any) {
     console.log("contact: " + JSON.stringify(props.contact))
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%]`}>
-            <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto">
+        <div className={`absolute left-0 top-[18%] w-full h-[72%]
+            ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-gradient-to-b from-gray-100 to-gray-200"}
+            backdrop-blur-xl overflow-hidden`}>
+            <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
                     const lastMessage = getLastMessage(element, idx);
                     const time = lastMessage && lastMessage.timestamp
@@ -704,14 +758,19 @@ export function Contacts( props: any) {
 
                     return (
                     // this is the normal conversation (1 on 1)
-                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ? 
+                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
+                        className={`group/contact relative flex-none flex flex-row h-16 w-[96%] overflow-hidden
+                            transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
+                            ${props.themeChosen === "Dark"
+                                ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
+                                : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
+                            hover:scale-[1.02] active:scale-[0.98]`}
                        onClick={(e) => {
                         console.log("==============\nFIRST DIV PRESSED\n================")
                         console.log("CLICKED BY USER?", e.isTrusted);
-                        props.setPressed(element); 
+                        props.setPressed(element);
 
                         let contact = {...element};
                         let timestamp = new Date().toISOString()
@@ -719,46 +778,64 @@ export function Contacts( props: any) {
                             if(contact.opened_at[i].id === props.curr_user) contact.opened_at[i].opened_at = timestamp;
                         }
 
-                        props.setCurrContact(contact); 
-                        // props.setCurrContact(element); 
-                        // console.log("clicked")
-                    }}  // <--- Only TWO closing braces needed 
+                        props.setCurrContact(contact);
+                    }}  // <--- Only TWO closing braces needed
                     >
-                        <div className="relative flex w-[15%] h-full justify-center items-center">
+                        {/* Animated gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                        opacity-0 group-hover/contact:opacity-100 transition-opacity duration-500" />
+
+                        <div className="relative flex w-[15%] h-full justify-center items-center group/avatar">
+                            {/* Glowing ring around avatar */}
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-500/20
+                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-75" />
+
                             {/* Use base64 data for image */}
                             {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-10 w-10 rounded-full"
+                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"
                             /> : getProfileImage(element, 1).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="h-10 w-10 rounded-full"
-                                alt="Profile"></img> : 
-                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
+                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                alt="Profile"></img> :
+                                <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="relative h-10 w-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
                         </div>
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-base xss:text-lg font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
+                                    <div className={`indent-[10px] text-base xss:text-lg font-semibold font-sans
+                                        ${props.themeChosen === "Dark"
+                                            ? "text-gray-200"
+                                            : "text-gray-900"}`}>
                                         {getNameWithUserId(element)}
                                     </div>
                                 </div>
                                 <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-sm xss:text-base ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[40%] text-white hover:cursor-pointer`}>
+                                    <div className={`flex flex-row justify-center items-center rounded-full text-xs xss:text-sm font-semibold
+                                        ${getUnreadMessages(element) > 0
+                                            ? 'bg-gradient-to-br from-green-400 to-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                                            : ''}
+                                        ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
+                                        h-[60%] w-[40%] hover:cursor-pointer transition-all duration-300 hover:scale-110`}>
                                         {getUnreadMessages(element) > 0 ? getUnreadMessages(element) : ''}
-                                    </div> 
+                                    </div>
                                 </div>
                             </div>
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs xss:text-sm
+                                            ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
+                                            font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm
+                                        ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
+                                        font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
                                             ? "Sent " + time
                                             : time
@@ -767,16 +844,21 @@ export function Contacts( props: any) {
                                 </div>
                         </div>
                     </div>
-                    </div> : 
+                    </div> :
                         // otherwise group conversation so check if the members is not null
-                        element.members.length > 0/*getLenMembers(element) > 0*/ ? 
+                        element.members.length > 0/*getLenMembers(element) > 0*/ ?
                             <div
                                 key={idx}
-                                className={`relative flex-none flex flex-row h-[12%] w-[96%] text-[#FFD166] bg-transparent hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-2xl mt-2 hover:cursor-pointer`}
+                                className={`group/group relative flex-none flex flex-row h-16 w-[96%] overflow-hidden
+                                    transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
+                                    ${props.themeChosen === "Dark"
+                                        ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border border-purple-500/10 hover:border-purple-500/30"
+                                        : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
+                                    hover:scale-[1.02] active:scale-[0.98]`}
                                 onClick={(e) => {
                                     console.log("========\n2nd DIV PRESSED\n========")
                                     console.log("CLICKED BY USER?", e.isTrusted);
-                                    // props.setPressed(element); 
+                                    // props.setPressed(element);
                                     // let contact = element;
                                     let timestamp = new Date().toISOString()
                                     let contact = {
@@ -784,42 +866,62 @@ export function Contacts( props: any) {
                                     opened_at: element.opened_at.map(obj =>
                                         obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
                                     )};
-                                    props.setCurrContact(contact); 
+                                    props.setCurrContact(contact);
                                     // console.log("clicked")
                                 }}
                             >
-                                <div className="flex flex-row w-[15%] h-full justify-center items-center">
+                                {/* Animated gradient overlay for groups */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent
+                                                opacity-0 group-hover/group:opacity-100 transition-opacity duration-500" />
+
+                                <div className="relative flex flex-row w-[15%] h-full justify-center items-center group/groupavatar">
+                                    {/* Glowing ring around group avatar */}
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-500/20 to-blue-500/20
+                                                    blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
+
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data !== "" ? <img
                                         src={getImageGroup(element).data}
-                                        className="h-10 w-10 rounded-full"
+                                        className="relative h-10 w-10 rounded-full border border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
                                         alt="Profile"
-                                    /> : 
-                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="h-10 w-10 rounded-full pointer-events-none"></img>}
+                                    /> :
+                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
-                                <div className="flex w-[85%] flex-col">
+                                <div className="relative flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-base xss:text-lg font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"}`}>
+                                            <div className={`indent-[10px] text-base xss:text-lg font-semibold font-sans tracking-wide
+                                                ${props.themeChosen === "Dark"
+                                                    ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
+                                                    : "text-gray-900"}`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                            <div className={`flex flex-row justify-center items-center rounded-full contain-size text-lg xss:text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-contain h-[60%] w-[50%] text-white`}>
+                                            <div className={`flex flex-row justify-center items-center rounded-full text-xs xss:text-sm font-semibold
+                                                ${getUnreadMessages(element) > 0
+                                                    ? 'bg-gradient-to-br from-green-400 to-purple-500 text-white shadow-lg shadow-purple-500/30'
+                                                    : ''}
+                                                ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
+                                                h-[60%] w-[50%] transition-all duration-300 hover:scale-110`}>
                                                 {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
-                                            </div> 
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] flex h-full w-full items-start text-sm xss:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-800"} font-medium overflow-x-hidden`}>
+                                            <div className={`indent-[10px] flex h-full w-full items-start text-xs xss:text-sm
+                                                ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
+                                                font-medium overflow-x-hidden transition-colors duration-300`}>
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-medium`}>
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm
+                                                ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
+                                                font-medium transition-colors duration-300`}>
                                                 {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
                                                     ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
                                                     : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
@@ -839,7 +941,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`relative h-[12%] left-[2%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                        className={`relative h-16 left-[2%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                         onClick={(e) => {
                             console.log("============\n3rd DIV PRESSED\n=============")
                             console.log("CLICKED BY USER?", e.isTrusted);
@@ -901,7 +1003,7 @@ export function Contacts( props: any) {
                         element.is_group === true && getLenMembers(element) > 0 ? 
                             <div 
                                 key={idx}
-                                className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
+                                className={`relative h-16 left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {
                                     props.setPressed(element); 
                                     // let contact = element;
@@ -1086,29 +1188,30 @@ export function Groups(props) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         };
-        
+
         console.log("Before request to server")
 
         try {
             const response = await fetch('http://localhost:3002/createGroup', requestOptions)
 
             if(response.status === 200) {
-                console.log("Group created successfully")
-                return 200;
+                const result = await response.json()
+                console.log("Group created successfully:", result.data)
+                return { status: 200, data: result.data };
             }
             else {
                 if(response.status === 409) {
                     console.log("Group with the same name already exists")
-                    return 409;
+                    return { status: 409, data: null };
                 }
                 else if(response.status === 500) {
                     console.log("Server error")
-                    return 500;
+                    return { status: 500, data: null };
                 }
             }
         } catch(err) {
             console.error("Group creation failed")
-            return -1;
+            return { status: -1, data: null };
         }
     }
 
@@ -1121,46 +1224,86 @@ export function Groups(props) {
     } 
 
     return (
-        <div className="absolute left-0 top-0 w-full h-full">
-            {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%]">
+        <div className={`absolute left-0 top-0 w-full h-full
+            ${props.themeChosen === "Dark"
+                ? "bg-gradient-to-b from-slate-900/95 via-slate-800/90 to-slate-900/95"
+                : "bg-gradient-to-b from-gray-100 to-gray-200"}
+            backdrop-blur-xl`}>
+            {finishingSettingUpGroup && <div className={`relative left-0 top-0 w-full h-[8%] ${props.themeChosen === "Dark" ? "border-b border-cyan-500/10" : "border-b border-gray-300"}`}>
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center w-6 h-6 xss:w-8 xss:h-8"></img>
+                    <div className={`group relative indent-[20px] left-[2%] h-[70%] w-[10%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+                        transition-all duration-300 rounded-xl hover:cursor-pointer
+                        ${props.themeChosen === "Dark"
+                            ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/20"
+                            : "hover:bg-gray-300/50"}
+                        hover:scale-105 active:scale-95`} onClick={() => {setFinishingSettingUpGroupAsync(false)}}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
+                             className="justify-center items-center w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
                     </div>
-                    <div className={`flex w-[80%] left-0 indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans`}>Create group</div>
+                    <div className={`flex w-[80%] left-0 indent-[20px] h-full text-lg xss:text-xl font-bold flex-col justify-center items-start font-sans
+                        bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent`}>
+                        Create group
+                    </div>
                 </div>
             </div>}
             {finishingSettingUpGroup && (
                 <div className="relative flex flex-col left-0 top-0 w-full h-[30%] justify-center items-center">
                     <div className="absolute w-full h-full">
                     <div className="relative w-full h-full flex flex-col justify-center items-center">
-                        <div className="relative flex flex-col w-[50%] h-[50%] aspect-square justify-center items-center hover:cursor-pointer" /*onClick={() => {document.getElementById("groupImageInput")?.click()}}*/ onMouseEnter={() => {setHoveringGroupIcon(true)}} onMouseLeave={() => {setHoveringGroupIcon(false)}}>
-                        {!newGroupImage && <img src={`${props.themeChosen === "Dark" ? "./group_icon-nobg.png" : "./group_icon-black.png"}`} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-60'}`}/>}
-                        {newGroupImage && <img src={newGroupImage} className={`absolute flex w-full h-full aspect-square ${hoveringGroupIcon ? 'opacity-30' : 'opacity-100'} rounded-full`}/>}
-                        <div className="absolute flex flex-col w-[60%] h-[60%] justify-center items-center">
-                            {hoveringGroupIcon && <img src="/camera-icon.png" className="relative flex flex-row w-[60%] h-[60%] justify-center items-center"/>}
-                            {hoveringGroupIcon && <div className="relative flex flex-row w-full h-[40%] text-center justify-center items-center">Upload group picture..</div>}
-                        </div>
-                        {/* Hidden file input */}
-                        <input
-                            id="groupImageInput"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
+                        <div className="group/icon relative flex flex-col w-36 h-28 xss:w-44 xss:h-36 aspect-square justify-center items-center hover:cursor-pointer
+                            transition-all duration-300"
+                            onClick={() => {document.getElementById("groupImageInput")?.click()}}
+                            onMouseEnter={() => {setHoveringGroupIcon(true)}}
+                            onMouseLeave={() => {setHoveringGroupIcon(false)}}>
 
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                                const base64 = reader.result as string;
-                                console.log("Base64 image:", base64);
-                                // you can store it in state:
-                                setNewGroupImage(base64);
-                            };
-                            reader.readAsDataURL(file);
-                            }}
-                        />
+                            {/* Glowing ring around icon */}
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                            blur-xl group-hover/icon:blur-2xl transition-all duration-500 scale-110 animate-pulse" />
+
+                            {/* Group icon */}
+                            {!newGroupImage && <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
+                                className={`absolute flex w-full h-full aspect-square transition-all duration-300
+                                    ${hoveringGroupIcon ? 'blur-sm opacity-40 scale-95' : 'opacity-60'}`}/>}
+                            {newGroupImage && <img src={newGroupImage}
+                                className={`absolute flex w-full h-full aspect-square rounded-full
+                                    border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-cyan-300"}
+                                    shadow-2xl bg-gradient-to-r from-transparent via-cyan-400 to-transparent transition-all duration-300
+                                    ${hoveringGroupIcon ? 'opacity-40 scale-95 blur-sm' : 'opacity-100'}`}/>}
+
+                            {/* Upload overlay */}
+                            <div className={`absolute flex flex-col w-[70%] h-[70%] justify-center items-center transition-all duration-300 z-10
+                                ${hoveringGroupIcon ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-cyan-400/30 blur-lg rounded-full" />
+                                    <img src={`${props.themeChosen === "Dark" ? "camera-white.png" : "camera.png"}`} className="relative flex flex-row w-12 h-12 xss:w-14 xss:h-14 justify-center items-center"/>
+                                </div>
+                                <div className={`relative top-[15%] flex flex-row w-full h-[40%] text-center justify-center items-center text-sm xss:text-base font-semibold
+                                    ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}
+                                    drop-shadow-[0_0_6px_rgba(34,211,238,0.5)]`}>
+                                    Upload group picture..
+                                </div>
+                            </div>
+
+                            {/* Hidden file input */}
+                            <input
+                                id="groupImageInput"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                    const base64 = reader.result as string;
+                                    console.log("Base64 image:", base64);
+                                    // you can store it in state:
+                                    setNewGroupImage(base64);
+                                };
+                                reader.readAsDataURL(file);
+                                }}
+                            />
                         </div>
                     </div>
                     </div>
@@ -1168,9 +1311,14 @@ export function Groups(props) {
                 )}
 
             {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[10%] justify-center items-center">
-                    <input type="text" className={`flex flex-row indent-[10px] w-[80%] h-[60%] outline-none bg-transparent border-b-2 border-gray-700 text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}
-                        placeholder="Enter group name here.." 
-                        value={groupName} 
+                    <input type="text" className={`flex flex-row indent-[10px] w-[80%] h-[60%] outline-none bg-transparent
+                        border-b-2 transition-all duration-300 text-base font-medium
+                        ${props.themeChosen === "Dark"
+                            ? "border-cyan-500/50 text-cyan-100 placeholder:text-gray-400 focus:border-cyan-400 shadow-sm shadow-cyan-500/30 focus:shadow-lg hover:shadow-cyan-500/50"
+                            : "border-cyan-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500"}
+                        focus:shadow-[0_2px_8px_rgba(34,211,238,0.3)]`}
+                        placeholder="Enter group name here.."
+                        value={groupName}
                         onChange={(e) => {
                             const newGroupName = e.target.value
                             setGroupNameAsync(newGroupName)
@@ -1178,15 +1326,24 @@ export function Groups(props) {
                             props.fetchContacts();
                             const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === newGroupName)})
                             if(group_w_name.length > 0) setNameAlreadyExistsAsync(true)
-                            else setNameAlreadyExistsAsync(false) 
+                            else setNameAlreadyExistsAsync(false)
                         }}
                         >
                     </input>
-                    {nameAlreadyExists && <div className="relative flex flex-row indent-[20px] w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
+                    {nameAlreadyExists && <div className="relative flex flex-row indent-[20px] w-[80%] h-[40%] items-center
+                        bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent font-semibold text-sm xss:text-base
+                        drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]">
+                        Group name already exists!
+                    </div>}
             </div>}
             {finishingSettingUpGroup && <div className="relative flex flex-col left-0 top-0 w-full h-[20%] justify-center items-center">
-                    <textarea 
-                        className={`relative px-[10px] pt-2 pb-2 w-[80%] h-[60%] outline-none bg-transparent border-2 border-gray-700 rounded-xl text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"} align-top`}
+                    <textarea
+                        className={`relative px-[10px] pt-2 pb-2 w-[80%] h-[60%] outline-none rounded-xl text-base font-medium align-top
+                            transition-all duration-300 resize-none
+                            ${props.themeChosen === "Dark"
+                                ? "bg-slate-800/50 border-2 border-cyan-500/30 text-white placeholder:text-gray-400 focus:border-cyan-400/60 focus:bg-slate-800/70"
+                                : "bg-gray-100 border-2 border-cyan-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500"}
+                            focus:shadow-[0_4px_12px_rgba(34,211,238,0.2)]`}
                         placeholder="Add description.."
                         value={description}
                         onChange={(e) => {
@@ -1200,136 +1357,181 @@ export function Groups(props) {
                             }
                         }}
                     />
-                    {nameAlreadyExists && <div className="relative flex flex-row w-[80%] h-[40%] text-red-600 text-base">Group name already exists!</div>}
+                    {nameAlreadyExists && <div className="relative flex flex-row w-[80%] h-[40%] items-center
+                        bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent font-semibold text-sm xss:text-base
+                        drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]">
+                        Group name already exists!
+                    </div>}
             </div>}
-            {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[15%]">
-                <div className="relative flex flex-row top-0 h-[50%] w-full items-center">
-                    <div className={`relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} hover:rounded-xl hover:cursor-pointer`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
+            {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[16%]">
+                <div className={`relative left-0 top-0 h-[35%] w-full flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent"}`}>
+                    <div className={`group relative left-[2%] w-[10%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+                                    transition-all duration-300 rounded-xl hover:cursor-pointer
+                                    ${props.themeChosen === "Dark"
+                                        ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30"
+                                        : "hover:bg-gray-300/50"}
+                                    hover:scale-105 active:scale-95`} onClick={() => {props.setAddContact(false); props.setNewGroupPress(false); setFinishingSettingUpGroup(false); props.setContactsInNewGroup([])}}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
+                             className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
                     </div>
-                    <div className={`flex w-[80%] indent-[20px] h-full text-xl font-semibold flex-col justify-center items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans`}>Add group members</div>
+                    <div className={`flex w-[80%] indent-[20px] h-full text-base xss:text-lg font-bold flex-row items-center font-sans
+                        bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                        Add group members
+                    </div>
                 </div>
-                <div className="relative left-0 top-0 h-[40%] flex flex-row justify-center items-center">
-                    {/* First child div */}
-                    <div className={`absolute left-[2%] top-[7%] w-[96%] h-full rounded-2xl ${props.themeChosen === "Dark" ? "border-[#57CC99] border-2 bg-[#0D1317]" : "bg-gray-500 bg-opacity-60 border-gray-500"}`}>
+                <div className={`relative left-0 top-0 h-[65%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
+                        transition-all duration-300
+                        ${props.themeChosen === "Dark"
+                            ? "border-2 border-slate-700/50 bg-slate-800/60 focus-within:border-[#3B7E9B] focus-within:shadow-[0_0_12px_rgba(59,126,155,0.4)]"
+                            : "border-2 border-gray-300 bg-gray-100 focus-within:border-[#3B7E9B]"}
+                        backdrop-blur-sm`}>
                         <div className="relative top-0 left-0 h-full w-full flex flex-row">
                             <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%]' src="/searchIcon2-1.png"></img>
+                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                             </div>
                             <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                                <input className="absolute left-0 top-0 w-full h-full outline-none text-white bg-transparent overflow-x-auto text-xl placeholder:text-white" 
+                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg font-medium
+                                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
                                     value={usernameSearch} placeholder="Search user to add.."
-                                    onChange={async (e) => { 
+                                    onChange={async (e) => {
                                         const val = e.target.value;
                                         setUsernameSearch(val);
                                         filtUsers(val);
                                     }}
-                                >       
+                                >
                                 </input>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>}
-            {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 && <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
-                <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center w-[80%] overflow-y-scroll scrollbar-hide">
-                {props.contactsInNewGroup.map((contact, idx) => (
-                    <div key={idx} className="relative text-md bg-blue-500 w-full h-[40px] flex flex-row justify-center items-center rounded-full">
-                        <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden">{getNameUser(contact)}</div>
-                        <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
-                            <img
-                                src="./xicon.png"
-                                className="w-6 h-6"
-                                onClick={() => {
-                                    props.removeContactFromGroup(contact);
-                                setToRemoveFromAddingToGroup(contact)
-                                }}
-                            ></img>
-                        </div>
+            {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 &&
+                <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
+                    <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center justify-center w-[90%] overflow-y-scroll scrollbar-hide">
+                        {props.contactsInNewGroup.map((contact, idx) => (
+                            <div key={idx} className={`group/chip relative text-md w-[92%] h-[40px] flex flex-row justify-center items-center rounded-full
+                                transition-all duration-300 overflow-hidden
+                                ${props.themeChosen === "Dark"
+                                    ? "bg-gradient-to-r from-cyan-500/90 to-blue-500/90 shadow-lg shadow-blue-700"
+                                    : "bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500"}
+                                hover:scale-105 active:scale-95`}>
+                                <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden text-white font-semibold">
+                                    {getNameUser(contact)}
+                                </div>
+                                <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
+                                    <img
+                                        src={`${props.themeChosen === "Dark" ? "xicon-white.png" : "xicon-white.png"}`}
+                                        className="w-5 h-5 xss:w-6 xss:h-6 cursor-pointer transition-all duration-300 hover:scale-125 active:scale-90 opacity-90 hover:opacity-100"
+                                        onClick={() => {
+                                            props.removeContactFromGroup(contact);
+                                            setToRemoveFromAddingToGroup(contact);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
                 </div>
-            </div>}
-            {!finishingSettingUpGroup && <div className={`relative flex top-[2%] flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[58%]' : 'h-[73%]' } justify-center items-center overflow-y-scroll`}>
+            }
+            {!finishingSettingUpGroup && <div className={`relative flex top-0 flex-col w-full ${props.contactsInNewGroup.length !== 0 ? 'h-[55%]' : 'h-[70%]' } justify-start items-center overflow-y-scroll scrollbar-hidden`}>
                 { filteredUsersG !== null && filteredUsersG.map((element: any, idx: number) => (
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`relative flex-none flex flex-row h-[15%] w-[96%] top-0 bg-transparent bg-opacity-60 rounded-lg hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"}`}
+                    className={`group/groupuser relative flex-none flex flex-row h-16 w-[96%] mt-2 top-0 overflow-hidden
+                        transition-all duration-300 rounded-xl hover:cursor-pointer
+                        ${props.themeChosen === "Dark"
+                            ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border border-cyan-500/10 hover:border-cyan-500/30"
+                            : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
+                        hover:scale-[1.02] active:scale-[0.98]`}
                     onClick={async () => { await props.setContactsInNewGroup([...props.contactsInNewGroup, element]); console.log("clicked")}}
                 >
-                    <div className="relative flex w-[15%] h-full justify-center items-center">
+                    {/* Animated gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                    opacity-0 group-hover/groupuser:opacity-100 transition-opacity duration-500" />
+
+                    <div className="relative flex w-[15%] h-full justify-center items-center group/groupuseravatar">
+                        {/* Glowing ring around avatar */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-500/20
+                                        blur-md group-hover/groupuseravatar:blur-lg transition-all duration-300 scale-75" />
+
                         {/* Use base64 data for image */}
-                        {getImageUser(element).data !== "" ? <img
+                        {(getImageUser(element).data !== "" && element.profile_pic_visibility !== "Nobody") ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                            className="h-10 w-10 rounded-full"
+                            className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/groupuseravatar:border-cyan-400/60 transition-all duration-300"
                             alt="Profile"
-                        /> : getImageUser(element).data !== "" ? <img
+                        /> : (getImageUser(element).data !== "" && element.profile_pic_visibility !== "Nobody") ? <img
                             src={`data:image/jpg;base64,${getImageUser(element).data}`}
-                            className="h-10 w-10 rounded-full"
-                            alt="Profile"></img> : 
-                            <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`} className="h-10 w-10 rounded-full"></img>}
+                            className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/groupuseravatar:border-cyan-400/60 transition-all duration-300"
+                            alt="Profile"></img> :
+                            <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`}
+                                 className="relative h-10 w-10 rounded-full opacity-80 group-hover/groupuseravatar:opacity-100 transition-all duration-300"></img>}
                     </div>
-                    <div className="relative flex flex-col w-[85%]">
-                        <div className="relative flex flex-row h-[50%] w-full items-center">
-                            <div className="w-[75%] h-full flex flex-row items-end">
-                                <div className={`indent-[10px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black" } `}>
-                                    {getNameUser2(element)}
-                                </div>
-                            </div>
-                            <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                <div className="rounded-full contain-size text-2xl bg-green-700 justify-center bg-contain h-full">
-                                </div> 
-                            </div>
+                    <div className="relative flex w-[85%] flex-col justify-center py-2">
+                        <div className={`flex text-sm xss:text-base font-sans font-semibold
+                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
+                            {getNameUser2(element)}
                         </div>
-                        <div className="relative flex w-full h-[40%] items-center">
-                            {/* Left text container */}
-                            <div className="relative flex flex-row h-full w-[80%]">
-                                <div className={`indent-[10px] flex flex-row h-full w-full items-start text-base ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} font-medium`}>
-                                    {element.about}
-                                </div>
-                            </div>
-                            {/* Right time container */}
-                            <div className="relative flex flex-row h-full w-[20%]">
-                                <div className="flex h-full w-full flex-row items-center justify-center text-lg text-gray-300 font-medium">
-                                    
-                                </div>
-                            </div>
+                        <div className={`flex text-xs xss:text-sm font-sans truncate
+                            ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}`}>
+                            {element.about}
                         </div>
                     </div>
                 </div>))}
             </div>}
-            <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
-                <div className="relative flex flex-row justify-center items-center w-[10%] h-[70%] hover:bg-slate-400 hover:rounded-xl hover:cursor-pointer rounded-xl">
-                    <img
-                        src={`${finishingSettingUpGroup ? (props.themeChosen === "Dark" ? '/forward-nobg.png' : "forward-black.png") : (props.themeChosen === "Dark" ? './plus-sign-2.png' : './plus-icon-black.png')}`}
-                        className="h-[40%] flex items-center"
-                        onClick={
-                            async () => 
-                                { 
-                                    if(!finishingSettingUpGroup) setFinishingSettingUpGroupAsync(true); 
-                                    else {
-                                        props.fetchContacts();
-                                        const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === groupName)})
-                                        console.log("group_w_name = " + JSON.stringify(group_w_name))
-                                        if(group_w_name.length === 0) {
-                                            console.log("Did not find group with name = " + JSON.stringify(groupName))
-                                            let success = await createGroup()
-                                            if(success === 200) {
-                                                props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages(); 
-                                                setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
-                                            } else {
-                                                if(success === 409) alert("Group with same name already exists")
-                                                else alert("Error! Could not create group!")
-                                            }
+            {/* Footer with confirm/next button */}
+            <div className={`absolute left-0 bottom-0 h-[12%] w-full flex items-center justify-center
+                ${props.themeChosen === "Dark"
+                    ? "bg-slate-800/50 border-t border-cyan-500/20"
+                    : "bg-gray-200/80 border-t border-gray-300"}`}>
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full
+                    transition-all cursor-pointer group
+                    ${props.themeChosen === "Dark"
+                        ? "bg-gradient-to-br from-cyan-500/80 to-blue-500/80 hover:from-cyan-400 hover:to-blue-400 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-400/50"
+                        : "bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/30"}
+                    hover:scale-110 active:scale-95`}
+                    onClick={
+                        async () =>
+                            {
+                                if(!finishingSettingUpGroup) {
+                                    console.log("contactsInNewGroup size: ", props.contactsInNewGroup.length)
+                                    if(props.contactsInNewGroup.length > 0) setFinishingSettingUpGroupAsync(true);
+                                }
+                                else {
+                                    props.fetchContacts();
+                                    const group_w_name = props.contacts.filter((contact) => {return (contact.members.length > 1 && contact.group_name === groupName)})
+                                    console.log("group_w_name = " + JSON.stringify(group_w_name))
+                                    if(group_w_name.length === 0) {
+                                        console.log("Did not find group with name = " + JSON.stringify(groupName))
+                                        let result = await createGroup()
+                                        if(result.status === 200 && result.data) {
+                                            // Append the new group to decryptedContacts
+                                            props.setDecryptedContacts((currArr) => [...currArr, { ...result.data, message: [] }])
+                                            props.setContactsInNewGroup([]); props.fetchUsers(); props.fetchContacts(); props.fetchImages();
+                                            setFinishingSettingUpGroupAsync(false); props.setNewGroupPress(false);
                                         } else {
-                                            console.log("Group with name " + JSON.stringify(groupName) + " already exists!")
-                                            setNameAlreadyExistsAsync(true)
+                                            if(result.status === 409) alert("Group with same name already exists")
+                                            else alert("Error! Could not create group!")
                                         }
+                                    } else {
+                                        console.log("Group with name " + JSON.stringify(groupName) + " already exists!")
+                                        setNameAlreadyExistsAsync(true)
                                     }
                                 }
                             }
-                    ></img>
+                        }
+                    >
+                    {finishingSettingUpGroup ? (
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                        </svg>
+                    )}
                 </div>
             </div>
         </div>

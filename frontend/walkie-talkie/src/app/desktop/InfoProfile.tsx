@@ -376,8 +376,10 @@ export default function ProfileInfo( props ) {
                             description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser} themeChosen={props.themeChosen}>
             </AboutProfile>
             {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Members>}
-            {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsGroup>}
-            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsChat>}
+            {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} 
+                                                              decryptedContacts={props.decryptedContacts} setDecryptedContacts={props.setDecryptedContacts} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsGroup>}
+            {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen} 
+                                                              setDecryptedContacts={props.setDecryptedContacts}></OptionsChat>}
         </div>
     );
 }
@@ -719,6 +721,10 @@ function Members(props) {
 }
 
 function OptionsGroup(props) {
+
+    useEffect(() => {
+
+    }, [props.decryptedContacts])
     
     async function exitGroup() {
         console.log("curr_user = " + props.curr_user + " group_id = " + props.contact.id)
@@ -738,6 +744,14 @@ function OptionsGroup(props) {
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has exited the group " + props.contact.group_name)
                 await props.fetchContacts()
+
+                localStorage.removeItem(`conversation_${props.contact.id}`)
+                localStorage.removeItem(`conversation_${props.curr_user}_${props.contact.id}`)
+
+                // Filter out the deleted chat from decryptedContacts
+                props.setDecryptedContacts((currArr) => 
+                    currArr.filter(c => c.id !== props.contact.id)
+                )
             } else {
                 console.log("Error exiting the group " + JSON.stringify(props.contact.group_name))
             }
@@ -757,7 +771,7 @@ function OptionsGroup(props) {
                     ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20"
                     : "hover:bg-red-50"}
                 hover:scale-[1.01] active:scale-[0.99]`}
-                onClick={() => {exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
+                onClick={async () => {await exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 
                 <div className="flex w-[15%] h-full items-center justify-center">
                     <div className="relative">
@@ -807,6 +821,10 @@ function OptionsChat(props) {
                 localStorage.removeItem(`conversation_${props.curr_user}_${other_user}`)
 
                 await props.fetchContacts()
+                // Filter out the deleted chat from decryptedContacts
+                props.setDecryptedContacts((currArr) => 
+                    currArr.filter(c => c.id !== props.contact.id)
+                )
             } else {
                 console.log("Error deleting chat " + JSON.stringify(props.contact.id))
             }
@@ -919,7 +937,7 @@ function OptionsChat(props) {
                     ? "hover:bg-red-500/15 hover:shadow-lg hover:shadow-red-500/30"
                     : "hover:bg-red-50"}
                 hover:scale-[1.01] active:scale-[0.99]`}
-                onClick={() => {deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
+                onClick={async () => {await deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 
                 <div className="flex w-[15%] h-full items-center justify-center">
                     <div className="relative">

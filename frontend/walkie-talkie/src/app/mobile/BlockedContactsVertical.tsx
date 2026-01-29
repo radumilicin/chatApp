@@ -1,4 +1,3 @@
-import {useEffect, useState} from 'react'
 
 export default function BlockedContactsViewVertical(props: any) {
 
@@ -38,7 +37,7 @@ export default function BlockedContactsViewVertical(props: any) {
         if(resp.ok) {
             console.log("Unblocked user")
 
-            let blockedContactsWithoutUnblocked = props.blockedContacts.filter((elem) => !((elem.sender_id === user_id && elem.contact_id === props.user) || 
+            let blockedContactsWithoutUnblocked = props.blockedContacts.filter((elem) => !((elem.sender_id === user_id && elem.contact_id === props.user) ||
                                                                                          (elem.sender_id === props.user && elem.contact_id === user_id)))
             props.setBlockedContacts(blockedContactsWithoutUnblocked)
             props.fetchContacts()
@@ -48,54 +47,66 @@ export default function BlockedContactsViewVertical(props: any) {
     }
 
     return (
-        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-[#323232] bg-opacity-60 border-[#0D1317] " : "bg-gray-300 border-gray-400 shadow-lg border-2"} border-black border-2 flex flex-col`}>
-            <div className="absolute left-0 top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center hover:cursor-pointer hover:bg-gray-500 ${props.themeChosen === "Dark" ? "hover:bg-opacity-40" : "hover:bg-opacity-30"} rounded-xl`} 
-                        onClick={() => {
-                            props.setPressPrivacy(true)
-                            props.setPressedSettings(false)
-                            props.setPressNotifications(false)
-                            props.setPressAccount(false)
-                            props.setPressProfile(false)
-                            props.setPressAppearance(false)
-                            props.setPressedSettings(false)
-                            props.setProfilePicPrivPress(false)
-                            props.setStatusPrivPress(false)
-                            props.setDisappearingMessagesPressed(false)
-                            props.setBlockedContactsPressed(false)
-                        }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center w-[20px] h-[20px] xss:w-6 xss:h-6 aspect-square"></img>
+        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-auto no-scrollbar`}>
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressPrivacy(true)
+                                props.setPressedSettings(false)
+                                props.setPressNotifications(false)
+                                props.setPressAccount(false)
+                                props.setPressProfile(false)
+                                props.setPressAppearance(false)
+                                props.setPressedSettings(false)
+                                props.setProfilePicPrivPress(false)
+                                props.setStatusPrivPress(false)
+                                props.setDisappearingMessagesPressed(false)
+                                props.setBlockedContactsPressed(false)
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
+                    </div>
+                    <h1 className={`text-lg xss:text-xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                        Blocked Contacts
+                    </h1>
                 </div>
-                <div className={`relative indent-[10px] left-[2%] w-full text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-sans flex flex-row justify-start items-center`}>Blocked Contacts</div>
             </div>
-            <div className="relative top-[15%] flex flex-col left-[2%] w-[96%] h-[80%]">
-                { props.blockedContacts.map((elem, idx) => {
-                    return (
-                        <div key={idx} className="relative flex flex-row w-full h-[12%] rounded-xl hover:bg-[#ACCBE1] hover:bg-opacity-20">
-                            <div className="relative flex flex-row w-[15%] h-full justify-center items-center">
-                                {/* <img src={`${}profilePic.png`} className="w-8 h-8"></img> */}
-                                {getImageUser(getUserWithId(getIdContact(elem))).data !== "" ? <img
-                                src={`data:image/jpg;base64,${getImageUser(getUserWithId(getIdContact(elem))).data}`}
-                                className="h-[75%] w-[75%] rounded-full"
-                                alt="Profile"></img> : 
-                                <img src="./profilePic2.png" className="h-[75%] w-[75%] rounded-full"></img>}
-                            </div>
-                            <div className="relative flex flex-col w-[70%] justify-center items-center">
-                                <div className="relative flex flex-row h-[50%] w-full items-end text-lg">{getUserWithId(getIdContact(elem)).username}</div>
-                                <div className="relative flex flex-row h-[50%] w-full items-start">{getUserWithId(getIdContact(elem)).about}</div>
-                            </div>
-                            <div className="relative flex flex-row w-[15%] justify-center items-center hover:cursor-pointer">
-                                <div className="relative flex flex-row w-10 h-10 justify-center items-center hover:bg-slate-400 hover:rounded-xl" onClick={async () => {
-                                    unblockUser(getIdContact(elem))  
-                                }}>
-                                    <img src="./unblockIcon-nobg.png" className="flex flex-row justify-center items-center w-6 h-6"></img>
 
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="flex flex-col gap-3">
+                    { props.blockedContacts.map((elem, idx) => {
+                        return (
+                            <div key={idx} className={`group flex items-center gap-3 px-4 py-4 rounded-2xl cursor-pointer transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-xl hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50 hover:shadow-lg"} hover:scale-[1.01] active:scale-[0.99] border border-transparent ${props.themeChosen === "Dark" ? "hover:border-[#3B7E9B]/30" : "hover:border-gray-400/30"}`}>
+                                <div className="flex items-center justify-center w-10 h-10 xss:w-12 xss:h-12">
+                                    {getImageUser(getUserWithId(getIdContact(elem))).data !== "" ? <img
+                                    src={`data:image/jpg;base64,${getImageUser(getUserWithId(getIdContact(elem))).data}`}
+                                    className="w-10 h-10 xss:w-12 xss:h-12 rounded-full"
+                                    alt="Profile" /> :
+                                    <img src="./profilePic2.png" className="w-10 h-10 xss:w-12 xss:h-12 rounded-full" alt="Profile" />}
+                                </div>
+                                <div className="flex-1 flex flex-col gap-1">
+                                    <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                                        {getUserWithId(getIdContact(elem)).username}
+                                    </div>
+                                    <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                                        {getUserWithId(getIdContact(elem)).about}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-center">
+                                    <div className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/30" : "hover:bg-gray-400/50"} hover:scale-110 active:scale-95`} onClick={async (e) => {
+                                        e.stopPropagation()
+                                        unblockUser(getIdContact(elem))
+                                    }}>
+                                        <img src="./unblockIcon-nobg.png" className="w-5 h-5 xss:w-6 xss:h-6" alt="Unblock" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                })  
-                }
+                        )
+                    })
+                    }
+                </div>
             </div>
         </div>
     );

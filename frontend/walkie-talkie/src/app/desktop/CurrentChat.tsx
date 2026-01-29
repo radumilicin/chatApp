@@ -529,10 +529,10 @@ export default function CurrentChat( props: any ) {
                                 group-hover:text-cyan-200/90 transition-colors duration-300`}>
                                 {props.contact !== null && props.contact.members.map((ctc, idx) => (
                                     <span key={ctc} className="inline-flex items-center">
-                                        <span className="text-cyan-400/60 mr-1">•</span>
-                                        {idx === props.contact.members.length - 1
-                                            ? `${getUserWithId(ctc).username} `
-                                            : `${getUserWithId(ctc).username}, `}
+                                        {idx === 0 ? `${getUserWithId(ctc).username}, ` :
+                                         idx === props.contact.members.length - 1
+                                            ? <span><span>&nbsp;</span> {`${getUserWithId(ctc).username} ...`}</span>
+                                            : <span><span>&nbsp;</span> {`${getUserWithId(ctc).username}, `}</span>}
                                     </span>
                                 ))}
                             </div>

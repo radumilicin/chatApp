@@ -41,7 +41,7 @@ export const users = pgTable('users', {
 
 // Define the "users" table with columns "id", "username", and "password_hash"
 export const contacts = pgTable('contacts', {
-  id: serial('id').primaryKey(), // varchar('id', {length : 36}).primaryKey() // convert to varchar and change the code to reflect this
+  id: varchar('id', {length : 36}).primaryKey(), // convert to varchar and change code to reflect change
   sender_id: varchar('sender_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}), // this and contact_id are empty if group is true
   group: boolean('is_group'),                          // assign true to this if the contact is a group 
   group_members: jsonb('members').default([]),                // this and sender_id are empty if group is true

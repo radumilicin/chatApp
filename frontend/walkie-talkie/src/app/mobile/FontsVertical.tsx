@@ -2,14 +2,11 @@ import {useState, useEffect} from 'react'
 
 export default function FontsVertical(props: any) {
 
-
-    // const [props.fontChosenPending, props.setFontChosenPending] = useState("")
     const [confirm, setConfirm] = useState(false)
-    
+
     useEffect(() => {
         if(confirm === true) {
             setFontDB()
-            // props.setFontChosenPending("")
             setConfirm(false)
         }
     }, [confirm])
@@ -27,7 +24,7 @@ export default function FontsVertical(props: any) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data) 
+            body: JSON.stringify(data)
         })
 
         if(!response.ok) {
@@ -35,59 +32,146 @@ export default function FontsVertical(props: any) {
         } else {
             props.setFontPressed(false)
             props.setFontChosen(props.fontChosenPending)
-            // props.setFontChosenPending("")
         }
     }
 
     return (
-        <div className={`absolute left-[15%] top-[35%] w-[70%] h-[30%] ${props.themeChosen === "Dark" ? "bg-gray-800" : "bg-gray-400"} rounded-xl z-50 blur-none border-gray-700 border-[1px]`}>
-            <div className="relative flex flex-col left-0 w-full h-full">
-                <div className={`relative flex flex-row items-center indent-[20px] text-lg xsw:text-xl ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-semibold h-[20%] w-full`}>Choose Font</div>
-                <div className={`left-[20px] relative top-[5%] flex flex-row w-full h-[15%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} text-base`}>
-                    <div className="relative flex flex-row w-10 h-full justify-center items-center">
-                        <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
-                            if(props.fontChosenPending !== "Sans") props.setFontChosenPending("Sans")
-                        }}>
-                            {props.fontChosenPending !== "Sans" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                            {props.fontChosenPending === "Sans" && <div className="absolute flex flex-row w-2 h-2 xsw:w-3 xsw:h-3 bg-green-500 rounded-full"></div>}
-                            {props.fontChosenPending === "Sans" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[2px] xsw:border-[3px] border-green-500 rounded-full"></div>}
+        <>
+            {/* Backdrop overlay with blur */}
+            <div className={`fixed inset-0 ${props.themeChosen === "Dark" ? "bg-black/60" : "bg-gray-900/40"} backdrop-blur-md z-40`} onClick={() => props.setFontPressed(false)} />
+
+            {/* Modal */}
+            <div className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[450px] h-auto
+                ${props.themeChosen === "Dark"
+                    ? "bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-slate-900/98"
+                    : "bg-gradient-to-b from-gray-100 to-gray-200"}
+                backdrop-blur-xl rounded-3xl z-50 shadow-2xl
+                border-2 ${props.themeChosen === "Dark" ? "border-cyan-500/30" : "border-gray-300"}
+                animate-in fade-in-0 zoom-in-95 duration-200`}>
+
+                {/* Animated glow effect */}
+                <div className={`absolute inset-0 rounded-3xl ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-purple-500/10 opacity-50" : "bg-gradient-to-br from-cyan-400/15 via-blue-400/10 to-purple-400/15 opacity-40"}`} />
+
+                <div className="relative flex flex-col left-0 w-full h-full p-6 gap-6">
+                    {/* Header with gradient text */}
+                    <div className={`relative flex flex-row items-center text-xl xss:text-2xl font-bold
+                        bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                        Choose Font
+                    </div>
+                    {/* Font options */}
+                    <div className="flex flex-col gap-3">
+                        {/* Sans option */}
+                        <div className={`group flex flex-row items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300
+                            ${props.fontChosenPending === "Sans"
+                                ? props.themeChosen === "Dark"
+                                    ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
+                                : props.themeChosen === "Dark"
+                                    ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
+                            }
+                            hover:scale-[1.02] active:scale-[0.98]`}
+                            onClick={() => {
+                                if(props.fontChosenPending !== "Sans") props.setFontChosenPending("Sans")
+                            }}>
+
+                            {/* Radio button */}
+                            <div className="relative flex items-center justify-center w-6 h-6">
+                                {props.fontChosenPending === "Sans" ? (
+                                    <>
+                                        <div className="absolute w-3 h-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full animate-pulse" />
+                                        <div className="absolute w-6 h-6 border-3 border-cyan-400 rounded-full" />
+                                    </>
+                                ) : (
+                                    <div className={`absolute w-6 h-6 border-3 ${props.themeChosen === "Dark" ? "border-slate-600" : "border-gray-400"} rounded-full`} />
+                                )}
+                            </div>
+
+                            {/* Label */}
+                            <div className={`text-base xss:text-lg font-semibold font-sans ${props.themeChosen === "Dark" ? "text-cyan-100" : "text-gray-800"}`}>
+                                Sans
+                            </div>
+                        </div>
+
+                        {/* Serif option */}
+                        <div className={`group flex flex-row items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300
+                            ${props.fontChosenPending === "Serif"
+                                ? props.themeChosen === "Dark"
+                                    ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
+                                : props.themeChosen === "Dark"
+                                    ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
+                            }
+                            hover:scale-[1.02] active:scale-[0.98]`}
+                            onClick={() => {
+                                if(props.fontChosenPending !== "Serif") props.setFontChosenPending("Serif")
+                            }}>
+
+                            {/* Radio button */}
+                            <div className="relative flex items-center justify-center w-6 h-6">
+                                {props.fontChosenPending === "Serif" ? (
+                                    <>
+                                        <div className="absolute w-3 h-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full animate-pulse" />
+                                        <div className="absolute w-6 h-6 border-3 border-cyan-400 rounded-full" />
+                                    </>
+                                ) : (
+                                    <div className={`absolute w-6 h-6 border-3 ${props.themeChosen === "Dark" ? "border-slate-600" : "border-gray-400"} rounded-full`} />
+                                )}
+                            </div>
+
+                            {/* Label */}
+                            <div className={`text-base xss:text-lg font-semibold font-serif ${props.themeChosen === "Dark" ? "text-cyan-100" : "text-gray-800"}`}>
+                                Serif
+                            </div>
+                        </div>
+
+                        {/* Mono option */}
+                        <div className={`group flex flex-row items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300
+                            ${props.fontChosenPending === "Mono"
+                                ? props.themeChosen === "Dark"
+                                    ? "bg-cyan-500/20 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20"
+                                    : "bg-gray-300/40 border-2 border-gray-300 hover:bg-gray-300/50 hover:shadow-lg"
+                                : props.themeChosen === "Dark"
+                                    ? "border-2 border-slate-700/50 hover:border-cyan-400/30 hover:bg-cyan-500/10"
+                                    : "border-2 border-gray-300 hover:border-gray-400/30 hover:bg-gray-200/50"
+                            }
+                            hover:scale-[1.02] active:scale-[0.98]`}
+                            onClick={() => {
+                                if(props.fontChosenPending !== "Mono") props.setFontChosenPending("Mono")
+                            }}>
+
+                            {/* Radio button */}
+                            <div className="relative flex items-center justify-center w-6 h-6">
+                                {props.fontChosenPending === "Mono" ? (
+                                    <>
+                                        <div className="absolute w-3 h-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full animate-pulse" />
+                                        <div className="absolute w-6 h-6 border-3 border-cyan-400 rounded-full" />
+                                    </>
+                                ) : (
+                                    <div className={`absolute w-6 h-6 border-3 ${props.themeChosen === "Dark" ? "border-slate-600" : "border-gray-400"} rounded-full`} />
+                                )}
+                            </div>
+
+                            {/* Label */}
+                            <div className={`text-base xss:text-lg font-semibold font-mono ${props.themeChosen === "Dark" ? "text-cyan-100" : "text-gray-800"}`}>
+                                Mono
+                            </div>
                         </div>
                     </div>
-                    <div className={`relative flex flex-row indent-[5px] w-[80%] h-full justify-start items-center text-base xsw:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-medium font-sans`}>Sans</div>
-                </div>
-                <div className="left-[20px] relative top-[5%] flex flex-row w-full h-[15%] text-black text-base">
-                    <div className="relative flex flex-row w-10 h-full justify-center items-center">
-                        <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
-                            if(props.fontChosenPending !== "Serif") props.setFontChosenPending("Serif")
-                        }}>
-                            {props.fontChosenPending !== "Serif" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                            {props.fontChosenPending === "Serif" && <div className="absolute flex flex-row w-2 h-2 xsw:w-3 xsw:h-3 bg-green-500 rounded-full"></div>}
-                            {props.fontChosenPending === "Serif" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[2px] xsw:border-[3px] border-green-500 rounded-full"></div>}
+
+                    {/* Action buttons */}
+                    <div className="relative flex flex-row justify-end items-center w-full gap-3 pt-4">
+                        <div className={`flex flex-row px-5 xss:px-6 py-2.5 ${props.themeChosen === "Dark" ? "text-cyan-200 hover:bg-cyan-500/20" : "text-gray-700 hover:bg-gray-300/50"} font-semibold hover:cursor-pointer text-sm xss:text-base justify-center items-center rounded-xl transition-all hover:scale-105 active:scale-95 border ${props.themeChosen === "Dark" ? "border-cyan-500/30" : "border-gray-300"}`} onClick={() => {props.setFontPressed(false)}}>
+                            Cancel
                         </div>
-                    </div>
-                    <div className={`relative flex flex-row indent-[5px] w-[80%] h-full justify-start items-center text-base xsw:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-medium font-serif`}>Serif</div>
-                </div>
-                <div className="left-[20px] relative top-[5%] flex flex-row w-full h-[15%] text-black text-base">
-                    <div className="relative flex flex-row w-10 h-full justify-center items-center">
-                        <div className="relative flex flex-row w-6 h-full justify-center items-center hover:cursor-pointer" onClick={() => {
-                            if(props.fontChosenPending !== "Mono") props.setFontChosenPending("Mono")
-                        }}>
-                            {props.fontChosenPending !== "Mono" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[3px] border-gray-700 rounded-full"></div>}
-                            {props.fontChosenPending === "Mono" && <div className="absolute flex flex-row w-2 h-2 xsw:w-3 xsw:h-3 bg-green-500 rounded-full"></div>}
-                            {props.fontChosenPending === "Mono" && <div className="absolute flex flex-row w-5 h-5 xsw:w-6 xsw:h-6 bg-transparent border-[2px] xsw:border-[3px] border-green-500 rounded-full"></div>}
-                        </div>
-                    </div>
-                    <div className={`relative flex flex-row indent-[5px] w-[80%] h-full justify-start items-center text-base xsw:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"} font-medium font-mono`}>Mono</div>
-                </div>
-                <div className="relative flex flex-row left-[15px] xsw:left-[20px] top-[20%] w-full h-[10%]">
-                    <div className="absolute flex flex-row left-[35%] top-0 w-[60%] h-full">
-                        <div className="relative flex flex-row left-0 top-0 w-full h-full gap-[5px] xsw:gap-[10px]">
-                            <div className={`relative flex flex-row w-[45%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} hover:cursor-pointer text-sm xss:text-base xsw:text-lg font-medium justify-center items-center`} onClick={() => {props.setFontPressed(false)}}>Cancel</div>
-                            <div className={`relative flex flex-row w-[45%] ${props.themeChosen === "Dark" ? "text-white" : "text-black"} hover:cursor-pointer text-sm xss:text-base xsw:text-lg font-medium justify-center items-center bg-green-600 rounded-md`} onClick={ async () => { setConfirm(true) }}>Confirm</div>
+                        <div className={`flex flex-row px-5 xss:px-6 py-2.5 text-white hover:cursor-pointer text-sm xss:text-base font-semibold justify-center items-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all hover:scale-105 active:scale-95`} onClick={ async () => { setConfirm(true) }}>
+                            Confirm
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
