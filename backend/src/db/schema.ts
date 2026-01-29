@@ -80,7 +80,7 @@ export const one_time_prekeys = pgTable('one_time_prekeys', {
 export const ratchetState = pgTable('ratchet_state', {
   id: serial('id').primaryKey(),
   user: varchar('user_id', {length: 36}).references(() => users.id, {onDelete: "cascade"}),
-  conversation_id: integer('conversation_id').references(() => contacts.id, {onDelete: "cascade"}),
+  conversation_id: varchar('conversation_id', {length: 36}).references(() => contacts.id, {onDelete: "cascade"}),
   send_message_number: integer('send_message_number').notNull().default(0),
   receive_message_number: integer('receive_message_number').notNull().default(0),
   send_chain_key: text('send_chain_key').notNull(),
