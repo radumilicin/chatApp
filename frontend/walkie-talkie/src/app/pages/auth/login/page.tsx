@@ -5,6 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../AuthProvider'
 import crypto, { sign } from 'crypto';
+import { X3DHClient } from '../../../x3dh-client';
+
+declare global {
+    interface Window {
+        google: any;
+    }
+}
 
 export default function Login(props: any) {
 
@@ -14,6 +21,7 @@ export default function Login(props: any) {
     const router = useRouter()
     const [users, setUsers] = useState([])
     const { loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
+    const googleButtonRef = useRef<HTMLDivElement>(null)
 
      useEffect(() => {
         const fetchUsers = async () => {
@@ -25,6 +33,37 @@ export default function Login(props: any) {
         // console.log("props = " + JSON.stringify(props));
     }, []);
 
+    // Load Google Identity Services script
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            if (window.google && googleButtonRef.current) {
+                window.google.accounts.id.initialize({
+                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+                    callback: handleGoogleResponse,
+                });
+                window.google.accounts.id.renderButton(
+                    googleButtonRef.current,
+                    {
+                        theme: 'filled_black',
+                        size: 'large',
+                        width: '100%',
+                        text: 'signin_with',
+                        shape: 'rectangular',
+                    }
+                );
+            }
+        };
+        document.head.appendChild(script);
+
+        return () => {
+            document.head.removeChild(script);
+        };
+    }, []);
+
     const setLoggedInAsync = async () => {
         setLoggedIn()
     }
@@ -33,7 +72,7 @@ export default function Login(props: any) {
         if(users !== null) return users.map((elem) => elem.username)
         else return []
     }
-    
+
     function usernameExistsF() {
         return getUsernames().includes(username)
     }
@@ -43,17 +82,105 @@ export default function Login(props: any) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    async function handleGoogleResponse(response: any) {
+        console.log("Google sign-in response received");
+
+        try {
+            const res = await fetch("http://localhost:3002/auth/google", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential }),
+                credentials: 'include',
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error("Google auth failed:", data.error);
+                return;
+            }
+
+            console.log("Google auth success, userId:", data.userId, "isNewUser:", data.isNewUser);
+            props.setU(data.userId);
+
+            if (data.isNewUser) {
+                // Generate X3DH keys for the new Google user
+                const newIdentityKey = await X3DHClient.generateKeyPair();
+                const signedPreKeyPair = await X3DHClient.generateKeyPair();
+                const signature = await X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
+
+                const newSignedPreKey = {
+                    keyId: 1,
+                    publicKey: signedPreKeyPair.publicKey,
+                    privateKey: signedPreKeyPair.privateKey,
+                    signature,
+                };
+
+                const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
+
+                // Register keys on the server
+                await fetch("http://localhost:3002/register-keys", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: data.userId,
+                        identityKeyPublic: newIdentityKey.publicKey,
+                        signedPreKeyPublic: newSignedPreKey.publicKey,
+                        signedPreKeySignature: signature,
+                        oneTimePreKeysPublic: newOneTimePreKeys.map(k => ({
+                            keyId: k.keyId,
+                            publicKey: k.publicKey,
+                        })),
+                    }),
+                });
+
+                // Encrypt and store keys locally
+                const deviceKey = await props.getOrCreateDeviceKey(data.userId);
+                const encryptedKeys = props.encryptKeys(
+                    {
+                        identityKey: newIdentityKey,
+                        signedPreKey: newSignedPreKey,
+                        oneTimePreKeys: newOneTimePreKeys,
+                    },
+                    deviceKey
+                );
+                localStorage.setItem(`encrypted_keys_${data.userId}`, encryptedKeys);
+
+                // Set keys in state
+                props.setIdentityKey(newIdentityKey);
+                props.setSignedPreKey(newSignedPreKey);
+                props.setOneTimePreKeys(newOneTimePreKeys);
+
+                console.log("Keys generated and registered for new Google user");
+            } else {
+                // Existing user — load keys
+                const deviceKey = await props.getOrCreateDeviceKey(data.userId);
+                const loaded = await props.loadKeysAfterLogin(data.userId, deviceKey);
+                if (loaded) {
+                    console.log("Keys loaded after Google login");
+                } else {
+                    console.error("Failed to load keys after Google login");
+                }
+            }
+
+            setLoggedInAsync();
+            router.push("/");
+        } catch (error) {
+            console.error("Google sign-in error:", error);
+        }
+    }
+
     async function login() {
-        console.log("In login") 
+        console.log("In login")
 
         if(username.length < 8) {
             console.log("Username should be 8 characters or more")
             return
         }
-        
+
         if(password.length < 8) {
             console.log("Password should be 8 or more characters long")
-            return 
+            return
         }
 
         let msg = {
@@ -78,7 +205,7 @@ export default function Login(props: any) {
         if(response.status === 200){
             console.log("Logged in")
             setLoggedInAsync();
-            
+
             const deviceKey = await props.getOrCreateDeviceKey(user.userId);
             // const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
 
@@ -95,23 +222,18 @@ export default function Login(props: any) {
             const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user.userId}`);
             const dbKeys = await dbResponse.json();
 
-            console.log("🔍 COMPARISON:");
-            console.log(`🔍 Bob localStorage signedPreKey user ${user.userId}:`, props.signedPreKey.publicKey);
-            console.log(`🔍 Bob database signedPreKey user ${user.userId} :`, dbKeys.signedPreKey.public_key);
-            console.log("🔍 DO THEY MATCH?", props.signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
+            console.log("COMPARISON:");
+            console.log(`Bob localStorage signedPreKey user ${user.userId}:`, props.signedPreKey.publicKey);
+            console.log(`Bob database signedPreKey user ${user.userId} :`, dbKeys.signedPreKey.public_key);
+            console.log("DO THEY MATCH?", props.signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
 
-            // localStorage.setItem("jwt-token", user.) 
+            // localStorage.setItem("jwt-token", user.)
             return user
         } else {
             console.log("login failed")
             return {}
         }
     }
-
-    // useEffect(() => {
-    //     checkPreKeys()
-
-    // }, [props.signedPreKey])
 
     return (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
@@ -163,6 +285,14 @@ export default function Login(props: any) {
                     >
                         Sign In
                     </button>
+
+                    <div className="relative flex items-center my-2">
+                        <div className="flex-grow border-t border-gray-600"></div>
+                        <span className="mx-4 text-gray-400 text-sm">or</span>
+                        <div className="flex-grow border-t border-gray-600"></div>
+                    </div>
+
+                    <div ref={googleButtonRef} className="flex justify-center w-full"></div>
                 </div>
                 <div className="mt-6 text-center">
                     <p className="text-gray-400 text-sm">

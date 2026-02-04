@@ -484,21 +484,21 @@ export default function CurrentChat( props: any ) {
                                              transition-all duration-300"
                                     alt="Profile"
                                 /> :
-                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ?
+                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                    src={`${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
                                     alt="Group"
                                 /> :
-                                (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ?
+                                (props.contact !== null && props.contact.is_group === true) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                    src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
+                                    className="relative w-12 h-12 rounded-full object-cover
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"

@@ -26,7 +26,8 @@ export const users = pgTable('users', {
   id: varchar('id', {length : 36}).primaryKey(), // convert to varchar and change code to reflect change
   username: varchar('username', { length: 50 }).notNull().unique(),
   email: varchar('email', {length: 100}).notNull().unique(),
-  password_hash: text('password_hash').notNull(),
+  password_hash: text('password_hash'),
+  google_id: varchar('google_id', {length: 100}),
   profile_pic_id: integer("profile_pic_id").references(() => images.id, {onDelete: "cascade"}),
   about: varchar('about', {length : 250}),
   incoming_sounds: boolean().default(false),

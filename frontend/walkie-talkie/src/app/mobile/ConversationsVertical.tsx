@@ -855,12 +855,12 @@ export function Contacts( props: any) {
                                                     blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
 
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
                                         className="relative h-10 w-10 rounded-full border border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
                                         alt="Profile"
                                     /> :
-                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
                                 <div className="relative flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
@@ -993,12 +993,12 @@ export function Contacts( props: any) {
                             >
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
                                         className="h-12 w-12 rounded-full"
                                         alt="Profile"
-                                    /> : 
-                                        <img src={`${props.themeChosen === "Dark" ? './userProfile2.png' : 'userProfile_nobg.png'}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                    /> :
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
@@ -1591,10 +1591,10 @@ export function Contacts2( props: any) {
                                 <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
                                 (element !== null && element.is_group === false && getImage(element).data === "") ?
                                 <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
-                            (element !== null && element.is_group === true && element.group_pic_id !== null) ? 
-                                <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
-                                (element !== null && element.is_group === true && element.group_pic_id === null) ? 
-                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                            (element !== null && element.is_group === true && element.group_pic_id !== null && getImage(element).data) ?
+                                <img src={`data:image/jpeg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
+                                (element !== null && element.is_group === true) ?
+                                <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="max-h-[60%] rounded-full"></img> : <></>                        
                             }
                         </div>
                         <div className="flex w-[90%] flex-col">

@@ -242,11 +242,29 @@ export default function ProfileInfoVertical( props ) {
                             blur-lg transition-all duration-300 scale-105" />
 
                         {/* Profile Picture */}
-                        {((props.contact !== undefined && props.contact !== null) && getImage(props.contact).data !== "" && (!props.contact.is_group && getUser(props.contact).profile_pic_visibility !== 'Nobody')) ? (
+                        {((props.contact !== undefined && props.contact !== null) && !props.contact.is_group && getImage(props.contact).data && getUser(props.contact).profile_pic_visibility !== 'Nobody') ? (
                             <img
                                 src={getImage(props.contact).data.startsWith('data:image')
                                     ? `${getImage(props.contact).data}`
-                                    : `data:image/jpg;base64,${getImage(props.contact).data}`}
+                                    : `data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                    border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
+                                    shadow-2xl shadow-cyan-500/20
+                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    group-hover/profile:scale-105 transition-all duration-300 z-10`}
+                            />
+                        ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group && getImage(props.contact).data) ? (
+                            <img
+                                src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                    border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
+                                    shadow-2xl shadow-cyan-500/20
+                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    group-hover/profile:scale-105 transition-all duration-300 z-10`}
+                            />
+                        ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group) ? (
+                            <img
+                                src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
                                 className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
