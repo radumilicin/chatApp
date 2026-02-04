@@ -15,6 +15,7 @@ export default function CurrentChat( props: any ) {
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
     const image = useRef(null)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
     const [decryptedContact, setDecryptedContact] = useState(null);
 
@@ -134,6 +135,7 @@ export default function CurrentChat( props: any ) {
 
     useEffect(() => {
         // console.log("Changed all messages: " + JSON.stringify(allMessages))
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [allMessages])
 
 
@@ -667,6 +669,7 @@ export default function CurrentChat( props: any ) {
                 </div>
             );
                     })}
+                <div ref={messagesEndRef} />
             </div>}
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>

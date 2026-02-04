@@ -46,10 +46,8 @@ export default function ProfileSettings(props) {
 
             console.log("images = " + JSON.stringify(props.images))
 
-            const img = props.images.find((img) => { return img.id === msg.profile_pic_id }) 
+            const img = props.images.find((img) => { return img.id === msg.profile_pic_id })
             console.log("profile pic id = " + JSON.stringify(img))
-            // update images here 
-            // const response2 = await fetch(`http://localhost:3002/putProfilePic?user=${props.curr_user}`)
         }
     }
 
@@ -89,18 +87,6 @@ export default function ProfileSettings(props) {
         }
     }
 
-
-    useEffect(() => {
-        console.log("users after profile pic change = " + JSON.stringify(props.users))
-        setCurrImageData(getProfileImage())
-        setUsername(getCurrUser().username)
-        setAbout(getCurrUser().about)
-    }, [props.users, props.images])
-
-    useEffect(() => {
-        console.log("data image changed to " + JSON.stringify(currImageData) + " at time " + new Date().toISOString())
-    }, [currImageData])
-
     const divRef = useRef<HTMLDivElement>(null);
     const divRef2 = useRef<HTMLDivElement>(null);
 
@@ -114,7 +100,7 @@ export default function ProfileSettings(props) {
                 console.log("outside press")
             }
         };
-        
+
         const handleClickOutside2 = (event) => {
             console.log("divRef.current:", divRef2.current);
             console.log("event.target:", event.target);
@@ -124,23 +110,42 @@ export default function ProfileSettings(props) {
             }
         };
 
-        // listens if the whole document was clicked and if it is then see if it was then
-        // check if the click happened outside
-        // Attach event listener to the document
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("mousedown", handleClickOutside2);
 
-        // Cleanup function to remove the listener
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("mousedown", handleClickOutside2);
         };
     }, []);
 
+    useEffect(() => {
+        console.log("users after profile pic change = " + JSON.stringify(props.users))
+        setCurrImageData(getProfileImage())
+        setUsername(getCurrUser().username)
+        setAbout(getCurrUser().about)
+    }, [props.users, props.images])
+
+    useEffect(() => {
+        console.log("data image changed to " + JSON.stringify(currImageData) + " at time " + new Date().toISOString())
+    }, [currImageData])
+
     return (
-        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border flex flex-col`}>
-            <div className="absolute left-[2%] top-[1%] h-[5%] w-[98%] flex flex-row">
-                <div className={`relative indent-[20px] left-[2%] w-[8%] text-2xl font-semibold text-black font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"}`}
+        <div className={`relative left-0 w-full top-0 h-full
+            ${props.themeChosen === "Dark"
+                ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95"
+                : "bg-gradient-to-b from-gray-100 to-gray-200"}
+            backdrop-blur-lg flex flex-col shadow-2xl
+            border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-4">
+                <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all
+                        ${props.themeChosen === "Dark"
+                            ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30"
+                            : "hover:bg-gray-300/50"}
+                        hover:scale-105 active:scale-95`}
                         onClick={() => {
                             props.setPressPrivacy(false)
                             props.setPressNotifications(false)
@@ -153,115 +158,178 @@ export default function ProfileSettings(props) {
                             props.setDisappearingMessagesPressed(false)
                             props.setBlockedContactsPressed(false)
                         }}>
-                    <img src={`${props.themeChosen === "Dark" ? "/back-arrow.png" : "back_image_black.png"}`} className="justify-center items-center max-h-[70%] aspect-square"></img>
-                </div>
-                <div className={`relative indent-[10px] left-[2%] w-[60%] text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-slate-700"} font-sans flex flex-row justify-start items-center`}>Profile info</div>
-            </div>
-            <div
-                className="relative flex flex-row top-[8%] left-[15%] w-[70%] h-80 justify-center items-center hover:opacity-50 rounded-full"
-                onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
-                onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
-            >
-                {currImageData.data !== "" ? (
-                    <img
-                        src={`data:image/jpeg;base64,${currImageData.data}`}
-                        className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600"
-                    />
-                ) : (
-                    <img src="./profilePic2.png" className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[220px] lg:h-[220px] xl:w-60 xl:h-60 z-0 rounded-full border-8 border-gray-600"></img>
-                )}
-
-                {hoveredProfilePic && (
-                    <div className="absolute h-[70%] w-[70%] flex flex-col items-center justify-center z-20">
-                        <img src="./camera-icon-white2.png" className="h-20 w-20" />
-                        <p className="h-[30%] w-[100%] text-white text-center">
-                            Change profile picture
-                        </p>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
+                            className="w-5 h-5 aspect-square opacity-90" alt="Back" />
                     </div>
-                )}
-
-                {/* Input for file upload */}
-                <input
-                    type="file"
-                    accept="image/*"
-                    className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-                    onChange={(event) => {
-                        console.log("File input triggered");
-                        const file = event.target.files[0];
-                        if (file) {
-                            console.log("File selected:", file.name);
-                            const reader = new FileReader();
-                            console.log("FileReader created");
-                            reader.onload = (e) => {
-                                console.log("File loaded");
-                                let base64Image = e.target.result as string;
-                                const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
-                                if (base64Regex.test(base64Image)) {
-                                    // Remove the data URL prefix
-                                    base64Image = base64Image.replace(base64Regex, "");
-                                }
-
-                                console.log("Base64 Image (stripped):", base64Image);
-
-                                // Send the base64 image
-                                changeProfilePic(base64Image);
-                            };
-                            reader.onerror = (error) =>
-                                console.error("Error reading file:", error);
-                            reader.readAsDataURL(file);
-                            console.log("Started reading file");
-                        } else {
-                            console.log("No file selected");
-                        }
-                        // Reset the file input to allow re-selection
-                        event.target.value = "";
-                    }}
-                />
+                    <h1 className={`text-lg font-bold bg-gradient-to-r
+                        ${props.themeChosen === "Dark"
+                            ? "from-cyan-400 via-blue-400 to-cyan-300"
+                            : "from-gray-700 to-gray-900"}
+                        bg-clip-text text-transparent`}>
+                        Profile Settings
+                    </h1>
+                </div>
             </div>
-            <div className={`relative flex flex-col top-[0%] left-0 h-[45%] justify-center items-center ${props.themeChosen === "Dark" ? "text-gray-300" : "text-black"} `}>
-                <div className="relative flex flex-col top-[10%] w-[60%] xss:w-[55%] xsw:w-[50%] h-[30%]">
-                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>Name</div>
-                    <div ref={divRef} className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
-                        {
-                        stateUsername === "fixed" ? <p className={`flex flex-row w-[50%] h-full items-center md:text-lg xl:text-xl indent-[40px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().username}</p> 
-                                                : <input className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
-                                                            value={username} onChange={(e) => {
-                                                                setUsername(e.target.value)
-                                                            }}    
-                                                            onKeyDown={(e) => {
-                                                                if(e.key === "Enter"){
-                                                                    changeUsername(username)
-                                                                    setStateUsername("fixed")
-                                                                }
-                                                            }}></input>
-                                                
-                        }
-                        <div className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full hover:cursor-pointer`} onClick={() => {
-                            console.log("stateUsername: " + stateUsername)
-                            if(stateUsername === "input") {
-                                setStateUsername("fixed")
-                                console.log("stateUsername change to: fixed")
-                            }
-                            else {
-                                setStateUsername("input")
-                                console.log("stateUsername change to: input")
-                            } 
-                        }}>
-                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"} transition-all`}>
-                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]"></img>
-                            </div>
+
+            {/* Profile Picture Section */}
+            <div className="relative w-full flex flex-col items-center justify-center py-6">
+                <div
+                    className="relative flex items-center justify-center group/profile"
+                    onMouseEnter={() => {setHoverProfilePic(true); console.log("in profile pic")}}
+                    onMouseLeave={() => {setHoverProfilePic(false); console.log("out of profile pic")}}
+                >
+                    {/* Glowing ring effect around profile picture */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                        blur-xl group-hover/profile:blur-2xl transition-all duration-500 scale-110 animate-pulse" />
+
+                    {/* Secondary glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-300/20 via-transparent to-purple-300/20
+                        blur-lg transition-all duration-300 scale-105" />
+
+                    {currImageData.data !== "" ? (
+                        <img
+                            src={`data:image/jpeg;base64,${currImageData.data}`}
+                            className={`relative w-36 h-36 z-10 rounded-full
+                                border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
+                                shadow-2xl shadow-cyan-500/20
+                                group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                ${hoveredProfilePic ? 'blur-sm' : ""} transition-all duration-300`}
+                            alt="Profile"
+                        />
+                    ) : (
+                        <img
+                            src={`${props.themeChosen === "Dark" ? "./profilePic2.png" : "./userProfile2.png"}`}
+                            className={`relative w-36 h-36 z-10 rounded-full
+                                border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
+                                shadow-2xl shadow-cyan-500/20
+                                group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                ${hoveredProfilePic ? 'blur-sm' : ""} transition-all duration-300`}
+                            alt="Default Profile"
+                        />
+                    )}
+
+                    {hoveredProfilePic && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-2">
+                            <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : "./camera.png"}`}
+                                className="h-12 w-12" alt="Camera" />
+                            <p className={`font-medium text-xs text-center px-4
+                                ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"}`}>
+                                Change profile picture
+                            </p>
                         </div>
-                    </div>
+                    )}
+
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 z-50 opacity-0 cursor-pointer"
+                        onChange={(event) => {
+                            console.log("File input triggered");
+                            const file = event.target.files[0];
+                            if (file) {
+                                console.log("File selected:", file.name);
+                                const reader = new FileReader();
+                                console.log("FileReader created");
+                                reader.onload = (e) => {
+                                    console.log("File loaded");
+                                    let base64Image = e.target.result as string;
+                                    const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+                                    if (base64Regex.test(base64Image)) {
+                                        base64Image = base64Image.replace(base64Regex, "");
+                                    }
+                                    console.log("Base64 Image (stripped):", base64Image);
+                                    changeProfilePic(base64Image);
+                                };
+                                reader.onerror = (error) =>
+                                    console.error("Error reading file:", error);
+                                reader.readAsDataURL(file);
+                                console.log("Started reading file");
+                            } else {
+                                console.log("No file selected");
+                            }
+                            event.target.value = "";
+                        }}
+                    />
                 </div>
-                <div ref={divRef2} className="relative flex flex-col top-[10%] w-[60%] xss:w-[55%] xsw:w-[50%] h-[30%]">
-                    <div className={`relative ${props.themeChosen === "Dark" ? "text-white" : "text-gray-600"} text-opacity-80 indent-[40px] top-[10%] left-0 h-[30%] text-lg lg:text-xl 2xl:text-2xl font-medium items-center`}>About</div>
-                    <div className="relative flex flex-row top-[10%] left-0 w-full h-[40%] items-end">
-                        {
-                            stateAbout === "fixed" ? (
-                                <p className={`flex flex-row w-[50%] h-full items-center md:text-lg xl:text-xl indent-[40px] font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>{getCurrUser().about}</p>
+            </div>
+
+            {/* User Information Section */}
+            <div className={`flex-1 w-full py-6 px-6 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
+                <div className="flex flex-col gap-6">
+                    {/* Name Section */}
+                    <div className="flex flex-col gap-2">
+                        <label className={`text-xs font-medium uppercase tracking-wide
+                            ${props.themeChosen === "Dark"
+                                ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
+                                : "text-gray-600"}`}>
+                            Name
+                        </label>
+                        <div ref={divRef} className="flex items-center gap-3">
+                            {stateUsername === "fixed" ? (
+                                <p className={`flex-1 text-base font-medium truncate
+                                    ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>
+                                    {getCurrUser().username}
+                                </p>
                             ) : (
                                 <input
-                                    className="flex flex-row w-[50%] h-full items-center text-md font-medium outline-none border-b-2 border-black bg-transparent"
+                                    className={`flex-1 text-base font-medium outline-none border-b-2 bg-transparent pb-1
+                                        ${props.themeChosen === "Dark"
+                                            ? "border-cyan-500 text-white focus:border-cyan-400"
+                                            : "border-gray-800 text-gray-800"}`}
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if(e.key === "Enter"){
+                                            changeUsername(username)
+                                            setStateUsername("fixed")
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                            )}
+                            <button
+                                className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all
+                                    ${props.themeChosen === "Dark"
+                                        ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30"
+                                        : "hover:bg-gray-300/50"}
+                                    hover:scale-110 active:scale-95`}
+                                onClick={() => {
+                                    if(stateUsername === "fixed") {
+                                        setStateUsername("input")
+                                    } else {
+                                        setStateUsername("fixed")
+                                    }
+                                }}
+                            >
+                                <img
+                                    src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`}
+                                    className="w-5 h-5 opacity-90"
+                                    alt="Edit"
+                                />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* About Section */}
+                    <div className="flex flex-col gap-2 py-4">
+                        <label className={`text-xs font-medium uppercase tracking-wide
+                            ${props.themeChosen === "Dark"
+                                ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
+                                : "text-gray-600"}`}>
+                            About
+                        </label>
+                        <div ref={divRef2} className="flex items-center gap-3">
+                            {stateAbout === "fixed" ? (
+                                <p className={`flex-1 text-base font-medium truncate
+                                    ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>
+                                    {getCurrUser().about}
+                                </p>
+                            ) : (
+                                <input
+                                    className={`flex-1 text-base font-medium outline-none border-b-2 bg-transparent pb-1
+                                        ${props.themeChosen === "Dark"
+                                            ? "border-cyan-500 text-white focus:border-cyan-400"
+                                            : "border-gray-800 text-gray-800"}`}
                                     value={about}
                                     onChange={(e) => setAbout(e.target.value)}
                                     onKeyDown={(e) => {
@@ -270,23 +338,32 @@ export default function ProfileSettings(props) {
                                             setStateAbout("fixed");
                                         }
                                     }}
+                                    autoFocus
                                 />
-                            )
-                        }
-                        <div
-                            className={`flex flex-row w-[50%] h-full items-center justify-center hover:rounded-full  hover:cursor-pointer`}
-                            onClick={() => {
-                                if(stateAbout === "input") setStateAbout("fixed")
-                                else setStateAbout("input")
-                            }}
-                        >
-                            <div className={`flex flex-row w-[60px] h-[40px] justify-center items-center rounded-full ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"} transition-all`}>
-                                <img src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`} className="w-[20px] h-[20px]" />
-                            </div>
+                            )}
+                            <button
+                                className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all
+                                    ${props.themeChosen === "Dark"
+                                        ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30"
+                                        : "hover:bg-gray-300/50"}
+                                    hover:scale-110 active:scale-95`}
+                                onClick={() => {
+                                    if(stateAbout === "fixed"){
+                                        setStateAbout("input")
+                                    } else {
+                                        setStateAbout("fixed")
+                                    }
+                                }}
+                            >
+                                <img
+                                    src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`}
+                                    className="w-5 h-5 opacity-90"
+                                    alt="Edit"
+                                />
+                            </button>
                         </div>
                     </div>
                 </div>
-                            
             </div>
         </div>
     );

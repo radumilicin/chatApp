@@ -23,9 +23,14 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
     const audioRef = useRef(null);
 
     useEffect(() => {
+        // Don't connect if URL is not set
+        if (!url) {
+            return;
+        }
+
         // Initialize WebSocket
         ws.current = new WebSocket(url);
-        
+
         // Create audio element for notification sound
         audioRef.current = new Audio('/borat-wawaweewa.mp3');
 
@@ -153,7 +158,9 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
 
         // Cleanup on unmount
         return () => {
-            ws.current.close();
+            if (ws.current) {
+                ws.current.close();
+            }
         };
     }, [url, incomingSoundsEnabled]);
 

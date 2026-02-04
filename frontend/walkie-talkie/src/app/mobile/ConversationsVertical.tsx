@@ -326,7 +326,7 @@ export function OtherOptions (props) {
                             : "text-black"}`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[80%] max-w-[80%]"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/addUser-white.png" : "add-user.png"}`} className="justify-end items-center w-5 h-5"></img>
                 </div>
                 <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className="justify-end items-center w-6 h-6"></img>
@@ -706,34 +706,9 @@ export function Contacts( props: any) {
     }
 
     useEffect(() => {
-
         if(props.contact) {
             console.log("================\n\n\n CONTACT = " + JSON.stringify(props.contact) + "\n\n\n=================")
         }
-
-        // const updateAccess = async () => {
-        //     if(props.contact && props.contact.opened_at) {
-        //         for(let elem of props.contact.opened_at){
-        //             if(elem.id === props.curr_user) {
-        //                 // console.log("============\nupdating access time for chat\n==========")
-        //                 // console.log("Sending timestamp:", elem.opened_at); // Add this log
-        //                 await updateAccessedOnChat(elem.opened_at);
-        //             }
-        //         }
-
-        //         if(prevContact.current !== null) {
-        //             await props.closeChat(prevContact.current);
-        //         }
-                
-        //         // console.log("ABOUT TO FETCH CONTACTS");
-        //         await props.fetchContacts();
-        //         // console.log("CONTACTS FETCHED, should re-render now");
-                
-        //         prevContact.current = props.contact;
-        //     }
-        // };
-        
-        // if(props.contact) updateAccess();
     }, [props.contact])
 
     useEffect(() => {

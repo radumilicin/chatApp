@@ -329,6 +329,7 @@ app.post('/insertContact', async (req, res) => {
   console.log(`sender_id: ${sender_id}, contact_id: ${contact_id}`)
 
   try {
+    const id = uuidv4();
     let users = [sender_id, contact_id]
     let openedAt = []
     let closedAt = []
@@ -338,8 +339,8 @@ app.post('/insertContact', async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO contacts (sender_id, contact_id, group_pic_id, is_group, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb) RETURNING *",
-      [sender_id, contact_id, null, false, JSON.stringify(openedAt), JSON.stringify(closedAt)]
+      "INSERT INTO contacts (id, sender_id, contact_id, group_pic_id, is_group, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb) RETURNING *",
+      [id, sender_id, contact_id, null, false, JSON.stringify(openedAt), JSON.stringify(closedAt)]
     );
 
     res.status(200).json({ data: result.rows[0] });
@@ -351,9 +352,7 @@ app.post('/insertContact', async (req, res) => {
 
 app.get('/contactsGroup', async (req, res) => {      
     var group_id = null;
-    if (req.query.group_id) {
-      group_id = parseInt(req.query.group_id, 10);
-    }
+    if (req.query.group_id) group_id = req.query.group_id
 
     console.log("group_id = " + group_id)
 
@@ -590,14 +589,22 @@ wss.on('connection', (ws, req) => {
         }
       
         console.log("before recipient web socket")
-        // Get recipient's WebSocket
-        const recipientWs = clients.get(recipient_ids);
+        // Send the message to all group recipients
+        const groupMessage = {
+          sender_id,
+          recipient_ids,
+          group_id,
+          message,
+          timestamp
+        };
 
-        // Send the message to the intended recipient
-        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
-          recipientWs.send(JSON.stringify({ senderId, content })); // Send message
-        } else {
-          console.log(`Recipient ${recipient_id} is not online.`);
+        for (const recipient_id of recipient_ids) {
+          const recipientWs = clients.get(recipient_id);
+          if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+            recipientWs.send(JSON.stringify(groupMessage));
+          } else {
+            console.log(`Recipient ${recipient_id} is not online.`);
+          }
         }
 
         let msg = message
@@ -951,7 +958,7 @@ app.post('/createGroup', async (req, res) => {
 
   if (users !== null && Array.isArray(users)) {
     try {
-      const rdm = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
+      const rdm = uuidv4(); // Generate a random UUID
       
       console.log("Before inserting group into contacts");
 

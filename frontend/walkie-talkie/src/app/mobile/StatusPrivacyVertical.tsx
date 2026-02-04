@@ -56,14 +56,6 @@ export default function StatusPrivacyVertical(props: any) {
                             onClick={() => {
                                 props.setPressPrivacy(true)
                                 props.setStatusPrivPress(false)
-                                props.setPressNotifications(false)
-                                props.setPressAccount(false)
-                                props.setPressProfile(false)
-                                props.setPressAppearance(false)
-                                props.setPressedSettings(false)
-                                props.setProfilePicPrivPress(false)
-                                props.setDisappearingMessagesPressed(false)
-                                props.setBlockedContactsPressed(false)
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>

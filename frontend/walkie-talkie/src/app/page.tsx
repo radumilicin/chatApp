@@ -325,12 +325,29 @@ export default function Home() {
       }
 
       // Check database
-      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
-      const dbKeys = await dbResponse.json();
-      console.log("🗄️ Bob's keys from database:");
-      console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
-      console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
-      console.log(`  local storage SignedPreKey public:`, signedPreKey.public_key.substring(0, 30) + "...");
+      try {
+        const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+        if (!dbResponse.ok) {
+          console.log("🗄️ Failed to fetch keys from database:", dbResponse.status);
+          return;
+        }
+        const dbKeys = await dbResponse.json();
+        if (dbKeys && dbKeys.identityKey && dbKeys.signedPreKey) {
+          console.log("🗄️ Bob's keys from database:");
+          console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
+          console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+        } else {
+          console.log("🗄️ No keys found in database for user");
+        }
+      } catch (e) {
+        console.error("❌ Failed to fetch/parse keys from database:", e);
+      }
+
+      if (signedPreKey) {
+        console.log(`  local storage SignedPreKey public:`, signedPreKey.publicKey.substring(0, 30) + "...");
+      } else {
+        console.log(`  local storage SignedPreKey public: NOT LOADED YET`);
+      }
 
 
       /* FORGOT TO PUT THESE WTF??? */
@@ -409,12 +426,29 @@ export default function Home() {
       }
 
       // Check database
-      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
-      const dbKeys = await dbResponse.json();
-      console.log("🗄️ Bob's keys from database:");
-      console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
-      console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
-      console.log(`  local storage SignedPreKey public:`, signedPreKey.public_key.substring(0, 30) + "...");
+      try {
+        const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+        if (!dbResponse.ok) {
+          console.log("🗄️ Failed to fetch keys from database:", dbResponse.status);
+          return;
+        }
+        const dbKeys = await dbResponse.json();
+        if (dbKeys && dbKeys.identityKey && dbKeys.signedPreKey) {
+          console.log("🗄️ Bob's keys from database:");
+          console.log("  - Identity public:", dbKeys.identityKey.substring(0, 30) + "...");
+          console.log("  - SignedPreKey public:", dbKeys.signedPreKey.public_key.substring(0, 30) + "...");
+        } else {
+          console.log("🗄️ No keys found in database for user");
+        }
+      } catch (e) {
+        console.error("❌ Failed to fetch/parse keys from database:", e);
+      }
+
+      if (signedPreKey) {
+        console.log(`  local storage SignedPreKey public:`, signedPreKey.publicKey.substring(0, 30) + "...");
+      } else {
+        console.log(`  local storage SignedPreKey public: NOT LOADED YET`);
+      }
 
 
       /* FORGOT TO PUT THESE WTF??? */
@@ -697,11 +731,7 @@ export default function Home() {
   checkAndDecrypt();
 }, [identityKey, signedPreKey, user, contacts.length]);
 
-
-
-
   useEffect(() => {
-    
     const checkKeys = async () => {
       const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
       const dbKeys = await dbResponse.json();
@@ -779,6 +809,12 @@ export default function Home() {
   // Different cases for groups and users
   async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string, contact: any) {
     console.log(`In load conversation messages at ${new Date()} with ${user}`)
+
+    // Group messages are plaintext - no decryption needed
+    if (is_group) {
+      console.log(`Group contact ${contact.id} - returning ${messages?.length || 0} messages as-is (no decryption)`);
+      return messages || [];
+    }
 
     const decryptedMessages = [];
     const decryption_key = X3DHClient.getOrCreateLocalKey();
@@ -954,7 +990,9 @@ export default function Home() {
       }
     }
 
-    await ratchet.updateRatchetState()
+    if (ratchet) {
+      await ratchet.updateRatchetState()
+    }
 
     console.log("Decrypted messages: ", decryptedMessages)
 
@@ -1018,10 +1056,6 @@ export default function Home() {
     loadConversationRatchetStateDB
   );
 
-  // useEffect(() => {
-  //   fetchData2()
-  // }, [messages])
-
   useEffect(() => {
     console.log(`Decrypted contacts after updating: ${JSON.stringify(decryptedContacts)}`)
   }, [decryptedContacts])
@@ -1042,7 +1076,9 @@ export default function Home() {
         {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br ${themeChosen === "Dark" ? "from-[#181c25] via-[#01050c] to-[#0d1018]" : "from-[#258ebe] via-[#7823a8] to-[#10bb79]"} 
                                               ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
-          {display === "Mobile" && <OptionsBarVerticalView curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings} 
+          {display === "Mobile" && !pressedAccount && !pressedNotifications && !pressedPrivacy && !pressedSettings && !curr_contact && !pressedProfile &&
+                                    !profilePicPrivPress && !statusPrivPress && !disappearingMessagesPressed && !blockedContactsPressed && !profileInfo && !addingToGroup && !addContact2
+                                    && <OptionsBarVerticalView curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings}
                                     setPressedSettings={setPressedSettings} themeChosen={themeChosen} setPressAccount={setPressAccount} setPressPrivacy={setPressPrivacy} setDisappearingMessagesPressed={setDisappearingMessagesPressed}
                                     setStatusPrivPress={setStatusPrivPress} setProfilePicPrivPress={setProfilePicPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressNotifications={setPressNotifications}
                                     setPressAppearance={setPressAppearance} setCurrContact={setCurrContact} setProfileInfo={setProfileInfo}
@@ -1061,10 +1097,7 @@ export default function Home() {
                                           userObj={userObj} user={user}  fetchUsers={fetchData} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} visibilityStatus={visibilityStatus} setVisibilityStatus={setVisibilityStatus} 
                                       setDisappearingMessagesPeriod={setDisappearingMessagesPeriod} setDisappearingMessagesPressed={setDisappearingMessagesPressed} 
-                                      setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed}
-                                          
-                                          
-                                          ></ProfileSettingsVertical>)
+                                      setStatusPrivPress={setStatusPrivPress} setBlockedContactsPressed={setBlockedContactsPressed}></ProfileSettingsVertical>)
                                    :                 
             pressedSettings ? (display === "Desktop" ? <SettingsView curr_user={user} setPressedSettings={setPressedSettings} setPressProfile={setPressProfile} setProfilePicPrivPress={setProfilePicPrivPress} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                   users={users} images={images} logOutNow={logOutNow} setLoggedIn={setLoggedIn} loggedIn={loggedIn} setPressPrivacy={setPressPrivacy} setStatusPrivPress={setStatusPrivPress}
@@ -1100,9 +1133,9 @@ export default function Home() {
                                       disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus}
                                       visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen}></Privacy> : <PrivacyVertical userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
-                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} 
-                                      disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus}
-                                      visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen}></PrivacyVertical>)
+                                      setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} setPressAppearance={setPressAppearance}
+                                      disappearingMessagesPressed={disappearingMessagesPressed} setPressNotifications={setPressNotifications} setPressProfile={setPressProfile}
+                                      setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus} setPressAccount={setPressAccount} visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen}></PrivacyVertical>)
                                     : 
             profilePicPrivPress ? (display === "Desktop" ? <ProfilePicPrivacy userObj={userObj} user={user} users={users} fetchUsers={fetchData} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
@@ -1143,12 +1176,12 @@ export default function Home() {
                                       setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                                       images={images} themeChosen={themeChosen}></BlockedContactsView> : <BlockedContactsViewVertical userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
-                                      setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
+                                      setProfilePicPrivPress={setProfilePicPrivPress} setPressProfile={setPressProfile} setStatusPrivPress={setStatusPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
                                       images={images} themeChosen={themeChosen}></BlockedContactsViewVertical>)
                                     :
             
             curr_contact !== null && profileInfo === true && display === "Mobile" ? <ProfileInfoVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
-                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} setAddToGroup={setAddToGroup}
+                                                addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} setAddToGroup={setAddToGroup} fetchContacts={fetchData2}
                                                 messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} setCurrContact={setCurrContact}></ProfileInfoVertical> 
                                     :
             curr_contact !== null && profileInfo === false && display === "Mobile" ? <CurrentChatVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
@@ -1181,8 +1214,8 @@ export default function Home() {
                                                        <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64} setUser={setUser} setIdentityKey={setIdentityKey} 
                                                        setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} isKeysLoaded={isKeysLoaded} deriveKeyFromPassword={deriveKeyFromPassword} decryptKeys={decryptKeys} encryptKeys={encryptKeys}></Register> : <></>}
       </div>
-      {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} decryptedContacts={decryptedContacts} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
-      {profileInfo === true && curr_contact !== null && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}
+      {profileInfo === true && curr_contact !== null && curr_contact !== undefined && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} decryptedContacts={decryptedContacts} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
+      {profileInfo === true && curr_contact !== null && curr_contact !== undefined && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}
     </div>
   );
 }

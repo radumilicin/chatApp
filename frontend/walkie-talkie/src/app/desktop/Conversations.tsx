@@ -338,7 +338,6 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-
         <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
             <div className={`group relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl overflow-hidden
                 transition-all duration-300
