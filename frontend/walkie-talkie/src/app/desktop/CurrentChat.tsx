@@ -15,6 +15,7 @@ export default function CurrentChat( props: any ) {
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
     const image = useRef(null)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
     const [decryptedContact, setDecryptedContact] = useState(null);
 
@@ -134,6 +135,7 @@ export default function CurrentChat( props: any ) {
 
     useEffect(() => {
         // console.log("Changed all messages: " + JSON.stringify(allMessages))
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [allMessages])
 
 
@@ -482,21 +484,21 @@ export default function CurrentChat( props: any ) {
                                              transition-all duration-300"
                                     alt="Profile"
                                 /> :
-                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ?
+                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                    src={`${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
                                     alt="Group"
                                 /> :
-                                (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ?
+                                (props.contact !== null && props.contact.is_group === true) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                    src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
+                                    className="relative w-12 h-12 rounded-full object-cover
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -667,6 +669,7 @@ export default function CurrentChat( props: any ) {
                 </div>
             );
                     })}
+                <div ref={messagesEndRef} />
             </div>}
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>

@@ -1,5 +1,5 @@
 {
-  "id": "d975b1bf-21d9-404e-96f2-d4b6392623be",
+  "id": "1c8f8f50-13ca-4b65-9a8f-59aafd002d8d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(36)",
           "primaryKey": true,
           "notNull": true
         },
@@ -80,8 +80,8 @@
           "notNull": false,
           "default": false
         },
-        "blockedAt": {
-          "name": "blockedAt",
+        "blocked_at": {
+          "name": "blocked_at",
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
@@ -99,6 +99,30 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'[]'::jsonb"
+        },
+        "last_message_sent_by_sender": {
+          "name": "last_message_sent_by_sender",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_message_sent_by_recipient": {
+          "name": "last_message_sent_by_recipient",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_message_read_by_sender": {
+          "name": "last_message_read_by_sender",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_message_read_by_recipient": {
+          "name": "last_message_read_by_recipient",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -270,6 +294,125 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.ratchet_state": {
+      "name": "ratchet_state",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "send_message_number": {
+          "name": "send_message_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "receive_message_number": {
+          "name": "receive_message_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "send_chain_key": {
+          "name": "send_chain_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "receive_chain_key": {
+          "name": "receive_chain_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "root_key": {
+          "name": "root_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dh_sending_key": {
+          "name": "dh_sending_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dh_receiving_key": {
+          "name": "dh_receiving_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "previous_sending_chain_length": {
+          "name": "previous_sending_chain_length",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ratchet_state_user_id_users_id_fk": {
+          "name": "ratchet_state_user_id_users_id_fk",
+          "tableFrom": "ratchet_state",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ratchet_state_conversation_id_contacts_id_fk": {
+          "name": "ratchet_state_conversation_id_contacts_id_fk",
+          "tableFrom": "ratchet_state",
+          "tableTo": "contacts",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ratchet_state_user_id_conversation_id_unique": {
+          "name": "ratchet_state_user_id_conversation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "conversation_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.user_keys": {
       "name": "user_keys",
       "schema": "",
@@ -359,7 +502,13 @@
           "name": "password_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "google_id": {
+          "name": "google_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "profile_pic_id": {
           "name": "profile_pic_id",

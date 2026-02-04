@@ -78,7 +78,7 @@ export default function OptionsBarVerticalView(props){
                         }}>
                         <div className={`flex w-10 h-10 justify-center items-center flex-col rounded-xl hover:cursor-pointer transition-all hover:shadow-lg hover:shadow-[#3B7E9B]/30 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                             {imageData.data !== "" ? <img src={`data:image/jpg;base64,${imageData.data}`} className="flex w-8 h-8 rounded-full border-2 border-transparent hover:border-[#3B7E9B] transition-all" onClick={() => {}}></img>
-                                                : <img src="./profilePic2.png" className="flex w-8 h-8 rounded-full opacity-90"></img>
+                                                : <img src={`${props.themeChosen === "Dark" ? "./profilePic2.png" : "/profilePic_black.png"}`} className="flex w-8 h-8 rounded-full opacity-90"></img>
                             }
                         </div>
                     </div>

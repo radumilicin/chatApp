@@ -50,15 +50,7 @@ export default function ProfilePicPrivacyVertical(props: any) {
                     <div className={`w-12 h-12 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                             onClick={() => {
                                 props.setPressPrivacy(true)
-                                props.setPressNotifications(false)
-                                props.setPressAccount(false)
-                                props.setPressProfile(false)
-                                props.setPressAppearance(false)
-                                props.setPressedSettings(false)
                                 props.setProfilePicPrivPress(false)
-                                props.setStatusPrivPress(false)
-                                props.setDisappearingMessagesPressed(false)
-                                props.setBlockedContactsPressed(false)
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>

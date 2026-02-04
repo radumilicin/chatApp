@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 export default function Privacy(props: any) {
 
     return (
-        <div className={`relative left-0 w-full top-0 h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-auto no-scrollbar`}>
+        <div className={`relative left-0 w-full top-0 h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"} overflow-y-auto no-scrollbar`}>
             {/* Header */}
             <div className="relative w-full pt-4 px-4 pb-6">
                 <div className="flex items-center gap-4">
@@ -11,15 +11,15 @@ export default function Privacy(props: any) {
                             onClick={() => {
                                 props.setPressedSettings(true)
                                 props.setPressPrivacy(false)
-                                props.setPressNotifications(false)
-                                props.setPressAccount(false)
-                                props.setPressProfile(false)
-                                props.setPressAppearance(false)
-                                props.setPressedSettings(false)
-                                props.setProfilePicPrivPress(false)
-                                props.setStatusPrivPress(false)
-                                props.setDisappearingMessagesPressed(false)
-                                props.blockedContactsPressed(false)
+                                // props.setPressNotifications(false)
+                                // props.setPressAccount(false)
+                                // props.setPressProfile(false)
+                                // props.setPressAppearance(false)
+                                // props.setPressedSettings(false)
+                                // props.setProfilePicPrivPress(false)
+                                // props.setStatusPrivPress(false)
+                                // props.setDisappearingMessagesPressed(false)
+                                // props.blockedContactsPressed(false)
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>

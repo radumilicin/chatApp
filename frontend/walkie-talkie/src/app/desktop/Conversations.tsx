@@ -338,7 +338,6 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-
         <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
             <div className={`group relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl overflow-hidden
                 transition-all duration-300
@@ -883,7 +882,7 @@ export function Contacts( props: any) {
                                 className={`group/group relative flex-none flex flex-row h-[12%] w-[92%] overflow-hidden
                                     transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
-                                        ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border border-purple-500/10 hover:border-purple-500/30"
+                                        ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border-2 border-purple-500/10 hover:border-purple-500/30"
                                         : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
                                     hover:scale-[1.02] active:scale-[0.98]`}
                                 onClick={(e) => {
@@ -911,12 +910,12 @@ export function Contacts( props: any) {
                                                     blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
 
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
-                                        className="relative h-10 w-10 rounded-full border border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
+                                        className="relative h-10 w-10 rounded-full border-[2px] border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
                                         alt="Profile"
                                     /> :
-                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`}
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
                                              className="relative h-12 w-12 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
                                 <div className="relative flex w-[85%] flex-col">
@@ -1050,12 +1049,12 @@ export function Contacts( props: any) {
                             >
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
                                         className="h-12 w-12 rounded-full"
                                         alt="Profile"
-                                    /> : 
-                                        <img src={`${props.themeChosen === "Dark" ? './userProfile2.png' : 'userProfile_nobg.png'}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                    /> :
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
@@ -1211,7 +1210,8 @@ export function Groups(props) {
             "users": [...ids, curr_user.id],
             "group_name": groupName,
             "description": description,
-            "image": newGroupImage
+            "image": newGroupImage      // here it could be empty as some people 
+                                        // might prefer to not put an image
         }
         // console.log("ids in new group: " + JSON.stringify(data))
 
@@ -1256,11 +1256,7 @@ export function Groups(props) {
     } 
 
     return (
-        <div className={`absolute left-0 top-0 w-full h-full
-            ${props.themeChosen === "Dark"
-                ? "bg-gradient-to-b from-slate-900/95 via-slate-800/90 to-slate-900/95"
-                : "bg-transparent"}
-            backdrop-blur-xl`}>
+        <div className={`absolute left-0 top-0 w-full h-full backdrop-blur-xl`}>
             {finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[8%] border-b border-cyan-500/10">
                 <div className="relative flex flex-row top-0 h-full w-full items-center">
                     <div className={`group relative indent-[20px] left-[2%] h-[70%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
@@ -1396,7 +1392,7 @@ export function Groups(props) {
                     </div>}
             </div>}
             {!finishingSettingUpGroup && <div className="relative left-0 top-0 w-full h-[16%]">
-                <div className={`relative left-0 top-0 h-[35%] w-full flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent"}`}>
+                <div className={`relative left-0 top-0 h-[35%] w-full flex flex-row items-center bg-transparent`}>
                     <div className={`group relative left-[2%] w-[8%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
                                     transition-all duration-300 rounded-xl hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
@@ -1412,7 +1408,7 @@ export function Groups(props) {
                         Add group members
                     </div>
                 </div>
-                <div className={`relative left-0 top-0 h-[65%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+                <div className={`relative left-0 top-0 h-[65%] w-full bg-transparent`}>
                     <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
                         transition-all duration-300
                         ${props.themeChosen === "Dark"
@@ -1501,7 +1497,7 @@ export function Groups(props) {
                             <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "userProfile2.png"}`}
                                  className="relative h-10 w-10 rounded-full opacity-80 group-hover/groupuseravatar:opacity-100 transition-all duration-300"></img>}
                     </div>
-                    <div className="relative flex flex-col w-[85%]">
+                    <div className={`relative flex flex-col w-[85%]`}>
                         <div className="relative flex flex-row h-[50%] w-full items-center">
                             <div className="w-[75%] h-full flex flex-row items-end">
                                 <div className={`indent-[10px] text-base xl:text-lg font-semibold font-sans tracking-wide
@@ -1535,7 +1531,7 @@ export function Groups(props) {
                     </div>
                 </div>))}
             </div>}
-            <div className="relative flex flex-row w-full h-[10%] items-center justify-center">
+            <div className={`relative flex flex-row w-full h-[10%] items-center justify-center`}>
                 <div className={`group relative flex flex-row justify-center items-center w-[12%] h-[60%] rounded-xl
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
@@ -1662,10 +1658,10 @@ export function Contacts2( props: any) {
                                 <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
                                 (element !== null && element.is_group === false && getImage(element).data === "") ?
                                 <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
-                            (element !== null && element.is_group === true && element.group_pic_id !== null) ? 
-                                <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
-                                (element !== null && element.is_group === true && element.group_pic_id === null) ? 
-                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                            (element !== null && element.is_group === true && element.group_pic_id !== null && getImage(element).data) ?
+                                <img src={`data:image/jpeg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
+                                (element !== null && element.is_group === true) ?
+                                <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="max-h-[60%] rounded-full"></img> : <></>                        
                             }
                         </div>
                         <div className="flex w-[90%] flex-col">

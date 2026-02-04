@@ -6,6 +6,12 @@ import { useRouter } from 'next/navigation'
 import {useAuth} from '../../../AuthProvider'
 import { X3DHClient } from '../../../x3dh-client';
 
+declare global {
+    interface Window {
+        google: any;
+    }
+}
+
 export default function Register(props) {
 
     const [username, setUsername] = useState('')
@@ -15,7 +21,129 @@ export default function Register(props) {
     const [emailExists, setEmailExists] = useState(false)
     const router = useRouter()
     const { loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
+    const googleButtonRef = useRef<HTMLDivElement>(null)
 
+    // Load Google Identity Services script
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            if (window.google && googleButtonRef.current) {
+                window.google.accounts.id.initialize({
+                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+                    callback: handleGoogleResponse,
+                });
+                window.google.accounts.id.renderButton(
+                    googleButtonRef.current,
+                    {
+                        theme: 'filled_black',
+                        size: 'large',
+                        width: '100%',
+                        text: 'signup_with',
+                        shape: 'rectangular',
+                    }
+                );
+            }
+        };
+        document.head.appendChild(script);
+
+        return () => {
+            document.head.removeChild(script);
+        };
+    }, []);
+
+    async function handleGoogleResponse(response: any) {
+        console.log("Google sign-up response received");
+
+        try {
+            const res = await fetch("http://localhost:3002/auth/google", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential }),
+                credentials: 'include',
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error("Google auth failed:", data.error);
+                return;
+            }
+
+            console.log("Google auth success, userId:", data.userId, "isNewUser:", data.isNewUser);
+            props.setUser(data.userId);
+
+            if (data.isNewUser) {
+                // Generate X3DH keys for the new Google user
+                const newIdentityKey = await X3DHClient.generateKeyPair();
+                const signedPreKeyPair = await X3DHClient.generateKeyPair();
+                const signature = await X3DHClient.sign(newIdentityKey.privateKey, signedPreKeyPair.publicKey);
+
+                const newSignedPreKey = {
+                    keyId: 1,
+                    publicKey: signedPreKeyPair.publicKey,
+                    privateKey: signedPreKeyPair.privateKey,
+                    signature,
+                };
+
+                const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
+
+                // Register keys on the server
+                await fetch("http://localhost:3002/register-keys", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: data.userId,
+                        identityKeyPublic: newIdentityKey.publicKey,
+                        signedPreKeyPublic: newSignedPreKey.publicKey,
+                        signedPreKeySignature: signature,
+                        oneTimePreKeysPublic: newOneTimePreKeys.map(k => ({
+                            keyId: k.keyId,
+                            publicKey: k.publicKey,
+                        })),
+                    }),
+                });
+
+                // Encrypt and store keys locally
+                const deviceKey = await props.getOrCreateDeviceKey(data.userId);
+                const encryptedKeys = props.encryptKeys(
+                    {
+                        identityKey: newIdentityKey,
+                        signedPreKey: newSignedPreKey,
+                        oneTimePreKeys: newOneTimePreKeys,
+                    },
+                    deviceKey
+                );
+                localStorage.setItem(`encrypted_keys_${data.userId}`, encryptedKeys);
+
+                // Set keys in state
+                props.setIdentityKey(newIdentityKey);
+                props.setSignedPreKey(newSignedPreKey);
+                props.setOneTimePreKeys(newOneTimePreKeys);
+
+                console.log("Keys generated and registered for new Google user");
+            } else {
+                // Existing user — load their keys
+                console.log("User already exists, loading keys via Google login");
+                const deviceKey = await props.getOrCreateDeviceKey(data.userId);
+                const loaded = await props.loadKeysAfterLogin(data.userId, deviceKey);
+                if (loaded) {
+                    console.log("Keys loaded after Google login (existing user)");
+                } else {
+                    console.error("Failed to load keys after Google login");
+                }
+            }
+
+            // Toggle registered so we go to logged-in state
+            await props.setRegisteredAsync();
+            setLoggedIn();
+            router.push("/");
+        } catch (error) {
+            console.error("Google sign-up error:", error);
+        }
+    }
 
     function getUsernames() {
         if(props.users !== null) return props.users.map((elem) => elem.username)
@@ -212,6 +340,14 @@ export default function Register(props) {
                     >
                         Create Account
                     </button>
+
+                    <div className="relative flex items-center my-2">
+                        <div className="flex-grow border-t border-gray-600"></div>
+                        <span className="mx-4 text-gray-400 text-sm">or</span>
+                        <div className="flex-grow border-t border-gray-600"></div>
+                    </div>
+
+                    <div ref={googleButtonRef} className="flex justify-center w-full"></div>
                 </div>
                 <div className="mt-6 text-center">
                     <p className="text-gray-400 text-sm">

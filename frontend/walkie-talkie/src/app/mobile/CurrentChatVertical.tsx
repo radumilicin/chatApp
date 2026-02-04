@@ -15,6 +15,7 @@ export default function CurrentChatVertical( props: any ) {
     const allMessagesPrev = useRef(allMessages)
     const contact = useRef(null)
     const image = useRef(null)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
     const [decryptedContact, setDecryptedContact] = useState(null);
 
@@ -134,6 +135,7 @@ export default function CurrentChatVertical( props: any ) {
 
     useEffect(() => {
         // console.log("Changed all messages: " + JSON.stringify(allMessages))
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [allMessages])
 
 
@@ -407,13 +409,13 @@ export default function CurrentChatVertical( props: any ) {
 
 
     return (
-        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
+        <div className={`relative left-[0%] w-full top-[0%] h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[15%] overflow-hidden flex flex-row
                 ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl" : "bg-gray-100/80 border-b border-gray-300"}
                 hover:cursor-pointer group transition-all duration-300
                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
                 onClick={() => {
-                    // props.setProfileInfo(true)
+                    props.setProfileInfo(true)
                     // console.log("profile info set to true")
                 }}>
                 {/* Animated gradient overlay */}
@@ -463,18 +465,18 @@ export default function CurrentChatVertical( props: any ) {
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Profile"
                             /> :
-                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null) ?
+                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`${getImage(props.contact).data}`}
+                                src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
                                 className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Group"
                             /> :
-                            (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id === null) ?
+                            (props.contact !== null && props.contact.is_group === true) ?
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
                                 className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Group"
@@ -528,7 +530,7 @@ export default function CurrentChatVertical( props: any ) {
                 }
             </div>
             <div className={`relative left-[2%] top-[18%] w-[96%] h-[70%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-4`}>
-                {decryptedContact !== null  &&
+                {decryptedContact !== null && decryptedContact !== undefined && decryptedContact.hasOwnProperty("message") && 
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
 
@@ -621,6 +623,7 @@ export default function CurrentChatVertical( props: any ) {
                 </div>
             );
                     })}
+                <div ref={messagesEndRef} />
             </div>
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}></div>}
             {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}>

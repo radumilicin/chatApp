@@ -11,6 +11,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { access } from 'fs';
 import {v4 as uuidv4} from 'uuid';
+import { OAuth2Client } from 'google-auth-library';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,8 @@ app.use(cookieParser())
 const PORT = 3002;
 
 const JWT_TOKEN = process.env.JWT_TOKEN
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_AUTH_ID
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID)
 
 // Database configuration
 const pool = new pg.Pool({
@@ -190,13 +193,112 @@ app.post('/login', async (req, res) => {
 app.get('/logout', (req, res) => {
 
   res.clearCookie("auth_token", {
-    httpOnly: true, 
+    httpOnly: true,
     // secure : process.env.NODE_ENV === "production",
     secure: false,
     // maxAge: 3600000,
     sameSite: "strict",
   });
   res.status(200).json( {message: 'Logged out successfully'} );
+});
+
+app.post('/auth/google', async (req, res) => {
+  const { credential } = req.body;
+
+  if (!credential) {
+    return res.status(400).json({ error: 'No credential provided' });
+  }
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub, email, name } = payload;
+
+    console.log("Google login for: " + email);
+
+    // Check if user exists by google_id or email
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE google_id = $1 OR email = $2',
+      [sub, email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      // Existing user — log them in
+      const user = existingUser.rows[0];
+
+      // Link google_id if they registered with email/password before
+      if (!user.google_id) {
+        await pool.query('UPDATE users SET google_id = $1 WHERE id = $2', [sub, user.id]);
+      }
+
+      const token = jwt.sign({ user }, JWT_TOKEN, { expiresIn: "24h" });
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 3600000,
+        sameSite: "strict",
+      });
+
+      console.log("Google login — existing user: " + user.id);
+      res.status(200).json({ userId: user.id, isNewUser: false });
+    } else {
+      // New user — create account
+      const user_id = uuidv4();
+      const username = name || email.split('@')[0];
+
+      await pool.query(
+        'INSERT INTO users (id, username, email, google_id, about) VALUES ($1, $2, $3, $4, $5)',
+        [user_id, username, email, sub, "Hey, there! I am using WhatsDown!"]
+      );
+
+      const newUser = { id: user_id, username, email };
+      const token = jwt.sign({ user: newUser }, JWT_TOKEN, { expiresIn: "24h" });
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 3600000,
+        sameSite: "strict",
+      });
+
+      console.log("Google login — new user created: " + user_id);
+      res.status(201).json({ userId: user_id, isNewUser: true });
+    }
+  } catch (error) {
+    console.error("Google auth error:", error.message);
+    res.status(401).json({ error: 'Invalid Google credential' });
+  }
+});
+
+app.post('/register-keys', async (req, res) => {
+  const { userId, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic } = req.body;
+
+  if (!userId || !identityKeyPublic || !signedPreKeyPublic || !signedPreKeySignature || !oneTimePreKeysPublic) {
+    return res.status(400).json({ error: 'Missing required key fields' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO user_keys (user_id, identity_key_public, signed_prekey_public, signed_prekey_signature, signed_prekey_id) VALUES ($1, $2, $3, $4, $5)',
+      [userId, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, 1]
+    );
+
+    for (const otpk of oneTimePreKeysPublic) {
+      await pool.query(
+        'INSERT INTO one_time_prekeys (user_id, key_id, public_key) VALUES ($1, $2, $3)',
+        [userId, otpk.keyId, otpk.publicKey]
+      );
+    }
+
+    console.log("Keys registered for user: " + userId);
+    res.status(201).json({ message: 'Keys registered successfully' });
+  } catch (error) {
+    console.error("Error registering keys:", error.message);
+    res.status(500).json({ error: 'Failed to register keys' });
+  }
 });
 
 /////////////////////////////////////////////////////////////
@@ -329,6 +431,7 @@ app.post('/insertContact', async (req, res) => {
   console.log(`sender_id: ${sender_id}, contact_id: ${contact_id}`)
 
   try {
+    const id = uuidv4();
     let users = [sender_id, contact_id]
     let openedAt = []
     let closedAt = []
@@ -338,8 +441,8 @@ app.post('/insertContact', async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO contacts (sender_id, contact_id, group_pic_id, is_group, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb) RETURNING *",
-      [sender_id, contact_id, null, false, JSON.stringify(openedAt), JSON.stringify(closedAt)]
+      "INSERT INTO contacts (id, sender_id, contact_id, group_pic_id, is_group, opened_at, closed_at) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb) RETURNING *",
+      [id, sender_id, contact_id, null, false, JSON.stringify(openedAt), JSON.stringify(closedAt)]
     );
 
     res.status(200).json({ data: result.rows[0] });
@@ -351,9 +454,7 @@ app.post('/insertContact', async (req, res) => {
 
 app.get('/contactsGroup', async (req, res) => {      
     var group_id = null;
-    if (req.query.group_id) {
-      group_id = parseInt(req.query.group_id, 10);
-    }
+    if (req.query.group_id) group_id = req.query.group_id
 
     console.log("group_id = " + group_id)
 
@@ -590,14 +691,22 @@ wss.on('connection', (ws, req) => {
         }
       
         console.log("before recipient web socket")
-        // Get recipient's WebSocket
-        const recipientWs = clients.get(recipient_ids);
+        // Send the message to all group recipients
+        const groupMessage = {
+          sender_id,
+          recipient_ids,
+          group_id,
+          message,
+          timestamp
+        };
 
-        // Send the message to the intended recipient
-        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
-          recipientWs.send(JSON.stringify({ senderId, content })); // Send message
-        } else {
-          console.log(`Recipient ${recipient_id} is not online.`);
+        for (const recipient_id of recipient_ids) {
+          const recipientWs = clients.get(recipient_id);
+          if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+            recipientWs.send(JSON.stringify(groupMessage));
+          } else {
+            console.log(`Recipient ${recipient_id} is not online.`);
+          }
         }
 
         let msg = message
@@ -951,7 +1060,7 @@ app.post('/createGroup', async (req, res) => {
 
   if (users !== null && Array.isArray(users)) {
     try {
-      const rdm = Math.floor(Math.random() * 10000000) + 5; // Generate a random ID
+      const rdm = uuidv4(); // Generate a random UUID
       
       console.log("Before inserting group into contacts");
 

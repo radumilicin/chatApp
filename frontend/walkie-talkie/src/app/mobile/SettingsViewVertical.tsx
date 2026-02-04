@@ -17,7 +17,7 @@ export default function SettingsViewVertical(props) {
     const showLogOut = searchedSettings === "" || logOutSettings.some(s => s.toLowerCase().includes(searchLower));
 
     return (
-        <div className={`relative left-0 top-0 w-full h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border flex flex-col overflow-y-auto no-scrollbar`}>
+        <div className={`relative left-0 top-0 w-full h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border flex flex-col overflow-y-auto no-scrollbar`}>
             <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                 <div className={`relative left-[2%] w-[12%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                         onClick={() => {

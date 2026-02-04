@@ -326,7 +326,7 @@ export function OtherOptions (props) {
                             : "text-black"}`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
-                    <img src={`${props.themeChosen === "Dark" ? "/add-contact-3.png" : "add-contact-black.png"}`} className="justify-end items-center max-h-[80%] max-w-[80%]"></img>
+                    <img src={`${props.themeChosen === "Dark" ? "/addUser-white.png" : "add-user.png"}`} className="justify-end items-center w-5 h-5"></img>
                 </div>
                 <div className={`relative left-0 w-[50%] h-full transition-all duration-300 ${props.themeChosen === "Dark" ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30" : "hover:bg-gray-300/50"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className="justify-end items-center w-6 h-6"></img>
@@ -706,34 +706,9 @@ export function Contacts( props: any) {
     }
 
     useEffect(() => {
-
         if(props.contact) {
             console.log("================\n\n\n CONTACT = " + JSON.stringify(props.contact) + "\n\n\n=================")
         }
-
-        // const updateAccess = async () => {
-        //     if(props.contact && props.contact.opened_at) {
-        //         for(let elem of props.contact.opened_at){
-        //             if(elem.id === props.curr_user) {
-        //                 // console.log("============\nupdating access time for chat\n==========")
-        //                 // console.log("Sending timestamp:", elem.opened_at); // Add this log
-        //                 await updateAccessedOnChat(elem.opened_at);
-        //             }
-        //         }
-
-        //         if(prevContact.current !== null) {
-        //             await props.closeChat(prevContact.current);
-        //         }
-                
-        //         // console.log("ABOUT TO FETCH CONTACTS");
-        //         await props.fetchContacts();
-        //         // console.log("CONTACTS FETCHED, should re-render now");
-                
-        //         prevContact.current = props.contact;
-        //     }
-        // };
-        
-        // if(props.contact) updateAccess();
     }, [props.contact])
 
     useEffect(() => {
@@ -880,12 +855,12 @@ export function Contacts( props: any) {
                                                     blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
 
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
                                         className="relative h-10 w-10 rounded-full border border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
                                         alt="Profile"
                                     /> :
-                                        <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
                                 <div className="relative flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
@@ -1018,12 +993,12 @@ export function Contacts( props: any) {
                             >
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}
-                                    {getImageGroup(element).data !== "" ? <img
-                                        src={getImageGroup(element).data}
+                                    {getImageGroup(element).data ? <img
+                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
                                         className="h-12 w-12 rounded-full"
                                         alt="Profile"
-                                    /> : 
-                                        <img src={`${props.themeChosen === "Dark" ? './userProfile2.png' : 'userProfile_nobg.png'}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
+                                    /> :
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
                                 </div>
                                 <div className="flex w-[90%] flex-col">
                                     <div className="flex h-[50%] w-full items-center flex-row">
@@ -1616,10 +1591,10 @@ export function Contacts2( props: any) {
                                 <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
                                 (element !== null && element.is_group === false && getImage(element).data === "") ?
                                 <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> :
-                            (element !== null && element.is_group === true && element.group_pic_id !== null) ? 
-                                <img src={`data:image/jpg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
-                                (element !== null && element.is_group === true && element.group_pic_id === null) ? 
-                                <img src={`./userProfile2.png`} className="max-h-[60%] rounded-full"></img> : <></>                        
+                            (element !== null && element.is_group === true && element.group_pic_id !== null && getImage(element).data) ?
+                                <img src={`data:image/jpeg;base64,${getImage(element).data}`} className="max-h-[60%] rounded-full"></img> :
+                                (element !== null && element.is_group === true) ?
+                                <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="max-h-[60%] rounded-full"></img> : <></>                        
                             }
                         </div>
                         <div className="flex w-[90%] flex-col">
