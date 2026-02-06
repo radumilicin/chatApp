@@ -53,6 +53,10 @@ export const contacts = pgTable('contacts', {
   group_description: varchar('group_description', {length:100}).default(''),
   group_admins: jsonb('admins').default([]),
   blocked: boolean('blocked').default(false),
+  blocked_by_sender: boolean('blocked_by_sender').default(false),
+  blocked_by_receiver: boolean('blocked_by_receiver').default(false),
+  blocked_by_sender_at: varchar('blocked_by_sender_at', {length: 50}),
+  blocked_by_receiver_at: varchar('blocked_by_receiver_at', {length: 50}),
   blockedAt: varchar('blocked_at', {length: 50}),
   opened_at: jsonb('opened_at').default([]),                // array with [{id_user1: {}}, {id_user2: {}}]
   closed_at: jsonb('closed_at').default([]),                // array with [{id_user1: 1, closedAt: 25.01.2025T23:22:15}, {id_user2: {}}]]

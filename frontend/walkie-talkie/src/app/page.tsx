@@ -62,6 +62,7 @@ export default function Home() {
   const [addingToGroup, setAddToGroup] = useState(false)
   const [pressedSettings, setPressedSettings] = useState(false)
   const {loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
+  const [newGroupPress, setNewGroupPress] = useState(false)
 
   // this is when we are looking at AddContacts and we press on one to text
   const [potentialContact, setPotentialContact] = useState(null);
@@ -1077,7 +1078,7 @@ export default function Home() {
                                               ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
           {display === "Mobile" && !pressedAccount && !pressedNotifications && !pressedPrivacy && !pressedSettings && !curr_contact && !pressedProfile &&
-                                    !profilePicPrivPress && !statusPrivPress && !disappearingMessagesPressed && !blockedContactsPressed && !profileInfo && !addingToGroup && !addContact2
+                                    !profilePicPrivPress && !statusPrivPress && !disappearingMessagesPressed && !blockedContactsPressed && !profileInfo && !addingToGroup && !addContact2 && !pressedAppearance && !newGroupPress
                                     && <OptionsBarVerticalView curr_user={user} users={users} images={images} setPressProfile={setPressProfile} pressedSettings={pressedSettings}
                                     setPressedSettings={setPressedSettings} themeChosen={themeChosen} setPressAccount={setPressAccount} setPressPrivacy={setPressPrivacy} setDisappearingMessagesPressed={setDisappearingMessagesPressed}
                                     setStatusPrivPress={setStatusPrivPress} setProfilePicPrivPress={setProfilePicPrivPress} setBlockedContactsPressed={setBlockedContactsPressed} setPressNotifications={setPressNotifications}
@@ -1194,12 +1195,13 @@ export default function Home() {
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
                                       closeChat={closeChat} themeChosen={themeChosen} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} decryptedContacts={decryptedContacts}
-                                      loadConversationRatchetStateDB={loadConversationRatchetStateDB} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts}></Conversations> : 
+                                      loadConversationRatchetStateDB={loadConversationRatchetStateDB} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts} newGroupPress={newGroupPress} 
+                                      setNewGroupPress={setNewGroupPress}></Conversations> : 
                                       <ConversationsVertical users={users} contacts={contacts} blockedContacts={blockedContacts} setBlockedContacts={setBlockedContacts} images={images} setPressed={setPressed} curr_user={user} contact={curr_contact} setCurrContact={setCurrContact}
                                       fetchUsers={fetchData} fetchContacts={fetchData2} fetchImages={fetchImages} setLoggedIn={setLoggedIn} setPotentialContact={setPotentialContact} setAddContact2={setAddContact2}
                                       updateImages={updateImages} updateContacts={updateContacts} updateUsers={updateUsers} setUser={setUser} setBlockedContactsPressed={setBlockedContactsPressed} 
                                       closeChat={closeChat} themeChosen={themeChosen} setPressedSettings={setPressedSettings} pressedSettings={pressedSettings} pressedProfile={pressedProfile} decryptAllMessages={decryptAllMessages} 
-                                      decryptedContacts={decryptedContacts} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts}></ConversationsVertical>)
+                                      decryptedContacts={decryptedContacts} hasDecryptedInitial={hasDecryptedInitial} setDecryptedContacts={setDecryptedContacts} newGroupPress={newGroupPress} setNewGroupPress={setNewGroupPress}></ConversationsVertical>)
           }
           {profileInfo === false ? (display === "Desktop" ? <CurrentChat users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}

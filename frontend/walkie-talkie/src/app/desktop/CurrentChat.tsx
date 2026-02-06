@@ -163,6 +163,7 @@ export default function CurrentChat( props: any ) {
     */
     const handleSendMessage = async (msg) => {
         if (msg.trim() === '') return;
+        if (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) return;
 
         const other_user = props.contact.sender_id === props.curr_user 
             ? props.contact.contact_id 
@@ -353,7 +354,22 @@ export default function CurrentChat( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+
+    const groupUserColors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA',
+        '#F8C471', '#85C1E9', '#F1948A', '#73C6B6', '#D7BDE2'
+    ];
+
+    const getUserColor = (userId: string) => {
+        let hash = 0;
+        const str = String(userId);
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return groupUserColors[Math.abs(hash) % groupUserColors.length];
+    };
 
     const findImageBasedOnID = (message: any) => {
         // console.log("message = " + JSON.stringify(message))
@@ -647,12 +663,10 @@ export default function CurrentChat( props: any ) {
                     ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 border-black flex-col ${
-                                    String(props.curr_user) === String(message.sender_id)
-                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
-                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
+                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
+                                style={{ borderColor: getUserColor(message.sender_id), boxShadow: `0 0 6px ${getUserColor(message.sender_id)}30` }}
                             >
-                                <div className={`relative flex w-full text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className="relative flex w-full text-lg font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
                                 <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> :
@@ -669,11 +683,28 @@ export default function CurrentChat( props: any ) {
                 </div>
             );
                     })}
+                {/* Blocked indicator for 1-on-1 chats */}
+                {!props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) && (
+                    <div className="flex justify-center items-center my-4">
+                        <div className="bg-gray-500 text-white text-sm font-semibold py-1 px-3 rounded-xl">
+                            {(props.curr_user === props.contact.sender_id ? props.contact.blocked_by_sender : props.contact.blocked_by_receiver)
+                                ? "You blocked this chat"
+                                : `${getNameContact(props.contact)} has blocked the chat`}
+                        </div>
+                    </div>
+                )}
                 <div ref={messagesEndRef} />
             </div>}
             {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
-            {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
-                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20 
+            {props.contact && !props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) && (
+                <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
+                    <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-500"}`}>
+                        You can't send messages in this chat
+                    </div>
+                </div>
+            )}
+            {props.contact && (!(!props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver))) && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
+                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
                             border-[1px] flex flex-row`}>
                     <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
                         {/* Wrapper for Image and Input */}

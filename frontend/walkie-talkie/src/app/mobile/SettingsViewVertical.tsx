@@ -292,7 +292,7 @@ export function LogOutOption( props: any ){
 
 export function SearchBar( props : any ) {
     return (
-        <div className={`absolute left-0 top-[6%] h-[12%] w-full ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
+        <div className={`absolute left-0 top-[6%] h-[10%] w-full ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
             <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
                 transition-all duration-300
                 ${props.themeChosen === "Dark"

@@ -375,7 +375,7 @@ export default function CurrentChatVertical( props: any ) {
         return user || { data: "" }; // Ensure we return a fallback value
     }
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const findImageBasedOnID = (message: any) => {
         // console.log("message = " + JSON.stringify(message))

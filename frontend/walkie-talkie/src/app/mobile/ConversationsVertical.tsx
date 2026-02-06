@@ -12,11 +12,13 @@ export default function ConversationsVertical( props : any) {
     const [filteredDecryptedContacts, setFilteredDecryptedContacts] = useState([]);
     const [menuPress, setMenuPress] = useState(false)
     const [newChatPress, setNewChatPress] = useState(false)
-    const [newGroupPress, setNewGroupPress] = useState(false)
+    const newGroupPress = props.newGroupPress
+    const setNewGroupPress = props.setNewGroupPress
     const [logOut, setLogOut] = useState(false)
     const [pressed2, setPressed2] = useState(false) // this is for selecting contacts for groups
     const [contactsInNewGroup, setContactsInNewGroup] = useState([])
-    const [addContact, setAddContact] = useState(false) // adding contact
+    const [addContact, _setAddContact] = useState(false) // adding contact
+    const setAddContact = (val: boolean) => { _setAddContact(val); props.setAddContact2(val); }
 
     /* This is for adding users to contacts IF IN the ADD CONTACT mode */
     const [filteredUsers, setFilteredUsers] = useState([])
@@ -200,7 +202,7 @@ export default function ConversationsVertical( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[0%] w-full top-[0%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl`}>
+        <div className={`relative left-[0%] w-full top-[0%] ${newGroupPress || addContact ? 'h-full' : 'h-[90%]'} ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl`}>
             {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
@@ -397,7 +399,7 @@ export function UsersToAddToContacts (props : any) {
     }, [props.filteredUsers])
 
     
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -480,7 +482,7 @@ export function UsersToAddToContacts (props : any) {
     }
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%]
+        <div className={`absolute left-0 top-[16%] w-full h-[74%]
             ${props.themeChosen === "Dark"
                 ? "bg-transparent"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}
@@ -547,7 +549,7 @@ export function Contacts( props: any) {
         if(props.curr_user != -1) setCurrUser(curr_user);
     }, [props.curr_user])
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const groupRef = useRef(null);
     const prevContact = useRef(null);
@@ -1201,7 +1203,7 @@ export function Groups(props) {
     return (
         <div className={`absolute left-0 top-0 w-full h-full
             ${props.themeChosen === "Dark"
-                ? "bg-gradient-to-b from-slate-900/95 via-slate-800/90 to-slate-900/95"
+                ? "bg-transparent"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}
             backdrop-blur-xl`}>
             {finishingSettingUpGroup && <div className={`relative left-0 top-0 w-full h-[8%] ${props.themeChosen === "Dark" ? "border-b border-cyan-500/10" : "border-b border-gray-300"}`}>
@@ -1517,7 +1519,7 @@ export function Contacts2( props: any) {
 
     let curr_user = 1
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1

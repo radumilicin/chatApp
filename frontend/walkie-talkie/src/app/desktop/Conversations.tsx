@@ -12,7 +12,7 @@ export default function Conversations( props : any) {
     const [filteredDecryptedContacts, setFilteredDecryptedContacts] = useState([]);
     const [menuPress, setMenuPress] = useState(false)
     const [newChatPress, setNewChatPress] = useState(false)
-    const [newGroupPress, setNewGroupPress] = useState(false)
+    // const [newGroupPress, setNewGroupPress] = useState(false)
     const [logOut, setLogOut] = useState(false)
     const [pressed2, setPressed2] = useState(false) // this is for selecting contacts for groups
     const [contactsInNewGroup, setContactsInNewGroup] = useState([])
@@ -50,7 +50,7 @@ export default function Conversations( props : any) {
 
     useEffect(() => {
         if(props.settingsPressed === true || props.pressedProfile === true) {
-            setNewGroupPress(false)
+            props.setNewGroupPress(false)
             setNewChatPress(false)
             setAddContact(false)
         }
@@ -201,17 +201,17 @@ export default function Conversations( props : any) {
 
     return (
         <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
-            {newGroupPress && <Groups setNewGroupPress={setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
+            {props.newGroupPress && <Groups setNewGroupPress={props.setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
                 setDecryptedContacts={props.setDecryptedContacts}></Groups>}
-            {!newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
-            {!newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={setNewGroupPress} setLogOut={setLogOut} 
+            {!props.newGroupPress && <OtherOptions setMenuPress={setMenuPress} setNewChatPress={setNewChatPress} addContact={addContact} setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></OtherOptions>}
+            {!props.newGroupPress && <MenuDropdown menuPress={menuPress} setMenuPress={setMenuPress} onOutsideClick={handleOutsideClick} setNewGroupPress={props.setNewGroupPress} setLogOut={setLogOut} 
                                              setAddContact={setAddContact} setAddContact2={props.setAddContact2} themeChosen={props.themeChosen}></MenuDropdown>}
-            {!newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen} newGroupPress={newGroupPress}></SearchBar>}
-            {!newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredDecryptedContacts={filteredDecryptedContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
+            {!props.newGroupPress && <SearchBar currentSearch={currentSearch} setCurrSearch={setCurrSearch} filterContacts={filterContacts} filterUsers={filterUsers} addContact={addContact} themeChosen={props.themeChosen} newGroupPress={props.newGroupPress}></SearchBar>}
+            {!props.newGroupPress && !addContact && <Contacts currentSearch={currentSearch} users={props.users} filteredContacts={filteredContacts} filteredDecryptedContacts={filteredDecryptedContacts} filteredUsers={filteredUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} 
                                                         setPressed={props.setPressed} setCurrContact={props.setCurrContact} contact={props.contact} closeChat={props.closeChat} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Contacts>}
-            {!newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} fetchContacts={props.fetchContacts} addContact={addContact} filteredContacts={filteredContacts}
+            {!props.newGroupPress && addContact && <UsersToAddToContacts themeChosen={props.themeChosen} currentSearch={currentSearch} users={props.users} fetchContacts={props.fetchContacts} addContact={addContact} filteredContacts={filteredContacts}
                                         filteredUsers={filteredUsers} filterUsers={filterUsers} contacts={props.contacts} curr_user={props.curr_user} images={props.images} setPressed={props.setPressed} setPotentialContact={props.setPotentialContact} setCurrContact={props.setCurrContact} setAddContact={setAddContact}></UsersToAddToContacts>}
         </div>
     );
@@ -396,7 +396,7 @@ export function UsersToAddToContacts (props : any) {
     }, [props.filteredUsers])
 
     
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -572,7 +572,7 @@ export function Contacts( props: any) {
         if(props.curr_user != -1) setCurrUser(curr_user);
     }, [props.curr_user])
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const groupRef = useRef(null);
     const prevContact = useRef(null);
@@ -1205,13 +1205,20 @@ export function Groups(props) {
 
         console.log("description = " + JSON.stringify(description))
 
+        let imageData = newGroupImage;
+        if (imageData && typeof imageData === 'string') {
+            const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+            if (base64Regex.test(imageData)) {
+                imageData = imageData.replace(base64Regex, "");
+            }
+        }
+
         let data = {
             "admin": curr_user.id,
             "users": [...ids, curr_user.id],
             "group_name": groupName,
             "description": description,
-            "image": newGroupImage      // here it could be empty as some people 
-                                        // might prefer to not put an image
+            "image": imageData
         }
         // console.log("ids in new group: " + JSON.stringify(data))
 
@@ -1584,7 +1591,7 @@ export function Contacts2( props: any) {
 
     // let curr_user = 1
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1
