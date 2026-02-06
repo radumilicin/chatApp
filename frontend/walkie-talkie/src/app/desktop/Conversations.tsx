@@ -396,7 +396,7 @@ export function UsersToAddToContacts (props : any) {
     }, [props.filteredUsers])
 
     
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -572,7 +572,7 @@ export function Contacts( props: any) {
         if(props.curr_user != -1) setCurrUser(curr_user);
     }, [props.curr_user])
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const groupRef = useRef(null);
     const prevContact = useRef(null);
@@ -1205,13 +1205,20 @@ export function Groups(props) {
 
         console.log("description = " + JSON.stringify(description))
 
+        let imageData = newGroupImage;
+        if (imageData && typeof imageData === 'string') {
+            const base64Regex = /^data:image\/[a-zA-Z]+;base64,/;
+            if (base64Regex.test(imageData)) {
+                imageData = imageData.replace(base64Regex, "");
+            }
+        }
+
         let data = {
             "admin": curr_user.id,
             "users": [...ids, curr_user.id],
             "group_name": groupName,
             "description": description,
-            "image": newGroupImage      // here it could be empty as some people 
-                                        // might prefer to not put an image
+            "image": imageData
         }
         // console.log("ids in new group: " + JSON.stringify(data))
 
@@ -1584,7 +1591,7 @@ export function Contacts2( props: any) {
 
     // let curr_user = 1
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1

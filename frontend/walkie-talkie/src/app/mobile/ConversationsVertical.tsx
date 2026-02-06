@@ -397,7 +397,7 @@ export function UsersToAddToContacts (props : any) {
     }, [props.filteredUsers])
 
     
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     function getNameWithUserId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
@@ -547,7 +547,7 @@ export function Contacts( props: any) {
         if(props.curr_user != -1) setCurrUser(curr_user);
     }, [props.curr_user])
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     const groupRef = useRef(null);
     const prevContact = useRef(null);
@@ -1517,7 +1517,7 @@ export function Contacts2( props: any) {
 
     let curr_user = 1
 
-    const isBase64 = value => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
+    const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
     // here I need to have current user .. so then I can extract its contacts .. 
     // let's say for simplicity curr_user = 1

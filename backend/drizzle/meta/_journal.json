@@ -8,6 +8,13 @@
       "when": 1770227713870,
       "tag": "0000_misty_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770401128320,
+      "tag": "0001_quiet_lizard",
+      "breakpoints": true
     }
   ]
 }

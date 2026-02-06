@@ -1,6 +1,7 @@
 import react, {useState, useEffect, useRef} from 'react'
 import { GrUserAdmin } from "react-icons/gr";
 import { CiCircleRemove } from "react-icons/ci";
+import { CgProfile } from "react-icons/cg";
 
 export default function ProfileInfo( props ) {
 
@@ -46,7 +47,7 @@ export default function ProfileInfo( props ) {
         } else {
             setDescriptionAsync(getUser(props.contact).about)
         }
-    }, [props.contact])
+    }, [props.contact, props.contacts])
 
     useEffect(() => {
         console.log("Fetching contacts after entering in DB")
@@ -158,6 +159,12 @@ export default function ProfileInfo( props ) {
         }
     }
 
+    function currUserIsAdmin() {
+        if(props.contact.admins.length === 0) return false
+
+        return props.contact.admins.find(props.curr_user) !== null
+    }
+
     async function changeProfilePic(base64Img) {
         let group_id = null
         if(props.contact.is_group === true) group_id = props.contact.id
@@ -253,7 +260,7 @@ export default function ProfileInfo( props ) {
                                 src={getImage(props.contact).data.startsWith('data:image')
                                     ? `${getImage(props.contact).data}`
                                     : `data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -262,19 +269,21 @@ export default function ProfileInfo( props ) {
                         ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group && getImage(props.contact).data) ? (
                             <img
                                 src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    ${onProfilePic && props.contact.admins.includes(props.curr_user) ? 'blur-sm' : ''}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
                         ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group) ? (
                             <img
                                 src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    ${onProfilePic && props.contact.admins.includes(props.curr_user) ? 'blur-sm' : ''}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
                         ) : (
@@ -288,9 +297,18 @@ export default function ProfileInfo( props ) {
                             />
                         )}
 
+                        {/* Camera overlay on hover for group admins */}
+                        {onProfilePic && props.contact.is_group && props.contact.admins.includes(props.curr_user) && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-2">
+                                <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : "./camera.png"}`} className="h-16 w-16" alt="Camera" />
+                                <p className={`font-medium text-sm text-center px-4 ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"}`}>
+                                    Change group picture
+                                </p>
+                            </div>
+                        )}
+
                         {/* Input Overlaid on Top of the Image */}
-                        {/* {(props.contact !== null && onProfilePic === true && props.contact.is_group === true) && ( */}
-                            {isAdmin && <input
+                            {props.contact.is_group === true && props.contact.admins.includes(props.curr_user) && <input
                                 type="file"
                                 accept="image/*"
                                 className="absolute top-0 left-0 w-full h-full z-40 cursor-pointer opacity-0"
@@ -371,7 +389,7 @@ export default function ProfileInfo( props ) {
 
                         {/* Edit button */}
                         <div className="absolute flex flex-row justify-center items-center h-full right-0 w-[15%]" onClick={() => {(settingOppositeNameChangeGroup())}}>
-                            {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true)
+                            {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true && props.contact.admins.includes(props.curr_user))
                                 ? <div className={`flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full
                                     transition-all cursor-pointer group/edit
                                     ${props.themeChosen === "Dark"
@@ -391,9 +409,10 @@ export default function ProfileInfo( props ) {
                 </div>
             </div>
             <AboutProfile setDescriptionPressedAsync={setDescriptionPressedAsync} descriptionPressed={descriptionPressed} contact={props.contact}
-                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser} themeChosen={props.themeChosen}>
+                            description={description} setDescriptionAsync={setDescriptionAsync} changeGroupDescription={changeGroupDescription} users={props.users} getUser={getUser} themeChosen={props.themeChosen} curr_user={props.curr_user}>
             </AboutProfile>
-            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser} fetchContacts={props.fetchContacts} themeChosen={props.themeChosen}></Members>}
+            {props.contact.is_group === true && <Members users={props.users} images={props.images} contact={props.contact} contacts={props.contacts} setAddToGroup={props.setAddToGroup} getUser={getUser}
+                                                fetchContacts={props.fetchContacts} themeChosen={props.themeChosen} curr_user={props.curr_user} setCurrContact={props.setCurrContact} setDecryptedContacts={props.setDecryptedContacts}></Members>}
             {props.contact.is_group === true && <OptionsGroup curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} 
                                                               decryptedContacts={props.decryptedContacts} setDecryptedContacts={props.setDecryptedContacts} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen}></OptionsGroup>}
             {props.contact.is_group === false && <OptionsChat curr_user={props.curr_user} contact={props.contact} users={props.users} contacts={props.contacts} fetchContacts={props.fetchContacts} getUser={getUser} setCurrContact={props.setCurrContact} setProfileInfo={props.setProfileInfo} themeChosen={props.themeChosen} 
@@ -449,9 +468,9 @@ function AboutProfile(props) {
             border-y-[1px] backdrop-blur-sm`}>
 
             {/* About Title */}
-            <div className={`flex text-lg lg:text-xl 2xl:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center bg-gradient-to-r
+            <div className={`flex text-lg lg:text-xl 2xl:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center 
                 ${props.themeChosen === "Dark"
-                    ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
+                    ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                     : "text-gray-800"}`}>
                 About
             </div>
@@ -460,10 +479,10 @@ function AboutProfile(props) {
             <div ref={divRef} className="flex flex-row px-8 h-[40%] w-full font-sans items-center justify-center">
                 <div className={`flex flex-row w-[90%] h-full items-start justify-start text-base lg:text-lg xl:text-xl
                     ${props.themeChosen === "Dark" ? "text-cyan-100/80" : "text-gray-700"}
-                    ${props.contact.is_group ? "hover:cursor-pointer" : ""}
+                    ${props.contact.is_group && props.contact.admins.includes(props.curr_user) ? "hover:cursor-pointer" : ""}
                     ${props.descriptionPressed ? 'ml-2' : ''}
                     transition-colors`}
-                    onClick={() => {props.contact.is_group ? props.setDescriptionPressedAsync(true) : {}}}>
+                    onClick={() => {props.contact.is_group && props.contact.admins.includes(props.curr_user) ? props.setDescriptionPressedAsync(true) : {}}}>
                     {
                         (props.contact !== null) ?
                             (props.contact.is_group === true ?
@@ -502,7 +521,7 @@ function AboutProfile(props) {
 
                 {/* Edit button */}
                 <div className="w-[10%] h-full flex items-center justify-center">
-                    {props.contact.is_group === true &&
+                    {props.contact.is_group === true && props.contact.admins.includes(props.curr_user) &&
                         <div className={`flex items-center justify-center w-8 h-8 lg:w-9 lg:h-9 rounded-full
                             transition-all cursor-pointer group/edit
                             ${props.themeChosen === "Dark"
@@ -517,6 +536,7 @@ function AboutProfile(props) {
                                 src={`${props.themeChosen === "Dark" ? "./edit_white.png" : "./editIcon.png"}`}
                                 className="w-4 h-4 lg:w-5 lg:h-5 opacity-70 group-hover/edit:opacity-100 transition-opacity"
                             />
+
                         </div>
                     }
                 </div>
@@ -593,6 +613,18 @@ function Members(props) {
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(val)) + " has been kicked out from the group " + props.contact.group_name)
                 await props.fetchContacts()
+                props.setDecryptedContacts((currArr) =>
+                    currArr.map(c => {
+                        if (c.id === props.contact.id) {
+                            return {
+                                ...c,
+                                members: c.members.filter(m => m !== val),
+                                admins: c.admins.filter(a => a !== val)
+                            }
+                        }
+                        return c
+                    })
+                )
             } else {
                 console.log("Error exiting the group " + JSON.stringify(props.contact.group_name))
             }
@@ -615,8 +647,19 @@ function Members(props) {
 
             const response = await fetch(`http://localhost:3002/makeAdmin`, requestOptions);
             if(response.ok) {
-                console.log("User " + userToAddAsAdmin.toString() + " successfully made admin")
+                console.log("User " + val + " successfully made admin")
                 await props.fetchContacts()
+                props.setDecryptedContacts((currArr) =>
+                    currArr.map(c => {
+                        if (c.id === props.contact.id) {
+                            return {
+                                ...c,
+                                admins: [...c.admins, val]
+                            }
+                        }
+                        return c
+                    })
+                )
             } else {
                 console.log("response error: " + response.status)
             }
@@ -635,7 +678,7 @@ function Members(props) {
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/20"
-                    : "hover:bg-gray-200/70"}
+                    : "hover:bg-gray-300/50"}
                 hover:scale-[1.01] active:scale-[0.99] border-b border-cyan-500/10`}
                 onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
 
@@ -656,13 +699,23 @@ function Members(props) {
             </div>
 
             {/* Members List */}
-            {props.contact.members.map((id, idx) => (
+            {[...props.contact.members].sort((a, b) => {
+                // Current user always first
+                if (a === props.curr_user) return -1;
+                if (b === props.curr_user) return 1;
+                // Admins before regular users
+                const aIsAdmin = props.contact.admins.includes(a);
+                const bIsAdmin = props.contact.admins.includes(b);
+                if (aIsAdmin && !bIsAdmin) return -1;
+                if (!aIsAdmin && bIsAdmin) return 1;
+                return 0;
+            }).map((id, idx) => (
             <div key={idx} className={`relative flex h-[100px] w-full flex-row px-4 group
-                transition-all duration-300 cursor-pointer
+                transition-all duration-300 cursor-pointer select-none
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/10"
-                    : "hover:bg-gray-200/50"}
-                hover:scale-[1.01] active:scale-[0.99] border-b border-cyan-500/5`}
+                    : "hover:bg-gray-300/50"}
+                ${!pressed[idx] ? "hover:scale-[1.01] active:scale-[0.99]" : ""} border-b border-cyan-500/5`}
                 onClick={() => { updatePressedIndex(idx) }}>
 
                 <div className="flex w-[15%] h-full items-center justify-center">
@@ -682,9 +735,10 @@ function Members(props) {
                 </div>
 
                 <div className="flex w-[70%] h-full flex-col justify-center py-4">
-                    <div className={`flex text-base lg:text-lg xl:text-xl font-sans font-semibold
+                    <div className={`flex flex-row text-base lg:text-lg xl:text-xl font-sans font-semibold items-center
                         ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                         {getUser(id).username}
+                        {props.curr_user === id && <span className={`lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
                     </div>
                     <div className={`flex text-sm lg:text-base font-sans
                         ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}
@@ -708,28 +762,52 @@ function Members(props) {
                     rounded-xl overflow-hidden z-50 shadow-2xl
                     ${props.themeChosen === "Dark"
                         ? "bg-slate-800/95 border border-cyan-500/30 backdrop-blur-xl"
-                        : "bg-white border border-gray-300"}`}>
+                        : "bg-white border border-gray-300"}`}
+                    onClick={(e) => e.stopPropagation()}>
+                    
+                    {props.curr_user !== id && 
+                        <div className={`flex flex-row w-full h-12 items-center px-4 gap-3 group/menu
+                            transition-all cursor-pointer select-none
+                            ${props.themeChosen === "Dark"
+                                ? "hover:bg-blue-500/40 text-blue-300"
+                                : "hover:bg-blue-500/40 text-black"}`}
+                            onClick={() => {
+                                const contact = props.contacts.find(c =>
+                                    !c.is_group &&
+                                    ((c.sender_id === props.curr_user && c.contact_id === id) ||
+                                    (c.contact_id === props.curr_user && c.sender_id === id))
+                                );
+                                if (contact) props.setCurrContact(contact);
+                            }}>
+                            <CgProfile className="w-5 h-5 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                            <span className="text-sm lg:text-base font-medium">View profile</span>
+                        </div>
+                    }
 
-                    <div className={`flex flex-row w-full h-12 items-center px-4 gap-3 group/menu
-                        transition-all cursor-pointer
-                        ${props.themeChosen === "Dark"
-                            ? "hover:bg-cyan-500/20 text-cyan-200"
-                            : "hover:bg-gray-100 text-gray-800"}
-                        border-b ${props.themeChosen === "Dark" ? "border-cyan-500/20" : "border-gray-200"}`}
-                        onClick={() => {makeAdmin(id)}}>
-                        <GrUserAdmin className="w-5 h-5 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
-                        <span className="text-sm lg:text-base font-medium">Make admin</span>
-                    </div>
+                    {props.contact.admins.includes(props.curr_user) && !props.contact.admins.includes(id) &&
+                        <div className={`flex flex-row w-full h-12 items-center px-4 gap-3 group/menu
+                            transition-all cursor-pointer select-none
+                            ${props.themeChosen === "Dark"
+                                ? "hover:bg-cyan-500/20 text-cyan-200"
+                                : "hover:bg-gray-100 text-gray-800"}
+                            border-b ${props.themeChosen === "Dark" ? "border-cyan-500/20" : "border-gray-200"}`}
+                            onClick={() => {makeAdmin(id)}}>
+                            <GrUserAdmin className="w-5 h-5 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                            <span className="text-sm lg:text-base font-medium">Make admin</span>
+                        </div>
+                    }
 
-                    <div className={`flex flex-row w-full h-12 items-center px-4 gap-3 group/menu
-                        transition-all cursor-pointer
-                        ${props.themeChosen === "Dark"
-                            ? "hover:bg-red-500/20 text-red-400"
-                            : "hover:bg-red-50 text-red-600"}`}
-                        onClick={() => {kickFromGroup(id)}}>
-                        <CiCircleRemove className="w-5 h-5 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
-                        <span className="text-sm lg:text-base font-medium">Remove user</span>
-                    </div>
+                    {props.contact.admins.includes(props.curr_user) && !props.contact.admins.includes(id) &&
+                        <div className={`flex flex-row w-full h-12 items-center px-4 gap-3 group/menu
+                            transition-all cursor-pointer select-none
+                            ${props.themeChosen === "Dark"
+                                ? "hover:bg-red-500/20 text-red-400"
+                                : "hover:bg-red-50 text-red-600"}`}
+                            onClick={() => {kickFromGroup(id)}}>
+                            <CiCircleRemove className="w-5 h-5 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                            <span className="text-sm lg:text-base font-medium">Remove user</span>
+                        </div>
+                    }
                 </div>
                 }
             </div>
@@ -761,6 +839,7 @@ function OptionsGroup(props) {
             const response = await fetch('http://localhost:3002/exitGroup', requestOptions)
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has exited the group " + props.contact.group_name)
+
                 await props.fetchContacts()
 
                 localStorage.removeItem(`conversation_${props.contact.id}`)
@@ -787,7 +866,7 @@ function OptionsGroup(props) {
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20"
-                    : "hover:bg-red-50"}
+                    : "hover:bg-red-200"}
                 hover:scale-[1.01] active:scale-[0.99]`}
                 onClick={async () => {await exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 
@@ -856,11 +935,13 @@ function OptionsChat(props) {
     }
 
     async function blockContact(status: string) {
-        console.log("curr_user = " + props.contact.sender_id + " contact_id = " + props.contact.contact_id)
-        if(props.contact !== null && props.contact.is_group === false) {
+        console.log("in block contact curr_user = " + props.curr_user + " contact_id = " + props.contact.contact_id)
+        if((props.contact !== null && props.contact !== undefined) && (props.curr_user !== null && props.curr_user !== undefined) && props.contact.is_group === false) {
+
+            let action_by = props.contact.sender_id === props.curr_user ? "sender" : "receiver"
             let msg = {
-                "curr_user": props.contact.sender_id,
-                "contact_id": props.contact.contact_id,
+                "id_contact": props.contact.id,
+                "action_by": action_by,
                 "status": status
             }
 
@@ -876,6 +957,19 @@ function OptionsChat(props) {
             if(response.status === 200){
                 console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
                 await props.fetchContacts()
+                props.setDecryptedContacts((currArr) =>
+                    currArr.map(elem => {
+                        if ((elem.sender_id === props.contact.sender_id && elem.contact_id === props.contact.contact_id) ||
+                            (elem.sender_id === props.contact.contact_id && elem.contact_id === props.contact.sender_id)) {
+                            return {
+                                ...elem,
+                                blocked_by_sender: action_by === "sender" ? (status === "block") : elem.blocked_by_sender,
+                                blocked_by_receiver: action_by === "receiver" ? (status === "block") : elem.blocked_by_receiver
+                            }
+                        }
+                        return elem
+                    })
+                )
                 setCurrContactAfterChange()
             } else {
                 console.log("Error blocking chat " + JSON.stringify(props.contact.id))
@@ -896,12 +990,14 @@ function OptionsChat(props) {
             overflow-scroll scrollbar-hide`}>
 
             {/* Block/Unblock User */}
-            {props.contact.blocked === false && (
+            {((props.contact.sender_id === props.curr_user && props.contact.blocked_by_sender === false) || 
+             (props.contact.contact_id === props.curr_user && props.contact.blocked_by_receiver === false))
+                && (
                 <div className={`flex flex-row w-full h-[100px] px-6 group
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
                         ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20 border-b border-cyan-500/10"
-                        : "hover:bg-red-50 border-b border-gray-200"}
+                        : "hover:bg-red-200 border-b border-gray-200"}
                     hover:scale-[1.01] active:scale-[0.99]`}
                     onClick={() => {blockContact('block');}}>
 
@@ -921,8 +1017,9 @@ function OptionsChat(props) {
                     </div>
                 </div>
             )}
-
-            {props.contact.blocked === true && (
+            {((props.contact.sender_id === props.curr_user && props.contact.blocked_by_sender === true) || 
+             (props.contact.contact_id === props.curr_user && props.contact.blocked_by_receiver === true))
+               && (
                 <div className={`flex flex-row w-full h-[100px] px-6 group
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
@@ -952,8 +1049,8 @@ function OptionsChat(props) {
             <div className={`flex flex-row w-full h-[100px] px-6 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
-                    ? "hover:bg-red-500/15 hover:shadow-lg hover:shadow-red-500/30"
-                    : "hover:bg-red-50"}
+                    ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/30"
+                    : "hover:bg-red-200"}
                 hover:scale-[1.01] active:scale-[0.99]`}
                 onClick={async () => {await deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 

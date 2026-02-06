@@ -717,9 +717,9 @@ wss.on('connection', (ws, req) => {
         // to see if it's an image or not
         const isBase64 = (str) => {
           try {
-            return btoa(atob(str)) === str; // If the string can be re-encoded to base64, it's valid
+            return str.length > 100 && btoa(atob(str)) === str;
           } catch (err) {
-            return false; // It's not valid base64
+            return false;
           }
         };
 
@@ -1132,14 +1132,21 @@ app.post('/exitGroup', async (req, res) => {
     try { 
       console.log("Before deleting member from group");
 
-      // Insert the group into the "contacts" table
+      // Remove user from members and admins
       await pool.query(
           `
           UPDATE contacts
-          SET members = (
-              SELECT jsonb_agg(elem)
+          SET members = COALESCE(
+              (SELECT jsonb_agg(elem)
               FROM jsonb_array_elements(members) AS elem
-              WHERE elem <> to_jsonb($1::text)
+              WHERE elem <> to_jsonb($1::text)),
+              '[]'::jsonb
+          ),
+          admins = COALESCE(
+              (SELECT jsonb_agg(elem)
+              FROM jsonb_array_elements(admins) AS elem
+              WHERE elem <> to_jsonb($1::text)),
+              '[]'::jsonb
           )
           WHERE is_group = true
             AND id = $2
@@ -1219,10 +1226,10 @@ app.post('/deleteChat', async (req, res) => {
 });
 
 app.put('/blockContact', async (req, res) => {
-  const { curr_user, contact_id, status} = req.body;
+  const { id_contact, action_by, status} = req.body;
 
-  console.log("curr_user = " + curr_user + " group_id = " + contact_id)
-  if (curr_user !== null && contact_id !== null && status !== null) {
+  console.log("id_contact = " + id_contact + " action_by: " + action_by + ", action: " + status)
+  if (id_contact !== null && action_by !== null && status !== null) {
     try { 
       console.log("Before blocking contact");
 
@@ -1230,21 +1237,29 @@ app.put('/blockContact', async (req, res) => {
       console.log("type timestamp = " + typeof(timestamp))
       // Insert the group into the "contacts" table
       if(status === "block") {
-        await pool.query(
-            `UPDATE contacts SET blocked_at=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
-          [curr_user, contact_id, timestamp, true] // Bind variables
-        );
+        if(action_by === "sender") {
+          await pool.query(
+              `UPDATE contacts SET blocked_by_sender = $2, blocked_by_sender_at = $3 WHERE id = $1`,
+            [id_contact, true, timestamp]);
+        } else if(action_by === "receiver") {
+          await pool.query(
+              `UPDATE contacts SET blocked_by_receiver = $2, blocked_by_receiver_at = $3 WHERE id = $1`,
+            [id_contact, true, timestamp]);
+        }
       } else if(status === "unblock") {
-
-        console.log("In server before unblocking")
-
-        await pool.query(
-            `UPDATE contacts SET blocked_at=$3::varchar, blocked=$4 WHERE (sender_id=$1 AND contact_id=$2) OR (sender_id=$2 AND contact_id=$1)`,
-          [curr_user, contact_id, '', false] // Bind variables
-        );
+        if(action_by === "sender") {
+          await pool.query(
+              `UPDATE contacts SET blocked_by_sender = $2, blocked_by_sender_at = $3 WHERE id = $1`,
+            [id_contact, false, null]);
+        } else if(action_by === "receiver") {
+          await pool.query(
+              `UPDATE contacts SET blocked_by_receiver = $2, blocked_by_receiver_at = $3 WHERE id = $1`,
+            [id_contact, false, null]);
+        }
       }
 
-      console.log("After blocking contact");
+      if(status === "block") console.log("After blocking contact");
+      else console.log("After unblocking contact")
       res.sendStatus(200);
     } catch (err) {
       console.error("Error blocking contact", err.message);

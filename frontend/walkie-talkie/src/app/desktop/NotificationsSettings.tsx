@@ -43,11 +43,9 @@ export default function NotificationSettings( props: any ) {
                     props.setOutgoingMessagesSoundsEnabled(true)
                 }
             } else {
-                // When notifications are disabled, disable both incoming and outgoing
-                if(props.incomingSoundsEnabled) {
+                // When notifications are disabled, only disable both if both were on
+                if(props.incomingSoundsEnabled && props.outgoingMessagesSoundsEnabled) {
                     props.setIncomingSoundsEnabled(false)
-                }
-                if(props.outgoingMessagesSoundsEnabled) {
                     props.setOutgoingMessagesSoundsEnabled(false)
                 }
             }
