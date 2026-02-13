@@ -97,96 +97,85 @@ app.get("/verify", (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, email, password, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic } = req.body;
 
-  console.log("username = " + username + ";  password register = " + password)
-  const hashedPassword = await bcrypt.hash(password, 10);
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Missing username, email, or password' });
+  }
+
+  if (!identityKeyPublic || !signedPreKeyPublic || !signedPreKeySignature || !oneTimePreKeysPublic) {
+    return res.status(400).json({ error: 'Missing required key fields' });
+  }
+
   try {
-    console.log("before query")
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user_id = uuidv4();
-
-    // const user_id = result.rows[0].id;
-    // console.log("identityKeyPublic: " + JSON.stringify(identityKeyPublic));
-    // console.log("signed_prekey_public: " + JSON.stringify(signedPreKeyPublic));
-    // console.log("signed_prekey_signature: " + JSON.stringify(signedPreKeySignature));
-    // console.log("oneTimePreKeys: " + JSON.stringify(oneTimePreKeysPublic));
-
-    // res.status(500).json("Nothing wrong bruv just debugging");
 
     const result = await pool.query(
       'INSERT INTO users (id, username, email, password_hash, about) VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [user_id, username, email, hashedPassword, "Hey, there! I am using WhatsDown!"]
     );
 
-    const result2 = await pool.query( 
-      'INSERT INTO user_keys (user_id, identity_key_public, signed_prekey_public, signed_prekey_signature, signed_prekey_id) VALUES ($1, $2, $3, $4, $5)', 
+    await pool.query(
+      'INSERT INTO user_keys (user_id, identity_key_public, signed_prekey_public, signed_prekey_signature, signed_prekey_id) VALUES ($1, $2, $3, $4, $5)',
       [user_id, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, 1]
-    )
+    );
 
     for(const otpk of oneTimePreKeysPublic) {
-      const res = await pool.query('INSERT INTO one_time_prekeys (user_id, key_id, public_key) VALUES ($1, $2, $3)', [user_id, otpk.keyId, otpk.publicKey])
+      await pool.query('INSERT INTO one_time_prekeys (user_id, key_id, public_key) VALUES ($1, $2, $3)', [user_id, otpk.keyId, otpk.publicKey]);
     }
 
-    console.log("After query")
-
-    const responseData = { user_id: user_id };
-    console.log("📤 Sending response:", responseData); // Debug
-    
-    res.status(201).json(responseData);
+    console.log("Registered user:", user_id);
+    res.status(201).json({ user_id: user_id });
   } catch (error) {
-    console.error("More detailed error: " + error.message)
-    res.status(400).json({ error: 'User already exists' });
+    console.error("Registration error:", error.message);
+    if (error.code === '23505') {
+      res.status(400).json({ error: 'User already exists' });
+    } else {
+      res.status(500).json({ error: 'Registration failed' });
+    }
   }
 });
 
 app.post('/login', async (req, res) => {
-
-  console.log("In login endpoint")
-
   const { username, password } = req.body;
 
-  console.log("username = " + username + ";  password login = " + password);
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Missing username or password' });
+  }
 
   try {
-    console.log("before query");
     const result = await pool.query(
       'SELECT * from users WHERE username = $1',
       [username]
     );
 
-    console.log("result query = " + JSON.stringify(result));
-
-    if (result.rows.length > 0) {
-      const user = result.rows[0];
-      // console.log("username = " + username + ";  password login = " + JSON.stringify(await bcrypt.hash(password, 10)));
-      // console.log("user = " + JSON.stringify(user))
-      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-      // console.log("password valid = " + isPasswordValid)
-
-      if (isPasswordValid) {
-        
-        console.log("Password is valid, making and incorporating the token")
-
-        const token = jwt.sign({user}, JWT_TOKEN, { expiresIn: "24h" })
-        res.cookie("auth_token", token, {
-          httpOnly: true, 
-          // secure : process.env.NODE_ENV === "production",
-          secure: false,
-          maxAge: 3600000,
-          sameSite: "strict",
-        });
-        
-        console.log("After cookie incorporation in the response")
-
-        res.status(200).json({ userId: user.id });
-      } else {
-        res.status(401).json({ error: "Invalid username or password" });
-      }
-    } else {
-      res.status(404).json({ error: "User does not exist" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User does not exist" });
     }
+
+    const user = result.rows[0];
+
+    if (!user.password_hash) {
+      return res.status(401).json({ error: "This account uses Google sign-in" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const token = jwt.sign({user}, JWT_TOKEN, { expiresIn: "24h" })
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000,
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ userId: user.id });
   } catch (error) {
-    console.error("More detailed error: " + error.message);
-    res.status(400).json({ error: 'An error occurred while logging in' });
+    console.error("Login error:", error.message);
+    res.status(500).json({ error: 'An error occurred while logging in' });
   }
 });
 
@@ -1211,7 +1200,6 @@ app.post('/deleteChat', async (req, res) => {
           `DELETE FROM contacts WHERE sender_id=$1 AND contact_id=$2`,
         [curr_user, contact_id] // Bind variables
       );
-
 
       console.log("After deleting chat");
       res.sendStatus(200);

@@ -643,8 +643,8 @@ export default function CurrentChat( props: any ) {
                                         ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
                                         : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                <div className={`relative flex w-full text-sm lg:text-base xl:text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-2 items-start text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                                     <div className="break-words">
                                         {/* {
                                             message.decrypted_message
@@ -666,8 +666,8 @@ export default function CurrentChat( props: any ) {
                                 className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
                                 style={{ borderColor: getUserColor(message.sender_id), boxShadow: `0 0 6px ${getUserColor(message.sender_id)}30` }}
                             >
-                                <div className="relative flex w-full text-lg font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                <div className="relative flex w-full text-sm lg:text-base xl:text-lg font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex flex-col gap-2 items-start text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
                                     <div className="break-words">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :

@@ -257,6 +257,14 @@ export default function Register(props) {
             // ✅ Save with user ID
             localStorage.setItem(`encrypted_keys_${userId}`, encryptedKeys);
             
+            // Save credentials for pre-fill on next login
+            localStorage.setItem(`remembered_credentials_${userId}`, JSON.stringify({ username, password }));
+            localStorage.setItem('last_remembered_user_id', userId);
+            const accounts = JSON.parse(localStorage.getItem('remembered_accounts') || '{}');
+            accounts[username] = userId;
+            localStorage.setItem('remembered_accounts', JSON.stringify(accounts));
+            localStorage.setItem('has_account', 'true');
+
             // Set in state
             props.setUser(userId);
             props.setIdentityKey(newIdentityKey);

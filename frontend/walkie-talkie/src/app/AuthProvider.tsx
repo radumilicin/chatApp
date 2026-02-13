@@ -20,7 +20,12 @@ const AuthContext = createContext<AuthContextType>({
 // Create the provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [loggedIn, setLoggedInState] = useState(false);
-  const [registered, setRegistered] = useState(false);
+  const [registered, setRegistered] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('has_account') === 'true';
+    }
+    return false;
+  });
 
   // Define the function to toggle the logged-in state
   const toggleLoggedIn = () => {
@@ -28,7 +33,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const toggleRegistered = () => {
-    setRegistered((prev) => !prev)
+    setRegistered((prev) => {
+      const next = !prev;
+      if (next && typeof window !== 'undefined') {
+        localStorage.setItem('has_account', 'true');
+      }
+      return next;
+    })
   }
 
   return (
