@@ -124,7 +124,7 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
             if (!currArr) return currArr;
 
             const updated_state = currArr.map((elem) => {
-              if((elem.contact_id === user && elem.sender_id === contact_id) || (elem.sender_id === user && elem.sender_id === contact_id)){
+              if((elem.contact_id === user && elem.sender_id === contact_id) || (elem.sender_id === user && elem.contact_id === contact_id)){
                 const updated_message = [...(elem.message || []), decrypted_message];
 
                 return {
@@ -402,7 +402,7 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
               "timestamp": message.timestamp
             };
             
-            let existing_messages = localStorage.getItem(`conversation_${user}_${contact_id}`);
+            let existing_messages = JSON.parse(localStorage.getItem(`conversation_${user}_${contact_id}`) || '[]');
             let convo_after_dec = [...existing_messages, message_details];
             localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(convo_after_dec));
             

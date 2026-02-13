@@ -674,7 +674,7 @@ function Members(props) {
             overflow-scroll scrollbar-hide border-b-[1px]`}>
 
             {/* Add Member Button */}
-            <div className={`relative flex h-[100px] w-full flex-row px-4 group
+            {props.contact.admins.includes(props.curr_user) && <div className={`relative flex h-[100px] w-full flex-row px-4 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/20"
@@ -696,7 +696,7 @@ function Members(props) {
                         Add member
                     </div>
                 </div>
-            </div>
+            </div>}
 
             {/* Members List */}
             {[...props.contact.members].sort((a, b) => {

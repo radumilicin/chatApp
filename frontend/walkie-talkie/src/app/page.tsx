@@ -76,6 +76,7 @@ export default function Home() {
 
   /* END DECRYPTED CONTACTS */
   const hasDecryptedInitial = useRef(false);
+  const lastDecryptedContactsLength = useRef(0);
 
 
 
@@ -541,6 +542,8 @@ export default function Home() {
         });
         
         if(res.ok) {
+            localStorage.removeItem(`remembered_credentials_${user}`);
+            localStorage.removeItem('last_remembered_user_id');
             updateUsers([]);
             updateContacts([]);
             updateImages([]);
@@ -698,7 +701,7 @@ export default function Home() {
       return;
     }
     
-    if (hasDecryptedInitial.current) {
+    if (hasDecryptedInitial.current && contacts.length === lastDecryptedContactsLength.current) {
       console.log("✅ Already decrypted, skipping");
       return;
     }
@@ -722,6 +725,7 @@ export default function Home() {
     
     if (decryptedAll) {
       hasDecryptedInitial.current = true;
+      lastDecryptedContactsLength.current = contacts.length;
       console.log("✅ Successfully decrypted all messages");
     } else {
       console.log("❌ Failed to decrypt all messages");
@@ -808,13 +812,18 @@ export default function Home() {
   // Client-side: Load conversation history 
   // 
   // Different cases for groups and users
-  async function loadConversationMessages(messages: [any], is_group: boolean, contact_id: string, contact: any) {
+  async function loadConversationMessages(messages: any[], is_group: boolean, contact_id: string, contact: any) {
     console.log(`In load conversation messages at ${new Date()} with ${user}`)
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      console.log(`No messages for contact ${contact.id} - returning empty array`);
+      return [];
+    }
 
     // Group messages are plaintext - no decryption needed
     if (is_group) {
-      console.log(`Group contact ${contact.id} - returning ${messages?.length || 0} messages as-is (no decryption)`);
-      return messages || [];
+      console.log(`Group contact ${contact.id} - returning ${messages.length} messages as-is (no decryption)`);
+      return messages;
     }
 
     const decryptedMessages = [];
@@ -866,7 +875,7 @@ export default function Home() {
        // I SENT the message → check sender read time
       
        // Message sent by original sender → original recipient may have read it
-      if (user === contact.sender_id && lastRead_sender && messageTime <= lastRead_sender) {
+      if (user === contact.sender_id && lastRead_sender && messageTime <= lastRead_sender && existing_messages[i]) {
         console.log(`already read by sender: `, existing_messages[i].message);
         decryptedMessages.push(existing_messages[i])
         console.log("Decrypted messages after checking already read sender: ", decryptedMessages)
@@ -874,7 +883,7 @@ export default function Home() {
       }
 
       // Message sent by original recipient → original sender may have read it
-      if (user === contact.contact_id && lastRead_receiver && messageTime <= lastRead_receiver) {
+      if (user === contact.contact_id && lastRead_receiver && messageTime <= lastRead_receiver && existing_messages[i]) {
         console.log(`already read by recipient: `, existing_messages[i].message);
         decryptedMessages.push(existing_messages[i])
         console.log("Decrypted messages after checking already read sender: ", decryptedMessages)

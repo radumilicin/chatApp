@@ -64,13 +64,13 @@ export default function Conversations( props : any) {
             });
             
             if (res.ok) {
-            props.updateUsers([]);
-            props.updateContacts([]);
-            props.updateImages([]);
-            props.setUser("");
-            props.setDecryptedContacts([]);
-            setFilteredDecryptedContacts([]);
-            props.hasDecryptedInitial.current = false;
+                props.updateUsers([]);
+                props.updateContacts([]);
+                props.updateImages([]);
+                props.setUser("");
+                props.setDecryptedContacts([]);
+                setFilteredDecryptedContacts([]);
+                props.hasDecryptedInitial.current = false;
             } else {
             console.error('Logout failed with status:', res.status);
             }
@@ -768,7 +768,15 @@ export function Contacts( props: any) {
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
-                    const lastMessage = getLastMessage(element, idx);
+                    var lastMessage, lastMessageGroup = null
+                    if(element.is_group) {
+                        lastMessageGroup = getLastMessageGroup(element)  
+                        if(lastMessageGroup.group_id !== null) {
+                            console.log("last message for group looks like: " + JSON.stringify(lastMessageGroup) + `\n${props.curr_user}`)
+                        } 
+                    } else {
+                        lastMessage = getLastMessage(element, idx)
+                    }
                     const time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
                     : "";
@@ -863,12 +871,15 @@ export function Contacts( props: any) {
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs lg:text-sm
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs
                                         ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
-                                            ? "Sent " + time
-                                            : time
+                                            ? <div className="flex flex-col"> 
+                                                <div className="">Sent</div>
+                                                <div className="">{time}</div>
+                                              </div> 
+                                            : <div className="">{time}</div>
                                         }
                                     </div>
                                 </div>
@@ -935,28 +946,31 @@ export function Contacts( props: any) {
                                                     : ''}
                                                 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
                                                 h-[60%] w-[50%] transition-all duration-300 hover:scale-110`}>
-                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
+                                                {(element.message.length > 0 && lastMessageGroup.sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] flex h-full w-full items-start text-xs lg:text-sm xl:text-base
+                                            <div className={`indent-[10px] h-full w-full text-xs lg:text-sm xl:text-base
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
-                                                font-medium overflow-x-hidden transition-colors duration-300`}>
-                                                {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
+                                                font-medium truncate transition-colors duration-300`}>
+                                                {element.message.length > 0 && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs lg:text-sm
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-xs
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user 
-                                                    ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                                    : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
-                                                }
+                                                {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
+                                                    ?   <div className="flex flex-col"> 
+                                                            <div className="">Sent</div>
+                                                            <div className="">{lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                        </div> 
+                                                    :   <div className="">{lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                }     
                                             </div>
                                         </div>
                                 </div>

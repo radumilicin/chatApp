@@ -17,11 +17,45 @@ export default function Login(props: any) {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [rememberMe, setRememberMe] = useState(false)
     const [usernameExists, setUsernameExists] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const router = useRouter()
     const [users, setUsers] = useState([])
     const { loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
     const googleButtonRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const lastUserId = localStorage.getItem('last_remembered_user_id');
+        if (lastUserId) {
+            const saved = localStorage.getItem(`remembered_credentials_${lastUserId}`);
+            if (saved) {
+                try {
+                    const { username: savedUser, password: savedPass } = JSON.parse(saved);
+                    setUsername(savedUser || '');
+                    setPassword(savedPass || '');
+                    setRememberMe(true);
+                } catch {}
+            }
+        }
+    }, []);
+
+    function lookupPasswordForUsername(typedUsername: string) {
+        try {
+            const accounts = JSON.parse(localStorage.getItem('remembered_accounts') || '{}');
+            const userId = accounts[typedUsername];
+            if (userId) {
+                const saved = localStorage.getItem(`remembered_credentials_${userId}`);
+                if (saved) {
+                    const { password: savedPass } = JSON.parse(saved);
+                    setPassword(savedPass || '');
+                    setRememberMe(true);
+                    return;
+                }
+            }
+        } catch {}
+        if (!rememberMe) setPassword('');
+    }
 
      useEffect(() => {
         const fetchUsers = async () => {
@@ -172,66 +206,65 @@ export default function Login(props: any) {
 
     async function login() {
         console.log("In login")
+        setErrorMessage('')
 
         if(username.length < 8) {
-            console.log("Username should be 8 characters or more")
-            return
+            setErrorMessage("Username should be 8 characters or more")
+            return null
         }
 
         if(password.length < 8) {
-            console.log("Password should be 8 or more characters long")
-            return
+            setErrorMessage("Password should be 8 or more characters long")
+            return null
         }
 
-        let msg = {
-            username: username,
-            password: password
-        }
+        try {
+            const response = await fetch("http://localhost:3002/login", {
+                method: 'POST',
+                headers: {'Content-Type' : 'application/json'},
+                body: JSON.stringify({ username, password }),
+                credentials: 'include',
+            });
 
-        const response = await fetch("http://localhost:3002/login", {
-            method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
-            body: JSON.stringify(msg),
-            credentials: 'include', // allows cookies to be set
-        });
+            const user = await response.json()
 
-        const user = await response.json()
+            if(response.status !== 200) {
+                setErrorMessage(user.error || "Login failed")
+                return null
+            }
 
-        props.setU(user.userId)
+            console.log(`User: ${user.userId}`)
+            props.setU(user.userId)
 
-        console.log(`User: ${user.userId}`)
-        sleep(2000)
+            if (rememberMe) {
+                localStorage.setItem(`remembered_credentials_${user.userId}`, JSON.stringify({ username, password }));
+                localStorage.setItem('last_remembered_user_id', user.userId);
+                const accounts = JSON.parse(localStorage.getItem('remembered_accounts') || '{}');
+                accounts[username] = user.userId;
+                localStorage.setItem('remembered_accounts', JSON.stringify(accounts));
+            } else {
+                localStorage.removeItem(`remembered_credentials_${user.userId}`);
+                localStorage.removeItem('last_remembered_user_id');
+                const accounts = JSON.parse(localStorage.getItem('remembered_accounts') || '{}');
+                delete accounts[username];
+                localStorage.setItem('remembered_accounts', JSON.stringify(accounts));
+            }
 
-        if(response.status === 200){
-            console.log("Logged in")
             setLoggedInAsync();
 
             const deviceKey = await props.getOrCreateDeviceKey(user.userId);
-            // const deviceKeyString = await props.cryptoKeyToBase64(deviceKey)
-
             console.log("Before loading keys after login")
 
             const loaded = await props.loadKeysAfterLogin(user.userId, deviceKey)
-            if(loaded) {
-                console.log("Encrypted keys loaded")
-            } else {
-                console.log("Encrypted keys failed to load")
+            if(!loaded) {
+                console.error("Encrypted keys failed to load")
             }
 
-            // Fetch what's in the database
-            const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user.userId}`);
-            const dbKeys = await dbResponse.json();
-
-            console.log("COMPARISON:");
-            console.log(`Bob localStorage signedPreKey user ${user.userId}:`, props.signedPreKey.publicKey);
-            console.log(`Bob database signedPreKey user ${user.userId} :`, dbKeys.signedPreKey.public_key);
-            console.log("DO THEY MATCH?", props.signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
-
-            // localStorage.setItem("jwt-token", user.)
             return user
-        } else {
-            console.log("login failed")
-            return {}
+        } catch (error) {
+            console.error("Login error:", error)
+            setErrorMessage("Could not connect to server")
+            return null
         }
     }
 
@@ -239,7 +272,9 @@ export default function Login(props: any) {
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
             if(e.key === 'Enter') {
                 const resp = await login();
-                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered)
+                if(resp !== null) {
+                    router.push("/");
+                }
             }}}>
             <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
                 <div className="flex flex-col mb-8 text-center">
@@ -256,6 +291,7 @@ export default function Login(props: any) {
                             value={username}
                             onChange={(e) => {
                                 setUsername(e.target.value);
+                                lookupPasswordForUsername(e.target.value);
                                 if(usernameExistsF()) setUsernameExists(true)
                             }}
                             className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
@@ -272,13 +308,21 @@ export default function Login(props: any) {
                             className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
                         />
                     </div>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-600 bg-gray-700/50 text-[#3B7E9B] focus:ring-[#3B7E9B]/20 cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-300">Remember me</span>
+                    </label>
+                    {errorMessage && <p className="text-red-400 text-sm text-center -mb-2">{errorMessage}</p>}
                     <button
                         onClick={async () => {
                             const resp = await login();
                             if(resp !== null) {
-                                console.log("should now be in main view");
                                 router.push("/");
-                                console.log("loggedIn = " + loggedIn + " registered = " + registered)
                             }
                         }}
                         className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"

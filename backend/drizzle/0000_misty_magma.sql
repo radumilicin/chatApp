@@ -1,1 +1,0 @@
-ALTER TABLE users ADD COLUMN google_id VARCHAR(100); ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
