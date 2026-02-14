@@ -518,7 +518,7 @@ app.put('/updateMessageStatus', async (req, res) => {
 });
 
 app.put('/accessedChat', async (req, res) => {
-  const { curr_user, contact, accessed_at } = req.body;
+  const { curr_user, contact, accessed_at} = req.body;
   if (!curr_user || !contact || !accessed_at) {
     return res.status(400).json({ error: "Missing request parameters" });
   }
@@ -527,7 +527,7 @@ app.put('/accessedChat', async (req, res) => {
     const resp = await updateJsonbTimestamp(pool, {
       contactId: contact.id,
       userId: curr_user,
-      field: 'opened_at',
+      field: "opened_at",
       value: accessed_at,
     });
 
