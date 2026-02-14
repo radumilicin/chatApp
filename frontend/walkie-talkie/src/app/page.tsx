@@ -125,8 +125,8 @@ export default function Home() {
   const [display, setDisplay] = useState("Desktop");
 
   const [windowDimensions, setWindowDimensions] = useState<{width: number, height: number}>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0
+    width: 0,
+    height: 0
   });
 
 
@@ -1141,7 +1141,8 @@ export default function Home() {
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
                                       setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} 
                                       disappearingMessagesPressed={disappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed} visibilityStatus={visibilityStatus}
-                                      visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen}></Privacy> : <PrivacyVertical userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      visibilityProfilePic={visibilityProfilePic} themeChosen={themeChosen} setPressNotifications={setPressNotifications} setPressAccount={setPressAccount} 
+                                      setPressProfile={setPressProfile} setPressAppearance={setPressAppearance} blockedContactsPressed={blockedContactsPressed}></Privacy> : <PrivacyVertical userObj={userObj} user={user} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
                                       setBlockedContacts={setBlockedContacts} setProfilePicPrivPress={setProfilePicPrivPress} setStatusPrivPress={setStatusPrivPress} 
                                       setDisappearingMessagesPressed={setDisappearingMessagesPressed} disappearingMessagesPeriod={disappearingMessagesPeriod} setPressAppearance={setPressAppearance}
                                       disappearingMessagesPressed={disappearingMessagesPressed} setPressNotifications={setPressNotifications} setPressProfile={setPressProfile}

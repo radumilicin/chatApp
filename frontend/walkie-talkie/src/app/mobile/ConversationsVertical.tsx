@@ -6,7 +6,7 @@ import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettingsVertical';
 
 export default function ConversationsVertical( props : any) {
-    
+
     const [currentSearch, setCurrSearch] = useState('');
     const [filteredContacts, setFilteredContacts] = useState([]);
     const [filteredDecryptedContacts, setFilteredDecryptedContacts] = useState([]);
@@ -654,17 +654,21 @@ export function Contacts( props: any) {
         return timeDifference / (1000 * 3600 * 24);
     }
 
-    async function updateAccessedOnChat(timestamp : string) {
+    async function updateAccessedOnChat(newContact: any, timestamp: string) {
 
         let body = {
             "curr_user": props.curr_user,
-            "contact": props.contact,
+            "contact": newContact,
             "accessed_at": timestamp
         }
 
-        console.log(`accessed chat with curr_user: ${props.curr_user}, contact: ${props.contact}, accessed_at: ${timestamp}`)
+        console.log(`accessed chat with curr_user: ${props.curr_user}, contact: ${newContact.id}, accessed_at: ${timestamp}`)
 
         try {
+            // First close the previous chat (update closed_at)
+            if(prevContact.current !== null) await props.closeChat(prevContact.current)
+
+            // Then open the new chat (update opened_at)
             const response = await fetch(`http://localhost:3002/accessedChat`, {
                 method: "PUT",
                 credentials: "include",
@@ -675,11 +679,9 @@ export function Contacts( props: any) {
             });
 
             if(response.ok) {
+                prevContact.current = newContact
                 props.fetchContacts()
-                if(prevContact !== null) props.closeChat(prevContact.current)
                 console.log("updated accessedChat")
-            } else {
-                console.log()
             }
         } catch(err) {
             console.log("Error in changing time of access:" + err)
@@ -738,7 +740,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`group/contact relative flex-none flex flex-row h-16 w-[96%] overflow-hidden
+                        className={`group/contact relative flex-none flex flex-row h-[15%] w-[96%] overflow-hidden
                             transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                             ${props.themeChosen === "Dark"
                                 ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
@@ -756,6 +758,7 @@ export function Contacts( props: any) {
                         }
 
                         props.setCurrContact(contact);
+                        updateAccessedOnChat(contact, timestamp);
                     }}  // <--- Only TWO closing braces needed
                     >
                         {/* Animated gradient overlay */}
@@ -781,7 +784,7 @@ export function Contacts( props: any) {
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-base xss:text-lg font-semibold font-sans
+                                    <div className={`indent-[10px] text-lg font-semibold font-sans
                                         ${props.themeChosen === "Dark"
                                             ? "text-gray-200"
                                             : "text-gray-900"}`}>
@@ -802,7 +805,7 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-xs xss:text-sm
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xsw:text-base
                                             ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
                                             font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
@@ -810,12 +813,18 @@ export function Contacts( props: any) {
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs xss:text-sm
                                         ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
-                                            ? "Sent " + time
-                                            : time
+                                            ? <div className="flex flex-col">
+                                                <div className="">Sent</div>
+                                                <div className="">{time}</div>
+                                              </div>
+                                            : <div className="flex flex-col">
+                                                <div className=""><br></br></div>
+                                                <div className="">{time}</div>
+                                              </div>
                                         }
                                     </div>
                                 </div>
@@ -826,7 +835,7 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ?
                             <div
                                 key={idx}
-                                className={`group/group relative flex-none flex flex-row h-16 w-[96%] overflow-hidden
+                                className={`group/group relative flex-none flex flex-row h-[15%] w-[96%] overflow-hidden
                                     transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
                                         ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border border-purple-500/10 hover:border-purple-500/30"
@@ -835,8 +844,6 @@ export function Contacts( props: any) {
                                 onClick={(e) => {
                                     console.log("========\n2nd DIV PRESSED\n========")
                                     console.log("CLICKED BY USER?", e.isTrusted);
-                                    // props.setPressed(element);
-                                    // let contact = element;
                                     let timestamp = new Date().toISOString()
                                     let contact = {
                                     ...element,
@@ -844,7 +851,7 @@ export function Contacts( props: any) {
                                         obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
                                     )};
                                     props.setCurrContact(contact);
-                                    // console.log("clicked")
+                                    updateAccessedOnChat(contact, timestamp);
                                 }}
                             >
                                 {/* Animated gradient overlay for groups */}
@@ -867,7 +874,7 @@ export function Contacts( props: any) {
                                 <div className="relative flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-base xss:text-lg font-semibold font-sans tracking-wide
+                                            <div className={`indent-[10px] text-lg font-semibold font-sans tracking-wide
                                                 ${props.themeChosen === "Dark"
                                                     ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
                                                     : "text-gray-900"}`}>
@@ -888,20 +895,26 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] flex h-full w-full items-start text-xs xss:text-sm
+                                            <div className={`indent-[10px] h-full w-full text-sm xsw:text-base
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
-                                                font-medium overflow-x-hidden transition-colors duration-300`}>
+                                                font-medium truncate transition-colors duration-300`}>
                                                 {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
-                                        <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[30%] justify-center text-xs xss:text-sm
+                                        <div className="relative flex flex-row h-full w-[25%] justify-end">
+                                            <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs xss:text-sm
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
-                                                {(element.message.length > 0) ? (getLastMessageGroup(element).sender_id === curr_user || getLastMessageGroup(element).contact_id === curr_user
-                                                    ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                                    : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)) : ""
+                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id === props.curr_user)
+                                                    ? <div className="flex flex-col">
+                                                        <div className="">Sent</div>
+                                                        <div className="">{getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                      </div>
+                                                    : <div className="flex flex-col">
+                                                        <div className=""><br></br></div>
+                                                        <div className="">{getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                      </div>
                                                 }
                                             </div>
                                         </div>
@@ -922,16 +935,15 @@ export function Contacts( props: any) {
                         onClick={(e) => {
                             console.log("============\n3rd DIV PRESSED\n=============")
                             console.log("CLICKED BY USER?", e.isTrusted);
-                            props.setPressed(element); 
-                            // let contact = element;
+                            props.setPressed(element);
                             let timestamp = new Date().toISOString()
                             let contact = {
                                 ...element,
                                 opened_at: element.opened_at.map(obj =>
                                     obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
                             )};
-                            props.setCurrContact(contact); 
-                            console.log("clicked")
+                            props.setCurrContact(contact);
+                            updateAccessedOnChat(contact, timestamp);
                         }}
                     >
                         <div className="flex w-[10%] justify-center items-center">
@@ -982,16 +994,16 @@ export function Contacts( props: any) {
                                 key={idx}
                                 className={`relative h-16 left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
                                 onClick={() => {
-                                    props.setPressed(element); 
-                                    // let contact = element;
+                                    props.setPressed(element);
                                     let timestamp = new Date().toISOString()
                                     let contact = {
                                         ...element,
                                         opened_at: element.opened_at.map(obj =>
                                             obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
                                     )};
-                                    props.setCurrContact(contact); 
-                                    console.log("clicked")}}
+                                    props.setCurrContact(contact);
+                                    updateAccessedOnChat(contact, timestamp);
+                                }}
                             >
                                 <div className="flex w-[10%] justify-center items-center">
                                     {/* Use base64 data for image */}

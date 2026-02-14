@@ -23,11 +23,11 @@ export default function SettingsView(props) {
                 <div className={`relative left-[2%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                         onClick={() => {
                             props.setPressedSettings(false);
-                            props.setPressProfile(false);
-                            props.setProfilePicPrivPress(false);
-                            props.setStatusPrivPress(false);
-                            props.setDisappearingMessagesPressed(false);
-                            props.setBlockedContactsPressed(false);
+                            // props.setPressProfile(false);
+                            // props.setProfilePicPrivPress(false);
+                            // props.setStatusPrivPress(false);
+                            // props.setDisappearingMessagesPressed(false);
+                            // props.setBlockedContactsPressed(false);
                         }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square opacity-90`}></img>
                     </div>

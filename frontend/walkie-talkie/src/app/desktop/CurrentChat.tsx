@@ -583,7 +583,7 @@ export default function CurrentChat( props: any ) {
                     </div>
                 </div>
             }
-            {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
+            {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto pb-8 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
                     filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);

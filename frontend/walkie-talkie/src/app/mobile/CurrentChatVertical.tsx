@@ -377,6 +377,21 @@ export default function CurrentChatVertical( props: any ) {
 
     const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
+    const groupUserColors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA',
+        '#F8C471', '#85C1E9', '#F1948A', '#73C6B6', '#D7BDE2'
+    ];
+
+    const getUserColor = (userId: string) => {
+        let hash = 0;
+        const str = String(userId);
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return groupUserColors[Math.abs(hash) % groupUserColors.length];
+    };
+
     const findImageBasedOnID = (message: any) => {
         // console.log("message = " + JSON.stringify(message))
         const image = props.images.find((img) => { return img.id === message.image_id})
@@ -428,16 +443,14 @@ export default function CurrentChatVertical( props: any ) {
                 </div>
 
                 {/* Back button */}
-                <div className="relative flex flex-row w-[8%] h-[100%] justify-center items-center z-10" onClick={() => {
+                <div className="relative flex flex-row w-[8%] h-[100%] justify-center items-center z-10" onClick={(e) => {
+                        e.stopPropagation();
                         if (props.setCurrContact) {
                             props.setCurrContact(null)
                         }
                     }}>
                     <div className={`flex w-8 h-8 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"}`}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 object-contain`} 
-                            onClick={() => {
-                                props.setCurrContact(null)
-                            }}></img>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 object-contain`}></img>
                     </div>
                 </div>
 
@@ -453,7 +466,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-10 h-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Profile"
                             /> :
@@ -461,7 +474,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-12 h-12 xsw:w-16 xsw:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Profile"
                             /> :
@@ -469,7 +482,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-10 h-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Group"
                             /> :
@@ -477,7 +490,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-12 h-12 xsw:w-16 xsw:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Group"
                             /> : <></>
@@ -491,7 +504,7 @@ export default function CurrentChatVertical( props: any ) {
                         {/* Group name */}
                         <div className="flex justify-start items-center">
                             {props.contact !== null && (
-                                <div className={`text-base xss:text-lg font-bold tracking-wide
+                                <div className={`text-base xss:text-lg xsw:text-xl font-bold tracking-wide
                                     ${props.themeChosen === "Dark"
                                         ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                         : "text-gray-900"}`}>
@@ -501,7 +514,7 @@ export default function CurrentChatVertical( props: any ) {
                         </div>
 
                         {/* Group members list */}
-                        <div className={`flex flex-row text-xs xss:text-sm truncate mt-1
+                        <div className={`flex flex-row text-xs xss:text-base xsw:text-lg truncate mt-1
                             ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
                             group-hover:text-cyan-200/90 transition-colors duration-300`}>
                             {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
@@ -519,7 +532,7 @@ export default function CurrentChatVertical( props: any ) {
                 {props.contact !== null && props.contact.is_group === false &&
                     <div className="relative flex w-[75%] h-full items-center pl-2 z-10">
                         {props.contact !== null && (
-                            <div className={`text-base xss:text-lg font-bold tracking-wide
+                            <div className={`text-lg xss:text-xl xsw:text-2xl font-bold tracking-wide
                                 ${props.themeChosen === "Dark"
                                     ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                     : "text-gray-900"}`}>
@@ -529,7 +542,7 @@ export default function CurrentChatVertical( props: any ) {
                     </div>
                 }
             </div>
-            <div className={`relative left-[2%] top-[18%] w-[96%] h-[70%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-4`}>
+            <div className={`relative left-[2%] top-[18%] w-[96%] h-[70%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-8`}>
                 {decryptedContact !== null && decryptedContact !== undefined && decryptedContact.hasOwnProperty("message") && 
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
@@ -580,14 +593,14 @@ export default function CurrentChatVertical( props: any ) {
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-2xl flex-col transition-all ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
-                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
+                                        ? `${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/15 border-2 border-[#48C287]/40 shadow-[0_0_8px_rgba(72,194,135,0.15)]" : "bg-gray-100 border-2 border-gray-300"}`
+                                        : `${props.themeChosen === "Dark" ? "bg-[#3F8F63]/10 border-2 border-[#2479C7]/40 shadow-[0_0_8px_rgba(36,121,199,0.15)]" : "bg-gray-100 border-2 border-gray-300"}`}`}
                             >
                                 <div className={`relative flex w-full text-sm xss:text-base text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
                                 <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words text-sm">
+                                    <div className="break-words text-sm xsw:text-base">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
@@ -601,14 +614,12 @@ export default function CurrentChatVertical( props: any ) {
                     ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 border-black flex-col ${
-                                    String(props.curr_user) === String(message.sender_id)
-                                        ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
-                                        : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
+                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
+                                style={{ borderColor: getUserColor(message.sender_id), boxShadow: `0 0 6px ${getUserColor(message.sender_id)}30` }}
                             >
-                                <div className={`relative flex w-full text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"} ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>{getUserFromId(message.sender_id).username}</div>
+                                <div className={`relative flex w-full text-sm xss:text-base font-semibold ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
                                 <div className={`relative flex flex-col gap-1 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words text-sm">
+                                    <div className="break-words text-sm xsw:text-base">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}

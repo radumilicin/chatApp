@@ -11,15 +11,15 @@ export default function Privacy(props: any) {
                             onClick={() => {
                                 props.setPressedSettings(true)
                                 props.setPressPrivacy(false)
-                                props.setPressNotifications(false)
-                                props.setPressAccount(false)
-                                props.setPressProfile(false)
-                                props.setPressAppearance(false)
-                                props.setPressedSettings(false)
-                                props.setProfilePicPrivPress(false)
-                                props.setStatusPrivPress(false)
-                                props.setDisappearingMessagesPressed(false)
-                                props.blockedContactsPressed(false)
+                                // props.setPressNotifications(false)
+                                // props.setPressAccount(false)
+                                // props.setPressProfile(false)
+                                // props.setPressAppearance(false)
+                                // props.setPressedSettings(false)
+                                // props.setProfilePicPrivPress(false)
+                                // props.setStatusPrivPress(false)
+                                // props.setDisappearingMessagesPressed(false)
+                                // props.setBlockedContactsPressed(false)
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
                     </div>
