@@ -27,6 +27,8 @@ export function updateUserSetting(pool, column) {
       return res.status(400).json({ error: `Missing 'new_setting' or 'user' field` });
     }
 
+    console.log(`BEFORE QUERY IN UPDATE USER SETTING ${column} with new_setting: ${new_setting}`)
+
     try {
       const resp = await pool.query(
         `UPDATE users SET ${column} = $1 WHERE id = $2 RETURNING *`,

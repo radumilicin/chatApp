@@ -201,8 +201,8 @@ export default function ProfileSettings(props) {
 
                     {hoveredProfilePic && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-2">
-                            <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : "./camera.png"}`} className="h-16 w-16" alt="Camera" />
-                            <p className={`font-medium text-sm text-center px-4 ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"}`}>
+                            <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : `${currImageData.data ? './camera-white.png' : './camera.png'}`}`} className="h-16 w-16" alt="Camera" />
+                            <p className={`font-medium text-sm text-center px-4 ${props.themeChosen === "Dark" ? "text-white" : `${currImageData.data ? 'text-white' : 'text-gray-900'}`}`}>
                                 Change profile picture
                             </p>
                         </div>

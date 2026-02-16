@@ -1,24 +1,12 @@
-import {useState, useEffect} from 'react'
-
 export default function Theme(props: any) {
 
-    // const [props.themeChosenPending, props.setThemeChosenPending] = useState("Dark")
-    const [confirm, setConfirm] = useState(false)
-    
-    useEffect(() => {
-        if(confirm === true) {
-            setThemeDB()
-            // props.setThemeChosen(props.themeChosenPending)
-            setConfirm(false)
-        }
-    }, [confirm])
 
     /* Sets data in DB and also sets the themeChosen from the one that's pending */
     async function setThemeDB() {
 
         const data = {
             'user': props.curr_user,
-            'new_theme': props.themeChosenPending
+            'new_setting': props.themeChosenPending
         }
 
         const response = await fetch('http://localhost:3002/changeTheme', {
@@ -150,7 +138,7 @@ export default function Theme(props: any) {
                         <div className={`flex flex-row px-6 py-2.5 ${props.themeChosen === "Dark" ? "text-cyan-200 hover:bg-cyan-500/20" : "text-gray-700 hover:bg-gray-300/50"} font-semibold hover:cursor-pointer text-sm xl:text-base justify-center items-center rounded-xl transition-all hover:scale-105 active:scale-95 border ${props.themeChosen === "Dark" ? "border-cyan-500/30" : "border-gray-300"}`} onClick={() => {props.setThemePressed(false)}}>
                             Cancel
                         </div>
-                        <div className={`flex flex-row px-6 py-2.5 text-white hover:cursor-pointer text-sm xl:text-base font-semibold justify-center items-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all hover:scale-105 active:scale-95`} onClick={ async () => { setConfirm(true) }}>
+                        <div className={`flex flex-row px-6 py-2.5 text-white hover:cursor-pointer text-sm xl:text-base font-semibold justify-center items-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all hover:scale-105 active:scale-95`} onClick={ async () => { await setThemeDB() }}>
                             Confirm
                         </div>
                     </div>

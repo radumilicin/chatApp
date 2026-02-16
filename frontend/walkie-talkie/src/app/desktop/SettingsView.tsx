@@ -96,10 +96,6 @@ export function CurrUserDiv (props: any) {
             onClick={() => {
                 props.setPressedSettings(false);
                 props.setPressProfile(true);
-                props.setProfilePicPrivPress(false);
-                props.setStatusPrivPress(false);
-                props.setDisappearingMessagesPressed(false);
-                props.setBlockedContactsPressed(false);
             }}
         >
             <div className={`relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/10 group-hover:bg-[#3B7E9B]/20" : "bg-gray-200 group-hover:bg-gray-300"} `}>

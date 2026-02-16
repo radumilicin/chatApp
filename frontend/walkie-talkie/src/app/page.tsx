@@ -638,7 +638,10 @@ export default function Home() {
 
   useEffect(() => {
     if(contacts.length > 0 && userObj !== null) {
-      setBlockedContacts(contacts.filter((elem) => elem.blocked === true))
+      setBlockedContacts(contacts.filter((elem) =>
+        (elem.sender_id === user && elem.blocked_by_sender === true) ||
+        (elem.contact_id === user && elem.blocked_by_receiver === true)
+      ))
       
       // if(identityKey && signedPreKey) {
       //   decryptAllMessages();
@@ -1042,7 +1045,7 @@ export default function Home() {
       } 
     } else {
       setThemeChosen("Dark"); setThemeChosenPending("Dark")
-      setFontChosen("Sans"); setFontChosenPending("Dark")
+      setFontChosen("Sans"); setFontChosenPending("Sans")
       setIncomingSoundsEnabled(false); 
       setOutgoingMessagesSoundsEnabled(false); 
       setNotificationsEnabled(false); 
@@ -1183,12 +1186,12 @@ export default function Home() {
                                       ></DisappearingMessagesViewVertical>)
                                     :
             blockedContactsPressed ? (display === "Desktop" ? <BlockedContactsView userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
-                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                       setProfilePicPrivPress={setProfilePicPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
-                                      images={images} themeChosen={themeChosen}></BlockedContactsView> : <BlockedContactsViewVertical userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
-                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance} 
+                                      setDecryptedContacts={setDecryptedContacts} images={images} themeChosen={themeChosen}></BlockedContactsView> : <BlockedContactsViewVertical userObj={userObj} user={user} users={users} fetchUsers={fetchData} fetchContacts={fetchData2} setPressPrivacy={setPressPrivacy} setPressedSettings={setPressedSettings} blockedContacts={blockedContacts}
+                                      setBlockedContacts={setBlockedContacts} setPressAccount={setPressAccount} setPressNotifications={setPressNotifications} setPressAppearance={setPressAppearance}
                                       setProfilePicPrivPress={setProfilePicPrivPress} setPressProfile={setPressProfile} setStatusPrivPress={setStatusPrivPress} setDisappearingMessagesPressed={setDisappearingMessagesPressed} setBlockedContactsPressed={setBlockedContactsPressed}
-                                      images={images} themeChosen={themeChosen}></BlockedContactsViewVertical>)
+                                      setDecryptedContacts={setDecryptedContacts} images={images} themeChosen={themeChosen}></BlockedContactsViewVertical>)
                                     :
             
             curr_contact !== null && profileInfo === true && display === "Mobile" ? <ProfileInfoVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 

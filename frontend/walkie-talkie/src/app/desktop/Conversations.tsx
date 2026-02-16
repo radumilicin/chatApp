@@ -321,7 +321,7 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-bold flex-col justify-center items-start font-sans
                         bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl 2xl:text-3xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
@@ -766,7 +766,7 @@ export function Contacts( props: any) {
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
-                    var lastMessage, lastMessageGroup = null
+                    var lastMessage, lastMessageGroup, time, timeGroup = null
                     if(element.is_group) {
                         lastMessageGroup = getLastMessageGroup(element)  
                         if(lastMessageGroup.group_id !== null) {
@@ -775,9 +775,13 @@ export function Contacts( props: any) {
                     } else {
                         lastMessage = getLastMessage(element, idx)
                     }
-                    const time = lastMessage && lastMessage.timestamp
+                    time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
                     : "";
+                    timeGroup = lastMessageGroup && lastMessageGroup.timestamp
+                    ? lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    : "";
+
                     const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
 
                     // Define other_user BEFORE using it in JSX
@@ -874,7 +878,7 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xl:text-base
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xl:text-base 2xl:text-lg
                                             ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
                                             font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") || isBase64(lastMessage) ? "Image" : lastMessage.message}
@@ -882,17 +886,17 @@ export function Contacts( props: any) {
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm xl:text-base
                                         ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
-                                            ? <div className="flex flex-col"> 
-                                                <div className="">Sent</div>
-                                                <div className="">{time}</div>
-                                              </div> 
-                                            : <div className="flex flex-col">
-                                                <div className=""><br></br></div>
-                                                <div className="">{time}</div>
+                                            ? <div className="flex flex-col leading-tight">
+                                                <div>Sent</div>
+                                                <div>{time}</div>
+                                              </div>
+                                            : <div className="flex flex-col leading-tight">
+                                                <div><br></br></div>
+                                                <div>{time}</div>
                                               </div>
                                         }
                                     </div>
@@ -978,7 +982,7 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] h-full w-full text-sm xl:text-base
+                                            <div className={`indent-[10px] h-full w-full text-sm xl:text-base 2xl:text-lg
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
                                                 font-medium truncate transition-colors duration-300`}>
                                                 {element.message.length > 0 && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
@@ -986,17 +990,17 @@ export function Contacts( props: any) {
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-sm
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm xl:text-base
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
                                                 {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
-                                                    ?   <div className="flex flex-col"> 
-                                                            <div className="">Sent</div>
-                                                            <div className="">{lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
-                                                        </div> 
-                                                    :   <div className="flex flex-col">
-                                                            <div className=""><br></br></div>
-                                                            <div className="">{lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                    ?   <div className="flex flex-col leading-tight">
+                                                            <div>Sent</div>
+                                                            <div>{timeGroup}</div>
+                                                        </div>
+                                                    :   <div className="flex flex-col leading-tight">
+                                                            <div><br></br></div>
+                                                            <div>{timeGroup}</div>
                                                         </div>
                                                 }     
                                             </div>
