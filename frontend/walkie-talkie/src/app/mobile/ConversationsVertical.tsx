@@ -729,11 +729,29 @@ export function Contacts( props: any) {
             backdrop-blur-xl overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
-                    const lastMessage = getLastMessage(element, idx);
-                    const time = lastMessage && lastMessage.timestamp
+
+                    var lastMessage, lastMessageGroup, time, timeGroup = null
+                    if(element.is_group) {
+                        lastMessageGroup = getLastMessageGroup(element)  
+                        if(lastMessageGroup.group_id !== null) {
+                            console.log("last message for group looks like: " + JSON.stringify(lastMessageGroup) + `\n${props.curr_user}`)
+                        } 
+                    } else {
+                        lastMessage = getLastMessage(element, idx)
+                    }
+                    time = lastMessage && lastMessage.timestamp
                     ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
                     : "";
+                    timeGroup = lastMessageGroup && lastMessageGroup.timestamp
+                    ? lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    : "";
+
                     const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
+
+                    // Define other_user BEFORE using it in JSX
+                    const other_user = props.users.find((user) => ((user.id === element.sender_id && props.curr_user === element.contact_id) ||
+                                                                    (user.id === element.contact_id && props.curr_user === element.sender_id)));
+
 
                     return (
                     // this is the normal conversation (1 on 1)
@@ -888,7 +906,7 @@ export function Contacts( props: any) {
                                                     : ''}
                                                 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
                                                 h-[60%] w-[50%] transition-all duration-300 hover:scale-110`}>
-                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
+                                                {(element.message.length > 0 && lastMessageGroup && lastMessageGroup.sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div>
                                         </div>
                                     </div>
@@ -898,7 +916,7 @@ export function Contacts( props: any) {
                                             <div className={`indent-[10px] h-full w-full text-sm xsw:text-base
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
                                                 font-medium truncate transition-colors duration-300`}>
-                                                {element.message.length > 0 && (getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message}
+                                                {element.message.length > 0 && lastMessageGroup && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
                                             </div>
                                         </div>
                                         {/* Right time container */}
@@ -906,14 +924,14 @@ export function Contacts( props: any) {
                                             <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs xss:text-sm
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
-                                                {(element.message.length > 0 && getLastMessageGroup(element).sender_id === props.curr_user)
+                                                {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
                                                     ? <div className="flex flex-col">
                                                         <div className="">Sent</div>
-                                                        <div className="">{getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                        <div className="">{timeGroup}</div>
                                                       </div>
                                                     : <div className="flex flex-col">
                                                         <div className=""><br></br></div>
-                                                        <div className="">{getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)}</div>
+                                                        <div className="">{timeGroup}</div>
                                                       </div>
                                                 }
                                             </div>
@@ -1363,7 +1381,7 @@ export function Groups(props) {
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
                              className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-80 group-hover:opacity-100 transition-opacity"></img>
                     </div>
-                    <div className={`flex w-[80%] indent-[20px] h-full text-base xss:text-lg font-bold flex-row items-center font-sans
+                    <div className={`flex w-[80%] indent-[20px] h-full text-base xss:text-lg xsw:text-xl font-bold flex-row items-center font-sans
                         bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
                         Add group members
@@ -1429,7 +1447,7 @@ export function Groups(props) {
                 // this is the normal conversation (1 on 1)
                 <div
                     key={idx}
-                    className={`group/groupuser relative flex-none flex flex-row h-16 w-[96%] mt-2 top-0 overflow-hidden
+                    className={`group/groupuser relative flex-none flex flex-row h-[15%] w-[94%] mt-2 top-0 overflow-hidden
                         transition-all duration-300 rounded-xl hover:cursor-pointer
                         ${props.themeChosen === "Dark"
                             ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border border-cyan-500/10 hover:border-cyan-500/30"
@@ -1459,11 +1477,11 @@ export function Groups(props) {
                                  className="relative h-10 w-10 rounded-full opacity-80 group-hover/groupuseravatar:opacity-100 transition-all duration-300"></img>}
                     </div>
                     <div className="relative flex w-[85%] flex-col justify-center py-2">
-                        <div className={`flex text-sm xss:text-base font-sans font-semibold
+                        <div className={`flex text-sm xss:text-base xsw:text-lg font-sans font-semibold
                             ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                             {getNameUser2(element)}
                         </div>
-                        <div className={`flex text-xs xss:text-sm font-sans truncate
+                        <div className={`flex text-xs xss:text-sm xsw:text-base font-sans truncate
                             ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}`}>
                             {element.about}
                         </div>

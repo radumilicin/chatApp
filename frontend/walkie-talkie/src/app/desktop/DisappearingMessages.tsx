@@ -24,7 +24,7 @@ export default function DisappearingMessagesView(props: any) {
 
         const data = {
             'user': props.user,
-            'new_period': props.disappearingMessagesPeriod
+            'new_setting': props.disappearingMessagesPeriod
         }
 
         console.log("new period for disappearing messages: " + props.disappearingMessagesPeriod)

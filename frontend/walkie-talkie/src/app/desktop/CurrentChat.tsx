@@ -437,7 +437,7 @@ export default function CurrentChat( props: any ) {
     return (
         <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-r-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {/* Empty contact header - futuristic style */}
-            {!props.contact && (
+            {props.contact && (
                 <div
                     className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden hover:cursor-pointer
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl group transition-all duration-300" 
@@ -455,7 +455,7 @@ export default function CurrentChat( props: any ) {
             )}
 
             {/* Contact header - futuristic style */}
-            {props.contact && (
+            {props.contact !== null && (
                 <div
                     className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden flex flex-row
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300"
@@ -473,7 +473,7 @@ export default function CurrentChat( props: any ) {
                     </div> 
 
                     {/* Profile picture container */}
-                    <div className="relative flex w-[15%] h-full justify-center items-center z-10">
+                    <div className="relative flex w-[12%] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
@@ -504,7 +504,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -514,7 +514,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                    className="relative w-12 h-12 rounded-full object-cover
+                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full object-cover
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -526,12 +526,12 @@ export default function CurrentChat( props: any ) {
 
                     {/* Group contact info */}
                     {props.contact !== null && props.contact.is_group === true && (
-                        <div className="relative flex w-[85%] h-full flex-col justify-center pl-2 z-10">
+                        <div className="relative flex w-[88%] h-full flex-col justify-center pl-2 z-10 indent-[20px]">
                             {/* Group name */}
                             <div className="flex justify-start items-center">
                                 {props.contact !== null && (
                                     <div className="flex flex-col">
-                                        <div className={`text-lg xl:text-xl font-bold tracking-wide
+                                        <div className={`text-lg xl:text-xl 2xl:text-2xl font-bold tracking-wide
                                             bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                                             group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
                                             transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
@@ -542,24 +542,19 @@ export default function CurrentChat( props: any ) {
                             </div>
 
                             {/* Group members list */}
-                            <div className={`flex flex-row text-xs lg:text-sm xl:text-base truncate mt-1
+                            <div className={`flex flex-row text-sm lg:text-base xl:text-lg 2xl:text-xl truncate mt-1
                                 ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
                                 group-hover:text-cyan-200/90 transition-colors duration-300`}>
-                                {props.contact !== null && props.contact.members.map((ctc, idx) => (
-                                    <span key={ctc} className="inline-flex items-center">
-                                        {idx === 0 ? `${getUserWithId(ctc).username}, ` :
-                                         idx === props.contact.members.length - 1
-                                            ? <span><span>&nbsp;</span> {`${getUserWithId(ctc).username} ...`}</span>
-                                            : <span><span>&nbsp;</span> {`${getUserWithId(ctc).username}, `}</span>}
-                                    </span>
-                                ))}
+                                {props.contact !== null && props.contact.members.map((ctc) =>
+                                    getUserWithId(ctc).username
+                                ).join(", ") + " ..."}
                             </div>
                         </div>
                     )}
 
                     {/* Individual contact info */}
                     {props.contact !== null && props.contact.is_group === false && (
-                        <div className="relative flex w-[85%] h-full items-center pl-2 z-10">
+                        <div className="relative flex w-[85%] h-full items-center pl-2 z-10 indent-[20px]">
                             {props.contact !== null && (
                                 <div className={`text-lg lg:text-xl xl:text-2xl font-bold tracking-wide
                                     ${props.themeChosen === "Dark"
@@ -583,7 +578,7 @@ export default function CurrentChat( props: any ) {
                     </div>
                 </div>
             }
-            {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto pb-8 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
+            {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
                     filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);
@@ -758,7 +753,7 @@ export default function CurrentChat( props: any ) {
                         </div>
                     </div>
                     <div className={`relative left-0 flex basis-[80%] h-full`}>
-                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl lg:text-2xl
                                                                                                             ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} 
                             onKeyDown={(e) => { 

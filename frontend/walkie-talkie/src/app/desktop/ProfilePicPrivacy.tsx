@@ -22,7 +22,7 @@ export default function ProfilePicPrivacy(props: any) {
 
         const data = {
             'user': props.user,
-            'new_visibility': props.visibilityProfilePic
+            'new_setting': props.visibilityProfilePic
         }
 
         const resp = await fetch("http://localhost:3002/changeProfilePicVisibility", {

@@ -425,7 +425,7 @@ export default function CurrentChatVertical( props: any ) {
 
     return (
         <div className={`relative left-[0%] w-full top-[0%] h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
-            <div className={`absolute left-0 top-0 w-[100%] h-[15%] overflow-hidden flex flex-row
+            <div className={`absolute left-0 top-0 w-[100%] h-[12%] overflow-hidden flex flex-row
                 ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl" : "bg-gray-100/80 border-b border-gray-300"}
                 hover:cursor-pointer group transition-all duration-300
                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
@@ -474,7 +474,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                className="relative w-12 h-12 xsw:w-16 xsw:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-12 h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Profile"
                             /> :
@@ -490,7 +490,7 @@ export default function CurrentChatVertical( props: any ) {
                             <img
                                 key={props.contact?.group_pic_id || props.contact?.contact_id}
                                 src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                className="relative w-12 h-12 xsw:w-16 xsw:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                className="relative w-10 h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                          group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
                                 alt="Group"
                             /> : <></>
@@ -518,12 +518,11 @@ export default function CurrentChatVertical( props: any ) {
                             ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
                             group-hover:text-cyan-200/90 transition-colors duration-300`}>
                             {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
-                                <span key={ctc} className="inline-flex items-center">
-                                    {getUserWithId(ctc).username}
-                                    {idx < Math.min(props.contact.members.length, 3) - 1 && <span>,&nbsp;</span>}
+                                <span key={ctc}>
+                                    {getUserWithId(ctc).username}{idx < Math.min(props.contact.members.length, 3) - 1 ? ", " : ""}
                                 </span>
                             ))}
-                            {props.contact.members.length > 3 && <span><span>&nbsp;</span>..</span>}
+                            {props.contact.members.length > 3 && <span> ..</span>}
                         </div>
                     </div>
                 }
@@ -542,7 +541,7 @@ export default function CurrentChatVertical( props: any ) {
                     </div>
                 }
             </div>
-            <div className={`relative left-[2%] top-[18%] w-[96%] h-[70%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-8`}>
+            <div className={`relative left-[2%] top-[13%] w-[96%] h-[73%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-2`}>
                 {decryptedContact !== null && decryptedContact !== undefined && decryptedContact.hasOwnProperty("message") && 
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);
@@ -636,9 +635,9 @@ export default function CurrentChatVertical( props: any ) {
                     })}
                 <div ref={messagesEndRef} />
             </div>
-            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}></div>}
-            {props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center bg-transparent`}>
-                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-transparent border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
+            {!props.contact && <div className={`absolute left-0 top-[86%] h-[13%] w-full flex justify-center items-center bg-transparent`}></div>}
+            {props.contact && <div className={`absolute left-0 top-[86%] h-[13%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "transparent" : "bg-opacity-40 bg-transparent"}`}>
+                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
                             border-[1px] flex flex-row`}>
                     <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
                         {/* Wrapper for Image and Input */}
@@ -651,7 +650,7 @@ export default function CurrentChatVertical( props: any ) {
                                 />
                                 <input
                                     type="file" accept="image/*"
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-lg"
                                     onChange={(event) => {
                                         console.log("File input triggered");
                                         const file = event.target.files[0];
@@ -683,7 +682,7 @@ export default function CurrentChatVertical( props: any ) {
                         </div>
                     </div>
                     <div className={`relative left-0 flex basis-[80%] h-full`}>
-                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-base
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl
                                                                                                             ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
                             onKeyDown={(e) => {
