@@ -18,6 +18,7 @@ export default function CurrentChat( props: any ) {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
     const [decryptedContact, setDecryptedContact] = useState(null);
+    const prevMsgList = useRef(null)
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -393,6 +394,19 @@ export default function CurrentChat( props: any ) {
         }
     }, [props.contact, props.decryptedContacts])
 
+    function amOrPmTime( timestamp: string ) {
+        if(!timestamp.includes(":")) return ""
+
+        const time = timestamp.split(":")
+
+        if(parseInt(time[0]) >= 13) {
+            const new_hr = `${parseInt(time[0]) - 12}`
+            return `${new_hr}:${time[1]} pm`
+        } else {
+            return timestamp + " am"
+        }
+    }
+
     useEffect(() => {
         if(decryptedContact !== null && decryptedContact !== undefined) {
             console.log("===============================")
@@ -439,7 +453,7 @@ export default function CurrentChat( props: any ) {
             {/* Empty contact header - futuristic style */}
             {props.contact && (
                 <div
-                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden hover:cursor-pointer
+                    className={`absolute left-0 top-0 w-full h-[10%] rounded-tr-2xl overflow-hidden hover:cursor-pointer
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl group transition-all duration-300" 
                             : "bg-slate-200"} 
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
@@ -457,7 +471,7 @@ export default function CurrentChat( props: any ) {
             {/* Contact header - futuristic style */}
             {props.contact !== null && (
                 <div
-                    className={`absolute left-0 top-0 w-full h-[15%] rounded-tr-2xl overflow-hidden flex flex-row
+                    className={`absolute left-0 top-0 w-full h-[10%] rounded-tr-2xl overflow-hidden flex flex-row
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300"
                             : "bg-gray-100/80 border-b border-gray-300"}
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
@@ -473,7 +487,7 @@ export default function CurrentChat( props: any ) {
                     </div> 
 
                     {/* Profile picture container */}
-                    <div className="relative flex w-[12%] h-full justify-end items-center z-10">
+                    <div className="relative flex w-[10%] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
@@ -484,7 +498,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    className="relative w-8 h-18 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -494,7 +508,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -504,7 +518,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full
+                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -514,7 +528,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                    className="relative w-12 h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 rounded-full object-cover
+                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full object-cover
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -526,12 +540,12 @@ export default function CurrentChat( props: any ) {
 
                     {/* Group contact info */}
                     {props.contact !== null && props.contact.is_group === true && (
-                        <div className="relative flex w-[88%] h-full flex-col justify-center pl-2 z-10 indent-[20px]">
+                        <div className="relative flex w-[90%] h-full flex-col justify-center pl-2 z-10 indent-[10px]">
                             {/* Group name */}
-                            <div className="flex justify-start items-center">
+                            <div className="flex flex-row justify-start items-end h-1/2">
                                 {props.contact !== null && (
                                     <div className="flex flex-col">
-                                        <div className={`text-lg xl:text-xl 2xl:text-2xl font-bold tracking-wide
+                                        <div className={`text-lg xl:text-xl font-bold tracking-wide
                                             bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                                             group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
                                             transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
@@ -542,21 +556,20 @@ export default function CurrentChat( props: any ) {
                             </div>
 
                             {/* Group members list */}
-                            <div className={`flex flex-row text-sm lg:text-base xl:text-lg 2xl:text-xl truncate mt-1
-                                ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
-                                group-hover:text-cyan-200/90 transition-colors duration-300`}>
-                                {props.contact !== null && props.contact.members.map((ctc) =>
-                                    getUserWithId(ctc).username
-                                ).join(", ") + " ..."}
+                            <div className={`w-full h-1/2 items-start text-sm xl:text-base 3xl:text-lg truncate
+                                    ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
+                                    group-hover:text-cyan-200/90 transition-colors duration-300`}>
+                                    {props.contact !== null && props.contact.members.slice(0, 3).map((ctc) => getUserWithId(ctc).username).join(", ")}
+                                    {props.contact.members.length > 3 && " .."}
                             </div>
                         </div>
                     )}
 
                     {/* Individual contact info */}
                     {props.contact !== null && props.contact.is_group === false && (
-                        <div className="relative flex w-[85%] h-full items-center pl-2 z-10 indent-[20px]">
+                        <div className="relative flex w-[90%] h-full items-center pl-2 z-10 indent-[10px]">
                             {props.contact !== null && (
-                                <div className={`text-lg lg:text-xl xl:text-2xl font-bold tracking-wide
+                                <div className={`text-base lg:text-lg xl:text-xl font-bold tracking-wide
                                     ${props.themeChosen === "Dark"
                                         ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                         : "text-gray-900"}`}>
@@ -568,7 +581,7 @@ export default function CurrentChat( props: any ) {
                 </div>
             )}
             {!props.contact && 
-                <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" } justify-center items-center`}>
+                <div className={`relative left-[0%] top-[10%] w-[100%] h-[75%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent" } justify-center items-center`}>
                     <div className="absolute left-0 top-[30%] h-[40%] w-full flex flex-col justify-center items-center gap-4">
                         <img src={`${props.themeChosen === "Dark" ? "walkie-talkie-white.png" : "Walkie-talkie.png"}`} className="w-[200px] h-[200px]"></img>
                         <div className="flex flex-col justify-center items-center">
@@ -578,10 +591,15 @@ export default function CurrentChat( props: any ) {
                     </div>
                 </div>
             }
-            {props.contact && <div className={`relative left-[0%] top-[15%] w-[100%] h-[70%] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
+            {props.contact && <div className={`relative left-[0%] top-[10%] w-[100%] h-[75%] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
                     filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);
+
+                        let isSenderSame = false
+                        if(prevMsgList.current !== null) {
+                            isSenderSame = message.sender_id === prevMsgList.current.sender_id
+                        }
 
                         console.log(`DEBUG MESSAGE PRINT: ${JSON.stringify(message)}`)
 
@@ -609,6 +627,7 @@ export default function CurrentChat( props: any ) {
                                 });
                             }
                         };
+
                         
                         // Check if we need to show a date divider
                         const showDateDivider = idx === 0 ||
@@ -617,6 +636,7 @@ export default function CurrentChat( props: any ) {
                             new Date(filteredMessages[idx - 1].timestamp).toDateString());
 
                         
+                        prevMsgList.current = message
                         
                         return (
                 <div key={idx} className={`${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>
@@ -633,25 +653,21 @@ export default function CurrentChat( props: any ) {
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent" }`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 border-black flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-2 rounded-lg border-2 flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
                                         ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
                                         : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}
                             >
-                                <div className={`relative flex w-full text-sm lg:text-base xl:text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-2 items-start text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words">
-                                        {/* {
-                                            message.decrypted_message
-                                        } */}
-                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> : 
+                                {/* <div className={`relative flex w-full text-sm lg:text-base xl:text-lg text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div> */}
+                                <div className={`flex items-end gap-3 text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <span className="break-words min-w-0">
+                                        { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
-
-                                    </div>
-                                    <div className="text-xs whitespace-nowrap self-end">
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                    </div>
+                                    </span>
+                                    <span className="text-xs whitespace-nowrap shrink-0 ml-auto opacity-70 translate-y-1">
+                                        {amOrPmTime(message.timestamp.split("T")[1].split(".")[0].slice(0, 5))}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -661,16 +677,16 @@ export default function CurrentChat( props: any ) {
                                 className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
                                 style={{ borderColor: getUserColor(message.sender_id), boxShadow: `0 0 6px ${getUserColor(message.sender_id)}30` }}
                             >
-                                <div className="relative flex w-full text-sm lg:text-base xl:text-lg font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-2 items-start text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words">
+                                {!isSenderSame && <div className="text-sm lg:text-base xl:text-lg font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>}
+                                <div className={`flex items-end gap-3 text-sm lg:text-base xl:text-lg ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <span className="break-words min-w-0">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[300px] h-[300px]"  ></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[300px] h-[300px]"  ></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
-                                    </div>
-                                    <div className="text-xs whitespace-nowrap self-end">
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                    </div>
+                                    </span>
+                                    <span className="text-xs whitespace-nowrap shrink-0 ml-auto opacity-70 translate-y-1">
+                                        {amOrPmTime(message.timestamp.split("T")[1].split(".")[0].slice(0, 5))}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -690,7 +706,7 @@ export default function CurrentChat( props: any ) {
                 )}
                 <div ref={messagesEndRef} />
             </div>}
-            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}></div>}
+            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && !props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) && (
                 <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
                     <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-500"}`}>

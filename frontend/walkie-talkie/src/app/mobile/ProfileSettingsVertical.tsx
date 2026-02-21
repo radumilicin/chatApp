@@ -131,7 +131,7 @@ export default function ProfileSettings(props) {
     }, [currImageData])
 
     return (
-        <div className={`relative left-0 w-full top-0 h-full
+        <div className={`relative left-0 w-full top-0 h-full gap-6
             ${props.themeChosen === "Dark"
                 ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}
@@ -161,7 +161,7 @@ export default function ProfileSettings(props) {
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
                             className="w-5 h-5 aspect-square opacity-90" alt="Back" />
                     </div>
-                    <h1 className={`text-lg font-bold bg-gradient-to-r
+                    <h1 className={`text-xl xsw:text-2xl font-bold bg-gradient-to-r
                         ${props.themeChosen === "Dark"
                             ? "from-cyan-400 via-blue-400 to-cyan-300"
                             : "from-gray-700 to-gray-900"}
@@ -189,7 +189,7 @@ export default function ProfileSettings(props) {
                     {currImageData.data !== "" ? (
                         <img
                             src={`data:image/jpeg;base64,${currImageData.data}`}
-                            className={`relative w-36 h-36 z-10 rounded-full
+                            className={`relative w-60 h-60 z-10 rounded-full
                                 border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
                                 shadow-2xl shadow-cyan-500/20
                                 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -199,7 +199,7 @@ export default function ProfileSettings(props) {
                     ) : (
                         <img
                             src={`${props.themeChosen === "Dark" ? "./profilePic2.png" : "./userProfile2.png"}`}
-                            className={`relative w-36 h-36 z-10 rounded-full
+                            className={`relative w-60 h-60 z-10 rounded-full
                                 border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-400"}
                                 shadow-2xl shadow-cyan-500/20
                                 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -211,8 +211,8 @@ export default function ProfileSettings(props) {
                     {hoveredProfilePic && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-2">
                             <img src={`${props.themeChosen === "Dark" ? "./camera-white.png" : "./camera.png"}`}
-                                className="h-12 w-12" alt="Camera" />
-                            <p className={`font-medium text-xs text-center px-4
+                                className="h-16 w-16" alt="Camera" />
+                            <p className={`font-medium text-base text-center px-4
                                 ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"}`}>
                                 Change profile picture
                             </p>
@@ -258,7 +258,7 @@ export default function ProfileSettings(props) {
                 <div className="flex flex-col gap-6">
                     {/* Name Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-xs font-medium uppercase tracking-wide
+                        <label className={`text-base xsw:text-lg font-medium uppercase tracking-wide
                             ${props.themeChosen === "Dark"
                                 ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                                 : "text-gray-600"}`}>
@@ -266,13 +266,13 @@ export default function ProfileSettings(props) {
                         </label>
                         <div ref={divRef} className="flex items-center gap-3">
                             {stateUsername === "fixed" ? (
-                                <p className={`flex-1 text-base font-medium truncate
+                                <p className={`flex-1 text-base xsw:text-lg font-medium truncate
                                     ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>
                                     {getCurrUser().username}
                                 </p>
                             ) : (
                                 <input
-                                    className={`flex-1 text-base font-medium outline-none border-b-2 bg-transparent pb-1
+                                    className={`flex-1 text-base xsw:text-lg font-medium outline-none border-b-2 bg-transparent pb-1
                                         ${props.themeChosen === "Dark"
                                             ? "border-cyan-500 text-white focus:border-cyan-400"
                                             : "border-gray-800 text-gray-800"}`}
@@ -312,21 +312,21 @@ export default function ProfileSettings(props) {
 
                     {/* About Section */}
                     <div className="flex flex-col gap-2 py-4">
-                        <label className={`text-xs font-medium uppercase tracking-wide
+                        <label className={`text-base xsw:text-lg font-medium uppercase tracking-wide
                             ${props.themeChosen === "Dark"
                                 ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                                 : "text-gray-600"}`}>
                             About
                         </label>
-                        <div ref={divRef2} className="flex items-center gap-3">
+                        <div ref={divRef2} className="flex items-center gap-3 text-base">
                             {stateAbout === "fixed" ? (
-                                <p className={`flex-1 text-base font-medium truncate
+                                <p className={`flex-1 text-base xsw:text-lg font-medium truncate
                                     ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"}`}>
                                     {getCurrUser().about}
                                 </p>
                             ) : (
                                 <input
-                                    className={`flex-1 text-base font-medium outline-none border-b-2 bg-transparent pb-1
+                                    className={`flex-1 text-base xsw:text-lg font-medium outline-none border-b-2 bg-transparent pb-1
                                         ${props.themeChosen === "Dark"
                                             ? "border-cyan-500 text-white focus:border-cyan-400"
                                             : "border-gray-800 text-gray-800"}`}

@@ -73,7 +73,7 @@ export default function ProfilePicPrivacy(props: any) {
                 <div className="flex flex-col gap-6">
                     {/* Visibility Section */}
                     <div className="flex flex-col gap-4">
-                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xl:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Who can see your profile picture
                         </h2>
                         <div className="flex flex-col gap-[2px]">
@@ -118,7 +118,7 @@ function RadioOption(props: { label: string, selected: boolean, onClick: () => v
                     </>
                 )}
             </div>
-            <div className={`flex-1 text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+            <div className={`flex-1 text-base xl:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                 {props.label}
             </div>
         </div>

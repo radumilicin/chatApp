@@ -43,7 +43,7 @@ export default function ProfileInfoVertical( props ) {
             // console.log("Changing group name after change in profile")
             settingGroupName(props.contact.group_name)
             setDescriptionAsync(props.contact.group_description)
-            if(props.curr_user in props.contact.admins) setIsAdminAsync(true)
+            if(props.contact.admins.includes(props.curr_user)) setIsAdminAsync(true)
             else setIsAdminAsync(false)
         } else {
             setDescriptionAsync(getUser(props.contact).about)
@@ -114,7 +114,7 @@ export default function ProfileInfoVertical( props ) {
     }
 
     async function changeGroupName(contact: any, newName: string) {
-        if((contact !== null || contact !== undefined) && contact.is_group === true){
+        if((contact !== null && contact !== undefined) && contact.is_group === true){
             let message = {
                 id: contact.id,
                 newName: newName
@@ -129,6 +129,10 @@ export default function ProfileInfoVertical( props ) {
             try {
                 await fetch('http://localhost:3002/changeGroupName', requestParams)
                 await props.fetchContacts()
+                props.setDecryptedContacts((currArr) =>
+                    currArr.map(c => c.id === contact.id ? { ...c, group_name: newName } : c)
+                )
+                props.setCurrContact({ ...props.contact, group_name: newName })
             } catch(error) {
                 console.error(error)
             }
@@ -155,6 +159,10 @@ export default function ProfileInfoVertical( props ) {
         const response = await fetch(`http://localhost:3002/changeGroupDescription`, requestOptions)
         if(response.status === 200){
             await props.fetchContacts()
+            props.setDecryptedContacts((currArr) =>
+                currArr.map(c => c.id === props.contact.id ? { ...c, group_description: desc } : c)
+            )
+            props.setCurrContact({ ...props.contact, group_description: desc })
         } else {
             console.log("Could not change group description")
         }
@@ -194,7 +202,7 @@ export default function ProfileInfoVertical( props ) {
     }
 
     return (
-        <div className={`relative top-0 left-0 w-full h-full
+        <div className={`relative top-0 left-0 w-full h-full [container-type:size]
             ${props.themeChosen === "Dark"
                 ? "bg-gradient-to-b from-slate-900/95 via-gray-900/90 to-slate-900/95"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}
@@ -229,7 +237,7 @@ export default function ProfileInfoVertical( props ) {
                     </div>
                     <div className={`h-full flex w-[80%] flex-col justify-center items-start px-2
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]" : "text-black"}
-                        font-bold text-lg font-sans tracking-wide`}>
+                        font-bold text-lg xsw:text-2xl font-sans tracking-wide`}>
                         Contact info
                     </div>
                 </div>
@@ -254,7 +262,7 @@ export default function ProfileInfoVertical( props ) {
                                 src={getImage(props.contact).data.startsWith('data:image')
                                     ? `${getImage(props.contact).data}`
                                     : `data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -263,7 +271,7 @@ export default function ProfileInfoVertical( props ) {
                         ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group && getImage(props.contact).data) ? (
                             <img
                                 src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full h-[200px] w-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -272,7 +280,7 @@ export default function ProfileInfoVertical( props ) {
                         ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group) ? (
                             <img
                                 src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full h-[200px] w-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -281,7 +289,7 @@ export default function ProfileInfoVertical( props ) {
                         ) : (
                             <img
                                 src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                className={`relative cursor-pointer rounded-full max-w-[100%] max-h-[80%]
+                                className={`relative cursor-pointer rounded-full h-[200px] w-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
                                     shadow-2xl shadow-cyan-500/20
                                     group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
@@ -337,7 +345,7 @@ export default function ProfileInfoVertical( props ) {
                         {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ?
                             (<input
                                 value={nameGroup}
-                                className={`flex flex-row justify-center items-center text-lg
+                                className={`flex flex-row justify-center items-center text-lg xsw:text-2xl
                                     ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
                                     font-bold font-sans h-full w-full outline-none overflow-x-auto
                                     border-b-2 bg-transparent border-cyan-500
@@ -358,12 +366,12 @@ export default function ProfileInfoVertical( props ) {
                                 placeholder={getNameContact(props.contact)}>
                             </input>)
                             :
-                            <div className={`flex flex-row justify-center items-center text-xl
-                                font-bold font-sans h-full w-full tracking-wide ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                            <div className={`flex flex-row justify-center items-center text-xl xsw:text-2xl
+                                font-bold font-sans h-full w-full tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
                                     : "text-black"}`}>
                                 {getNameContact(props.contact)}
                             </div>)
-                            : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
+                            : <div className="flex flex-row justify-center items-center text-xl text-black font-medium font-sans h-full w-full"></div>}
 
                         {/* Edit button */}
                         <div className="absolute flex flex-row justify-center items-center h-full right-0 w-[15%]" onClick={() => {(settingOppositeNameChangeGroup())}}>
@@ -446,7 +454,7 @@ function AboutProfile(props) {
             border-y-[1px] backdrop-blur-sm`}>
 
             {/* About Title */}
-            <div className={`flex text-base px-6 h-[60%] w-full font-bold font-sans items-center
+            <div className={`flex px-6 h-[60%] w-full font-bold font-sans items-center text-xl
                 ${props.themeChosen === "Dark"
                     ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                     : "text-gray-800"}`}>
@@ -455,7 +463,7 @@ function AboutProfile(props) {
 
             {/* About Content */}
             <div ref={divRef} className="flex flex-row px-6 h-[40%] w-full font-sans items-center justify-center">
-                <div className={`flex flex-row w-[90%] h-full items-start justify-start text-sm
+                <div className={`flex flex-row w-[90%] h-full items-start justify-start text-base xsw:text-lg
                     ${props.themeChosen === "Dark" ? "text-cyan-100/80" : "text-gray-700"}
                     ${props.contact.is_group && props.contact.admins.includes(props.curr_user) ? "hover:cursor-pointer" : ""}
                     ${props.descriptionPressed ? 'ml-2' : ''}
@@ -478,7 +486,7 @@ function AboutProfile(props) {
                                        value={props.description}
                                        className={`w-[98%] outline-none bg-transparent border-b-2 border-cyan-500
                                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                           font-sans text-sm px-2
+                                           font-sans text-base xsw:text-lg px-2
                                            focus:border-cyan-400 transition-all placeholder:text-cyan-400/50`}
                                        onChange={(e) => {
                                           props.setDescriptionAsync(e.target.value)
@@ -651,7 +659,7 @@ function Members(props) {
             overflow-scroll scrollbar-hide border-b-[1px]`}>
 
             {/* Add Member Button */}
-            {props.contact.admins.includes(props.curr_user) && <div className={`relative flex h-[80px] w-full flex-row px-4 group
+            {props.contact.admins.includes(props.curr_user) && <div className={`relative flex min-h-[12.5cqh] w-full flex-row items-center px-4 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/20"
@@ -662,12 +670,12 @@ function Members(props) {
                 <div className="flex w-[20%] h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/30 to-cyan-400/30 blur-md group-hover:blur-lg transition-all" />
-                        <img src="./addFrendo.png" className="relative w-10 h-10 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
+                        <img src="./addFrendo.png" className="relative w-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
                     </div>
                 </div>
 
                 <div className="flex w-[80%] h-full items-center">
-                    <div className={`text-base font-sans font-bold
+                    <div className={`text-lg xsw:text-xl font-sans font-bold
                         bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent
                         group-hover:from-green-300 group-hover:to-cyan-300 transition-all`}>
                         Add member
@@ -687,7 +695,7 @@ function Members(props) {
                 if (!aIsAdmin && bIsAdmin) return 1;
                 return 0;
             }).map((id, idx) => (
-            <div key={idx} className={`relative flex h-[80px] w-full flex-row px-4 group
+            <div key={idx} className={`relative flex min-h-[12.5cqh] w-full flex-row items-center px-4 group
                 transition-all duration-300 cursor-pointer select-none
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/10"
@@ -701,23 +709,23 @@ function Members(props) {
                         {(getProfilePic(getUser(id)).data !== "") ?
                             <img
                                 src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
                             /> :
                             <img
                                 src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                className="relative w-10 h-10 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
                             />
                         }
                     </div>
                 </div>
 
                 <div className="flex w-[55%] h-full flex-col justify-center py-3">
-                    <div className={`flex flex-row text-sm xsw:text-base font-sans font-semibold items-center
+                    <div className={`flex flex-row text-lg xsw:text-xl font-sans font-semibold items-center
                         ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                         {getUser(id).username}
-                        {props.curr_user === id && <span className={`text-xs xsw:text-sm ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
+                        {props.curr_user === id && <span className={`text-lg xsw:text-xl ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
                     </div>
-                    <div className={`flex text-xs xsw:text-sm font-sans
+                    <div className={`flex text-base xsw:text-lg font-sans
                         ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}
                         truncate`}>
                         {getUser(id).about}
@@ -728,7 +736,7 @@ function Members(props) {
                 {(props.contact.admins.includes(id)) &&
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center
                         px-2 py-1 bg-gradient-to-r from-green-500/90 to-cyan-500/90 rounded-full
-                        text-white text-xs font-bold shadow-lg">
+                        text-white text-sm xsw:text-base font-bold shadow-lg">
                         Admin
                     </div>
                 }
@@ -755,8 +763,8 @@ function Members(props) {
                                         );
                                         if (contact) props.setCurrContact(contact);
                                     }}>
-                                    <CgProfile className="w-4 h-4 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
-                                    <span className="text-xs font-medium">View profile</span>
+                                    <CgProfile className="w-5 h-5 xsw:w-6 xsw:h-6 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                                    <span className="text-sm xsw:text-base font-medium">View profile</span>
                                 </div>
                         }
 
@@ -768,8 +776,8 @@ function Members(props) {
                                 : "hover:bg-gray-100 text-gray-800"}
                             border-b ${props.themeChosen === "Dark" ? "border-cyan-500/20" : "border-gray-200"}`}
                             onClick={() => {makeAdmin(id)}}>
-                            <GrUserAdmin className="w-4 h-4 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
-                            <span className="text-xs font-medium">Make admin</span>
+                            <GrUserAdmin className="w-5 h-5 xsw:w-6 xsw:h-6 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                            <span className="text-sm xsw:text-base font-medium">Make admin</span>
                         </div> }
 
                         { props.contact.admins.includes(props.curr_user) && !props.contact.admins.includes(id) &&
@@ -779,8 +787,8 @@ function Members(props) {
                                 ? "hover:bg-red-500/20 text-red-400"
                                 : "hover:bg-red-50 text-red-600"}`}
                             onClick={() => {kickFromGroup(id)}}>
-                            <CiCircleRemove className="w-4 h-4 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
-                            <span className="text-xs font-medium">Remove user</span>
+                            <CiCircleRemove className="w-5 h-5 xsw:w-6 xsw:h-6 flex-shrink-0 opacity-80 group-hover/menu:opacity-100 transition-opacity" />
+                            <span className="text-sm xsw:text-base font-medium">Remove user</span>
                         </div> }
                     </div>
                 }
@@ -831,7 +839,7 @@ function OptionsGroup(props) {
                 : "bg-gray-100/30"}
             overflow-scroll scrollbar-hide`}>
 
-            <div className={`flex h-[100px] w-full flex-row px-4 group
+            <div className={`flex min-h-[12.5cqh] w-full flex-row items-center px-4 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20"
@@ -842,12 +850,12 @@ function OptionsGroup(props) {
                 <div className="flex w-[20%] h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 blur-md group-hover:blur-lg transition-all" />
-                        <img src="./exitIcon.png" className="relative w-10 h-10 opacity-90 group-hover:scale-110 transition-all" />
+                        <img src="./exitIcon.png" className="relative w-10 h-10 xsw:w-12 xsw:h-12 opacity-90 group-hover:scale-110 transition-all" />
                     </div>
                 </div>
 
                 <div className="flex w-[80%] h-full items-center">
-                    <div className={`text-base font-sans font-bold
+                    <div className={`text-lg xsw:text-xl font-sans font-bold
                         bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent
                         group-hover:from-red-400 group-hover:to-orange-400 transition-all`}>
                         Exit group
@@ -962,7 +970,7 @@ function OptionsChat(props) {
             {((props.contact.sender_id === props.curr_user && props.contact.blocked_by_sender === false) ||
                 (props.contact.contact_id === props.curr_user && props.contact.blocked_by_receiver === false))
                 && (
-                <div className={`flex flex-row w-full h-[80px] px-4 group
+                <div className={`flex flex-row items-center w-full min-h-[12.5cqh] px-4 group
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
                         ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20 border-b border-cyan-500/10"
@@ -989,7 +997,7 @@ function OptionsChat(props) {
             {((props.contact.sender_id === props.curr_user && props.contact.blocked_by_sender === true) ||
                 (props.contact.contact_id === props.curr_user && props.contact.blocked_by_receiver === true))
                 && (
-                <div className={`flex flex-row w-full h-[80px] px-4 group
+                <div className={`flex flex-row items-center w-full min-h-[12.5cqh] px-4 group
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
                         ? "hover:bg-green-500/10 hover:shadow-lg hover:shadow-green-500/20 border-b border-cyan-500/10"
@@ -1015,7 +1023,7 @@ function OptionsChat(props) {
             )}
 
             {/* Delete Chat */}
-            <div className={`flex flex-row w-full h-[80px] px-4 group
+            <div className={`flex flex-row items-center w-full min-h-[12.5cqh] px-4 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-red-500/15 hover:shadow-lg hover:shadow-red-500/30"

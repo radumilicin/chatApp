@@ -11,15 +11,6 @@ export default function Privacy(props: any) {
                             onClick={() => {
                                 props.setPressedSettings(true)
                                 props.setPressPrivacy(false)
-                                // props.setPressNotifications(false)
-                                // props.setPressAccount(false)
-                                // props.setPressProfile(false)
-                                // props.setPressAppearance(false)
-                                // props.setPressedSettings(false)
-                                // props.setProfilePicPrivPress(false)
-                                // props.setStatusPrivPress(false)
-                                // props.setDisappearingMessagesPressed(false)
-                                // props.setBlockedContactsPressed(false)
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "back_image_black.png"}`} className="w-6 h-6 aspect-square opacity-90" alt="Back" />
                     </div>
@@ -34,7 +25,7 @@ export default function Privacy(props: any) {
                 <div className="flex flex-col gap-6">
                     {/* Personal Info Section */}
                     <div className="flex flex-col gap-3">
-                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xl:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Personal Information
                         </h2>
                         <ProfilePicturePrivacy setProfilePicPrivPress={props.setProfilePicPrivPress} setPressPrivacy={props.setPressPrivacy} visibilityProfilePic={props.visibilityProfilePic} themeChosen={props.themeChosen}></ProfilePicturePrivacy>
@@ -43,7 +34,7 @@ export default function Privacy(props: any) {
 
                     {/* Messages Section */}
                     <div className="flex flex-col gap-3">
-                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xl:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Messages
                         </h2>
                         <DisappearingMessages disappearingMessagesPeriod={props.disappearingMessagesPeriod} setDisappearingMessagesPressed={props.setDisappearingMessagesPressed}
@@ -53,7 +44,7 @@ export default function Privacy(props: any) {
 
                     {/* Blocked Section */}
                     <div className="flex flex-col gap-3">
-                        <h2 className={`text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xl:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Blocked
                         </h2>
                         <BlockedContacts blockedContacts={props.blockedContacts} setBlockedContactsPressed={props.setBlockedContactsPressed} setPressPrivacy={props.setPressPrivacy} themeChosen={props.themeChosen}></BlockedContacts>
@@ -72,10 +63,10 @@ export function ProfilePicturePrivacy(props: any) {
             onClick={() => {props.setProfilePicPrivPress(true); props.setPressPrivacy(false)}}
         >
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xl:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Profile picture
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     {props.visibilityProfilePic}
                 </div>
             </div>
@@ -97,10 +88,10 @@ export function StatusPrivacy(props: any) {
             onClick={() => {props.setStatusPrivPress(true); props.setPressPrivacy(false)}}
         >
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xl:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Status
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     {props.visibilityStatus}
                 </div>
             </div>
@@ -126,10 +117,10 @@ export function DisappearingMessages(props: any) {
             onClick={() => {props.setDisappearingMessagesPressed(true); props.setPressPrivacy(false)}}
         >
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xl:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Default duration
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     {props.disappearingMessagesPeriod === -1 ? "Off" : props.disappearingMessagesPeriod}
                 </div>
             </div>
@@ -150,10 +141,10 @@ export function BlockedContacts(props: any) {
             onClick={() => {props.setBlockedContactsPressed(true); props.setPressPrivacy(false);}}
         >
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xl:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Blocked contacts
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     {props.blockedContacts.length} {props.blockedContacts.length === 1 ? "contact" : "contacts"}
                 </div>
             </div>

@@ -425,7 +425,7 @@ export default function CurrentChatVertical( props: any ) {
 
     return (
         <div className={`relative left-[0%] w-full top-[0%] h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
-            <div className={`absolute left-0 top-0 w-[100%] h-[12%] overflow-hidden flex flex-row
+            <div className={`absolute left-0 top-0 w-[100%] h-[10%] overflow-hidden flex flex-row
                 ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl" : "bg-gray-100/80 border-b border-gray-300"}
                 hover:cursor-pointer group transition-all duration-300
                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
@@ -443,105 +443,105 @@ export default function CurrentChatVertical( props: any ) {
                 </div>
 
                 {/* Back button */}
-                <div className="relative flex flex-row w-[8%] h-[100%] justify-center items-center z-10" onClick={(e) => {
+                <div className="relative flex flex-row w-[5%] h-full justify-start items-center z-10 ml-2" onClick={(e) => {
                         e.stopPropagation();
                         if (props.setCurrContact) {
                             props.setCurrContact(null)
                         }
                     }}>
-                    <div className={`flex w-8 h-8 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"}`}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 object-contain`}></img>
+                    <div className={`flex w-10 h-10 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/20" : "hover:bg-gray-300/50"}`}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`w-5 h-5 xsw:w-6 xsw:h-6 object-contain`}></img>
                     </div>
                 </div>
+                <div className="relative flex flex-row w-[95%] h-full">
+                    {/* Profile picture container */}
+                    <div className="relative flex w-[15%] h-full justify-end items-center z-10">
+                        <div className="relative group/avatar">
+                            {/* Glowing ring around avatar */}
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
 
-                {/* Profile picture container */}
-                <div className="relative flex w-[12%] h-full justify-center items-center z-10">
-                    <div className="relative group/avatar">
-                        {/* Glowing ring around avatar */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
-                                        blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
-
-                        {/* Avatar image */}
-                        {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
-                            <img
-                                key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className="relative w-10 h-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
-                                alt="Profile"
-                            /> :
-                            (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
-                            <img
-                                key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                className="relative w-12 h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
-                                alt="Profile"
-                            /> :
-                         (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
-                            <img
-                                key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                className="relative w-10 h-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
-                                alt="Group"
-                            /> :
-                            (props.contact !== null && props.contact.is_group === true) ?
-                            <img
-                                key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                className="relative w-10 h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                         group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
-                                alt="Group"
-                            /> : <></>
-                        }
+                            {/* Avatar image */}
+                            {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                    className="relative w-10 h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    alt="Profile"
+                                /> :
+                                (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
+                                    className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    alt="Profile"
+                                /> :
+                            (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
+                                    className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    alt="Group"
+                                /> :
+                                (props.contact !== null && props.contact.is_group === true) ?
+                                <img
+                                    key={props.contact?.group_pic_id || props.contact?.contact_id}
+                                    src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
+                                    className="relative w-8 h-8 xss:w-10 xss:h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    alt="Group"
+                                /> : <></>
+                            }
+                        </div>
                     </div>
-                </div>
+                    {/* Group contact info */}
+                    {props.contact !== null && props.contact.is_group === true &&
+                        <div className="relative flex flex-col w-[75%] h-full justify-center pl-1 z-10">
+                            {/* Group name */}
+                            <div className="flex items-center">
+                                {props.contact !== null && (
+                                    <div className={`text-base xss:text-lg xsw:text-xl font-bold tracking-wide indent-[5px] xss:indent-[10px]
+                                        ${props.themeChosen === "Dark"
+                                            ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                                            : "text-gray-900"}`}>
+                                        {getNameContact(props.contact)}
+                                    </div>
+                                )}
+                            </div>
 
-                {/* Group contact info */}
-                {props.contact !== null && props.contact.is_group === true &&
-                    <div className="relative flex w-[75%] h-full flex-col justify-center pl-2 z-10">
-                        {/* Group name */}
-                        <div className="flex justify-start items-center">
+                            {/* Group members list */}
+                            <div className={`text-sm xss:text-base truncate indent-[5px] xss:indent-[10px]
+                                ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
+                                group-hover:text-cyan-200/90 transition-colors duration-300`}>
+                                {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
+                                    <span key={ctc}>
+                                        {getUserWithId(ctc).username}{idx < Math.min(props.contact.members.length, 3) - 1 ? ", " : ""}
+                                    </span>
+                                ))}
+                                {props.contact.members.length > 3 && <span> ..</span>}
+                            </div>
+                        </div>
+                    }
+
+                    {/* Individual contact info */}
+                    {props.contact !== null && props.contact.is_group === false &&
+                        <div className="relative flex flex-row w-[75%] h-full justify-begin items-center pl-1 z-10">
                             {props.contact !== null && (
-                                <div className={`text-base xss:text-lg xsw:text-xl font-bold tracking-wide
+                                <div className={`text-lg xss:text-xl font-bold tracking-wide indent-[5px] xss:indent-[10px]
                                     ${props.themeChosen === "Dark"
-                                        ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                                        ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                         : "text-gray-900"}`}>
                                     {getNameContact(props.contact)}
                                 </div>
                             )}
                         </div>
-
-                        {/* Group members list */}
-                        <div className={`flex flex-row text-xs xss:text-base xsw:text-lg truncate mt-1
-                            ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
-                            group-hover:text-cyan-200/90 transition-colors duration-300`}>
-                            {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
-                                <span key={ctc}>
-                                    {getUserWithId(ctc).username}{idx < Math.min(props.contact.members.length, 3) - 1 ? ", " : ""}
-                                </span>
-                            ))}
-                            {props.contact.members.length > 3 && <span> ..</span>}
-                        </div>
-                    </div>
-                }
-
-                {/* Individual contact info */}
-                {props.contact !== null && props.contact.is_group === false &&
-                    <div className="relative flex w-[75%] h-full items-center pl-2 z-10">
-                        {props.contact !== null && (
-                            <div className={`text-lg xss:text-xl xsw:text-2xl font-bold tracking-wide
-                                ${props.themeChosen === "Dark"
-                                    ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
-                                    : "text-gray-900"}`}>
-                                {getNameContact(props.contact)}
-                            </div>
-                        )}
-                    </div>
-                }
+                    }
+                </div>
             </div>
-            <div className={`relative left-[2%] top-[13%] w-[96%] h-[73%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-2`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[76%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-2`}>
                 {decryptedContact !== null && decryptedContact !== undefined && decryptedContact.hasOwnProperty("message") && 
                     decryptedContact.message.map((message, idx) => {
                         // console.log("message =", message);

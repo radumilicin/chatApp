@@ -23,15 +23,10 @@ export default function SettingsView(props) {
                 <div className={`relative left-[2%] w-[8%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
                         onClick={() => {
                             props.setPressedSettings(false);
-                            // props.setPressProfile(false);
-                            // props.setProfilePicPrivPress(false);
-                            // props.setStatusPrivPress(false);
-                            // props.setDisappearingMessagesPressed(false);
-                            // props.setBlockedContactsPressed(false);
                         }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className={`justify-center items-center w-6 h-6 aspect-square opacity-90`}></img>
                     </div>
-                <div className={`relative indent-[20px] left-[2%] w-[40%] text-xl xl:text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent font-sans flex flex-row justify-start items-center`}>Settings</div>
+                <div className={`relative indent-[20px] left-[2%] w-[40%] text-2xl 2xl:text-3xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent font-sans flex flex-row justify-start items-center`}>Settings</div>
             </div>
 
             <SearchBar searchedSetting={searchedSettings} setSearchedSetting={setSearchedSetting} themeChosen={props.themeChosen}></SearchBar>
@@ -116,10 +111,10 @@ export function CurrUserDiv (props: any) {
             <div className="flex-1 flex flex-col gap-1 min-w-0">
                 {user && (
                     <>
-                        <div className={`text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight truncate`}>
+                        <div className={`text-lg 2xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight truncate`}>
                             {user.username}
                         </div>
-                        <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium truncate`}>
+                        <div className={`text-sm 2xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium truncate`}>
                             {user.about}
                         </div>
                     </>
@@ -151,10 +146,10 @@ export function PrivacyOption(props: any) {
                 <img src="./lock-icon.svg" className={`w-6 h-6 transition-all group-hover:scale-110 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Privacy" />
             </div>
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-lg 2xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Privacy
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm 2xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Blocked contacts, disappearing messages
                 </div>
             </div>
@@ -186,10 +181,10 @@ export function AppearanceOption( props: any ){
                 <img src="./appearance-icon.svg" className={`w-6 h-6 transition-all group-hover:scale-110 group-hover:rotate-45 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Appearance" />
             </div>
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-lg 2xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Appearance
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm 2xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Customize themes and visual settings
                 </div>
             </div>
@@ -220,10 +215,10 @@ export function NotificationsOption( props: any ){
                 <img src="./notification_1.png" className={`w-6 h-6 transition-all group-hover:scale-110 group-hover:rotate-12 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Notifications" />
             </div>
             <div className="flex-1 flex flex-col gap-1">
-                <div className={`text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-lg 2xl:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Notifications
                 </div>
-                <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-sm 2xl:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Control message and sound alerts
                 </div>
             </div>
@@ -256,10 +251,10 @@ export function LogOutOption( props: any ){
                 <img src="exitIcon.png" className="w-6 h-6 opacity-90 transition-all group-hover:scale-110" alt="Log out" />
             </div>
             <div className="flex-1 flex flex-col gap-1">
-                <div className="text-lg font-semibold text-red-500 tracking-tight">
+                <div className="text-lg 2xl:text-xl font-semibold text-red-500 tracking-tight">
                     Log out
                 </div>
-                <div className="text-sm text-red-400 font-medium">
+                <div className="text-sm 2xl:text-base text-red-400 font-medium">
                     Sign out of your account
                 </div>
             </div>
@@ -280,10 +275,10 @@ export function SearchBar( props : any ) {
         <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
             <div className={`relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-xl border ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"} `}></img>
+                    <div className='relative left-0 top-0 w-[10%] h-full flex flex-row justify-center items-center'>
+                        <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"} `}></img>
                     </div>
-                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start'>
+                    <div className='relative left-[2%] top-0 w-[88%] h-full flex flex-col justify-center items-start'>
                         <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent px-2 overflow-x-auto text-base lg:text-lg xl:text-xl ${props.themeChosen === "Dark" ? 'text-white placeholder:text-gray-400' : 'text-gray-800 placeholder:text-gray-500'}`}
                             value={props.searchedSetting}
                             placeholder="Search settings..."

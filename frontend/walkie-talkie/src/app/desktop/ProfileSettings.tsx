@@ -247,17 +247,17 @@ export default function ProfileSettings(props) {
                 <div className="flex flex-col gap-8">
                     {/* Name Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
+                        <label className={`text-sm xl:text-base font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
                             Name
                         </label>
                         <div ref={divRef} className="flex items-center gap-3">
                             {stateUsername === "fixed" ? (
-                                <p className={`flex-1 text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} truncate`}>
+                                <p className={`flex-1 text-base xl:text-lg font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}>
                                     {getCurrUser().username}
                                 </p>
                             ) : (
                                 <input
-                                    className={`flex-1 text-lg font-medium outline-none border-b-2 ${props.themeChosen === "Dark" ? "border-[#3B7E9B] text-white" : "border-gray-800 text-gray-800"} bg-transparent pb-1`}
+                                    className={`flex-1 text-base xl:text-lg font-medium outline-none border-b-2 ${props.themeChosen === "Dark" ? "border-[#3B7E9B] text-white" : "border-gray-800 text-gray-800"} bg-transparent pb-1`}
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     onKeyDown={(e) => {
@@ -290,17 +290,17 @@ export default function ProfileSettings(props) {
 
                     {/* About Section */}
                     <div className="flex flex-col gap-2">
-                        <label className={`text-sm font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
+                        <label className={`text-sm xl:text-base font-medium ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "text-gray-600 bg-transparent"} uppercase tracking-wide`}>
                             About
                         </label>
                         <div ref={divRef2} className="flex items-center gap-3">
                             {stateAbout === "fixed" ? (
-                                <p className={`flex-1 text-base font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} truncate`}>
+                                <p className={`flex-1 text-base xl:text-lg font-medium ${props.themeChosen === "Dark" ? "text-white" : "text-gray-800"} overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}>
                                     {getCurrUser().about}
                                 </p>
                             ) : (
                                 <input
-                                    className={`flex-1 text-base font-medium outline-none border-b-2 ${props.themeChosen === "Dark" ? "border-[#3B7E9B] text-white" : "border-gray-800 text-gray-800"} bg-transparent pb-1`}
+                                    className={`flex-1 text-base xl:text-lg font-medium outline-none border-b-2 ${props.themeChosen === "Dark" ? "border-[#3B7E9B] text-white" : "border-gray-800 text-gray-800"} bg-transparent pb-1`}
                                     value={about}
                                     onChange={(e) => setAbout(e.target.value)}
                                     onKeyDown={(e) => {
