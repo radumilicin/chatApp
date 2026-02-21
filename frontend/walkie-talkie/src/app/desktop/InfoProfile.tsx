@@ -208,7 +208,7 @@ export default function ProfileInfo(props) {
     }
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] border-[1px] [container-type:size]
+        <div className={`flex-1 min-w-0 h-full border-[1px] [container-type:size]
             ${props.themeChosen === "Dark"
                 ? "bg-gradient-to-b from-slate-900/95 via-gray-900/90 to-slate-900/95"
                 : "bg-gradient-to-b from-gray-100 to-gray-200"}

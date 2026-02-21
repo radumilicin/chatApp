@@ -81,6 +81,17 @@ export default function Conversations( props : any) {
         }
         }
 
+    function amOrPmTime(timestamp: string) {
+        if (!timestamp.includes(":")) return ""
+        const time = timestamp.split(":")
+        if (parseInt(time[0]) >= 13) {
+            const new_hr = `${parseInt(time[0]) - 12}`
+            return `${new_hr}:${time[1]} pm`
+        } else {
+            return timestamp + " am"
+        }
+    }
+
     function getUserWithId(contact: any) {
         const user = props.users.find((user) => user.id === contact.contact_id);
         return user ? user : {};
@@ -200,7 +211,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`relative left-[8%] w-[30%] top-[5%] h-[90%] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`shrink-0 w-[30%] min-w-[400px] max-w-[500px] h-full min-h-[600px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {props.newGroupPress && <Groups setNewGroupPress={props.setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
@@ -309,8 +320,8 @@ export function MenuDropdown (props) {
 
 export function OtherOptions (props) {
     return (
-        <div className={`absolute left-0 top-0 h-[7.5%] w-[98%] flex flex-row items-center`}>
-            {props.addContact && <div className={`group relative left-[2%] w-[8%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
+        <div className={`absolute left-0 top-0 h-[6.5%] min-w-[50px] w-[98%] flex flex-row items-center`}>
+            {props.addContact && <div className={`group relative left-[2%] w-[8%] h-[90%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
                                     transition-all duration-300 rounded-xl hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
                                         ? "hover:bg-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/30"
@@ -338,23 +349,17 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-0 top-[7.5%] h-[12%] w-full`}>
-            <div className={`group relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl overflow-hidden
-                transition-all duration-300
-                ${props.themeChosen === "Dark"
-                    ? "border-2 border-slate-700/50 bg-slate-800/60 focus-within:border-[#3B7E9B] focus-within:shadow-[0_0_12px_rgba(59,126,155,0.4)]"
-                    : "border-2 border-gray-300 bg-gray-100 focus-within:border-[#3B7E9B]"}
-                backdrop-blur-sm`}>
+        <div className={`absolute left-0 top-[6.5%] h-[10%] w-full min-h-[80px]`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[65%] rounded-xl border ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[15%] xl:w-[12%] h-full flex flex-col justify-center items-center'>
-                        <img className='absolute w-7 h-7 xl:w-8 xl:h-8 opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110'
-                        src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                    <div className='relative left-0 top-0 w-[10%] h-full flex flex-row justify-center items-center'>
+                        <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                     </div>
-                    <div className='relative left-[2%] top-0 w-[83%] xl:w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg  font-medium
-                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
+                    <div className='relative left-[2%] top-0 w-[88%] h-full flex flex-col justify-center items-start'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent px-2 overflow-x-auto text-base lg:text-lg xl:text-xl
+                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
                             value={props.currentSearch}
-                            placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`} // replace later
+                            placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`}
                             onChange={async (e) => {props.setCurrSearch(e.target.value);
                                                     if(props.addContact) {
                                                         console.log("Filtering users in Search")
@@ -362,7 +367,7 @@ export function SearchBar( props : any ) {
                                                     }
                                                     else {
                                                         props.filterContacts(e.target.value)
-                                                    }}} // Update `currentSearch`
+                                                    }}}
                         >
                         </input>
                     </div>
@@ -574,6 +579,17 @@ export function Contacts( props: any) {
 
     const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
+    function amOrPmTime(timestamp: string) {
+        if (!timestamp.includes(":")) return ""
+        const time = timestamp.split(":")
+        if (parseInt(time[0]) >= 13) {
+            const new_hr = `${parseInt(time[0]) - 12}`
+            return `${new_hr}:${time[1]} pm`
+        } else {
+            return timestamp + " am"
+        }
+    }
+
     const groupRef = useRef(null);
     const prevContact = useRef(null);
 
@@ -762,7 +778,7 @@ export function Contacts( props: any) {
 
 
     return (
-        <div className={`absolute left-0 top-[19.5%] w-full h-[80.5%] flex flex-col overflow-hidden`}>
+        <div className={`absolute left-0 top-[17.5%] w-full h-[82.5%] flex flex-col overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
@@ -776,10 +792,10 @@ export function Contacts( props: any) {
                         lastMessage = getLastMessage(element, idx)
                     }
                     time = lastMessage && lastMessage.timestamp
-                    ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    ? amOrPmTime(lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5))
                     : "";
                     timeGroup = lastMessageGroup && lastMessageGroup.timestamp
-                    ? lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    ? amOrPmTime(lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5))
                     : "";
 
                     const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
@@ -793,7 +809,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`group/contact relative flex-none flex flex-row h-[12%] lg:h-[15%] w-[92%] overflow-hidden
+                        className={`group/contact relative flex-none flex flex-row h-[12%] min-h-[80px] w-[96%] overflow-hidden
                             transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                             ${props.themeChosen === "Dark"
                                 ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
@@ -837,27 +853,23 @@ export function Contacts( props: any) {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
                                         opacity-0 group-hover/contact:opacity-100 transition-opacity duration-500" />
 
-                        <div className="relative flex flex-row w-[15%] h-full justify-center items-center group/avatar">
-                            {/* Glowing ring around avatar */}
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-500/20
-                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-75" />
-
+                        <div className="relative flex flex-row w-[14%] h-full justify-end items-center group/avatar">
                             {/* Use base64 data for image */}
                             {(getImage(element).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-12 h-12 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"
                             /> : (getProfileImage(element, 1).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-12 h-12 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"></img> :
                                 <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                     className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
+                                     className="relative w-10 h-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
                         </div>
-                        <div className="relative flex flex-col w-[85%]">
+                        <div className="relative flex flex-col w-[86%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis">
-                                    <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans
+                                    <div className={`indent-[10px] text-base font-semibold font-sans
                                         ${props.themeChosen === "Dark"
                                             ? "text-gray-200"
                                             : "text-gray-900"}`}>
@@ -865,7 +877,7 @@ export function Contacts( props: any) {
                                     </div>
                                 </div>
                                 <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full text-xs lg:text-sm xl:text-base font-semibold
+                                    <div className={`flex flex-row justify-center items-center rounded-full text-sm font-semibold
                                         ${getUnreadMessages(element) > 0
                                             ? 'bg-gradient-to-br from-green-400 to-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                                             : ''}
@@ -878,16 +890,16 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xl:text-base
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm
                                             ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
-                                            font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
+                                            font-medium truncate transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") || isBase64(lastMessage) ? "Image" : lastMessage.message}
                                     </div>
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm 2xl:text-base
-                                        ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs
+                                        ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
                                             ? <div className="flex flex-col leading-tight">
@@ -908,10 +920,10 @@ export function Contacts( props: any) {
                         element.members.length > 0/*getLenMembers(element) > 0*/ ?
                             <div
                                 key={idx}
-                                className={`group/group relative flex-none flex flex-row h-[12%] lg:h-[15%] w-[92%] overflow-hidden
+                                className={`group/group relative flex-none flex flex-row h-[12%] min-h-[80px] w-[96%] overflow-hidden
                                     transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
-                                        ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border-2 border-purple-500/10 hover:border-purple-500/30"
+                                        ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
                                         : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
                                     hover:scale-[1.02] active:scale-[0.98]`}
                                 onClick={(e) => {
@@ -941,48 +953,45 @@ export function Contacts( props: any) {
                                 }}
                             >
                                 {/* Animated gradient overlay for groups */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
                                                 opacity-0 group-hover/group:opacity-100 transition-opacity duration-500" />
 
-                                <div className="relative flex flex-row w-[15%] h-full justify-center items-center group/groupavatar">
-                                    {/* Glowing ring around group avatar */}
-                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-500/20 to-blue-500/20
-                                                    blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
-
+                                <div className="relative flex flex-row w-[14%] h-full justify-end items-center group/groupavatar">
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data ? <img
                                         src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
-                                        className="relative h-10 w-10 rounded-full border-[2px] border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
+                                        className="relative w-12 h-12 rounded-full border border-cyan-500/30 group-hover/groupavatar:border-cyan-400/60 transition-all duration-300"
                                         alt="Profile"
                                     /> :
                                         <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
-                                             className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
+                                             className="relative w-11 h-11 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
-                                <div className="relative flex w-[85%] flex-col">
+                                <div className="relative flex w-[86%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans tracking-wide
+                                            <div className={`indent-[10px] text-base font-semibold font-sans
                                                 ${props.themeChosen === "Dark"
-                                                    ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
-                                                    : "text-gray-900"}`}>
+                                                    ? "text-gray-200"
+                                                    : "text-gray-900"}
+                                                overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[25%] h-full flex flex-row justify-center items-end">
-                                            <div className={`flex flex-row justify-center items-center rounded-full text-sm lg:text-base xl:text-lg font-semibold
+                                            <div className={`flex flex-row justify-center items-center rounded-full text-xs lg:text-sm xl:text-base font-semibold
                                                 ${getUnreadMessages(element) > 0
-                                                    ? 'bg-gradient-to-br from-green-400 to-purple-500 text-white shadow-lg shadow-purple-500/30 object-contain'
+                                                    ? 'bg-gradient-to-br from-green-400 to-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                                                     : ''}
                                                 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
-                                                h-[60%] w-[50%] transition-all duration-300 hover:scale-110`}>
+                                                h-[60%] w-[40%] hover:cursor-pointer transition-all duration-300 hover:scale-110`}>
                                                 {(element.message.length > 0 && lastMessageGroup.sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="relative flex w-full h-[50%] items-center">
+                                    <div className="relative flex flex-row w-full h-[50%]">
                                         {/* Left text container */}
-                                        <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] h-full w-full text-sm xl:text-base
+                                        <div className="relative flex flex-row h-full w-[75%] items-start">
+                                            <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
                                                 font-medium truncate transition-colors duration-300`}>
                                                 {element.message.length > 0 && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
@@ -990,9 +999,9 @@ export function Contacts( props: any) {
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm 2xl:text-base
-                                                ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
-                                                font-medium transition-colors duration-300`}>
+                                            <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs
+                                                ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
+                                                transition-colors duration-300`}>
                                                 {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
                                                     ?   <div className="flex flex-col leading-tight">
                                                             <div>Sent</div>
@@ -1011,132 +1020,7 @@ export function Contacts( props: any) {
 
                         : <React.Fragment key={idx}></React.Fragment>
                     )}
-
                 )}
-                    
-                { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
-                    ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
-                    <div
-                        key={idx}
-                        className={`relative h-[12%] left-[2%] w-[96%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                        onClick={(e) => {
-                            console.log("============\n3rd DIV PRESSED\n=============")
-                            console.log("CLICKED BY USER?", e.isTrusted);
-                            props.setPressed(element);
-                            let timestamp = new Date().toISOString()
-                            let contact = {
-                                ...element,
-                                opened_at: element.opened_at.map(obj =>
-                                    obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
-                            )};
-                            props.setCurrContact(contact);
-                            updateAccessedOnChat(contact, timestamp);
-                        }}
-                    >
-                        <div className="flex w-[10%] justify-center items-center">
-                            {/* Use base64 data for image */}
-                            <img
-                                src={getImage(element).data}
-                                className="h-12 w-12 rounded-full"
-                                alt="Profile"
-                            />
-                        </div>
-                        <div className="flex w-[90%] flex-col">
-                            <div className="flex h-[60%] w-full items-center flex-row">
-                                <div className="w-[80%] h-full flex flex-row items-center">
-                                    <div className={`indent-[20px] text-xl font-medium font-sans ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
-                                        {getNameWithUserId(element)}
-                                    </div>
-                                </div>
-                                <div className="w-[20%] h-full flex flex-row justify-center items-end">
-                                    <div className={`flex flex-row justify-center items-center rounded-full contain-size text-xl ${getUnreadMessages(element) > 0 ? 'bg-green-700' : ''} 
-                                                    bg-contain h-[60%] w-[50%] ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}`}>
-                                        {(element.message.length > 0) && element.message[0].recipient_id === curr_user && getUnreadMessages(element) !== 0 ? getUnreadMessages(element) : ""}
-                                    </div> 
-                                </div>
-                            </div>
-                            <div className="relative flex w-full h-[40%] items-center">
-                                {/* Left text container */}
-                                <div className="relative flex flex-row h-full w-[75%]">
-                                    <div className={`indent-[20px] flex h-full w-full items-start text-sm font-medium ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"} font-sans`}>
-                                        {getLastMessage(element, idx).message}
-                                    </div>
-                                </div>
-                                {/* Right time container */}
-                                <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className="relative flex h-[60%] w-full flex-row top-[30%] justify-center text-base text-gray-300 font-medium">
-                                        {getLastMessage(element, idx).sender_id === curr_user
-                                            ? "Sent " + getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                            : getLastMessage(element, idx).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                        }
-                                    </div>
-
-                                </div>
-                        </div>
-                        </div>
-                    </div> : 
-                        // otherwise group conversation so check if the members is not null
-                        element.is_group === true && getLenMembers(element) > 0 ? 
-                            <div 
-                                key={idx}
-                                className={`relative h-[12.5%] left-[2%] w-[96%] text-[#FFD166] bg-transparent bg-opacity-60 flex flex-row rounded-2xl mt-2 hover:bg-[#ACCBE1] hover:bg-opacity-40`}
-                                onClick={() => {
-                                    props.setPressed(element);
-                                    let timestamp = new Date().toISOString()
-                                    let contact = {
-                                        ...element,
-                                        opened_at: element.opened_at.map(obj =>
-                                            obj.id === props.curr_user ? { id:obj.id, opened_at: timestamp } : obj
-                                    )};
-                                    props.setCurrContact(contact);
-                                    updateAccessedOnChat(contact, timestamp);
-                                }}
-                            >
-                                <div className="flex w-[10%] justify-center items-center">
-                                    {/* Use base64 data for image */}
-                                    {getImageGroup(element).data ? <img
-                                        src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
-                                        className="h-12 w-12 rounded-full"
-                                        alt="Profile"
-                                    /> :
-                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="h-12 w-12 rounded-full pointer-events-none"></img>}
-                                </div>
-                                <div className="flex w-[90%] flex-col">
-                                    <div className="flex h-[50%] w-full items-center flex-row">
-                                        <div className="w-[80%] h-full">
-                                            <div className="indent-[20px] text-xl font-medium font-sans text-black">
-                                                {element.group_name}
-                                            </div>
-                                        </div>
-                                        <div className="w-[20%] h-full flex flex-row justify-center">
-                                            <div className="rounded-full contain-size bg-green-700 justify-center bg-contain h-full">
-                                                AAAAA{/* {element.message.length > 0 && getLastMessageGroup(element).sender_id !== curr_user && getUnreadMessages(element, idx)} */}
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    <div className="relative flex w-full h-[50%] items-center">
-                                        {/* Left text container */}
-                                        <div className="relative flex flex-row h-full w-[80%]">
-                                            <div className="indent-[20px] flex h-full w-full items-center text-sm text-gray-600 font-medium">
-                                                AAA{/* {(getLastMessageGroup(element).message).hasOwnProperty("image_id") ? "Image" : getLastMessageGroup(element).message} */}
-                                            </div>
-                                        </div>
-                                        {/* Right time container */}
-                                        <div className="relative flex flex-row h-full w-[20%]">
-                                            <div className="flex h-full w-full flex-row items-center text-sm text-gray-600 font-medium">
-                                                AAA{/* {getLastMessageGroup(element).user_id === curr_user
-                                                    ? "Sent " + getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                                    : getLastMessageGroup(element).timestamp.split("T")[1].split(".")[0].slice(0, 5)
-                                                } */}
-                                            </div>
-
-                                        </div>
-                                </div>
-                                </div>
-                            </div>
-                    
-                        : <React.Fragment key={idx}></React.Fragment>))
-                    }
             </div>
         </div>
     );

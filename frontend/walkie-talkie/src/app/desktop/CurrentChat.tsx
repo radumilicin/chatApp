@@ -449,7 +449,7 @@ export default function CurrentChat( props: any ) {
     };
 
     return (
-        <div className={`relative top-[5%] left-[8%] w-[58%] h-[90%] border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg rounded-r-2xl flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`flex-1 min-w-0 h-full border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {/* Empty contact header - futuristic style */}
             {props.contact && (
                 <div
@@ -487,7 +487,7 @@ export default function CurrentChat( props: any ) {
                     </div> 
 
                     {/* Profile picture container */}
-                    <div className="relative flex w-[10%] h-full justify-end items-center z-10">
+                    <div className="relative flex w-[10%] min-w-[80px] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
@@ -498,7 +498,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-8 h-18 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
+                                    className="relative w-12 h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -508,7 +508,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
+                                    className="relative w-12 h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -518,7 +518,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full
+                                    className="relative w-12 h-12 rounded-full
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -528,7 +528,7 @@ export default function CurrentChat( props: any ) {
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                    className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full object-cover
+                                    className="relative w-12 h-12 rounded-full object-cover
                                              border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
                                              transition-all duration-300"
@@ -653,7 +653,7 @@ export default function CurrentChat( props: any ) {
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent" }`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-2 rounded-lg border-2 flex-col ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${
                                     String(props.curr_user) === String(message.sender_id)
                                         ? `${props.themeChosen === "Dark" ? "border-[#48C287] bg-[#3B7E9B]/10 ring-1 ring-[#3B7E9B]" : "bg-gray-100 border-gray-300"} transition-all`
                                         : `${props.themeChosen === "Dark" ? "border-[#2479C7] bg-[#3F8F63]/10 ring-2 ring-[#2479C7]" : "bg-gray-100 border-gray-300"} transition-all`}`}

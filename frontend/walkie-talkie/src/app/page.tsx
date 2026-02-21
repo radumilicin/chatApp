@@ -1091,7 +1091,7 @@ export default function Home() {
                         ></Fonts> : <FontsVertical curr_user={user} userObj={userObj} fetchUsers={fetchData} fontPressed={fontPressed} setFontPressed={setFontPressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} fontChosenPending={fontChosenPending} setFontChosenPending={setFontChosenPending}
                         ></FontsVertical>) : <></>}
-        {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br ${themeChosen === "Dark" ? "from-[#181c25] via-[#01050c] to-[#0d1018]" : "from-[#258ebe] via-[#7823a8] to-[#10bb79]"} 
+        {loggedIn === true && <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br ${themeChosen === "Dark" ? "from-[#181c25] via-[#01050c] to-[#0d1018]" : "from-[#258ebe] via-[#7823a8] to-[#10bb79]"}
                                               ${(themePressed || fontPressed) ? 'blur-sm' : 'blur-none'}`}>
           {/* {themePressed ? <div className="absolute left-0 top-0 w-full h-full bg-"></div> : <></>} */}
           {display === "Mobile" && !pressedAccount && !pressedNotifications && !pressedPrivacy && !pressedSettings && !curr_contact && !pressedProfile &&
