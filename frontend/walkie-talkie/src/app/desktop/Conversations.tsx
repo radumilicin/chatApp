@@ -309,7 +309,7 @@ export function MenuDropdown (props) {
 
 export function OtherOptions (props) {
     return (
-        <div className={`absolute left-0 top-0 h-[7.5%] w-[98%] flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent" }`}>
+        <div className={`absolute left-0 top-0 h-[7.5%] w-[98%] flex flex-row items-center`}>
             {props.addContact && <div className={`group relative left-[2%] w-[8%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
                                     transition-all duration-300 rounded-xl hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
@@ -321,7 +321,7 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`flex w-[80%] indent-[20px] h-full text-base lg:text-lg xl:text-xl font-bold flex-col justify-center items-start font-sans
                         bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xl:text-2xl 2xl:text-3xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl 2xl:text-3xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
                 <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
@@ -338,7 +338,7 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-0 top-[6%] h-[14%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+        <div className={`absolute left-0 top-[7.5%] h-[12%] w-full`}>
             <div className={`group relative left-[2%] top-[10%] w-[96%] h-[50%] rounded-2xl overflow-hidden
                 transition-all duration-300
                 ${props.themeChosen === "Dark"
@@ -346,11 +346,11 @@ export function SearchBar( props : any ) {
                     : "border-2 border-gray-300 bg-gray-100 focus-within:border-[#3B7E9B]"}
                 backdrop-blur-sm`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                        <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110'
+                    <div className='relative left-0 top-0 w-[15%] xl:w-[12%] h-full flex flex-col justify-center items-center'>
+                        <img className='absolute w-7 h-7 xl:w-8 xl:h-8 opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110'
                         src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                     </div>
-                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
+                    <div className='relative left-[2%] top-0 w-[83%] xl:w-[86%] h-full flex flex-col justify-center items-start indent-2'>
                         <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg  font-medium
                             ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
                             value={props.currentSearch}
@@ -762,7 +762,7 @@ export function Contacts( props: any) {
 
 
     return (
-        <div className={`absolute left-0 top-[16%] w-full h-[84%] bg-transparent backdrop-blur-xl flex flex-col shadow-x-2xl overflow-hidden`}>
+        <div className={`absolute left-0 top-[19.5%] w-full h-[80.5%] flex flex-col overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredDecryptedContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
@@ -837,7 +837,7 @@ export function Contacts( props: any) {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
                                         opacity-0 group-hover/contact:opacity-100 transition-opacity duration-500" />
 
-                        <div className="relative flex w-[15%] h-full justify-center items-center group/avatar">
+                        <div className="relative flex flex-row w-[15%] h-full justify-center items-center group/avatar">
                             {/* Glowing ring around avatar */}
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-500/20
                                             blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-75" />
@@ -845,18 +845,18 @@ export function Contacts( props: any) {
                             {/* Use base64 data for image */}
                             {(getImage(element).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"
                             /> : (getProfileImage(element, 1).data !== "" && other_user && other_user.profile_pic_visibility !== 'Nobody') ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"></img> :
                                 <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                     className="relative h-10 w-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
+                                     className="relative w-[32px] h-[32px] xl:w-10 xl:h-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
                         </div>
                         <div className="relative flex flex-col w-[85%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
-                                <div className="w-[75%] h-full flex flex-row items-end">
+                                <div className="w-[75%] h-full flex flex-row items-end overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis">
                                     <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans
                                         ${props.themeChosen === "Dark"
                                             ? "text-gray-200"
@@ -878,7 +878,7 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xl:text-base 2xl:text-lg
+                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xl:text-base
                                             ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
                                             font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") || isBase64(lastMessage) ? "Image" : lastMessage.message}
@@ -886,7 +886,7 @@ export function Contacts( props: any) {
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm xl:text-base
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm 2xl:text-base
                                         ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
@@ -956,14 +956,14 @@ export function Contacts( props: any) {
                                         alt="Profile"
                                     /> :
                                         <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
-                                             className="relative h-12 w-12 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
+                                             className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
                                 <div className="relative flex w-[85%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-lg xl:text-xl font-semibold font-sans tracking-wide
+                                            <div className={`indent-[10px] text-base lg:text-lg xl:text-xl font-semibold font-sans tracking-wide
                                                 ${props.themeChosen === "Dark"
-                                                    ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
+                                                    ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
                                                     : "text-gray-900"}`}>
                                                 {element.group_name}
                                             </div>
@@ -982,7 +982,7 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] h-full w-full text-sm xl:text-base 2xl:text-lg
+                                            <div className={`indent-[10px] h-full w-full text-sm xl:text-base
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
                                                 font-medium truncate transition-colors duration-300`}>
                                                 {element.message.length > 0 && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
@@ -990,7 +990,7 @@ export function Contacts( props: any) {
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%]">
-                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm xl:text-base
+                                            <div className={`relative flex h-[60%] w-full flex-row top-[0%] justify-center text-xs lg:text-sm 2xl:text-base
                                                 ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
                                                 {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
@@ -1009,7 +1009,7 @@ export function Contacts( props: any) {
                                 </div>
                             </div>
 
-                        : <></>
+                        : <React.Fragment key={idx}></React.Fragment>
                     )}
 
                 )}
@@ -1135,7 +1135,7 @@ export function Contacts( props: any) {
                                 </div>
                             </div>
                     
-                        : <></>))
+                        : <React.Fragment key={idx}></React.Fragment>))
                     }
             </div>
         </div>
@@ -1743,7 +1743,7 @@ export function Contacts2( props: any) {
                                 </div>
                         </div>
                         </div>
-                    </div> : <></>))}
+                    </div> : <React.Fragment key={idx}></React.Fragment>))}
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
                     element.sender_id === props.curr_user ?
                     <div
@@ -1787,7 +1787,7 @@ export function Contacts2( props: any) {
                                 </div>
                         </div>
                         </div>
-                    </div> : <></>
+                    </div> : <React.Fragment key={idx}></React.Fragment>
                 ))}
             </div>
         </div>

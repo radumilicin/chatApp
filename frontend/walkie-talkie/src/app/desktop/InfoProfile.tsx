@@ -25,7 +25,7 @@ export default function ProfileInfo(props) {
         setDescription(val)
     }
 
-    const settingGroupName = async (val) => {
+    const settingGroupName = (val) => {
         setNameGroup(val)
     }
 
@@ -43,7 +43,7 @@ export default function ProfileInfo(props) {
             // console.log("Changing group name after change in profile")
             settingGroupName(props.contact.group_name)
             setDescriptionAsync(props.contact.group_description)
-            if (props.curr_user in props.contact.admins) setIsAdminAsync(true)
+            if (props.contact.admins.includes(props.curr_user)) setIsAdminAsync(true)
             else setIsAdminAsync(false)
         } else {
             setDescriptionAsync(getUser(props.contact).about)
@@ -114,7 +114,7 @@ export default function ProfileInfo(props) {
     }
 
     async function changeGroupName(contact: any, newName: string) {
-        if ((contact !== null || contact !== undefined) && contact.is_group === true) {
+        if ((contact !== null && contact !== undefined) && contact.is_group === true) {
             let message = {
                 id: contact.id,
                 newName: newName
@@ -129,6 +129,10 @@ export default function ProfileInfo(props) {
             try {
                 await fetch('http://localhost:3002/changeGroupName', requestParams)
                 await props.fetchContacts()
+                props.setDecryptedContacts((currArr) =>
+                    currArr.map(c => c.id === contact.id ? { ...c, group_name: newName } : c)
+                )
+                props.setCurrContact({ ...props.contact, group_name: newName })
             } catch (error) {
                 console.error(error)
             }
@@ -155,6 +159,10 @@ export default function ProfileInfo(props) {
         const response = await fetch(`http://localhost:3002/changeGroupDescription`, requestOptions)
         if (response.status === 200) {
             await props.fetchContacts()
+            props.setDecryptedContacts((currArr) =>
+                currArr.map(c => c.id === props.contact.id ? { ...c, group_description: desc } : c)
+            )
+            props.setCurrContact({ ...props.contact, group_description: desc })
         } else {
             console.log("Could not change group description")
         }
@@ -365,7 +373,7 @@ export default function ProfileInfo(props) {
                                     border-b-2 bg-transparent border-cyan-500
                                     focus:border-cyan-400 transition-all placeholder:text-cyan-300/50`}
                                 onChange={(e) => {
-                                    settingGroupName(e.target.value)
+                                    setNameGroup(e.target.value)
                                     console.log("input = " + nameGroup)
                                 }}
                                 onKeyDown={(e) => {
@@ -381,7 +389,7 @@ export default function ProfileInfo(props) {
                             </input>)
                             :
                             <div className={`flex flex-row justify-center items-center text-xl lg:text-2xl
-                                font-bold font-sans h-full w-full tracking-wide ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                                font-bold font-sans h-full w-full tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
                                     : "text-black"}
                                 `}>
                                 {getNameContact(props.contact)}
@@ -389,8 +397,14 @@ export default function ProfileInfo(props) {
                             : <div className="flex flex-row justify-center items-center text-lg text-black font-medium font-sans h-full w-full"></div>}
 
                         {/* Edit button */}
-                        <div className="absolute flex flex-row justify-center items-center h-full right-0 w-[15%]" onClick={() => { (settingOppositeNameChangeGroup()) }}>
-                            {((props.contact !== undefined || props.contact !== null) && props.contact.is_group === true && props.contact.admins.includes(props.curr_user))
+                        <div className="absolute flex flex-row justify-center items-center h-full right-0 w-[15%]" onClick={() => {
+                            if (nameChangeGroup && oldNameGroup.current !== nameGroup) {
+                                changeGroupName(props.contact, nameGroup)
+                                oldNameGroup.current = nameGroup
+                            }
+                            settingOppositeNameChangeGroup()
+                        }}>
+                            {((props.contact !== undefined && props.contact !== null) && props.contact.is_group === true && props.contact.admins.includes(props.curr_user))
                                 ? <div className={`flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full
                                     transition-all cursor-pointer group/edit
                                     ${props.themeChosen === "Dark"
@@ -469,7 +483,7 @@ function AboutProfile(props) {
             border-y-[1px] backdrop-blur-sm`}>
 
             {/* About Title */}
-            <div className={`flex text-lg lg:text-xl 2xl:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center 
+            <div className={`flex text-xl lg:text-2xl px-8 h-[60%] w-full font-bold font-sans items-center 
                 ${props.themeChosen === "Dark"
                     ? "bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
                     : "text-gray-800"}`}>
@@ -478,7 +492,7 @@ function AboutProfile(props) {
 
             {/* About Content */}
             <div ref={divRef} className="flex flex-row px-8 h-[40%] w-full font-sans items-center justify-center">
-                <div className={`flex flex-row w-[90%] h-full items-start justify-start text-base lg:text-lg xl:text-xl
+                <div className={`flex flex-row w-[90%] h-full items-start justify-start text-lg xl:text-xl truncate
                     ${props.themeChosen === "Dark" ? "text-cyan-100/80" : "text-gray-700"}
                     ${props.contact.is_group && props.contact.admins.includes(props.curr_user) ? "hover:cursor-pointer" : ""}
                     ${props.descriptionPressed ? 'ml-2' : ''}
@@ -501,7 +515,7 @@ function AboutProfile(props) {
                                     value={props.description}
                                     className={`w-[98%] outline-none bg-transparent border-b-2 border-cyan-500
                                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                           font-sans text-base lg:text-lg xl:text-xl px-2
+                                           font-sans text-lg xl:text-xl px-2
                                            focus:border-cyan-400 transition-all placeholder:text-cyan-400/50`}
                                     onChange={(e) => {
                                         props.setDescriptionAsync(e.target.value)
@@ -686,12 +700,12 @@ function Members(props) {
                 <div className="flex w-[15%] h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/30 to-cyan-400/30 blur-md group-hover:blur-lg transition-all" />
-                        <img src="./addFrendo.png" className="relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
+                        <img src="./addFrendo.png" className="relative w-12 h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
                     </div>
                 </div>
 
                 <div className="flex w-[85%] h-full items-center">
-                    <div className={`text-base lg:text-lg xl:text-xl font-sans font-bold
+                    <div className={`text-base lg:text-lg xl:text-xl 2xl:text-2xl font-sans font-bold
                         bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent
                         group-hover:from-green-300 group-hover:to-cyan-300 transition-all`}>
                         Add member
@@ -725,23 +739,23 @@ function Members(props) {
                             {(getProfilePic(getUser(id)).data !== "") ?
                                 <img
                                     src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`}
-                                    className="relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                    className="relative w-12 h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
                                 /> :
                                 <img
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                    className="relative w-12 h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
                                 />
                             }
                         </div>
                     </div>
 
                     <div className="flex w-[70%] h-full flex-col justify-center py-4">
-                        <div className={`flex flex-row text-base lg:text-lg xl:text-xl font-sans font-semibold items-center
+                        <div className={`flex flex-row text-base lg:text-lg xl:text-xl 2xl:text-2xl font-sans font-semibold items-center
                         ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                             {getUser(id).username}
-                            {props.curr_user === id && <span className={`lg:text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
+                            {props.curr_user === id && <span className={`lg:text-sm xl:text-base 2xl:text-xl ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
                         </div>
-                        <div className={`flex text-sm lg:text-base font-sans
+                        <div className={`flex text-sm lg:text-base xl:text-lg 2xl:text-xl font-sans
                         ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}
                         truncate`}>
                             {getUser(id).about}
@@ -750,9 +764,9 @@ function Members(props) {
 
                     {/* Admin Badge */}
                     {(props.contact.admins.includes(id)) &&
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center
+                        <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center justify-center
                         px-3 py-1 bg-gradient-to-r from-green-500/90 to-cyan-500/90 rounded-full
-                        text-white text-xs lg:text-sm font-bold shadow-lg">
+                        text-white text-sm lg:text-base font-bold shadow-lg">
                             Admin
                         </div>
                     }

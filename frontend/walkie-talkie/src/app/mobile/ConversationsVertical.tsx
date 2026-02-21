@@ -310,7 +310,7 @@ export function MenuDropdownVertical (props) {
 
 export function OtherOptions (props) {
     return (
-        <div className={`absolute left-0 top-0 h-[7%] w-[98%] flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-transparent"}`}>
+        <div className={`absolute left-0 top-0 h-[7%] w-[98%] flex flex-row items-center`}>
             {props.addContact && <div className={`group relative left-[2%] w-[10%] h-[70%] text-2xl font-semibold font-sans flex flex-row justify-center items-center
                                     transition-all duration-300 rounded-xl hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
@@ -322,7 +322,7 @@ export function OtherOptions (props) {
             {props.addContact && <div className={`flex w-[70%] indent-[20px] h-full text-lg xss:text-xl font-bold flex-col justify-center items-start font-sans
                         bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>Add contact</div>}
-            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xss:text-2xl font-semibold font-sans flex flex-row justify-start items-center
+            {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-xl xss:text-2xl xsw:text-3xl font-semibold font-sans flex flex-row justify-start items-center
                         ${props.themeChosen === "Dark"
                             ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                             : "text-black"}`}>Chats</div>}
@@ -341,7 +341,7 @@ export function OtherOptions (props) {
 export function SearchBar( props : any ) {
 
     return (
-        <div className={`absolute left-0 top-[6%] h-[12%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
+        <div className={`absolute left-0 top-[7%] h-[10%] w-full`}>
             <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
                 transition-all duration-300
                 ${props.themeChosen === "Dark"
@@ -349,12 +349,12 @@ export function SearchBar( props : any ) {
                     : "border-2 border-gray-300 bg-gray-100 shadow-md focus-within:border-[#3B7E9B] focus-within:shadow-lg"}
                 backdrop-blur-sm`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                        <img className={`absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110 transition-all`}
+                    <div className='relative left-0 top-0 w-[12%] h-full flex flex-col justify-center items-center'>
+                        <img className={`absolute w-8 h-8 opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110 transition-all`}
                         src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                     </div>
                     <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg font-medium
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg xsw:text-xl font-medium
                             ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
                             value={props.currentSearch}
                             placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`}
@@ -724,9 +724,8 @@ export function Contacts( props: any) {
     console.log("contact: " + JSON.stringify(props.contact))
 
     return (
-        <div className={`absolute left-0 top-[18%] w-full h-[72%]
-            ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-gradient-to-b from-gray-100 to-gray-200"}
-            backdrop-blur-xl overflow-hidden`}>
+        <div className={`absolute left-0 top-[17%] w-full h-[83%]
+            overflow-hidden`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
@@ -940,9 +939,9 @@ export function Contacts( props: any) {
                                 </div>
                             </div>
                     
-                        : <></>
+                        : <React.Fragment key={idx}></React.Fragment>
                     )}
-                    
+
                 )}
                     
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
@@ -1066,7 +1065,7 @@ export function Contacts( props: any) {
                                 </div>
                             </div>
                     
-                        : <></>))
+                        : <React.Fragment key={idx}></React.Fragment>))
                     }
             </div>
         </div>
@@ -1656,7 +1655,7 @@ export function Contacts2( props: any) {
                                 </div>
                         </div>
                         </div>
-                    </div> : <></>))}
+                    </div> : <React.Fragment key={idx}></React.Fragment>))}
                 { props.filteredContacts === null && props.contacts.map((element: any, idx: number) => (
                     element.sender_id === props.curr_user ?
                     <div
@@ -1700,7 +1699,7 @@ export function Contacts2( props: any) {
                                 </div>
                         </div>
                         </div>
-                    </div> : <></>
+                    </div> : <React.Fragment key={idx}></React.Fragment>
                 ))}
             </div>
         </div>

@@ -21,6 +21,14 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
     const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
     const audioRef = useRef(null);
+    const signedPreKeyRef = useRef(signedPreKey);
+    const identityKeyRef = useRef(identityKey);
+    const contactsRef = useRef(contacts);
+
+    // Keep refs in sync with latest props
+    useEffect(() => { signedPreKeyRef.current = signedPreKey; }, [signedPreKey]);
+    useEffect(() => { identityKeyRef.current = identityKey; }, [identityKey]);
+    useEffect(() => { contactsRef.current = contacts; }, [contacts]);
 
     useEffect(() => {
         // Don't connect if URL is not set
@@ -42,7 +50,15 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         // ✅ 2. Fix WebSocket to update state properly
         // this gets triggered both when WE send message and when they send
         ws.current.onmessage = async (event) => {
-          const message = JSON.parse(event.data);
+          let message;
+          try {
+            message = JSON.parse(event.data);
+          } catch (e) {
+            console.error('Failed to parse WebSocket message:', e);
+            console.error('Raw event.data:', event.data);
+            console.error('Type of event.data:', typeof event.data);
+            return;
+          }
 
           // ✅ Ignore acknowledgments
           if (message.type === 'ack') {
@@ -304,22 +320,31 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
 
   async function decryptMessage(message: any, is_group: boolean, contact_id: string) {
     console.log("In decryptMessage (WebSocket)")
-    
+
+    const currentSignedPreKey = signedPreKeyRef.current;
+    const currentIdentityKey = identityKeyRef.current;
+    const currentContacts = contactsRef.current;
+
+    if (!currentIdentityKey || !currentSignedPreKey) {
+      console.error('Keys not loaded yet (signedPreKey or identityKey is null). Skipping decryption.');
+      return null;
+    }
+
     const decryption_key = X3DHClient.getOrCreateLocalKey();
-    
+
     // ✅ Load ratchet from DB
-    const contact = contacts.find((elem) => 
-      (elem.sender_id === user && elem.contact_id === contact_id) || 
+    const contact = currentContacts.find((elem) =>
+      (elem.sender_id === user && elem.contact_id === contact_id) ||
       (elem.contact_id === user && elem.sender_id === contact_id)
     );
-    
+
     if (!contact) {
       console.error('Contact not found');
       return null;
     }
 
     let ratchet = await loadConversationRatchetStateDB(user, contact);
-    
+
     // Handle first message
     if (message?.is_first_message) {
       console.log("First message detected");
@@ -333,29 +358,29 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
         }
       } else {
         console.log("We are the receiver (Bob) - initializing ratchet");
-        
+
         console.log('About to perform X3DH as receiver with:');
         console.log('- ephemeralPublicKey:', message.ephemeralPublicKey);
         console.log('- identityKey:', message.identityKey);
-        console.log('- My signedPreKey:', signedPreKey);
-        console.log('- My identityKey:', identityKey);
-        
+        console.log('- My signedPreKey:', currentSignedPreKey);
+        console.log('- My identityKey:', currentIdentityKey);
+
         const sharedSecret = await X3DHClient.performX3DHAsReceiver(
-          identityKey,
-          signedPreKey,
+          currentIdentityKey,
+          currentSignedPreKey,
           message.ephemeralPublicKey,
           message.identityKey,
           message.oneTimePreKeyId
         );
-        
+
         console.log("=== BOB AFTER X3DH ===");
         console.log("X3DH shared secret:", sharedSecret.substring(0, 30) + "...");
-        
+
         ratchet = DoubleRatchet.initializeAsReceiver(
-          user, 
+          user,
           contact.id,
           sharedSecret,
-          signedPreKey
+          currentSignedPreKey
         );
         
         const initialState = ratchet.getState();

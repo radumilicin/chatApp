@@ -134,7 +134,7 @@ export default function Home() {
     if(loggedIn || !addContact2) {
       fetchData()
       console.log("user = " + user)
-      fetchData2()
+      if(user !== "") fetchData2()
       fetchImages()
     }
   }, [loggedIn, addContact2])
@@ -752,7 +752,7 @@ export default function Home() {
       console.log("CHECK DO THEY MATCH?", signedPreKey.publicKey === dbKeys.signedPreKey.public_key);
     }
 
-    if(signedPreKey !== undefined && user !== "" && users.length !== 0) {
+    if(signedPreKey !== undefined && signedPreKey !== null && user !== "" && users.length !== 0) {
       checkKeys()
     }
 
@@ -905,11 +905,16 @@ export default function Home() {
           if(user_o) console.log(`We are the receiver (Bob) ${user_o.username} - initializing ratchet`);
           else console.log(`We are the sender (Alice) ${user} - ratchet already loaded from DB`)
 
+          if (!identityKey || !signedPreKey) {
+            console.error('Keys not loaded yet (signedPreKey or identityKey is null). Skipping message decryption.');
+            continue;
+          }
+
           const sharedSecret = await X3DHClient.performX3DHAsReceiver(
-            identityKey, 
-            signedPreKey, 
-            messages[i].ephemeralPublicKey, 
-            messages[i].identityKey, 
+            identityKey,
+            signedPreKey,
+            messages[i].ephemeralPublicKey,
+            messages[i].identityKey,
             messages[i].oneTimePreKeyId
           );
 
@@ -1196,7 +1201,8 @@ export default function Home() {
             
             curr_contact !== null && profileInfo === true && display === "Mobile" ? <ProfileInfoVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} setAddToGroup={setAddToGroup} fetchContacts={fetchData2}
-                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} setCurrContact={setCurrContact}></ProfileInfoVertical> 
+                                                messages={messages} setMessages={setMessages} sendMessage={sendMessage} fontChosen={fontChosen} themeChosen={themeChosen} setCurrContact={setCurrContact} 
+                                                setDecryptedContacts={setDecryptedContacts}></ProfileInfoVertical> 
                                     :
             curr_contact !== null && profileInfo === false && display === "Mobile" ? <CurrentChatVertical users={users} contacts={contacts} images={images} contact={curr_contact} curr_user={user} setProfileInfo={setProfileInfo} 
                                                 addingToGroup={addingToGroup} potentialContact={potentialContact} prevPotentialContact={prevPotentialContact} fetchContacts={fetchData2}

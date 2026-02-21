@@ -54,7 +54,7 @@ export default function ProfilePicPrivacyVertical(props: any) {
                             }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>
-                    <h1 className={`text-lg xss:text-xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
+                    <h1 className={`text-xl xss:text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>
                         Profile Picture Privacy
                     </h1>
                 </div>
@@ -65,7 +65,7 @@ export default function ProfilePicPrivacyVertical(props: any) {
                 <div className="flex flex-col gap-6">
                     {/* Visibility Section */}
                     <div className="flex flex-col gap-4">
-                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xss:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Who can see your profile picture
                         </h2>
                         <div className="flex flex-col gap-[2px]">
@@ -110,7 +110,7 @@ function RadioOption(props: { label: string, selected: boolean, onClick: () => v
                     </>
                 )}
             </div>
-            <div className={`flex-1 text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+            <div className={`flex-1 text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                 {props.label}
             </div>
         </div>

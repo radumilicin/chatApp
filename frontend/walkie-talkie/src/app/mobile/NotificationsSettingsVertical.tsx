@@ -136,7 +136,7 @@ export default function NotificationSettings( props: any ) {
                 <div className="flex flex-col gap-6">
                     {/* Messages Section */}
                     <div className="flex flex-col gap-3">
-                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xsw:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Messages
                         </h2>
                         <EnableNotifications user={props.user} userObj={props.userObj} users={props.users} setNotificationsEnabled={props.setNotificationsEnabled} notificationsEnabled={props.notificationsEnabled}
@@ -148,7 +148,7 @@ export default function NotificationSettings( props: any ) {
 
                     {/* Message Sounds Section */}
                     <div className="flex flex-col gap-3">
-                        <h2 className={`text-xs xss:text-sm font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
+                        <h2 className={`text-sm xsw:text-base font-semibold uppercase tracking-wide ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             Message sounds
                         </h2>
                         <IncomingSounds user={props.user} userObj={props.userObj} users={props.users} setIncomingSoundsEnabled={props.setIncomingSoundsEnabled} incomingSoundsEnabled={props.incomingSoundsEnabled}
@@ -186,11 +186,11 @@ export function EnableNotifications(props: any) {
                 <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/10" : "bg-gray-200/50"}`}>
                     <img src={`${props.themeChosen === "Dark" ? "bell-icon.png" : "bell-icon-black-nobg.png"}`} className="w-5 h-5 xss:w-6 xss:h-6" alt="Notifications" />
                 </div>
-                <div className="flex flex-col gap-1">
-                    <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className="flex flex-col gap-[0.5]">
+                    <div className={`text-base xsw:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                         Message notifications
                     </div>
-                    <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    <div className={`text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                         Enable notification sound
                     </div>
                 </div>
@@ -236,11 +236,11 @@ export function IncomingSounds(props: any) {
                 <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/10" : "bg-gray-200/50"}`}>
                     <img src={`${props.themeChosen === "Dark" ? "./arrow_incoming.png" : "arrow_incoming_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6" alt="Incoming" />
                 </div>
-                <div className="flex flex-col gap-1">
-                    <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className="flex flex-col gap-[0.5]">
+                    <div className={`text-base xsw:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                         Incoming sounds
                     </div>
-                    <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    <div className={`text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                         Play sound when receiving a message
                     </div>
                 </div>
@@ -285,11 +285,11 @@ export function OutgoingSounds(props: any) {
                 <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/10" : "bg-gray-200/50"}`}>
                     <img src={`${props.themeChosen === "Dark" ? "./arrow_outgoing.png" : "arrow_outgoing_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6" alt="Outgoing" />
                 </div>
-                <div className="flex flex-col gap-1">
-                    <div className={`text-sm xss:text-base font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className="flex flex-col gap-[0.5]">
+                    <div className={`text-base xsw:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                         Outgoing sounds
                     </div>
-                    <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                    <div className={`text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                         Play sound when sending a message
                     </div>
                 </div>
