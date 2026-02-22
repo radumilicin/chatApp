@@ -448,6 +448,20 @@ export default function CurrentChat( props: any ) {
         });
     };
 
+    function showMessageBasedOnDisappearingPeriod(timestamp: string) {
+        if(props.disappearingMessagesPeriod === 'Off') return true;
+
+        const time_now = new Date()
+        const date_timestamp = new Date(timestamp)
+        const date_expiry = new Date(date_timestamp)
+
+        if(props.disappearingMessagesPeriod === 'Day') date_expiry.setDate(date_expiry.getDate() + 1)
+        else if(props.disappearingMessagesPeriod === 'Week') date_expiry.setDate(date_expiry.getDate() + 7)
+        else if(props.disappearingMessagesPeriod === 'Month') date_expiry.setMonth(date_expiry.getMonth() + 1)
+
+        return date_expiry > time_now;
+    }
+
     return (
         <div className={`flex-1 min-w-0 h-full border-[1px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {/* Empty contact header - futuristic style */}
@@ -615,6 +629,7 @@ export default function CurrentChat( props: any ) {
                             const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
                             const yesterdayDateOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
                             
+                            
                             if (messageDateOnly.getTime() === todayDateOnly.getTime()) {
                                 return "Today";
                             } else if (messageDateOnly.getTime() === yesterdayDateOnly.getTime()) {
@@ -628,7 +643,6 @@ export default function CurrentChat( props: any ) {
                             }
                         };
 
-                        
                         // Check if we need to show a date divider
                         const showDateDivider = idx === 0 ||
                             (idx > 0 &&
@@ -650,7 +664,8 @@ export default function CurrentChat( props: any ) {
                     )}
                     
                     {/* Message */}
-                    {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
+                    {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0)) 
+                        && showMessageBasedOnDisappearingPeriod(message.timestamp)) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent" }`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${
@@ -671,7 +686,7 @@ export default function CurrentChat( props: any ) {
                                 </div>
                             </div>
                         </div>
-                    ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
+                    ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0 && showMessageBasedOnDisappearingPeriod(message.timestamp)) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] mx-6 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
