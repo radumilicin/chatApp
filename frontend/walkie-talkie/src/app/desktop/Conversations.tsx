@@ -211,7 +211,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`shrink-0 w-[30%] min-w-[400px] max-w-[500px] h-full min-h-[600px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`shrink-0 w-[30%] min-w-[400px] max-w-[500px] h-full  min-h-[600px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {props.newGroupPress && <Groups setNewGroupPress={props.setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
@@ -335,10 +335,10 @@ export function OtherOptions (props) {
             {!props.addContact && <div className={`relative indent-[20px] left-[2%] w-[48%] text-2xl 2xl:text-3xl font-semibold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] font-sans flex flex-row justify-start items-center`}>Chats</div>}
             <div className="relative left-[30%] w-[20%] h-full flex flex-row items-center">
-                <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
+                <div className={`relative left-0 w-[50%] h-8 transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:scale-[1.02] active:scale-[0.98] hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setAddContact(true); props.setAddContact2(true); props.setMenuPress(false);}}>
                     <img src={`${props.themeChosen === "Dark" ? "/addUser-white.png" : "add-user.png"}`} className="justify-end items-center w-5 h-5 group-hover:scale-[1.2]"></img>
                 </div>
-                <div className={`relative left-0 w-[50%] h-full transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
+                <div className={`relative left-0 w-[50%] h-8 transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-opacity-30"} hover:rounded-xl flex flex-row items-center justify-center hover:cursor-pointer`} onClick={() => {props.setMenuPress(true)}}>
                     <img src={`${props.themeChosen === "Dark" ? "menu-icon-white.png" : "menu-icon-black.png"}`} className={`justify-end items-center w-6 h-6 group-hover:scale-[1.2] group-hover:rotate-90`}></img>
                 </div>
             </div>
@@ -352,11 +352,11 @@ export function SearchBar( props : any ) {
         <div className={`absolute left-0 top-[6.5%] h-[10%] w-full min-h-[80px]`}>
             <div className={`relative left-[2%] top-[10%] w-[96%] h-[65%] rounded-xl border ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[10%] h-full flex flex-row justify-center items-center'>
+                    <div className='relative left-0 top-0 w-[15%] h-full flex flex-row justify-center items-center'>
                         <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                     </div>
-                    <div className='relative left-[2%] top-0 w-[88%] h-full flex flex-col justify-center items-start'>
-                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent px-2 overflow-x-auto text-base lg:text-lg xl:text-xl
+                    <div className='relative left-0 top-0 w-[85%] h-full flex flex-col justify-center items-start'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base
                             ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
                             value={props.currentSearch}
                             placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`}

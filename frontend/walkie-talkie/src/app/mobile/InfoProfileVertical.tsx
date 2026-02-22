@@ -449,9 +449,9 @@ function AboutProfile(props) {
     return (
         <div className={`relative left-0 top-[0%] h-[15%] w-full flex flex-col justify-center
             ${props.themeChosen === "Dark"
-                ? "bg-slate-800/30 border-cyan-500/20"
-                : "bg-gray-100/50 border-gray-300"}
-            border-y-[1px] backdrop-blur-sm`}>
+                ? "bg-slate-800/20 border-cyan-500/20"
+                : "bg-gray-100/30 border-gray-300"}
+            border-y-[1px]`}>
 
             {/* About Title */}
             <div className={`flex px-6 h-[60%] w-full font-bold font-sans items-center text-xl
@@ -667,15 +667,15 @@ function Members(props) {
                 hover:scale-[1.01] active:scale-[0.99] border-b border-cyan-500/10`}
                 onClick={() => { props.setAddToGroup(true); console.log("Should show list of people to add to group")}}>
 
-                <div className="flex w-[20%] h-full items-center justify-center">
+                <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/30 to-cyan-400/30 blur-md group-hover:blur-lg transition-all" />
                         <img src="./addFrendo.png" className="relative w-10 xsw:w-14 xsw:h-14 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
                     </div>
                 </div>
 
-                <div className="flex w-[80%] h-full items-center">
-                    <div className={`text-lg xsw:text-xl font-sans font-bold
+                <div className="flex flex-1 h-full items-center pl-[10px]">
+                    <div className={`text-base xsw:text-lg font-sans font-bold
                         bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent
                         group-hover:from-green-300 group-hover:to-cyan-300 transition-all`}>
                         Add member
@@ -703,7 +703,7 @@ function Members(props) {
                 ${!pressed[idx] ? "hover:scale-[1.01] active:scale-[0.99]" : ""} border-b border-cyan-500/5`}
                 onClick={() => { updatePressedIndex(idx) }}>
 
-                <div className="flex w-[20%] h-full items-center justify-center">
+                <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative group/avatar">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-400/20 blur-md group-hover/avatar:blur-lg transition-all scale-110" />
                         {(getProfilePic(getUser(id)).data !== "") ?
@@ -719,13 +719,13 @@ function Members(props) {
                     </div>
                 </div>
 
-                <div className="flex w-[55%] h-full flex-col justify-center py-3">
-                    <div className={`flex flex-row text-lg xsw:text-xl font-sans font-semibold items-center
+                <div className="flex flex-1 min-w-0 h-full flex-col justify-center py-3 pl-[10px]">
+                    <div className={`flex flex-row text-base xsw:text-lg font-sans font-semibold items-center
                         ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                         {getUser(id).username}
-                        {props.curr_user === id && <span className={`text-lg xsw:text-xl ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
+                        {props.curr_user === id && <span className={`text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
                     </div>
-                    <div className={`flex text-base xsw:text-lg font-sans
+                    <div className={`flex text-sm xsw:text-base font-sans
                         ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}
                         truncate`}>
                         {getUser(id).about}
@@ -847,15 +847,15 @@ function OptionsGroup(props) {
                 hover:scale-[1.01] active:scale-[0.99]`}
                 onClick={async () => {await exitGroup(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 
-                <div className="flex w-[20%] h-full items-center justify-center">
+                <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 blur-md group-hover:blur-lg transition-all" />
                         <img src="./exitIcon.png" className="relative w-10 h-10 xsw:w-12 xsw:h-12 opacity-90 group-hover:scale-110 transition-all" />
                     </div>
                 </div>
 
-                <div className="flex w-[80%] h-full items-center">
-                    <div className={`text-lg xsw:text-xl font-sans font-bold
+                <div className="flex flex-1 h-full items-center pl-[10px]">
+                    <div className={`text-base xsw:text-lg font-sans font-bold
                         bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent
                         group-hover:from-red-400 group-hover:to-orange-400 transition-all`}>
                         Exit group
@@ -978,15 +978,15 @@ function OptionsChat(props) {
                     hover:scale-[1.01] active:scale-[0.99]`}
                     onClick={() => {blockContact('block');}}>
 
-                    <div className="flex w-[20%] h-full items-center justify-center">
+                    <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                         <div className="relative">
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 blur-md group-hover:blur-lg transition-all" />
                         <img src="./denied2.png" className="relative w-8 h-8 opacity-90 group-hover:scale-110 transition-all group-hover:rotate-90" />
                         </div>
                     </div>
 
-                    <div className="flex w-[80%] h-full items-center">
-                        <div className={`text-base font-sans font-bold
+                    <div className="flex flex-1 h-full items-center pl-[10px]">
+                        <div className={`text-sm xsw:text-base font-sans font-bold
                             ${props.themeChosen === "Dark" ? "text-red-500" : "text-red-600"}
                             group-hover:text-red-500 transition-colors`}>
                             Block user
@@ -1005,15 +1005,15 @@ function OptionsChat(props) {
                     hover:scale-[1.01] active:scale-[0.99]`}
                     onClick={() => {blockContact('unblock');}}>
 
-                    <div className="flex w-[20%] h-full items-center justify-center">
+                    <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                         <div className="relative">
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500/20 to-cyan-500/20 blur-md group-hover:blur-lg transition-all" />
                             <img src="./unblock2.png" className="relative w-8 h-8 opacity-90 group-hover:scale-110 group-hover:brightness-125 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.9)] group-hover:drop-shadow-[0_0_24px_rgba(34,211,238,0.7)]" />
                         </div>
                     </div>
 
-                    <div className="flex w-[80%] h-full items-center">
-                        <div className={`text-base font-sans font-bold
+                    <div className="flex flex-1 h-full items-center pl-[10px]">
+                        <div className={`text-sm xsw:text-base font-sans font-bold
                             bg-gradient-to-r from-green-500 to-cyan-500 bg-clip-text text-transparent
                             group-hover:from-green-400 group-hover:to-cyan-400 transition-all`}>
                             Unblock user
@@ -1031,7 +1031,7 @@ function OptionsChat(props) {
                 hover:scale-[1.01] active:scale-[0.99]`}
                 onClick={async () => {await deleteChat(); props.setCurrContact(null); props.setProfileInfo(false)}}>
 
-                <div className="flex w-[20%] h-full items-center justify-center">
+                <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-600/30 to-red-500/30 blur-md group-hover:blur-lg transition-all" />
                         <img src="./trash-icon-red.png" className="relative w-8 h-8 opacity-90 transition-all
@@ -1040,8 +1040,8 @@ function OptionsChat(props) {
                     </div>
                 </div>
 
-                <div className="flex w-[80%] h-full items-center">
-                    <div className={`text-base font-sans font-bold
+                <div className="flex flex-1 h-full items-center pl-[10px]">
+                    <div className={`text-sm xsw:text-base font-sans font-bold
                         ${props.themeChosen === "Dark" ? "text-red-500" : "text-red-600"}
                         group-hover:text-red-500 transition-colors`}>
                         Delete chat
