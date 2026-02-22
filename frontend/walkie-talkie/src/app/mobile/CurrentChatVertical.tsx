@@ -435,6 +435,20 @@ export default function CurrentChatVertical( props: any ) {
     }, [decryptedContact])
 
 
+    function showMessageBasedOnDisappearingPeriod(timestamp: string) {
+        if(props.disappearingMessagesPeriod === 'Off') return true;
+
+        const time_now = new Date()
+        const date_timestamp = new Date(timestamp)
+        const date_expiry = new Date(date_timestamp)
+
+        if(props.disappearingMessagesPeriod === 'Day') date_expiry.setDate(date_expiry.getDate() + 1)
+        else if(props.disappearingMessagesPeriod === 'Week') date_expiry.setDate(date_expiry.getDate() + 7)
+        else if(props.disappearingMessagesPeriod === 'Month') date_expiry.setMonth(date_expiry.getMonth() + 1)
+
+        return date_expiry > time_now;
+    }
+
     return (
         <div className={`relative left-[0%] w-full top-[0%] h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border`}>
             <div className={`absolute left-0 top-0 w-[100%] h-[10%] overflow-hidden flex flex-row
@@ -606,7 +620,8 @@ export default function CurrentChatVertical( props: any ) {
                     )}
 
                     {/* 1-on-1 Message */}
-                    {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
+                    {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))
+                        && showMessageBasedOnDisappearingPeriod(message.timestamp)) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 flex-col transition-all ${
@@ -626,7 +641,7 @@ export default function CurrentChatVertical( props: any ) {
                                 </div>
                             </div>
                         </div>
-                    ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0) ? (
+                    ) : (message.hasOwnProperty('group_id') && message.message !== undefined && Object.keys(message.message).length > 0 && showMessageBasedOnDisappearingPeriod(message.timestamp)) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
                                 className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
