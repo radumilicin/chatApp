@@ -139,9 +139,9 @@ export default function ProfileSettings(props) {
             border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
 
             {/* Header */}
-            <div className="relative w-full pt-4 px-4 pb-4">
+            <div className="relative w-full pt-4 px-4 pb-6">
                 <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all
                         ${props.themeChosen === "Dark"
                             ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30"
                             : "hover:bg-gray-300/50"}
@@ -159,9 +159,9 @@ export default function ProfileSettings(props) {
                             props.setBlockedContactsPressed(false)
                         }}>
                         <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`}
-                            className="w-5 h-5 aspect-square opacity-90" alt="Back" />
+                            className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>
-                    <h1 className={`text-xl xsw:text-2xl font-bold bg-gradient-to-r
+                    <h1 className={`text-xl xss:text-2xl font-bold bg-gradient-to-r
                         ${props.themeChosen === "Dark"
                             ? "from-cyan-400 via-blue-400 to-cyan-300"
                             : "from-gray-700 to-gray-900"}

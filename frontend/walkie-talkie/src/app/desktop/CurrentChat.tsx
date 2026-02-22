@@ -471,7 +471,7 @@ export default function CurrentChat( props: any ) {
             {/* Contact header - futuristic style */}
             {props.contact !== null && (
                 <div
-                    className={`absolute left-0 top-0 w-full h-[10%] rounded-tr-2xl overflow-hidden flex flex-row
+                    className={`absolute left-0 top-0 w-full h-[10%] min-h-[60px] rounded-tr-2xl overflow-hidden flex flex-row
                         ${props.themeChosen === "Dark" ? "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-b border-cyan-500/20 backdrop-blur-xl hover:cursor-pointer group transition-all duration-300"
                             : "bg-gray-100/80 border-b border-gray-300"}
                         ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
@@ -487,7 +487,7 @@ export default function CurrentChat( props: any ) {
                     </div> 
 
                     {/* Profile picture container */}
-                    <div className="relative flex w-[10%] min-w-[80px] h-full justify-end items-center z-10">
+                    <div className="relative flex w-[10%] min-w-[80px] max-w-[100px] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
@@ -569,7 +569,7 @@ export default function CurrentChat( props: any ) {
                     {props.contact !== null && props.contact.is_group === false && (
                         <div className="relative flex w-[90%] h-full items-center pl-2 z-10 indent-[10px]">
                             {props.contact !== null && (
-                                <div className={`text-base lg:text-lg xl:text-xl font-bold tracking-wide
+                                <div className={`text-lg xl:text-xl font-bold tracking-wide
                                     ${props.themeChosen === "Dark"
                                         ? "bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]"
                                         : "text-gray-900"}`}>
@@ -581,7 +581,7 @@ export default function CurrentChat( props: any ) {
                 </div>
             )}
             {!props.contact && 
-                <div className={`relative left-[0%] top-[10%] w-[100%] h-[75%] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent" } justify-center items-center`}>
+                <div className={`relative left-[0%] top-[min(10%,60px)] w-[100%] h-[calc(85%-min(10%,60px))] flex flex-col gap-1 overflow-y-auto ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent" } justify-center items-center`}>
                     <div className="absolute left-0 top-[30%] h-[40%] w-full flex flex-col justify-center items-center gap-4">
                         <img src={`${props.themeChosen === "Dark" ? "walkie-talkie-white.png" : "Walkie-talkie.png"}`} className="w-[200px] h-[200px]"></img>
                         <div className="flex flex-col justify-center items-center">
@@ -591,7 +591,7 @@ export default function CurrentChat( props: any ) {
                     </div>
                 </div>
             }
-            {props.contact && <div className={`relative left-[0%] top-[10%] w-[100%] h-[75%] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
+            {props.contact && <div className={`relative left-[0%] top-[max(10%,60px)] w-full h-[calc(85%-max(10%,60px))] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
                     filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);

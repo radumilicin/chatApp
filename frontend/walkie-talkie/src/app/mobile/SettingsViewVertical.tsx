@@ -18,25 +18,28 @@ export default function SettingsViewVertical(props) {
 
     return (
         <div className={`relative left-0 top-0 w-full h-full ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50" : "bg-gradient-to-b from-gray-100 to-gray-200 border-gray-300"} backdrop-blur-lg shadow-2xl border flex flex-col overflow-y-auto no-scrollbar`}>
-            <div className={`absolute left-0 top-[1%] h-[5%] w-full flex flex-row ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
-                <div className={`relative left-[2%] w-[12%] text-2xl font-semibold font-sans flex flex-row justify-center items-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
-                        onClick={() => {
-                            props.setPressedSettings(false);
-                            props.setPressProfile(false);
-                            props.setProfilePicPrivPress(false);
-                            props.setStatusPrivPress(false);
-                            props.setDisappearingMessagesPressed(false);
-                            props.setBlockedContactsPressed(false);
-                        }}>
-                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="justify-center items-center w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90"></img>
+            {/* Header */}
+            <div className="relative w-full pt-4 px-4 pb-6">
+                <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}
+                            onClick={() => {
+                                props.setPressedSettings(false);
+                                props.setPressProfile(false);
+                                props.setProfilePicPrivPress(false);
+                                props.setStatusPrivPress(false);
+                                props.setDisappearingMessagesPressed(false);
+                                props.setBlockedContactsPressed(false);
+                            }}>
+                        <img src={`${props.themeChosen === "Dark" ? "./back-arrow.png" : "./back_image_black.png"}`} className="w-5 h-5 xss:w-6 xss:h-6 aspect-square opacity-90" alt="Back" />
                     </div>
-                <div className={`relative indent-[10px] left-[2%] w-[40%] text-xl xss:text-2xl xsw:text-3xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent font-sans flex flex-row justify-start items-center`}>Settings</div>
+                    <h1 className={`text-xl xss:text-2xl font-bold bg-gradient-to-r ${props.themeChosen === "Dark" ? "from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" : "from-gray-700 to-gray-900"} bg-clip-text text-transparent`}>Settings</h1>
+                </div>
             </div>
 
             <SearchBar searchedSetting={searchedSettings} setSearchedSetting={setSearchedSetting} themeChosen={props.themeChosen}></SearchBar>
 
-            <div className={`absolute left-0 w-full top-[18%] h-[82%] flex flex-col items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
-                <div className="relative top-0 left-0 flex flex-col w-full h-full gap-2">
+            <div className="flex-1 overflow-y-auto">
+                <div className="flex flex-col w-full gap-2">
                     {showProfile && <CurrUserDiv curr_user={props.curr_user} users={props.users} images={props.images} themeChosen={props.themeChosen} setPressedSettings={props.setPressedSettings} setPressProfile={props.setPressProfile}
                                 setPressAccount={props.setPressAccount} setPressNotifications={props.setPressNotifications} setPressAppearance={props.setPressAppearance}
                                 setPressPrivacy={props.setPressPrivacy} setProfilePicPrivPress={props.setProfilePicPrivPress}></CurrUserDiv>}
@@ -110,10 +113,10 @@ export function CurrUserDiv (props: any) {
             <div className="flex-1 flex flex-col gap-0.5 min-w-0">
                 {user && (
                     <>
-                        <div className={`text-base xss:text-lg xsw:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight truncate`}>
+                        <div className={`text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight truncate`}>
                             {user.username}
                         </div>
-                        <div className={`text-xs xss:text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium truncate`}>
+                        <div className={`text-xs xss:text-sm  ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium truncate`}>
                             {user.about}
                         </div>
                     </>
@@ -145,10 +148,10 @@ export function PrivacyOption(props: any) {
                 <img src="./lock-icon.svg" className={`w-5 h-5 transition-all group-hover:scale-110 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Privacy" />
             </div>
             <div className="flex-1 flex flex-col gap-0.5">
-                <div className={`text-base xss:text-lg xsw:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Privacy
                 </div>
-                <div className={`text-xs xss:text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Blocked contacts, disappearing messages
                 </div>
             </div>
@@ -170,10 +173,10 @@ export function AccountOption( props: any ){
                 <img src={`${props.themeChosen === "Dark" ? "key-icon.png" : "key_icon_black.png"}`} className={`w-5 h-5 transition-all group-hover:scale-110`} alt="Account" />
             </div>
             <div className="flex-1 flex flex-col gap-0.5">
-                <div className={`text-base xss:text-lg xsw:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Account
                 </div>
-                <div className={`text-xs xss:text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Account info
                 </div>
             </div>
@@ -204,10 +207,10 @@ export function AppearanceOption( props: any ){
                 <img src="./appearance-icon.svg" className={`w-5 h-5 transition-all group-hover:scale-110 group-hover:rotate-45 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Appearance" />
             </div>
             <div className="flex-1 flex flex-col gap-0.5">
-                <div className={`text-base xss:text-lg xsw:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Appearance
                 </div>
-                <div className={`text-xs xss:text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Fonts, Themes
                 </div>
             </div>
@@ -238,10 +241,10 @@ export function NotificationsOption( props: any ){
                 <img src="./notification_1.png" className={`w-5 h-5 transition-all group-hover:scale-110 group-hover:rotate-12 ${props.themeChosen === "Dark" ? "invert" : ""}`} alt="Notifications" />
             </div>
             <div className="flex-1 flex flex-col gap-0.5">
-                <div className={`text-base xss:text-lg xsw:text-xl font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
+                <div className={`text-base xss:text-lg font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-900"} tracking-tight`}>
                     Notifications
                 </div>
-                <div className={`text-xs xss:text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
+                <div className={`text-xs xss:text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"} font-medium`}>
                     Message notifications
                 </div>
             </div>
@@ -274,10 +277,10 @@ export function LogOutOption( props: any ){
                 <img src="exitIcon.png" className="w-5 h-5 opacity-90 transition-all group-hover:scale-110" alt="Log out" />
             </div>
             <div className="flex-1 flex flex-col gap-0.5">
-                <div className="text-base xss:text-lg xsw:text-xl font-semibold text-red-500 tracking-tight">
+                <div className="text-base xss:text-lg font-semibold text-red-500 tracking-tight">
                     Log out
                 </div>
-                <div className="text-xs xss:text-sm xsw:text-base text-red-400 font-medium">
+                <div className="text-xs xss:text-sm text-red-400 font-medium">
                     Sign out of your account
                 </div>
             </div>
@@ -292,30 +295,17 @@ export function LogOutOption( props: any ){
 
 export function SearchBar( props : any ) {
     return (
-        <div className={`absolute left-0 top-[6%] h-[10%] w-full ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
-            <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
-                transition-all duration-300
-                ${props.themeChosen === "Dark"
-                    ? "border-2 border-cyan-500/30 bg-slate-800/60 shadow-lg shadow-cyan-500/10 focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(34,211,238,0.3)]"
-                    : "border-2 border-gray-300 bg-gray-100 shadow-md focus-within:border-[#3B7E9B] focus-within:shadow-lg"}
-                backdrop-blur-sm`}>
-                <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[12%] h-full flex flex-col justify-center items-center'>
-                        <img className={`absolute w-8 h-8 xsw:w-10 xsw:h-10 opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110 transition-all`}
-                        src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
-                    </div>
-                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg xsw:text-xl font-medium
-                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
-                            value={props.searchedSetting}
-                            placeholder="Search settings..."
-                            onChange={async (e) => {
-                                props.setSearchedSetting(e.target.value)
-                            }}
-                        >
-                        </input>
-                    </div>
+        <div className="relative w-full px-4 pb-4">
+            <div className={`w-full h-12 rounded-xl border flex flex-row items-center ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
+                <div className='w-12 h-full flex items-center justify-center'>
+                    <img className='w-6 h-6 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`} alt="Search" />
                 </div>
+                <input className={`flex-1 h-full outline-none bg-transparent text-base
+                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
+                    value={props.searchedSetting}
+                    placeholder="Search settings..."
+                    onChange={async (e) => { props.setSearchedSetting(e.target.value) }}
+                />
             </div>
         </div>
     );

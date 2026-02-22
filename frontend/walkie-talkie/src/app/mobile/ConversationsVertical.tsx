@@ -342,20 +342,14 @@ export function SearchBar( props : any ) {
 
     return (
         <div className={`absolute left-0 top-[7%] h-[10%] w-full`}>
-            <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
-                transition-all duration-300
-                ${props.themeChosen === "Dark"
-                    ? "border-2 border-cyan-500/30 bg-slate-800/60 shadow-lg shadow-cyan-500/10 focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(34,211,238,0.3)]"
-                    : "border-2 border-gray-300 bg-gray-100 shadow-md focus-within:border-[#3B7E9B] focus-within:shadow-lg"}
-                backdrop-blur-sm`}>
+            <div className={`relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-xl border ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                 <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                    <div className='relative left-0 top-0 w-[12%] h-full flex flex-col justify-center items-center'>
-                        <img className={`absolute w-8 h-8 opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110 transition-all`}
-                        src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                    <div className='relative left-0 top-0 w-[60px] h-full flex flex-row justify-center items-center'>
+                        <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                     </div>
-                    <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg xsw:text-xl font-medium
-                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
+                    <div className='relative left-[2%] top-0 w-[calc(min(100%-60px,88%))] h-full flex flex-col justify-center items-start'>
+                        <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base
+                            ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
                             value={props.currentSearch}
                             placeholder={`${props.addContact ? "Search for user to add.." : "Search contact.."}`}
                             onChange={async (e) => {props.setCurrSearch(e.target.value);
@@ -551,6 +545,17 @@ export function Contacts( props: any) {
 
     const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
+    function amOrPmTime(timestamp: string) {
+        if (!timestamp.includes(":")) return ""
+        const time = timestamp.split(":")
+        if (parseInt(time[0]) >= 13) {
+            const new_hr = `${parseInt(time[0]) - 12}`
+            return `${new_hr}:${time[1]} pm`
+        } else {
+            return timestamp + " am"
+        }
+    }
+
     const groupRef = useRef(null);
     const prevContact = useRef(null);
 
@@ -725,7 +730,7 @@ export function Contacts( props: any) {
 
     return (
         <div className={`absolute left-0 top-[17%] w-full h-[83%]
-            overflow-hidden`}>
+            overflow-hidden mb-2`}>
             <div className="relative top-0 left-0 h-full w-full flex flex-col items-center overflow-y-auto scrollbar-hidden">
                 { props.filteredContacts !== null && props.filteredDecryptedContacts.map((element: any, idx: number) => {
 
@@ -739,10 +744,10 @@ export function Contacts( props: any) {
                         lastMessage = getLastMessage(element, idx)
                     }
                     time = lastMessage && lastMessage.timestamp
-                    ? lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    ? amOrPmTime(lastMessage.timestamp.split("T")[1].split(".")[0].slice(0, 5))
                     : "";
                     timeGroup = lastMessageGroup && lastMessageGroup.timestamp
-                    ? lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5)
+                    ? amOrPmTime(lastMessageGroup.timestamp.split("T")[1].split(".")[0].slice(0, 5))
                     : "";
 
                     const isSender = lastMessage && lastMessage.sender_id === props.curr_user;
@@ -757,7 +762,7 @@ export function Contacts( props: any) {
                     ((element.sender_id !== null && element.sender_id === props.curr_user) || (element.contact_id !== null && element.contact_id === props.curr_user)) ?
                     <div
                         key={idx}
-                        className={`group/contact relative flex-none flex flex-row h-[15%] w-[96%] overflow-hidden
+                        className={`group/contact relative flex-none flex flex-row h-[14%] w-[96%] overflow-hidden
                             transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                             ${props.themeChosen === "Dark"
                                 ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
@@ -782,26 +787,22 @@ export function Contacts( props: any) {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
                                         opacity-0 group-hover/contact:opacity-100 transition-opacity duration-500" />
 
-                        <div className="relative flex w-[15%] h-full justify-center items-center group/avatar">
-                            {/* Glowing ring around avatar */}
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-500/20
-                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-75" />
-
+                        <div className="relative flex w-[15%] xsw:w-[12%] max-w-[60px] h-full justify-end items-center group/avatar">
                             {/* Use base64 data for image */}
                             {getImage(element).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-10 h-10 xss:w-12 xss:h-12 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"
                             /> : getProfileImage(element, 1).data !== "" ? <img
                                 src={`data:image/jpg;base64,${getImage(element).data}`}
-                                className="relative h-10 w-10 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
+                                className="relative w-10 h-10 xss:w-12 xss:h-12 rounded-full border border-cyan-500/30 group-hover/avatar:border-cyan-400/60 transition-all duration-300"
                                 alt="Profile"></img> :
                                 <img src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`} className="relative h-10 w-10 rounded-full opacity-80 group-hover/avatar:opacity-100 transition-all duration-300"></img>}
                         </div>
-                        <div className="relative flex flex-col w-[85%]">
+                        <div className="relative flex flex-col w-[85%] xsw:w-[88%]">
                             <div className="relative flex flex-row h-[50%] w-full items-center">
                                 <div className="w-[75%] h-full flex flex-row items-end">
-                                    <div className={`indent-[10px] text-lg font-semibold font-sans
+                                    <div className={`indent-[15px] text-base font-semibold font-sans
                                         ${props.themeChosen === "Dark"
                                             ? "text-gray-200"
                                             : "text-gray-900"}`}>
@@ -822,7 +823,7 @@ export function Contacts( props: any) {
                             <div className="relative flex flex-row w-full h-[50%]">
                                 {/* Left text container */}
                                 <div className="relative flex flex-row h-full w-[75%] items-start">
-                                    <div className={`indent-[10px] flex flex-row h-full w-full items-start text-sm xsw:text-base
+                                    <div className={`indent-[15px] flex flex-row h-full w-full items-start text-sm
                                             ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-700"}
                                             font-medium overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis transition-colors duration-300`}>
                                         {lastMessage.hasOwnProperty("image_id") ? "Image" : lastMessage.message}
@@ -830,8 +831,8 @@ export function Contacts( props: any) {
                                 </div>
                                 {/* Right time container */}
                                 <div className="relative flex flex-row h-full w-[25%]">
-                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs xss:text-sm
-                                        ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover/contact:text-cyan-300" : "text-gray-600"}
+                                    <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs
+                                        ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/contact:text-gray-300" : "text-gray-600"}
                                         font-medium transition-colors duration-300`}>
                                         {lastMessage.sender_id === props.curr_user
                                             ? <div className="flex flex-col">
@@ -855,7 +856,7 @@ export function Contacts( props: any) {
                                 className={`group/group relative flex-none flex flex-row h-[15%] w-[96%] overflow-hidden
                                     transition-all duration-300 rounded-2xl mt-2 hover:cursor-pointer
                                     ${props.themeChosen === "Dark"
-                                        ? "bg-slate-800/40 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-purple-500/20 border border-purple-500/10 hover:border-purple-500/30"
+                                        ? "bg-slate-800/40 shadow-cyan-500/10 hover:bg-slate-800/60 hover:shadow-lg hover:shadow-cyan-500/20 border-2 border-cyan-500/10 hover:border-cyan-500/30"
                                         : "bg-gray-100/60 hover:bg-gray-200/80 border border-gray-300"}
                                     hover:scale-[1.02] active:scale-[0.98]`}
                                 onClick={(e) => {
@@ -872,39 +873,36 @@ export function Contacts( props: any) {
                                 }}
                             >
                                 {/* Animated gradient overlay for groups */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
                                                 opacity-0 group-hover/group:opacity-100 transition-opacity duration-500" />
 
-                                <div className="relative flex flex-row w-[15%] h-full justify-center items-center group/groupavatar">
-                                    {/* Glowing ring around group avatar */}
-                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-500/20 to-blue-500/20
-                                                    blur-md group-hover/groupavatar:blur-lg transition-all duration-300 scale-75" />
-
+                                <div className="relative flex flex-row w-[15%] xsw:w-[12%] max-w-[60px] h-full justify-end items-center group/groupavatar">
                                     {/* Use base64 data for image */}
                                     {getImageGroup(element).data ? <img
                                         src={`data:image/jpeg;base64,${getImageGroup(element).data}`}
-                                        className="relative h-10 w-10 rounded-full border border-purple-500/30 group-hover/groupavatar:border-purple-400/60 transition-all duration-300"
+                                        className="relative w-10 h-10 xss:w-12 xss:h-12 rounded-full border border-cyan-500/30 group-hover/groupavatar:border-cyan-400/60 transition-all duration-300"
                                         alt="Profile"
                                     /> :
-                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="relative h-10 w-10 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
+                                        <img src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`} className="relative w-10 h-10 xss:h-12 xss:w-12 rounded-full pointer-events-none opacity-80 group-hover/groupavatar:opacity-100 transition-all duration-300"></img>}
                                 </div>
-                                <div className="relative flex w-[85%] flex-col">
+                                <div className="relative flex w-[85%] xsw:w-[88%] flex-col">
                                     <div className="relative flex flex-row h-[50%] w-full items-center">
                                         <div className="w-[75%] h-full flex flex-row items-end">
-                                            <div className={`indent-[10px] text-lg font-semibold font-sans tracking-wide
+                                            <div className={`indent-[15px] text-base font-semibold font-sans
                                                 ${props.themeChosen === "Dark"
-                                                    ? "bg-gradient-to-r from-purple-200 via-pink-200 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(168,85,247,0.3)]"
-                                                    : "text-gray-900"}`}>
+                                                    ? "text-gray-200"
+                                                    : "text-gray-900"}
+                                                overflow-x-hidden overflow-y-hidden whitespace-nowrap text-ellipsis`}>
                                                 {element.group_name}
                                             </div>
                                         </div>
                                         <div className="w-[25%] h-full flex flex-row justify-center items-end">
                                             <div className={`flex flex-row justify-center items-center rounded-full text-xs xss:text-sm font-semibold
                                                 ${getUnreadMessages(element) > 0
-                                                    ? 'bg-gradient-to-br from-green-400 to-purple-500 text-white shadow-lg shadow-purple-500/30'
+                                                    ? 'bg-gradient-to-br from-green-400 to-cyan-500 text-white shadow-lg shadow-cyan-500/30'
                                                     : ''}
                                                 ${props.themeChosen === "Dark" ? "text-gray-300" : "text-gray-800"}
-                                                h-[60%] w-[50%] transition-all duration-300 hover:scale-110`}>
+                                                h-[60%] w-[40%] hover:cursor-pointer transition-all duration-300 hover:scale-110`}>
                                                 {(element.message.length > 0 && lastMessageGroup && lastMessageGroup.sender_id !== curr_user && getUnreadMessages(element) > 0) ? getUnreadMessages(element) : ""}
                                             </div>
                                         </div>
@@ -912,7 +910,7 @@ export function Contacts( props: any) {
                                     <div className="relative flex w-full h-[50%] items-center">
                                         {/* Left text container */}
                                         <div className="relative flex flex-row h-full w-[75%]">
-                                            <div className={`indent-[10px] h-full w-full text-sm xsw:text-base
+                                            <div className={`indent-[15px] h-full w-full text-sm
                                                 ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-700"}
                                                 font-medium truncate transition-colors duration-300`}>
                                                 {element.message.length > 0 && lastMessageGroup && lastMessageGroup.message.hasOwnProperty("image_id") ? "Image" : lastMessageGroup.message}
@@ -920,8 +918,8 @@ export function Contacts( props: any) {
                                         </div>
                                         {/* Right time container */}
                                         <div className="relative flex flex-row h-full w-[25%] justify-end">
-                                            <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs xss:text-sm
-                                                ${props.themeChosen === "Dark" ? "text-purple-300/70 group-hover/group:text-purple-300" : "text-gray-600"}
+                                            <div className={`relative flex h-[50%] w-full flex-row top-[0%] justify-center text-xs
+                                                ${props.themeChosen === "Dark" ? "text-gray-400 group-hover/group:text-gray-300" : "text-gray-600"}
                                                 font-medium transition-colors duration-300`}>
                                                 {(element.message.length > 0 && lastMessageGroup.sender_id === props.curr_user)
                                                     ? <div className="flex flex-col">

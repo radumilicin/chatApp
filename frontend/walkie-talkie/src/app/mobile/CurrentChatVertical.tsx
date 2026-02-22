@@ -18,6 +18,7 @@ export default function CurrentChatVertical( props: any ) {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [ratchet, setRatchet] = useState<DoubleRatchet | null>(null);
     const [decryptedContact, setDecryptedContact] = useState(null);
+    const prevMsgList = useRef(null);
 
     // useEffect(() => {
     //     if(props.potentialContact !== props.prevPotentialContact.current)
@@ -377,6 +378,17 @@ export default function CurrentChatVertical( props: any ) {
 
     const isBase64 = value => value.length > 100 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(value);
 
+    function amOrPmTime(timestamp: string) {
+        if (!timestamp.includes(":")) return ""
+        const time = timestamp.split(":")
+        if (parseInt(time[0]) >= 13) {
+            const new_hr = `${parseInt(time[0]) - 12}`
+            return `${new_hr}:${time[1]} pm`
+        } else {
+            return timestamp + " am"
+        }
+    }
+
     const groupUserColors = [
         '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
         '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA',
@@ -544,7 +556,10 @@ export default function CurrentChatVertical( props: any ) {
             <div className={`relative left-[2%] top-[10%] w-[96%] h-[76%] bg-transparent flex flex-col gap-1 overflow-y-auto pb-2`}>
                 {decryptedContact !== null && decryptedContact !== undefined && decryptedContact.hasOwnProperty("message") && 
                     decryptedContact.message.map((message, idx) => {
-                        // console.log("message =", message);
+                        let isSenderSame = false
+                        if(prevMsgList.current !== null) {
+                            isSenderSame = message.sender_id === prevMsgList.current.sender_id
+                        }
 
                         // Helper function to get date label
                         const getDateLabel = (timestamp: string) => {
@@ -577,6 +592,8 @@ export default function CurrentChatVertical( props: any ) {
                             new Date(message.timestamp).toDateString() !== 
                             new Date(decryptedContact.message[idx - 1].timestamp).toDateString());
 
+                        prevMsgList.current = message
+
                         return (
                 <div key={idx} className={`${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}>
                     {/* Date Divider */}
@@ -587,26 +604,25 @@ export default function CurrentChatVertical( props: any ) {
                             </div>
                         </div>
                     )}
-                    
-                    {/* Message */}
+
+                    {/* 1-on-1 Message */}
                     {(message.hasOwnProperty('recipient_id') && (message.message !== undefined) && ((message.hasOwnProperty('message') && Object.keys(message.message).length > 0) || (message.hasOwnProperty('plaintext') && Object.keys(message.plaintext).length > 0))) ? (
                         <div className={`flex ${String(props.curr_user) === String(message.sender_id) ? 'justify-end' : 'justify-start'} ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-transparent"}`}>
                             <div
-                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-2xl flex-col transition-all ${
+                                className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 flex-col transition-all ${
                                     String(props.curr_user) === String(message.sender_id)
-                                        ? `${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/15 border-2 border-[#48C287]/40 shadow-[0_0_8px_rgba(72,194,135,0.15)]" : "bg-gray-100 border-2 border-gray-300"}`
-                                        : `${props.themeChosen === "Dark" ? "bg-[#3F8F63]/10 border-2 border-[#2479C7]/40 shadow-[0_0_8px_rgba(36,121,199,0.15)]" : "bg-gray-100 border-2 border-gray-300"}`}`}
+                                        ? `${props.themeChosen === "Dark" ? "bg-[#3B7E9B]/15 border-[#48C287]/40 shadow-[0_0_8px_rgba(72,194,135,0.15)]" : "bg-gray-100 border-gray-300"}`
+                                        : `${props.themeChosen === "Dark" ? "bg-[#3F8F63]/10 border-[#2479C7]/40 shadow-[0_0_8px_rgba(36,121,199,0.15)]" : "bg-gray-100 border-gray-300"}`}`}
                             >
-                                <div className={`relative flex w-full text-sm xss:text-base text-black font-semibold ${props.themeChosen === "Dark" ? "text-white" : "text-gray-700"}`}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-2 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words text-sm xsw:text-base">
+                                <div className={`flex items-end gap-3 text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <span className="break-words min-w-0">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
-                                    </div>
-                                    <div className="text-xs whitespace-nowrap self-end">
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                    </div>
+                                    </span>
+                                    <span className="text-xs whitespace-nowrap shrink-0 ml-auto opacity-70 translate-y-1">
+                                        {amOrPmTime(message.timestamp.split("T")[1].split(".")[0].slice(0, 5))}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -616,16 +632,16 @@ export default function CurrentChatVertical( props: any ) {
                                 className={`inline-flex mt-1 max-w-[80%] mx-4 py-2 px-4 rounded-lg border-2 flex-col ${props.themeChosen === "Dark" ? "bg-gray-800/30" : "bg-gray-100"} transition-all`}
                                 style={{ borderColor: getUserColor(message.sender_id), boxShadow: `0 0 6px ${getUserColor(message.sender_id)}30` }}
                             >
-                                <div className={`relative flex w-full text-sm xss:text-base font-semibold ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>
-                                <div className={`relative flex flex-col gap-1 items-start ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
-                                    <div className="break-words text-sm xsw:text-base">
+                                {!isSenderSame && <div className="text-sm xss:text-base font-semibold" style={{ color: getUserColor(message.sender_id) }}>{getUserFromId(message.sender_id).username}</div>}
+                                <div className={`flex items-end gap-3 text-sm xsw:text-base ${props.themeChosen === "Dark" ? "text-white" : "text-black"}`}>
+                                    <span className="break-words min-w-0">
                                         { message.message.hasOwnProperty("image_id") ? <img src={`data:image/jpeg;base64,${findImageBasedOnID(message.message).data}`} className="w-[200px] h-[200px]"></img> :
                                         isBase64(message.message) ? <img src={`data:image/jpeg;base64,${message.message}`} className="w-[200px] h-[200px]"></img> :
                                         message.hasOwnProperty("message") ? message.message : ''}
-                                    </div>
-                                    <div className="text-xs whitespace-nowrap self-end">
-                                        {message.timestamp.split("T")[1].split(".")[0].slice(0, 5)}
-                                    </div>
+                                    </span>
+                                    <span className="text-xs whitespace-nowrap shrink-0 ml-auto opacity-70 translate-y-1">
+                                        {amOrPmTime(message.timestamp.split("T")[1].split(".")[0].slice(0, 5))}
+                                    </span>
                                 </div>
                             </div>
                         </div>
