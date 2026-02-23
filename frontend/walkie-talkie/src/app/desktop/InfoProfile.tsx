@@ -369,7 +369,7 @@ export default function ProfileInfo(props) {
                                 value={nameGroup}
                                 className={`flex flex-row justify-center items-center text-lg lg:text-xl xl:text-2xl
                                     ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                    font-bold font-sans h-full w-full outline-none overflow-x-auto
+                                    font-bold font-sans h-full w-[75%] outline-none overflow-x-auto
                                     border-b-2 bg-transparent border-cyan-500
                                     focus:border-cyan-400 transition-all placeholder:text-cyan-300/50`}
                                 onChange={(e) => {
@@ -389,7 +389,7 @@ export default function ProfileInfo(props) {
                             </input>)
                             :
                             <div className={`flex flex-row justify-center items-center text-xl lg:text-2xl
-                                font-bold font-sans h-full w-full tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                                font-bold font-sans h-full w-[75%] tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
                                     : "text-black"}
                                 `}>
                                 {getNameContact(props.contact)}
@@ -515,7 +515,7 @@ function AboutProfile(props) {
                                     value={props.description}
                                     className={`w-[98%] outline-none bg-transparent border-b-2 border-cyan-500
                                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                           font-sans text-lg xl:text-xl px-2
+                                           font-sans text-lg xl:text-xl
                                            focus:border-cyan-400 transition-all placeholder:text-cyan-400/50`}
                                     onChange={(e) => {
                                         props.setDescriptionAsync(e.target.value)
@@ -689,7 +689,7 @@ function Members(props) {
             overflow-scroll scrollbar-hide border-b-[1px]`}>
 
             {/* Add Member Button */}
-            {props.contact.admins.includes(props.curr_user) && <div className={`relative flex min-h-[12.5cqh] w-full flex-row items-center px-4 group
+            {props.contact.admins.includes(props.curr_user) && <div className={`relative flex min-h-[max(100px,12.5cqh)] w-full flex-row items-center px-4 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/20"
@@ -725,7 +725,7 @@ function Members(props) {
                 if (!aIsAdmin && bIsAdmin) return 1;
                 return 0;
             }).map((id, idx) => (
-                <div key={idx} className={`relative flex min-h-[12.5cqh] w-full flex-row items-center px-4 group
+                <div key={idx} className={`relative flex min-h-[max(100px,12.5cqh)] w-full flex-row items-center px-4 group
                 transition-all duration-300 cursor-pointer select-none
                 ${props.themeChosen === "Dark"
                         ? "hover:bg-cyan-500/10 hover:shadow-lg hover:shadow-cyan-500/10"
@@ -876,7 +876,7 @@ function OptionsGroup(props) {
                 : "bg-gray-100/30"}
             overflow-scroll scrollbar-hide`}>
 
-            <div className={`flex min-h-[12.5cqh] w-full flex-row items-center px-6 group
+            <div className={`flex min-h-[max(100px,12.5cqh)] w-full flex-row items-center px-6 group
                 transition-all duration-300 cursor-pointer
                 ${props.themeChosen === "Dark"
                     ? "hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/20"

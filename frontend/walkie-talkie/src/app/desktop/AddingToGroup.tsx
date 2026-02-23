@@ -99,7 +99,7 @@ export default function AddPersonToGroup(props) {
                 {/* Header */}
                 <div className={`relative flex flex-row h-[10%] w-full items-center
                     ${props.themeChosen === "Dark"
-                        ? "bg-slate-800/50 border-b border-cyan-500/20"
+                        ? "bg-transparent"
                         : "bg-gray-200/80 border-b border-gray-300"}`}>
 
                     {/* Close button */}
@@ -128,18 +128,18 @@ export default function AddPersonToGroup(props) {
                 </div>
 
                 {/* Search bar */}
-                <div className="relative flex flex-row h-[10%] w-full items-center justify-center px-4 py-2">
-                    <div className={`relative w-full h-full rounded-xl overflow-hidden
+                <div className="relative flex flex-row h-[10%] w-full items-center justify-center px-4 py-1">
+                    <div className={`relative w-full h-full rounded-xl overflow-hidden border
                         ${props.themeChosen === "Dark"
-                            ? "bg-slate-800/60 border border-cyan-500/20"
-                            : "bg-gray-200/80 border border-gray-300"}
-                        transition-all focus-within:border-cyan-500/50 focus-within:ring-2 focus-within:ring-cyan-500/20`}>
+                            ? "bg-gray-700/50 border-gray-600"
+                            : "bg-gray-100 border-gray-300"}
+                        transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                         <input
                             placeholder="Search for username.."
                             value={searchedContact}
                             className={`w-full h-full bg-transparent outline-none px-4 text-base
                                 ${props.themeChosen === "Dark"
-                                    ? "text-cyan-100 placeholder:text-cyan-400/50"
+                                    ? "text-white placeholder:text-gray-400"
                                     : "text-gray-800 placeholder:text-gray-500"}`}
                             onChange={async (e) => {
                                 setSearchedContact(e.target.value);
@@ -200,12 +200,12 @@ export default function AddPersonToGroup(props) {
 
                             {/* User info */}
                             <div className="flex w-[70%] h-full flex-col justify-center py-2">
-                                <div className={`flex text-base lg:text-lg font-sans font-semibold
-                                    ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
+                                <div className={`flex text-base font-sans font-semibold
+                                    ${props.themeChosen === "Dark" ? "text-gray-200" : "text-gray-900"}`}>
                                     {user.username}
                                 </div>
-                                <div className={`flex text-sm lg:text-base font-sans truncate
-                                    ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}`}>
+                                <div className={`flex text-sm font-sans truncate
+                                    ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                                     {user.about}
                                 </div>
                             </div>
@@ -216,7 +216,7 @@ export default function AddPersonToGroup(props) {
                 {/* Footer with confirm button */}
                 <div className={`absolute left-0 bottom-0 h-[12%] w-full flex items-center justify-end px-6
                     ${props.themeChosen === "Dark"
-                        ? "bg-slate-800/50 border-t border-cyan-500/20"
+                        ? "bg-transparent"
                         : "bg-gray-200/80 border-t border-gray-300"}`}>
 
                     {/* Selected count badge */}

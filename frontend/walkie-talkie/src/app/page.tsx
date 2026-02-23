@@ -1079,7 +1079,7 @@ export default function Home() {
   }, [decryptedContacts])
 
   return (
-    <div className="absolute left-0 top-0 w-full h-full">
+    <div className="absolute left-0 top-0 w-full h-full min-h-[600px]">
       <div className={`relative left-0 top-0 w-full h-full flex flex-row bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] ${(addingToGroup === true) ? 'blur-sm' : 'blur-none'}`}>
         {themePressed ? (display === "Desktop" ? <Theme curr_user={user} userObj={userObj} fetchUsers={fetchData} themePressed={themePressed} setThemePressed={setThemePressed} themeChosen={themeChosen} setThemeChosen={setThemeChosen}
                                fontChosen={fontChosen} setFontChosen={setFontChosen} themeChosenPending={themeChosenPending} setThemeChosenPending={setThemeChosenPending}
