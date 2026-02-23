@@ -211,7 +211,7 @@ export default function Conversations( props : any) {
     }, []);
 
     return (
-        <div className={`shrink-0 w-[30%] min-w-[400px] max-w-[500px] h-full  min-h-[600px] ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
+        <div className={`shrink-0 w-[30%] min-w-[400px] max-w-[500px] h-full overflow-hidden ${props.themeChosen === "Dark" ? "bg-gradient-to-b from-gray-800/90 to-gray-900/95" : "bg-gradient-to-b from-gray-100 to-gray-200"} backdrop-blur-lg flex flex-col shadow-2xl border ${props.themeChosen === "Dark" ? "border-gray-700/50" : "border-gray-300"}`}>
             {props.newGroupPress && <Groups setNewGroupPress={props.setNewGroupPress} contactsInNewGroup={contactsInNewGroup} users={props.users} contacts={props.contacts}
                 removeContactFromGroup={removeContactFromGroup} setContactsInNewGroup={setContactsInNewGroup} curr_user={props.curr_user} setAddContact={setAddContact}
                 fetchUsers={props.fetchUsers} fetchContacts={props.fetchContacts} fetchImages={props.fetchImages} images={props.images} themeChosen={props.themeChosen}
@@ -1345,19 +1345,19 @@ export function Groups(props) {
                     </div>
                 </div>
                 <div className={`relative left-0 top-0 h-[65%] w-full bg-transparent`}>
-                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
-                        transition-all duration-300
+                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-xl overflow-hidden
+                        transition-all
                         ${props.themeChosen === "Dark"
-                            ? "border-2 border-slate-700/50 bg-slate-800/60 focus-within:border-[#3B7E9B] focus-within:shadow-[0_0_12px_rgba(59,126,155,0.4)]"
-                            : "border-2 border-gray-300 bg-gray-100 focus-within:border-[#3B7E9B]"}
-                        backdrop-blur-sm`}>
+                            ? "border bg-gray-700/50 border-gray-600"
+                            : "border bg-gray-100 border-gray-300"}
+                        focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                         <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                            <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                            <div className='relative left-0 top-0 w-[15%] h-full flex flex-row justify-center items-center'>
+                                <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                             </div>
-                            <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base lg:text-lg font-medium
-                                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
+                            <div className='relative left-0 top-0 w-[85%] h-full flex flex-col justify-center items-start'>
+                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base
+                                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
                                     value={usernameSearch} placeholder="Search user to add.."
                                     onChange={async (e) => {
                                         const val = e.target.value;
@@ -1373,7 +1373,7 @@ export function Groups(props) {
             </div>}
             {!finishingSettingUpGroup && props.contactsInNewGroup.length !== 0 &&
                 <div className="relative left-0 top-0 w-full h-[15%] flex flex-col justify-center items-center">
-                    <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(25%,50%))] gap-2 items-center justify-center w-[80%] overflow-y-scroll scrollbar-hide">
+                    <div className="relative top-[5%] h-full grid grid-flow-row-dense auto-rows-max grid-cols-[repeat(auto-fit,minmax(40%,70%))] gap-2 items-center justify-center w-[80%] overflow-y-scroll scrollbar-hide">
                         {props.contactsInNewGroup.map((contact, idx) => (
                             <div key={idx} className={`group/chip relative text-md w-[92%] h-[40px] flex flex-row justify-center items-center rounded-full
                                 transition-all duration-300 overflow-hidden
@@ -1381,13 +1381,13 @@ export function Groups(props) {
                                     ? "bg-gradient-to-r from-cyan-500/90 to-blue-500/90 shadow-lg shadow-blue-700"
                                     : "bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500"}
                                 hover:scale-105 active:scale-95`}>
-                                <div className="relative w-[70%] h-full flex flex-row items-center pl-5 overflow-hidden text-white font-semibold">
+                                <div className="relative w-[80%] h-full flex flex-row items-center pl-5 overflow-hidden text-white font-semibold">
                                     {getNameUser(contact)}
                                 </div>
-                                <div className="relative w-[30%] h-full flex flex-row items-center justify-center">
+                                <div className="relative w-[20%] h-full flex flex-row items-center justify-center">
                                     <img
                                         src={`${props.themeChosen === "Dark" ? "xicon-white.png" : "xicon-white.png"}`}
-                                        className="w-6 h-6 cursor-pointer transition-all duration-300 hover:scale-125 active:scale-90 opacity-90 hover:opacity-100"
+                                        className="w-6 h-6 cursor-pointer transition-all duration-300 hover:scale-110 active:scale-110 opacity-90 hover:opacity-100"
                                         onClick={() => {
                                             props.removeContactFromGroup(contact);
                                             setToRemoveFromAddingToGroup(contact);
@@ -1436,9 +1436,9 @@ export function Groups(props) {
                     <div className={`relative flex flex-col w-[85%]`}>
                         <div className="relative flex flex-row h-[50%] w-full items-center">
                             <div className="w-[75%] h-full flex flex-row items-end">
-                                <div className={`indent-[10px] text-base xl:text-lg font-semibold font-sans tracking-wide
+                                <div className={`indent-[10px] text-base font-semibold font-sans
                                     ${props.themeChosen === "Dark"
-                                        ? "bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(34,211,238,0.3)]"
+                                        ? "text-gray-200"
                                         : "text-gray-900"}`}>
                                     {getNameUser2(element)}
                                 </div>
@@ -1467,8 +1467,8 @@ export function Groups(props) {
                     </div>
                 </div>))}
             </div>}
-            <div className={`relative flex flex-row w-full h-[10%] items-center justify-center`}>
-                <div className={`group relative flex flex-row justify-center items-center w-[12%] h-[60%] rounded-xl
+            <div className={`relative flex flex-row w-full h-[14%] justify-center items-center`}>
+                <div className={`group relative flex flex-row justify-center items-center w-[12%] h-[40%] rounded-xl
                     transition-all duration-300 cursor-pointer
                     ${props.themeChosen === "Dark"
                         ? "bg-gradient-to-r from-cyan-500/90 to-blue-500/90 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50"

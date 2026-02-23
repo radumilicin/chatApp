@@ -36,7 +36,7 @@ export default function OptionsBarVerticalView(props){
                             props.setProfileInfo(false);
                             props.setCurrContact(null);
                         }}>
-                        <div className={`flex w-12 h-12 justify-center items-center flex-col rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
+                        <div className={`flex w-[44px] h-[44px] justify-center items-center flex-col rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                             <img src={`${props.themeChosen === "Dark" ? "/messagesIcon_w.png" : "messagesIcon.png"}`} className="flex w-8 h-8 opacity-90"></img>
                         </div>
                     </div>
@@ -56,7 +56,7 @@ export default function OptionsBarVerticalView(props){
                             props.setProfileInfo(false);
                             props.setCurrContact(null);
                         }}>
-                        <div className={`flex w-10 h-10 justify-center items-center flex-col rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
+                        <div className={`flex w-[44px] h-[44px] justify-center items-center flex-col rounded-xl hover:cursor-pointer transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                             <img src={`${props.themeChosen === "Dark" ? "/cogIcon2.png" : "./cog-black.png"}`} className="flex w-8 h-8 opacity-90"></img>
                         </div>
                     </div>

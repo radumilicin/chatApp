@@ -605,7 +605,7 @@ export default function CurrentChat( props: any ) {
                     </div>
                 </div>
             }
-            {props.contact && <div className={`relative left-[0%] top-[max(10%,60px)] w-full h-[calc(85%-max(10%,60px))] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
+            {props.contact && <div className={`relative left-[0%] top-[max(10%,60px)] w-full h-[calc(86%-max(10%,60px))] flex flex-col gap-1 overflow-y-auto pb-2 ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent" }`}>
                 {decryptedContact !== null  &&
                     filterMessagesByPeriod(decryptedContact.message).map((message, idx, filteredMessages) => {
                         // console.log("message =", message);
@@ -721,21 +721,22 @@ export default function CurrentChat( props: any ) {
                 )}
                 <div ref={messagesEndRef} />
             </div>}
-            {!props.contact && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent"}`}></div>}
+            {!props.contact && <div className={`absolute left-0 top-[86%] h-[14%] min-h-[100px] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-transparent" : "bg-opacity-50 bg-transparent"}`}></div>}
             {props.contact && !props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) && (
-                <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
+                <div className={`absolute left-0 top-[86%] h-[14%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
                     <div className={`text-sm ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-500"}`}>
                         You can't send messages in this chat
                     </div>
                 </div>
             )}
-            {props.contact && (!(!props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver))) && <div className={`absolute left-0 top-[85%] h-[15%] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
-                <div className={`absolute top-[25%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
+            {props.contact && (!(!props.contact.is_group && (props.contact.blocked_by_sender || props.contact.blocked_by_receiver))) && 
+            <div className={`absolute left-0 top-[86%] h-[14%] min-h-[100px] w-full flex justify-center items-center ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-40 bg-transparent"}`}>
+                <div className={`absolute top-[20%] w-[96%] h-[60%] rounded-2xl ${props.themeChosen === "Dark" ? "bg-gray-700/50 border-gray-600" : "bg-gray-100 border-gray-300"} transition-all focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20
                             border-[1px] flex flex-row`}>
                     <div className="relative left-[0%] flex basis-[10%] top-[15%] h-[70%] rounded-2xl" >
                         {/* Wrapper for Image and Input */}
-                        <div className="relative flex items-center justify-center w-full h-full">
-                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
+                        <div className="relative flex items-center justify-start ml-[12px] w-full h-full">
+                            <div className={`relative flex flex-col w-14 h-12 justify-center items-center rounded-xl transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95`}>
                                 <img
                                     src={`${props.themeChosen === "Dark" ? "/attach2-1.png" : "attach-black.png"}`}
                                     className="w-6 h-6 aspect-square pointer-events-none"
@@ -794,8 +795,8 @@ export default function CurrentChat( props: any ) {
                                     setText("")}}}></input>
                     </div>
                     <div className="relative left-0 flex flex-row basis-[10%] items-center justify-center mr-1" >
-                        <div className="absolute flex top-[15%] h-[70%] items-center justify-center rounded-2xl w-full" onClick={() => {handleSendMessage(text); setText("")}}>
-                            <div className={`relative flex flex-col w-16 h-12 justify-center items-center transition-all ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95 rounded-xl`}>
+                        <div className="absolute flex top-[15%] h-[70%] items-center justify-end rounded-2xl w-full" onClick={() => {handleSendMessage(text); setText("")}}>
+                            <div className={`relative flex items-center justify-center mr-2 w-14 h-12 ${props.themeChosen === "Dark" ? "hover:bg-[#3B7E9B]/20 hover:shadow-lg hover:shadow-[#3B7E9B]/30" : "hover:bg-gray-300/50"} hover:scale-105 active:scale-95 rounded-xl`}>
                                 <img src={`${props.themeChosen === "Dark" ? "sendIcon3-1.png" : "sendIcon-black.png"}`} className="absolute w-6 h-6 aspect-square cursor-pointer z-20"></img>
                             </div>
                         </div>

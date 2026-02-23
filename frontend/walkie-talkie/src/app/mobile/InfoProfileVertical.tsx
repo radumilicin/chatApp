@@ -341,13 +341,13 @@ export default function ProfileInfoVertical( props ) {
 
                 {/* Contact Name Section */}
                 <div className="relative flex flex-col h-[25%] items-center justify-center">
-                    <div ref={divRef} className="relative flex flex-row w-[70%] h-[60%] items-center justify-center group/name">
+                    <div ref={divRef} className="relative flex flex-row w-[90%] xsw:w-[80%] h-[60%] items-center justify-center group/name">
                         {(props.contact !== undefined || props.contact !== null) ? (nameChangeGroup === true ?
                             (<input
                                 value={nameGroup}
                                 className={`flex flex-row justify-center items-center text-lg xsw:text-2xl
                                     ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                    font-bold font-sans h-full w-full outline-none overflow-x-auto
+                                    font-bold font-sans h-full w-[75%] outline-none overflow-x-auto
                                     border-b-2 bg-transparent border-cyan-500
                                     focus:border-cyan-400 transition-all placeholder:text-cyan-300/50`}
                                 onChange={(e) => {
@@ -367,8 +367,8 @@ export default function ProfileInfoVertical( props ) {
                             </input>)
                             :
                             <div className={`flex flex-row justify-center items-center text-xl xsw:text-2xl
-                                font-bold font-sans h-full w-full tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
-                                    : "text-black"}`}>
+                                font-bold font-sans h-full w-[75%] tracking-wide truncate ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                                    : "text-black"}`} onClick={() => { setNameChangeGroup(true) }}>
                                 {getNameContact(props.contact)}
                             </div>)
                             : <div className="flex flex-row justify-center items-center text-xl text-black font-medium font-sans h-full w-full"></div>}
@@ -486,7 +486,7 @@ function AboutProfile(props) {
                                        value={props.description}
                                        className={`w-[98%] outline-none bg-transparent border-b-2 border-cyan-500
                                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                           font-sans text-base xsw:text-lg px-2
+                                           font-sans text-base xsw:text-lg
                                            focus:border-cyan-400 transition-all placeholder:text-cyan-400/50`}
                                        onChange={(e) => {
                                           props.setDescriptionAsync(e.target.value)

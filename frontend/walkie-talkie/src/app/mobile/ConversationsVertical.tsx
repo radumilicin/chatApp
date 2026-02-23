@@ -1385,19 +1385,19 @@ export function Groups(props) {
                     </div>
                 </div>
                 <div className={`relative left-0 top-0 h-[65%] w-full ${props.themeChosen === "Dark" ? "bg-gray-800 bg-opacity-30" : "bg-opacity-50 bg-transparent"}`}>
-                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-2xl overflow-hidden
-                        transition-all duration-300
+                    <div className={`group relative left-[2%] top-[10%] w-[96%] h-[70%] rounded-xl overflow-hidden
+                        transition-all
                         ${props.themeChosen === "Dark"
-                            ? "border-2 border-slate-700/50 bg-slate-800/60 focus-within:border-[#3B7E9B] focus-within:shadow-[0_0_12px_rgba(59,126,155,0.4)]"
-                            : "border-2 border-gray-300 bg-gray-100 focus-within:border-[#3B7E9B]"}
-                        backdrop-blur-sm`}>
+                            ? "border bg-gray-700/50 border-gray-600"
+                            : "border bg-gray-100 border-gray-300"}
+                        focus-within:border-[#3B7E9B] focus-within:ring-2 focus-within:ring-[#3B7E9B]/20`}>
                         <div className="relative top-0 left-0 h-full w-full flex flex-row">
-                            <div className='relative left-0 top-0 w-[15%] h-full flex flex-col justify-center items-center'>
-                                <img className='absolute max-w-[50px] max-h-[50px] w-[60%] h-[60%] opacity-70 group-focus-within:opacity-100 group-focus-within:scale-110' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
+                            <div className='relative left-0 top-0 w-[60px] h-full flex flex-row justify-center items-center'>
+                                <img className='absolute w-8 h-8 opacity-70' src={`${props.themeChosen === "Dark" ? "/searchIcon2-1.png" : "/searchIcon_black.png"}`}></img>
                             </div>
-                            <div className='relative left-[2%] top-0 w-[86%] h-full flex flex-col justify-center items-start indent-2'>
-                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base xss:text-lg font-medium
-                                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400/50" : "text-black placeholder:text-gray-400"}`}
+                            <div className='relative left-0 top-0 w-[calc(min(100%-60px,88%))] h-full flex flex-col justify-center items-start'>
+                                <input className={`absolute left-0 top-0 w-full h-full outline-none bg-transparent overflow-x-auto text-base
+                                    ${props.themeChosen === "Dark" ? "text-white placeholder:text-gray-400" : "text-gray-800 placeholder:text-gray-500"}`}
                                     value={usernameSearch} placeholder="Search user to add.."
                                     onChange={async (e) => {
                                         const val = e.target.value;
@@ -1474,12 +1474,12 @@ export function Groups(props) {
                                  className="relative h-10 w-10 rounded-full opacity-80 group-hover/groupuseravatar:opacity-100 transition-all duration-300"></img>}
                     </div>
                     <div className="relative flex w-[85%] flex-col justify-center py-2">
-                        <div className={`flex text-sm xss:text-base xsw:text-lg font-sans font-semibold
-                            ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
+                        <div className={`flex text-base font-sans font-semibold
+                            ${props.themeChosen === "Dark" ? "text-gray-200" : "text-gray-900"}`}>
                             {getNameUser2(element)}
                         </div>
-                        <div className={`flex text-xs xss:text-sm xsw:text-base font-sans truncate
-                            ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}`}>
+                        <div className={`flex text-sm font-sans truncate
+                            ${props.themeChosen === "Dark" ? "text-gray-400" : "text-gray-600"}`}>
                             {element.about}
                         </div>
                     </div>
