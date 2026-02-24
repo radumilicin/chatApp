@@ -35,7 +35,7 @@ export default function BlockedContactsView(props: any) {
             body: JSON.stringify(data)
         }
 
-        const response = await fetch('http://localhost:3002/blockContact', requestOptions)
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/blockContact`, requestOptions)
         if (response.status === 200) {
             console.log("Unblocked contact " + contact.id)
             await props.fetchContacts()

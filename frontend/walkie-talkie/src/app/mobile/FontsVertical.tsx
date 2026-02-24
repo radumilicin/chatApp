@@ -7,7 +7,7 @@ export default function FontsVertical(props: any) {
             'new_setting': props.fontChosenPending
         }
 
-        const response = await fetch('http://localhost:3002/changeFont', {
+        const response = await fetch('http://${SERVER}:${PORT_SERVER}/changeFont', {
             method: 'POST',
             credentials: "include",
             headers: {

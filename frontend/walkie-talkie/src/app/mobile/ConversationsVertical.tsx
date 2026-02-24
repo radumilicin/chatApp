@@ -60,7 +60,7 @@ export default function ConversationsVertical( props : any) {
 
     async function logOutNow() {
         try {
-            const res = await fetch(`http://localhost:3002/logout`, {
+            const res = await fetch(`http://${SERVER}:${PORT_SERVER}/logout`, {
             method: 'GET',
             credentials: "include",
             });
@@ -445,7 +445,7 @@ export function UsersToAddToContacts (props : any) {
         }
 
         const response = await fetch(
-            `http://localhost:3002/insertContact`, {
+            `http://${SERVER}:${PORT_SERVER}/insertContact`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -674,7 +674,7 @@ export function Contacts( props: any) {
             if(prevContact.current !== null) await props.closeChat(prevContact.current)
 
             // Then open the new chat (update opened_at)
-            const response = await fetch(`http://localhost:3002/accessedChat`, {
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/accessedChat`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -1196,7 +1196,7 @@ export function Groups(props) {
         console.log("Before request to server")
 
         try {
-            const response = await fetch('http://localhost:3002/createGroup', requestOptions)
+            const response = await fetch('http://${SERVER}:${PORT_SERVER}/createGroup', requestOptions)
 
             if(response.status === 200) {
                 const result = await response.json()

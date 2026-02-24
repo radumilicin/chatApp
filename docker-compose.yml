@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PSWD}
       POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/drizzle/0000_milky_meltdown.sql:/docker-entrypoint-initdb.d/init.sql
@@ -35,8 +35,8 @@ services:
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
       CORS_ORIGIN: http://localhost:3000
     ports:
-      - "3002:3002"
-      - "8080:8080"
+      - "127.0.0.1:3002:3002"
+      - "127.0.0.1:8080:8080"
 
 volumes:
   pgdata:
