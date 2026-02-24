@@ -34,7 +34,9 @@ jobs:
 
             docker compose down
             docker compose build --no-cache
-            docker compose up -d
+            # --wait ensures compose exits with error (instead of hanging forever)
+            # if healthcheck fails after retries
+            docker compose up -d --wait --wait-timeout 120
 
             # Install Node.js 20 if not present
             if ! command -v node &> /dev/null; then
