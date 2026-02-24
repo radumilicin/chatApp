@@ -29,7 +29,7 @@ export default function BlockedContactsView(props: any) {
 
         console.log("before sending request to unblock user in client")
 
-        const requestOptions = {
+        const requestOptions: RequestInit = {
             method: 'PUT',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
