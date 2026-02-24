@@ -34,6 +34,9 @@ jobs:
               apt-get install -y nodejs
             fi
 
+            cp env-chatapp.txt chatApp/.env
+            cp env-local-frontend.txt chatApp/frontend/walkie-talkie/.env.local
+
             cd frontend/walkie-talkie
             npm install
             npm run build
