@@ -34,6 +34,10 @@ services:
       GOOGLE_AUTH_ID: ${GOOGLE_AUTH_ID}
       RESEND_API_KEY: ${RESEND_API_KEY}
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
+      CLIENT: ${CLIENT}
+      SERVER: ${SERVER}
+      PORT_CLIENT: ${PORT_CLIENT}
+      PORT_SERVER: ${PORT_SERVER}
       CORS_ORIGIN: http://localhost:3000
     ports:
       - "127.0.0.1:3002:3002"
