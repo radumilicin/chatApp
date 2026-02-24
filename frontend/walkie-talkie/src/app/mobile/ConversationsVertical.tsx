@@ -4,7 +4,7 @@ import Image from 'next/image'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettingsVertical';
-import { SERVER, PORT_SERVER } from '../config';
+import { API_URL } from '../config';
 
 export default function ConversationsVertical( props : any) {
 
@@ -61,7 +61,7 @@ export default function ConversationsVertical( props : any) {
 
     async function logOutNow() {
         try {
-            const res = await fetch(`http://${SERVER}:${PORT_SERVER}/logout`, {
+            const res = await fetch(`${API_URL}/logout`, {
             method: 'GET',
             credentials: "include",
             });
@@ -446,7 +446,7 @@ export function UsersToAddToContacts (props : any) {
         }
 
         const response = await fetch(
-            `http://${SERVER}:${PORT_SERVER}/insertContact`, {
+            `${API_URL}/insertContact`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -675,7 +675,7 @@ export function Contacts( props: any) {
             if(prevContact.current !== null) await props.closeChat(prevContact.current)
 
             // Then open the new chat (update opened_at)
-            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/accessedChat`, {
+            const response = await fetch(`${API_URL}/accessedChat`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -1197,7 +1197,7 @@ export function Groups(props) {
         console.log("Before request to server")
 
         try {
-            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/createGroup`, requestOptions)
+            const response = await fetch(`${API_URL}/createGroup`, requestOptions)
 
             if(response.status === 200) {
                 const result = await response.json()

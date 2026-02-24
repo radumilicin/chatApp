@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../AuthProvider'
 import crypto, { sign } from 'crypto';
 import { X3DHClient } from '../../../x3dh-client';
-import { SERVER, PORT_SERVER } from '../../../config'
+import { API_URL } from '../../../config'
 
 declare global {
     interface Window {
@@ -60,7 +60,7 @@ export default function Login(props: any) {
 
      useEffect(() => {
         const fetchUsers = async () => {
-        const res = await fetch(`http://${SERVER}:${PORT_SERVER}/users`); // Replace with your API endpoint
+        const res = await fetch(`${API_URL}/users`); // Replace with your API endpoint
         const data = await res.json();
         setUsers(data);
         };
@@ -121,7 +121,7 @@ export default function Login(props: any) {
         console.log("Google sign-in response received");
 
         try {
-            const res = await fetch(`http://${SERVER}:${PORT_SERVER}/auth/google`, {
+            const res = await fetch(`${API_URL}/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ credential: response.credential }),
@@ -154,7 +154,7 @@ export default function Login(props: any) {
                 const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
 
                 // Register keys on the server
-                await fetch(`http://${SERVER}:${PORT_SERVER}/register-keys`, {
+                await fetch(`${API_URL}/register-keys`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -220,7 +220,7 @@ export default function Login(props: any) {
         }
 
         try {
-            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/login`, {
+            const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {'Content-Type' : 'application/json'},
                 body: JSON.stringify({ username, password }),

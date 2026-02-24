@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { X3DHClient, KeyPair } from './x3dh-client';
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
-import { SERVER, PORT_SERVER } from './config'
+import { API_URL } from './config'
 
 interface UserKeys {
   identityKey: KeyPair;
@@ -169,7 +169,7 @@ export function useX3DH() {
     }
 
     
-    const response = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${recipientId}`);
+    const response = await fetch(`${API_URL}/api/keys?recipient_id=${recipientId}`);
     const rawBundle = await response.json();
     
     console.log("After getting bundle")
