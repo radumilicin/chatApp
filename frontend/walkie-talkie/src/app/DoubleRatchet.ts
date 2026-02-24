@@ -513,10 +513,10 @@ export class DoubleRatchet {
       input[input.length - 1] = i + 1;
       
       const hash = nacl.hash(input);
-      t = hash.subarray(0, 32);
+      t = new Uint8Array(hash.subarray(0, 32));
       output.set(t, i * 32);
     }
-    
-    return output.subarray(0, length);
+
+    return new Uint8Array(output.subarray(0, length));
   }
 }
