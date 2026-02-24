@@ -127,7 +127,7 @@ export default function ProfileInfo(props) {
             }
 
             try {
-                await fetch('http://localhost:3002/changeGroupName', requestParams)
+                await fetch('http://${SERVER}:${PORT_SERVER}/changeGroupName', requestParams)
                 await props.fetchContacts()
                 props.setDecryptedContacts((currArr) =>
                     currArr.map(c => c.id === contact.id ? { ...c, group_name: newName } : c)
@@ -156,7 +156,7 @@ export default function ProfileInfo(props) {
         };
 
         console.log("Before sending POST request to server to change profile pic")
-        const response = await fetch(`http://localhost:3002/changeGroupDescription`, requestOptions)
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/changeGroupDescription`, requestOptions)
         if (response.status === 200) {
             await props.fetchContacts()
             props.setDecryptedContacts((currArr) =>
@@ -192,7 +192,7 @@ export default function ProfileInfo(props) {
         };
 
         console.log("Before sending POST request to server to change profile pic")
-        const response = await fetch(`http://localhost:3002/putProfilePic`, requestOptions)
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/putProfilePic`, requestOptions)
         if (response.status === 200) {
             await props.fetchUsers()
             await props.fetchImages()
@@ -203,7 +203,7 @@ export default function ProfileInfo(props) {
             // const img = props.images.find((img) => { return img.id === msg.profile_pic_id }) 
             // console.log("profile pic id = " + JSON.stringify(img.id))
             // update images here 
-            // const response2 = await fetch(`http://localhost:3002/putProfilePic?user=${props.curr_user}`)
+            // const response2 = await fetch(`http://${SERVER}:${PORT_SERVER}/putProfilePic?user=${props.curr_user}`)
         }
     }
 
@@ -611,7 +611,7 @@ function Members(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://localhost:3002/exitGroup', requestOptions)
+            const response = await fetch('http://${SERVER}:${PORT_SERVER}/exitGroup', requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(val)) + " has been kicked out from the group " + props.contact.group_name)
                 await props.fetchContacts()
@@ -647,7 +647,7 @@ function Members(props) {
                 body: JSON.stringify(body)
             }
 
-            const response = await fetch(`http://localhost:3002/makeAdmin`, requestOptions);
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/makeAdmin`, requestOptions);
             if (response.ok) {
                 console.log("User " + val + " successfully made admin")
                 await props.fetchContacts()
@@ -839,7 +839,7 @@ function OptionsGroup(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://localhost:3002/exitGroup', requestOptions)
+            const response = await fetch('http://${SERVER}:${PORT_SERVER}/exitGroup', requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has exited the group " + props.contact.group_name)
 
@@ -913,7 +913,7 @@ function OptionsChat(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://localhost:3002/deleteChat', requestOptions)
+            const response = await fetch('http://${SERVER}:${PORT_SERVER}/deleteChat', requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has deleted the chat with " + other_user + " with id = " + JSON.stringify(props.contact.id))
 
@@ -956,7 +956,7 @@ function OptionsChat(props) {
 
             console.log(`Trying to block contact attempt ${cnt.current} with curr_user: ` + JSON.stringify(props.contact.sender_id) + " contact_id: " + JSON.stringify(props.contact.contact_id) + " status: " + status)
 
-            const response = await fetch('http://localhost:3002/blockContact', requestOptions)
+            const response = await fetch('http://${SERVER}:${PORT_SERVER}/blockContact', requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
                 await props.fetchContacts()

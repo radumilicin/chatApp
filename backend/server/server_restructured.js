@@ -30,7 +30,12 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 const wss = new WebSocketServer({ port: 8080 });
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const CLIENT = process.env.NEXT_PUBLIC_CLIENT
+const SERVER = process.env.NEXT_PUBLIC_SERVER
+const PORT_CLIENT = process.env.PORT_CLIENT
+const PORT_SERVER = process.env.PORT_SERVER
+
+app.use(cors({ origin: `http://${CLIENT}:${PORT_CLIENT}`, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
@@ -971,7 +976,7 @@ async function handleDirectMessage(ws, parsedMessage) {
 
 // ─── START SERVER ─────────────────────────────────────────────────────
 
-app.listen(PORT, (error) => {
-  if (!error) console.log("Server running on port " + PORT);
+app.listen(PORT_SERVER, (error) => {
+  if (!error) console.log("Server running on port " + PORT_SERVER);
   else console.log("Error occurred, server can't start", error);
 });

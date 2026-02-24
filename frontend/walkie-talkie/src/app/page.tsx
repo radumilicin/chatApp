@@ -44,6 +44,11 @@ import { X3DHClient } from "./x3dh-client";
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
+const CLIENT = process.env.NEXT_PUBLIC_CLIENT
+const SERVER = process.env.NEXT_PUBLIC_SERVER
+const PORT_CLIENT = process.env.NEXT_PUBLIC_PORT_CLIENT
+const PORT_SERVER = process.env.NEXT_PUBLIC_PORT_SERVER
+
 export default function Home() {
 
   const [user, setUser] = useState("");
@@ -150,21 +155,21 @@ export default function Home() {
   }
 
   const fetchData = async () => {
-      const response = await fetch('http://localhost:3002/users'); // gets all users (need this for when adding contacts)
+      const response = await fetch(`http://${SERVER}:${PORT_SERVER}/users`); // gets all users (need this for when adding contacts)
       const result = await response.json();
       updateUsers(result);
       // console.log(result);
     };
 
   const fetchData2 = async () => {
-      const response = await fetch(`http://localhost:3002/contacts?user=${user}`); // gets contacts of current user
+      const response = await fetch(`http://${SERVER}:${PORT_SERVER}/contacts?user=${user}`); // gets contacts of current user
       const result = await response.json();
       updateContacts(result);
       // console.log("contacts = " + JSON.stringify(result));
     };
 
   const fetchImages = async () => {
-      const response = await fetch(`http://localhost:3002/images`); // Gets all images (TODO images of all contacts and users)
+      const response = await fetch(`http://${SERVER}:${PORT_SERVER}/images`); // Gets all images (TODO images of all contacts and users)
       const result = await response.json();
       updateImages(result);
       // console.log(result);
@@ -267,7 +272,7 @@ export default function Home() {
 
     console.log("In try SSO")
 
-    const res = await fetch(`http://localhost:3002/verify`, {
+    const res = await fetch(`http://${SERVER}:${PORT_SERVER}/verify`, {
         method: "GET",
         credentials: "include",
       }
@@ -328,7 +333,7 @@ export default function Home() {
 
       // Check database
       try {
-        const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+        const dbResponse = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${user}`);
         if (!dbResponse.ok) {
           console.log("🗄️ Failed to fetch keys from database:", dbResponse.status);
           return;
@@ -429,7 +434,7 @@ export default function Home() {
 
       // Check database
       try {
-        const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+        const dbResponse = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${user}`);
         if (!dbResponse.ok) {
           console.log("🗄️ Failed to fetch keys from database:", dbResponse.status);
           return;
@@ -536,7 +541,7 @@ export default function Home() {
 
   async function logOutNow() {
     try {
-        const res = await fetch("http://localhost:3002/logout", {
+        const res = await fetch("http://${SERVER}:${PORT_SERVER}/logout", {
             method: 'GET',
             credentials: "include",
         });
@@ -575,7 +580,7 @@ export default function Home() {
     }
 
     try { 
-      const resp = await fetch(`http://localhost:3002/closeChat`, {
+      const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/closeChat`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -659,7 +664,7 @@ export default function Home() {
       "status": status
     };
 
-    const response = await fetch(`http://localhost:3002/updateMessageStatus`, { 
+    const response = await fetch(`http://${SERVER}:${PORT_SERVER}/updateMessageStatus`, { 
       method: "PUT",
       credentials: "include",
       headers: {
@@ -679,7 +684,7 @@ export default function Home() {
   useEffect(() => {
   const checkAndDecrypt = async () => {
     const db_check_signedPrekey = async (currSignedPreKey) => {
-      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbResponse = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${user}`);
       const dbKeys = await dbResponse.json();
       console.log("🗄️ Bob's keys from database:");
       return dbKeys.signedPreKey.public_key === currSignedPreKey.publicKey;
@@ -741,7 +746,7 @@ export default function Home() {
 
   useEffect(() => {
     const checkKeys = async () => {
-      const dbResponse = await fetch(`http://localhost:3002/api/keys?recipient_id=${user}`);
+      const dbResponse = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${user}`);
       const dbKeys = await dbResponse.json();
 
       const user_o = users.find((elem) => user === elem.id)
@@ -766,7 +771,7 @@ export default function Home() {
     try {
 
       const response = await fetch(
-        `http://localhost:3002/getRatchetState?user_id=${user}&conversation_id=${contact.id}`
+        `http://${SERVER}:${PORT_SERVER}/getRatchetState?user_id=${user}&conversation_id=${contact.id}`
       );
     
       if (response.ok) {

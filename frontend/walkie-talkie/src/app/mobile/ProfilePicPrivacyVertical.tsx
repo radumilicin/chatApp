@@ -25,7 +25,7 @@ export default function ProfilePicPrivacyVertical(props: any) {
             'new_visibility': props.visibilityProfilePic
         }
 
-        const resp = await fetch("http://localhost:3002/changeProfilePicVisibility", {
+        const resp = await fetch("http://${SERVER}:${PORT_SERVER}/changeProfilePicVisibility", {
             method: 'PUT',
             credentials: "include",
             headers: {

@@ -168,7 +168,7 @@ export function useX3DH() {
     }
 
     
-    const response = await fetch(`http://localhost:3002/api/keys?recipient_id=${recipientId}`);
+    const response = await fetch(`http://${SERVER}:${PORT_SERVER}/api/keys?recipient_id=${recipientId}`);
     const rawBundle = await response.json();
     
     console.log("After getting bundle")

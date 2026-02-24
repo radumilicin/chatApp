@@ -248,7 +248,7 @@ export class DoubleRatchet {
   // Add this helper method to the class
   private async updateRatchetState(): Promise<void> {
     try {
-      const resp = await fetch('http://localhost:3002/updateRatchetState', {
+      const resp = await fetch('http://${SERVER}:${PORT_SERVER}/updateRatchetState', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
