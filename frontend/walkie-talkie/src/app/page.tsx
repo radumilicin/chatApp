@@ -44,10 +44,8 @@ import { X3DHClient } from "./x3dh-client";
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
+import { SERVER, PORT_SERVER } from './config'
 const CLIENT = process.env.NEXT_PUBLIC_CLIENT
-const SERVER = process.env.NEXT_PUBLIC_SERVER
-const PORT_CLIENT = process.env.NEXT_PUBLIC_PORT_CLIENT
-const PORT_SERVER = process.env.NEXT_PUBLIC_PORT_SERVER
 
 export default function Home() {
 

@@ -1,3 +1,5 @@
+import { SERVER, PORT_SERVER } from '../config'
+
 export default function Theme(props: any) {
 
 
@@ -9,7 +11,7 @@ export default function Theme(props: any) {
             'new_setting': props.themeChosenPending
         }
 
-        const response = await fetch('http://${SERVER}:${PORT_SERVER}/changeTheme', {
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/changeTheme`, {
             method: 'POST',
             credentials: "include",
             headers: {

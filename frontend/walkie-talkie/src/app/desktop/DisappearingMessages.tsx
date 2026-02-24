@@ -1,4 +1,5 @@
 import {useEffect, useState, useRef} from 'react'
+import { SERVER, PORT_SERVER } from '../config'
 
 
 export default function DisappearingMessagesView(props: any) {
@@ -29,7 +30,7 @@ export default function DisappearingMessagesView(props: any) {
 
         console.log("new period for disappearing messages: " + props.disappearingMessagesPeriod)
 
-        const resp = await fetch("http://${SERVER}:${PORT_SERVER}/changeDisappearingMessagesPeriod", {
+        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeDisappearingMessagesPeriod`, {
             method: 'PUT',
             credentials: "include",
             headers: {

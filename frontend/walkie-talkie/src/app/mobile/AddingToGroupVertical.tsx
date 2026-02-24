@@ -1,4 +1,5 @@
 import react, {useEffect, useState, useRef} from 'react'
+import { SERVER, PORT_SERVER } from '../config';
 
 export default function AddPersonToGroupVertical(props) {
 
@@ -69,7 +70,7 @@ export default function AddPersonToGroupVertical(props) {
             body: JSON.stringify(msg)
         }
 
-        const response = await fetch('http://${SERVER}:${PORT_SERVER}/insertMembersInGroup', req_options)
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/insertMembersInGroup`, req_options)
         if(response.status === 200){
             await props.fetchContacts()
             console.log("Inserted users in group " + props.contact.id)

@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+import { SERVER, PORT_SERVER } from '../config'
 
 export default function BlockedContactsView(props: any) {
 

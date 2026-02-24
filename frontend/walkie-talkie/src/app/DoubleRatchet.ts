@@ -1,6 +1,7 @@
 // lib/double-ratchet.ts
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
+import { SERVER, PORT_SERVER } from './config'
 
 export interface RatchetState {
   user: string;
@@ -248,7 +249,7 @@ export class DoubleRatchet {
   // Add this helper method to the class
   private async updateRatchetState(): Promise<void> {
     try {
-      const resp = await fetch('http://${SERVER}:${PORT_SERVER}/updateRatchetState', {
+      const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/updateRatchetState`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
