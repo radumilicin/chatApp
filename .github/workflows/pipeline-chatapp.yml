@@ -23,6 +23,8 @@ jobs:
             if ! command -v docker &> /dev/null; then
               apt-get update && apt-get install -y docker.io docker-compose-v2
             fi
+
+            cd ~
             
             cp env-chatapp.txt chatApp/.env
             cp env-local-frontend.txt chatApp/frontend/walkie-talkie/.env.local
