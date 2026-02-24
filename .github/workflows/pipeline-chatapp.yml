@@ -14,6 +14,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: root
           password: ${{ secrets.SERVER_PASSWORD }}
+          command_timeout: 30m
           script: |
             cd /root/chatApp || (git clone https://github.com/${{ github.repository }}.git /root/chatApp && cd /root/chatApp)
             cd /root/chatApp
@@ -29,6 +30,8 @@ jobs:
             cp env-chatapp.txt chatApp/.env
             cp env-local-frontend.txt chatApp/frontend/walkie-talkie/.env.local
 
+            cd chatApp
+
             docker compose down
             docker compose build --no-cache
             docker compose up -d
@@ -39,9 +42,11 @@ jobs:
               apt-get install -y nodejs
             fi
 
-            cd chatApp/frontend/walkie-talkie
+            cd frontend/walkie-talkie
             npm install
             npm run build
             # Kill any existing Next.js process, then start in background
             pkill -f "next start" || true
             nohup npm start > /tmp/frontend.log 2>&1 &
+            disown
+            sleep 2
