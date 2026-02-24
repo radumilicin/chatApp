@@ -476,9 +476,9 @@ export default function CurrentChat( props: any ) {
                     {/* Animated gradient overlay */}
                     <div className={`absolute inset-0 ${props.themeChosen === "Dark" ? "bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent group-hover:via-cyan-500/10 transition-all duration-500" : "bg-slate-200"} `} />
                     {/* Glow effect on hover */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {props.themeChosen === "Dark" && <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-                    </div>
+                    </div>}
                 </div>
             )}
 
@@ -492,60 +492,60 @@ export default function CurrentChat( props: any ) {
                     onClick={() => { props.setProfileInfo(true) }}
                 >
                     {/* Animated gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
-                                    group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />
+                    {props.themeChosen === "Dark" && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                    group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />}
 
                     {/* Top glow line on hover */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
+                    {props.themeChosen === "Dark" && <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
                         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-                    </div> 
+                    </div>}
 
                     {/* Profile picture container */}
                     <div className="relative flex w-[10%] min-w-[80px] max-w-[100px] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
-                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
+                            {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />}
 
                             {/* Avatar image */}
                             {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 rounded-full
-                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                    className={`relative w-12 h-12 rounded-full
+                                             border-2 ${props.themeChosen === "Dark" ? `border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
-                                             transition-all duration-300"
+                                             transition-all duration-300` : ``}`}
                                     alt="Profile"
                                 /> :
                                 (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 rounded-full
-                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                    className={`relative w-12 h-12 rounded-full
+                                             border-2 ${props.themeChosen === "Dark" ? `border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
-                                             transition-all duration-300"
+                                             transition-all duration-300` : ``}`}
                                     alt="Profile"
                                 /> :
                              (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-12 h-12 rounded-full
-                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                    className={`relative w-12 h-12 rounded-full
+                                             border-2 ${props.themeChosen === "Dark" ? `border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
-                                             transition-all duration-300"
+                                             transition-all duration-300` : ``}`}
                                     alt="Group"
                                 /> :
                                 (props.contact !== null && props.contact.is_group === true) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
-                                    src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                    className="relative w-12 h-12 rounded-full object-cover
-                                             border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
+                                    src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
+                                    className={`relative w-12 h-12 rounded-full object-cover
+                                             border-2 ${props.themeChosen === "Dark" ? `border-cyan-400/50 shadow-lg shadow-cyan-500/20
                                              group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40
-                                             transition-all duration-300"
+                                             transition-all duration-300` : ``} `}
                                     alt="Group"
                                 /> : <></>
                             }
@@ -560,9 +560,8 @@ export default function CurrentChat( props: any ) {
                                 {props.contact !== null && (
                                     <div className="flex flex-col">
                                         <div className={`text-lg xl:text-xl font-bold tracking-wide
-                                            bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent
-                                            group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200
-                                            transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]`}>
+                                            ${props.themeChosen === "Dark" ? `bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent 
+                                                    group-hover:from-cyan-200 group-hover:via-blue-200 group-hover:to-purple-200 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]` : `text-black`}`}>
                                             {getNameContact(props.contact)}
                                         </div>
                                     </div>
@@ -785,7 +784,7 @@ export default function CurrentChat( props: any ) {
                         </div>
                     </div>
                     <div className={`relative left-0 flex basis-[80%] h-full`}>
-                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl lg:text-2xl
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl
                                                                                                             ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`} 
                             onKeyDown={(e) => { 

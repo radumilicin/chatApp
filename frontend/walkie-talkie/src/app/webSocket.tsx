@@ -3,19 +3,6 @@ import { X3DHClient } from './x3dh-client';
 import { ConversationManager } from './ConversationManager';
 import { DoubleRatchet } from './DoubleRatchet';
 
-// user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
-//     user,
-//     contacts,
-//     updateContacts, 
-//     setDecryptedContacts,
-//     identityKey,
-//     signedPreKey,
-//     setMessages,
-//     incomingSoundsEnabled,
-//     outgoingMessagesSoundsEnabled,
-//     decryptAllMessages,
-//     fetchData2,
-//     loadConversationRatchetStateDB
 export default function useWebSocket (url, user, contacts, updateContacts, setDecryptedContacts, identityKey, signedPreKey, setMessages, incomingSoundsEnabled, 
                                         outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts, loadConversationRatchetStateDB) {
     const [isConnected, setIsConnected] = useState(false);

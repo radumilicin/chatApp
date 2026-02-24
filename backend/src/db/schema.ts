@@ -30,6 +30,7 @@ export const users = pgTable('users', {
   google_id: varchar('google_id', {length: 100}),
   profile_pic_id: integer("profile_pic_id").references(() => images.id, {onDelete: "cascade"}),
   about: varchar('about', {length : 250}),
+  email_verified: boolean('email_verified').default(false),
   incoming_sounds: boolean().default(false),
   outgoing_sounds: boolean().default(false),
   notifications_enabled: boolean().default(false),
@@ -80,6 +81,14 @@ export const one_time_prekeys = pgTable('one_time_prekeys', {
   user_id: varchar('user_id', {length: 36}).notNull().references(() => users.id, {onDelete: "cascade"}),
   key_id: varchar('key_id', {length: 100}).notNull(),
   public_key: varchar('public_key', {length: 100}).notNull()
+});
+
+export const emailVerificationCodes = pgTable('email_verification_codes', {
+  id: serial('id').primaryKey(),
+  email: varchar('email', { length: 100 }).notNull(),
+  code: varchar('code', { length: 6 }).notNull(),
+  expires_at: timestamp('expires_at', { withTimezone: true }).notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });
 
 export const ratchetState = pgTable('ratchet_state', {

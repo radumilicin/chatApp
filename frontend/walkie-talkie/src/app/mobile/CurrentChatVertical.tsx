@@ -460,13 +460,13 @@ export default function CurrentChatVertical( props: any ) {
                     // console.log("profile info set to true")
                 }}>
                 {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
-                                group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />
+                {props.themeChosen === "Dark" && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent
+                                group-hover:via-cyan-500/10 transition-all duration-500 pointer-events-none z-0" />}
 
                 {/* Top glow line on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
+                {props.themeChosen === "Dark" && <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0">
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-                </div>
+                </div>}
 
                 {/* Back button */}
                 <div className="relative flex flex-row w-[5%] h-full justify-start items-center z-10 ml-2" onClick={(e) => {
@@ -484,40 +484,36 @@ export default function CurrentChatVertical( props: any ) {
                     <div className="relative flex w-[15%] h-full justify-end items-center z-10">
                         <div className="relative group/avatar">
                             {/* Glowing ring around avatar */}
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
-                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />
+                            {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
+                                            blur-md group-hover/avatar:blur-lg transition-all duration-300 scale-110" />}
 
                             {/* Avatar image */}
                             {(props.contact !== null && props.contact.is_group === false && getImage(props.contact).data !== "") ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-10 h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    className={`relative w-10 h-10 xsw:w-12 xsw:h-12 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50 shadow-lg shadow-cyan-500/20 group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40" : "border-gray-300 shadow-lg"} transition-all duration-300`}
                                     alt="Profile"
                                 /> :
                                 (props.contact !== null && props.contact.is_group === false && getImage(props.contact).data === "") ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    className={`relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50 shadow-lg shadow-cyan-500/20 group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40" : "border-gray-300 shadow-lg"} transition-all duration-300`}
                                     alt="Profile"
                                 /> :
                             (props.contact !== null && props.contact.is_group === true && props.contact.group_pic_id !== null && getImage(props.contact).data) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
-                                    className="relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    className={`relative w-10 h-10 xss:w-12 xss:h-12 xsw:w-14 xsw:h-14 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50 shadow-lg shadow-cyan-500/20 group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40" : "border-gray-300 shadow-lg"} transition-all duration-300`}
                                     alt="Group"
                                 /> :
                                 (props.contact !== null && props.contact.is_group === true) ?
                                 <img
                                     key={props.contact?.group_pic_id || props.contact?.contact_id}
                                     src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group-white.png"}`}
-                                    className="relative w-8 h-8 xss:w-10 xss:h-10 xsw:w-12 xsw:h-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20
-                                            group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40 transition-all duration-300"
+                                    className={`relative w-8 h-8 xss:w-10 xss:h-10 xsw:w-12 xsw:h-12 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50 shadow-lg shadow-cyan-500/20 group-hover/avatar:border-cyan-300 group-hover/avatar:shadow-cyan-400/40" : "border-gray-300 shadow-lg"} transition-all duration-300`}
                                     alt="Group"
                                 /> : <></>
                             }
@@ -540,8 +536,7 @@ export default function CurrentChatVertical( props: any ) {
 
                             {/* Group members list */}
                             <div className={`text-sm xss:text-base truncate indent-[5px] xss:indent-[10px]
-                                ${props.themeChosen === "Dark" ? "text-cyan-300/70" : "text-gray-600"}
-                                group-hover:text-cyan-200/90 transition-colors duration-300`}>
+                                ${props.themeChosen === "Dark" ? "text-cyan-300/70 group-hover:text-cyan-200/90 transition-colors duration-300" : "text-gray-600"}`}>
                                 {props.contact !== null && props.contact.members.slice(0, 3).map((ctc, idx) => (
                                     <span key={ctc}>
                                         {getUserWithId(ctc).username}{idx < Math.min(props.contact.members.length, 3) - 1 ? ", " : ""}

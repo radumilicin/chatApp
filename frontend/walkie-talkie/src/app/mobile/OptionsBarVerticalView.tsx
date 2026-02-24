@@ -19,7 +19,7 @@ export default function OptionsBarVerticalView(props){
     }, [props.users, props.images])
 
     return (
-        <div className={`absolute left-0 top-[90%] w-full h-[10%] ${props.themeChosen === "Dark" ? "bg-gray-900/95 border-gray-700/30" : "bg-gray-200 border-t border-gray-300/50"} backdrop-blur-lg shadow-2xl flex flex-col`}>
+        <div className={`absolute left-0 bottom-0 w-full h-[80px] z-10 ${props.themeChosen === "Dark" ? "bg-gray-900/95 border-t border-gray-700" : "bg-gray-200 border-t border-gray-300/50"} backdrop-blur-lg shadow-2xl flex flex-col`}>
             <div className="relative flex flex-row top-0 left-0 h-full w-full justify-center items-center">
                 <div className="relative flex flex-col h-full w-[30%]">
                     <div className="w-full top-0 h-full relative flex flex-col items-center justify-center" onClick={() => {

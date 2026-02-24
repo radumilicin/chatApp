@@ -19,9 +19,52 @@ export default function Register(props) {
     const [password, setPassword] = useState('')
     const [usernameExists, setUsernameExists] = useState(false)
     const [emailExists, setEmailExists] = useState(false)
+    const [showVerification, setShowVerification] = useState(false)
+    const [verificationCode, setVerificationCode] = useState('')
+    const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', ''])
+    const [codeError, setCodeError] = useState('')
+    const [verifying, setVerifying] = useState(false)
+    const [registeredEmail, setRegisteredEmail] = useState('')
+    const otpRefs = useRef<(HTMLInputElement | null)[]>([])
     const router = useRouter()
     const { loggedIn, registered, setLoggedIn, setRegistered} = useAuth()
     const googleButtonRef = useRef<HTMLDivElement>(null)
+
+    function handleOtpChange(index: number, value: string) {
+        // Handle paste of full code
+        if (value.length > 1) {
+            const digits = value.replace(/\D/g, '').slice(0, 6).split('')
+            const newOtp = [...otpDigits]
+            digits.forEach((d, i) => {
+                if (index + i < 6) newOtp[index + i] = d
+            })
+            setOtpDigits(newOtp)
+            setVerificationCode(newOtp.join(''))
+            const nextIndex = Math.min(index + digits.length, 5)
+            otpRefs.current[nextIndex]?.focus()
+            return
+        }
+
+        const digit = value.replace(/\D/g, '')
+        const newOtp = [...otpDigits]
+        newOtp[index] = digit
+        setOtpDigits(newOtp)
+        setVerificationCode(newOtp.join(''))
+
+        if (digit && index < 5) {
+            otpRefs.current[index + 1]?.focus()
+        }
+    }
+
+    function handleOtpKeyDown(index: number, e: React.KeyboardEvent) {
+        if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+            const newOtp = [...otpDigits]
+            newOtp[index - 1] = ''
+            setOtpDigits(newOtp)
+            setVerificationCode(newOtp.join(''))
+            otpRefs.current[index - 1]?.focus()
+        }
+    }
 
     // Load Google Identity Services script
     useEffect(() => {
@@ -273,22 +316,142 @@ export default function Register(props) {
             // props.setIsKeysLoaded(true);
             
             console.log(`keys are loaded after registration for user: ${userId}`)
-            // await sleep(2000); // Wait 2 seconds            
 
+            // Show verification step instead of navigating
+            setRegisteredEmail(email)
+            setShowVerification(true)
             return "success"
         } else {
-            console.log("registration failed bitchass")
+            console.log("registration failed")
             return "error"
+        }
+    }
+
+    async function verifyCode() {
+        setCodeError('')
+        setVerifying(true)
+
+        if (verificationCode.length !== 6) {
+            setCodeError('Please enter the 6-digit code')
+            setVerifying(false)
+            return
+        }
+
+        try {
+            const response = await fetch('http://localhost:3002/verify-email-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: registeredEmail, code: verificationCode }),
+            })
+
+            const data = await response.json()
+
+            if (response.status === 410) {
+                // Code expired, user deleted — go back to registration form
+                setCodeError('Code expired. Your registration has been removed. Please register again.')
+                setShowVerification(false)
+                setVerificationCode('')
+                setOtpDigits(['', '', '', '', '', ''])
+                setUsername('')
+                setEmail('')
+                setPassword('')
+            } else if (!response.ok) {
+                setCodeError(data.error || 'Invalid code')
+            } else {
+                // Verified — navigate to main app
+                await props.setRegisteredAsync()
+                setLoggedIn()
+                router.push('/')
+            }
+        } catch (err) {
+            setCodeError('Could not connect to server')
+        } finally {
+            setVerifying(false)
+        }
+    }
+
+    async function resendCode() {
+        setCodeError('')
+
+        try {
+            const response = await fetch('http://localhost:3002/resend-verification-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: registeredEmail }),
+            })
+
+            const data = await response.json()
+
+            if (response.status === 429) {
+                setCodeError('Please wait before requesting another code')
+            } else if (!response.ok) {
+                setCodeError(data.error || 'Failed to resend code')
+            } else {
+                setCodeError('New code sent!')
+                setVerificationCode('')
+                setOtpDigits(['', '', '', '', '', ''])
+            }
+        } catch (err) {
+            setCodeError('Could not connect to server')
         }
     }
 
 
 
+    if (showVerification) {
+        return (
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
+                if (e.key === 'Enter') await verifyCode()
+            }}>
+                <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
+                    <div className="flex flex-col mb-8 text-center">
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Verify Email</h1>
+                        <p className="text-gray-400 mt-2 text-sm">We sent a 6-digit code to <span className="text-white">{registeredEmail}</span></p>
+                    </div>
+                    <div className="flex flex-col gap-5">
+                        <div className="flex flex-col gap-2 items-center">
+                            <label className="text-sm font-medium text-gray-300 pl-1 self-start">Verification Code</label>
+                            <div className="flex gap-3">
+                                {otpDigits.map((digit, i) => (
+                                    <input
+                                        key={i}
+                                        ref={(el) => { otpRefs.current[i] = el }}
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        value={digit}
+                                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                                        autoFocus={i === 0}
+                                        className="w-12 h-14 bg-gray-700/50 rounded-lg border border-gray-600 text-white text-center text-2xl font-bold outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        {codeError && <p className={`text-sm text-center ${codeError === 'New code sent!' ? 'text-green-400' : 'text-red-400'}`}>{codeError}</p>}
+                        <button
+                            onClick={verifyCode}
+                            disabled={verifying}
+                            className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                        >
+                            {verifying ? 'Verifying...' : 'Verify'}
+                        </button>
+                        <p
+                            onClick={resendCode}
+                            className="text-[#3B7E9B] hover:text-[#5BA3C5] cursor-pointer text-sm text-center transition-colors"
+                        >
+                            Resend code
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
             if(e.key === 'Enter') {
-                const resp = await register();
-                if(resp !== null) console.log("should now be in main view"); router.push("/"); console.log("loggedIn = " + loggedIn + " registered = " + registered)
+                await register()
             }}}>
             <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
                 <div className="flex flex-col mb-8 text-center">
@@ -337,12 +500,10 @@ export default function Register(props) {
                             className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
                         />
                     </div>
+                    {codeError && <p className="text-red-400 text-sm text-center">{codeError}</p>}
                     <button
                         onClick={async () => {
-                            const resp = await register();
-                            if(resp === "success") {
-                                await props.setRegisteredAsync();
-                            }
+                            await register()
                         }}
                         className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
                     >
