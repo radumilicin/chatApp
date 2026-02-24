@@ -222,11 +222,9 @@ export default function ProfileInfo(props) {
                     ? "bg-gradient-to-b from-slate-900/80 via-slate-800/60 to-transparent"
                     : "bg-gradient-to-b from-gray-200/50 to-transparent"}`}>
 
-                {/* Animated background effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 opacity-50" />
 
                 {/* Header with close button */}
-                <div className="relative left-0 flex h-[15%] w-full flex-row items-center z-10 border-b border-cyan-500/10">
+                <div className={`relative left-0 flex h-[15%] w-full flex-row items-center z-10 border-b ${props.themeChosen === "Dark" ? "border-cyan-500/10" : "border-gray-300/50"}`}>
                     <div className="flex h-full w-[10%] items-center justify-center" onClick={() => props.setProfileInfo(false)}>
                         <div className={`flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14
                             rounded-full transition-all group cursor-pointer
@@ -255,13 +253,6 @@ export default function ProfileInfo(props) {
                         onMouseEnter={() => { setHoverStatusProfilePic(true); console.log("On profile pic") }}
                         onMouseLeave={() => { setHoverStatusProfilePic(false); console.log("out of profile pic") }}
                     >
-                        {/* Glowing ring effect around profile picture */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-purple-500/30
-                            blur-xl group-hover/profile:blur-2xl transition-all duration-500 scale-110 animate-pulse" />
-
-                        {/* Secondary glow ring */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-300/20 via-transparent to-purple-300/20
-                            blur-lg transition-all duration-300 scale-105" />
 
                         {/* Profile Picture */}
                         {((props.contact !== undefined && props.contact !== null) && !props.contact.is_group && getImage(props.contact).data && getUser(props.contact).profile_pic_visibility !== 'Nobody') ? (
@@ -271,8 +262,7 @@ export default function ProfileInfo(props) {
                                     : `data:image/jpeg;base64,${getImage(props.contact).data}`}
                                 className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
-                                    shadow-2xl shadow-cyan-500/20
-                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    shadow-2xl ${props.themeChosen === "Dark" ? "shadow-cyan-500/20 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40" : ""}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
                         ) : ((props.contact !== undefined && props.contact !== null) && props.contact.is_group && getImage(props.contact).data) ? (
@@ -280,8 +270,7 @@ export default function ProfileInfo(props) {
                                 src={`data:image/jpeg;base64,${getImage(props.contact).data}`}
                                 className={`relative cursor-pointer rounded-full w-[200px] h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
-                                    shadow-2xl shadow-cyan-500/20
-                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    shadow-2xl ${props.themeChosen === "Dark" ? "shadow-cyan-500/20 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40" : ""}
                                     ${onProfilePic && props.contact.admins.includes(props.curr_user) ? 'blur-sm' : ''}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
@@ -290,8 +279,7 @@ export default function ProfileInfo(props) {
                                 src={`${props.themeChosen === "Dark" ? "./group-white.png" : "./group.png"}`}
                                 className={`relative cursor-pointer rounded-full w-[180px] h-[180px] lg:w-[200px] lg:h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
-                                    shadow-2xl shadow-cyan-500/20
-                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    shadow-2xl ${props.themeChosen === "Dark" ? "shadow-cyan-500/20 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40" : ""}
                                     ${onProfilePic && props.contact.admins.includes(props.curr_user) ? 'blur-sm' : ''}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
@@ -300,8 +288,7 @@ export default function ProfileInfo(props) {
                                 src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
                                 className={`relative cursor-pointer rounded-full w-[180px] h-[180px] lg:w-[200px] lg:h-[200px]
                                     border-4 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : "border-gray-300"}
-                                    shadow-2xl shadow-cyan-500/20
-                                    group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40
+                                    shadow-2xl ${props.themeChosen === "Dark" ? "shadow-cyan-500/20 group-hover/profile:border-cyan-300 group-hover/profile:shadow-cyan-400/40" : ""}
                                     group-hover/profile:scale-105 transition-all duration-300 z-10`}
                             />
                         )}
@@ -368,10 +355,10 @@ export default function ProfileInfo(props) {
                             (<input
                                 value={nameGroup}
                                 className={`flex flex-row justify-center items-center text-lg lg:text-xl xl:text-2xl
-                                    ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
+                                    ${props.themeChosen === "Dark" ? `text-cyan-200 border-cyan-500
+                                    focus:border-cyan-400 transition-all placeholder:text-cyan-300/50` : "text-gray-800 border-gray-400"}
                                     font-bold font-sans h-full w-[75%] outline-none overflow-x-auto
-                                    border-b-2 bg-transparent border-cyan-500
-                                    focus:border-cyan-400 transition-all placeholder:text-cyan-300/50`}
+                                    border-b-2 bg-transparent`}
                                 onChange={(e) => {
                                     setNameGroup(e.target.value)
                                     console.log("input = " + nameGroup)
@@ -511,12 +498,12 @@ function AboutProfile(props) {
                     {
                         (props.contact !== null) ?
                             ((props.contact.is_group === true && props.descriptionPressed === true) ?
-                                <input placeholder="Add description to group"
+                            <input placeholder="Add description to group"
                                     value={props.description}
                                     className={`w-[98%] outline-none bg-transparent border-b-2 border-cyan-500
-                                           ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-800"}
-                                           font-sans text-lg xl:text-xl
-                                           focus:border-cyan-400 transition-all placeholder:text-cyan-400/50`}
+                                           ${props.themeChosen === "Dark" ? "text-cyan-200 focus:border-cyan-400 transition-all placeholder:text-cyan-400/50" 
+                                                                        : "text-gray-800 border-gray-400"} font-sans text-lg xl:text-xl
+                                           `}
                                     onChange={(e) => {
                                         props.setDescriptionAsync(e.target.value)
                                         console.log("Description: " + props.description)
@@ -699,15 +686,15 @@ function Members(props) {
 
                 <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/30 to-cyan-400/30 blur-md group-hover:blur-lg transition-all" />
+                        {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/30 to-cyan-400/30 blur-md group-hover:blur-lg transition-all" />}
                         <img src="./addFrendo.png" className="relative w-12 h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full border-2 border-green-400/50 shadow-lg group-hover:scale-105 transition-all" />
                     </div>
                 </div>
 
                 <div className="flex flex-1 h-full items-center pl-[10px]">
-                    <div className={`text-sm lg:text-base xl:text-lg font-sans font-bold
-                        bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent
-                        group-hover:from-green-300 group-hover:to-cyan-300 transition-all`}>
+                    <div className={`text-base xl:text-lg font-sans font-bold
+                        ${props.themeChosen === "Dark" ? `bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent
+                        group-hover:from-green-300 group-hover:to-cyan-300 transition-all` : `text-green-500`} `}>
                         Add member
                     </div>
                 </div>
@@ -735,15 +722,15 @@ function Members(props) {
 
                     <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                         <div className="relative group/avatar">
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-400/20 blur-md group-hover/avatar:blur-lg transition-all scale-110" />
+                            {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-400/20 blur-md group-hover/avatar:blur-lg transition-all scale-110" />}
                             {(getProfilePic(getUser(id)).data !== "") ?
                                 <img
                                     src={`data:image/jpg;base64,${getProfilePic(getUser(id)).data}`}
-                                    className="relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                    className={`relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : ""} shadow-lg transition-all group-hover/avatar:scale-105`}
                                 /> :
                                 <img
                                     src={`${props.themeChosen === "Dark" ? "./userProfile_nobg.png" : "./userProfile2.png"}`}
-                                    className="relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 border-cyan-400/50 shadow-lg transition-all group-hover/avatar:scale-105"
+                                    className={`relative w-12 h-12 xl:w-14 xl:h-14 rounded-full border-2 ${props.themeChosen === "Dark" ? "border-cyan-400/50" : ""}  shadow-lg transition-all group-hover/avatar:scale-105`}
                                 />
                             }
                         </div>
@@ -754,6 +741,8 @@ function Members(props) {
                         ${props.themeChosen === "Dark" ? "text-cyan-200" : "text-gray-900"}`}>
                             {getUser(id).username}
                             {props.curr_user === id && <span className={`text-sm xl:text-base ${props.themeChosen === "Dark" ? "text-gray-600" : ""}`}>&nbsp;&nbsp;(You)</span>}
+                            {(props.contact.admins.includes(id)) && <span className={`${props.themeChosen === "Dark" ? `bg-gradient-to-r from-green-500/90 to-cyan-500/90 rounded-full text-white` 
+                                                                 : `bg-gray-400 hover:bg-gray-500 text-black`} rounded-full text-sm px-2 ml-2 lg:hidden`}>Admin</span>}
                         </div>
                         <div className={`flex text-sm xl:text-base font-sans
                         ${props.themeChosen === "Dark" ? "text-cyan-300/60" : "text-gray-600"}
@@ -764,9 +753,9 @@ function Members(props) {
 
                     {/* Admin Badge */}
                     {(props.contact.admins.includes(id)) &&
-                        <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center justify-center
-                        px-3 py-1 bg-gradient-to-r from-green-500/90 to-cyan-500/90 rounded-full
-                        text-white text-sm font-bold shadow-lg">
+                        <div className={`absolute right-12 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center
+                        px-3 py-1 ${props.themeChosen === "Dark" ? `bg-gradient-to-r from-green-500/90 to-cyan-500/90 rounded-full text-white` 
+                                                                 : `bg-gray-400 hover:bg-gray-500 text-black`}  rounded-full text-sm font-bold shadow-lg`}>
                             Admin
                         </div>
                     }
@@ -886,13 +875,13 @@ function OptionsGroup(props) {
 
                 <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 blur-md group-hover:blur-lg transition-all" />
+                        {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 blur-md group-hover:blur-lg transition-all" />}
                         <img src="./exitIcon.png" className="relative w-12 h-12 xl:w-14 xl:h-14 opacity-90 group-hover:scale-110 transition-all" />
                     </div>
                 </div>
 
                 <div className="flex flex-row flex-1 h-full items-center pl-[10px]">
-                    <div className={`text-sm lg:text-base xl:text-lg font-sans font-bold
+                    <div className={`text-base xl:text-lg font-sans font-bold
                         bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent
                         group-hover:from-red-400 group-hover:to-orange-400 transition-all`}>
                         Exit group
@@ -1017,7 +1006,7 @@ function OptionsChat(props) {
 
                         <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                             <div className="relative">
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 blur-md group-hover:blur-lg transition-all" />
+                                {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 blur-md group-hover:blur-lg transition-all" />}
                                 <img src="./denied2.png" className="relative w-10 h-10 opacity-90 group-hover:scale-110 transition-all group-hover:rotate-90" />
                             </div>
                         </div>
@@ -1044,7 +1033,7 @@ function OptionsChat(props) {
 
                         <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                             <div className="relative">
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500/20 to-cyan-500/20 blur-md group-hover:blur-lg transition-all" />
+                                {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500/20 to-cyan-500/20 blur-md group-hover:blur-lg transition-all" />}
                                 <img src="./unblock2.png" className="relative w-10 h-10 opacity-90 group-hover:scale-110 group-hover:brightness-125 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.9)] group-hover:drop-shadow-[0_0_24px_rgba(34,211,238,0.7)]" />
                             </div>
                         </div>
@@ -1070,7 +1059,7 @@ function OptionsChat(props) {
 
                 <div className="flex w-[80px] shrink-0 h-full items-center justify-center">
                     <div className="relative">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-600/30 to-red-500/30 blur-md group-hover:blur-lg transition-all" />
+                        {props.themeChosen === "Dark" && <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-600/30 to-red-500/30 blur-md group-hover:blur-lg transition-all" />}
                         <img src="./trash-icon-red.png" className="relative w-10 h-10 opacity-90 transition-all 
                                                                    group-hover:translate-x-[-10px] group-hover:translate-y-[-10px] group-hover:-rotate-45
                                                                     group-hover:brightness-125 group-hover:drop-shadow-[0_0_14px_rgba(239,68,68,0.9)] group-hover:drop-shadow-[0_0_28px_rgba(220,38,38,0.6)]" />

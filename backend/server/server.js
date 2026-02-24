@@ -25,7 +25,7 @@ const app = express();
 
 app.use(cors(
   {
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
     credentials: true
   }
 ))
@@ -42,11 +42,11 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID)
 
 // Database configuration
 const pool = new pg.Pool({
-  user: 'postgres',       // Replace with your PostgreSQL username
-  host: 'localhost',           // Replace with your database host
-  database: 'chatapp',   // Replace with your database name
-  password: process.env.DATABASE_PSWD,   // Replace with your PostgreSQL password
-  port: 5432,                  // Replace with your database port (default: 5432)
+  user: process.env.DATABASE_USER || 'postgres',
+  host: process.env.DATABASE_HOST || 'localhost',
+  database: process.env.DATABASE_NAME || 'chatapp',
+  password: process.env.DATABASE_PSWD,
+  port: parseInt(process.env.DATABASE_PORT || '5432'),
 });
 
 // Middleware to parse JSON

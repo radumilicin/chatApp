@@ -11,6 +11,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {v4 as uuidv4} from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
+import { Resend } from 'resend';
 import {
   setAuthCookie,
   updateUserSetting,
@@ -40,12 +41,17 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_AUTH_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const pool = new pg.Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'chatapp',
+  user: process.env.DATABASE_USER,
+  host: process.env.DATABASE_HOST || 'localhost',
+  database: process.env.DATABASE_NAME,
   password: process.env.DATABASE_PSWD,
   port: 5432,
 });
+
+// ─── EMAIL (RESEND) ──────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const emailRateLimit = new Map();
 
 // ─── AUTH & REGISTRATION ──────────────────────────────────────────────
 
@@ -104,6 +110,35 @@ app.post('/register', async (req, res) => {
       );
     }
 
+    // Generate verification code and send email
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await pool.query(
+      'DELETE FROM email_verification_codes WHERE email = $1',
+      [email]
+    );
+    await pool.query(
+      'INSERT INTO email_verification_codes (email, code, expires_at) VALUES ($1, $2, $3)',
+      [email, code, expiresAt]
+    );
+
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'WalkieTalkieTeam <onboarding@resend.dev>',
+      to: email,
+      subject: 'Your Verification Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #3B7E9B;">SocialiseIt Verification</h2>
+          <p>Your verification code is:</p>
+          <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #3B7E9B; padding: 16px; background: #f0f0f0; border-radius: 8px; text-align: center;">
+            ${code}
+          </div>
+          <p style="color: #666; margin-top: 16px;">This code expires in 10 minutes.</p>
+        </div>
+      `,
+    });
+
     res.status(201).json({ user_id });
   } catch (error) {
     console.error("Registration error:", error.message);
@@ -112,6 +147,99 @@ app.post('/register', async (req, res) => {
     } else {
       res.status(500).json({ error: 'Registration failed' });
     }
+  }
+});
+
+app.post('/verify-email-code', async (req, res) => {
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    return res.status(400).json({ error: 'Email and code are required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM email_verification_codes WHERE email = $1 AND code = $2 ORDER BY created_at DESC LIMIT 1',
+      [email, code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid verification code' });
+    }
+
+    const record = result.rows[0];
+
+    // Code expired — delete user and all related data (cascade handles keys/prekeys)
+    if (new Date() > new Date(record.expires_at)) {
+      await pool.query('DELETE FROM users WHERE email = $1 AND email_verified = false', [email]);
+      await pool.query('DELETE FROM email_verification_codes WHERE email = $1', [email]);
+      return res.status(410).json({ error: 'Verification code has expired. Please register again.' });
+    }
+
+    // Mark user as verified and clean up
+    await pool.query('UPDATE users SET email_verified = true WHERE email = $1', [email]);
+    await pool.query('DELETE FROM email_verification_codes WHERE email = $1', [email]);
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Error verifying code:', error.message);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
+
+app.post('/resend-verification-code', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Check user exists and is not yet verified
+    const user = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND email_verified = false',
+      [email]
+    );
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'No pending verification for this email' });
+    }
+
+    // Rate limit: 60s cooldown per email
+    const lastSent = emailRateLimit.get(email);
+    if (lastSent && Date.now() - lastSent < 60000) {
+      return res.status(429).json({ error: 'Please wait before requesting another code' });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await pool.query('DELETE FROM email_verification_codes WHERE email = $1', [email]);
+    await pool.query(
+      'INSERT INTO email_verification_codes (email, code, expires_at) VALUES ($1, $2, $3)',
+      [email, code, expiresAt]
+    );
+
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'SocialiseIt <onboarding@resend.dev>',
+      to: email,
+      subject: 'Your Verification Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #3B7E9B;">SocialiseIt Verification</h2>
+          <p>Your verification code is:</p>
+          <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #3B7E9B; padding: 16px; background: #f0f0f0; border-radius: 8px; text-align: center;">
+            ${code}
+          </div>
+          <p style="color: #666; margin-top: 16px;">This code expires in 10 minutes.</p>
+        </div>
+      `,
+    });
+
+    emailRateLimit.set(email, Date.now());
+    res.status(200).json({ message: 'Verification code resent' });
+  } catch (error) {
+    console.error('Error resending verification code:', error.message);
+    res.status(500).json({ error: 'Failed to resend verification code' });
   }
 });
 

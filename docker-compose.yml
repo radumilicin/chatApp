@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PSWD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/drizzle/0000_milky_meltdown.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d chatapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_PSWD: ${DATABASE_PSWD}
+      DATABASE_PORT: 5432
+      JWT_TOKEN: ${JWT_TOKEN}
+      GOOGLE_AUTH_ID: ${GOOGLE_AUTH_ID}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "3002:3002"
+      - "8080:8080"
+
+volumes:
+  pgdata:

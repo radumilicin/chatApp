@@ -23,6 +23,14 @@ CREATE TABLE "contacts" (
 	"last_message_read_by_recipient" timestamp with time zone
 );
 --> statement-breakpoint
+CREATE TABLE "email_verification_codes" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"email" varchar(100) NOT NULL,
+	"code" varchar(6) NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "images" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" varchar(36),
@@ -70,6 +78,7 @@ CREATE TABLE "users" (
 	"google_id" varchar(100),
 	"profile_pic_id" integer,
 	"about" varchar(250),
+	"email_verified" boolean DEFAULT false,
 	"incoming_sounds" boolean DEFAULT false,
 	"outgoing_sounds" boolean DEFAULT false,
 	"notifications_enabled" boolean DEFAULT false,
