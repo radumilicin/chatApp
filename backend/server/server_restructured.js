@@ -35,7 +35,7 @@ const SERVER = process.env.SERVER
 const PORT_CLIENT = process.env.PORT_CLIENT
 const PORT_SERVER = process.env.PORT_SERVER
 
-app.use(cors({ origin: process.env.APP_URL || `http://${CLIENT}:${PORT_CLIENT}`, credentials: true }));
+app.use(cors({ origin: `http://${CLIENT}:${PORT_CLIENT}`, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());

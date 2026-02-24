@@ -1,5 +1,5 @@
 import react, {useState, useEffect, useRef} from 'react'
-import { SERVER, PORT_SERVER } from '../config'
+import { API_URL } from '../config'
 
 export default function ProfileSettings(props) {
 
@@ -39,7 +39,7 @@ export default function ProfileSettings(props) {
             body: JSON.stringify(msg)
         };
         console.log("Before sending POST request to server to change profile pic")
-        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/putProfilePic`, requestOptions)
+        const response = await fetch(`${API_URL}/putProfilePic`, requestOptions)
         if(response.status === 200){
             await props.fetchData()
             await props.fetchData2()
@@ -50,7 +50,7 @@ export default function ProfileSettings(props) {
             const img = props.images.find((img) => { return img.id === msg.profile_pic_id }) 
             console.log("profile pic id = " + JSON.stringify(img))
             // update images here 
-            // const response2 = await fetch(`http://${SERVER}:${PORT_SERVER}/putProfilePic?user=${props.curr_user}`)
+            // const response2 = await fetch(`${API_URL}/putProfilePic?user=${props.curr_user}`)
         }
     }
 
@@ -66,7 +66,7 @@ export default function ProfileSettings(props) {
             body: JSON.stringify(msg)
         };
         console.log("Before sending POST request to server to change profile pic")
-        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/changeUsername`, requestOptions)
+        const response = await fetch(`${API_URL}/changeUsername`, requestOptions)
         if(response.status === 200){
             await props.fetchData()
         }
@@ -84,7 +84,7 @@ export default function ProfileSettings(props) {
             body: JSON.stringify(msg)
         };
         console.log("Before sending POST request to server to change profile pic")
-        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/changeAbout`, requestOptions)
+        const response = await fetch(`${API_URL}/changeAbout`, requestOptions)
         if(response.status === 200){
             await props.fetchData()
         }

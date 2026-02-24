@@ -4,7 +4,7 @@ import fs from "fs";
 import { DoubleRatchet } from '../DoubleRatchet';
 import { ConversationManager } from '../ConversationManager';
 import { X3DHClient } from '../x3dh-client';
-import { SERVER, PORT_SERVER } from '../config'
+import { API_URL } from '../config'
 
 export default function CurrentChat( props: any ) {
 
@@ -66,7 +66,7 @@ export default function CurrentChat( props: any ) {
                     if(props.contact.is_group === false) {
 
                         // const other_user = props.contact.sender_id === props.curr_user ? props.contact.contact_id : props.contact.sender_id
-                        // const response = await fetch(`http://${SERVER}:${PORT_SERVER}/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
+                        // const response = await fetch(`${API_URL}/contacts?user=${props.curr_user}&contact_id=${other_user}`); // Replace with your API endpoint
                         // if(!response.ok) {
                         //     throw new Error(`HTTP error! status: ${response.status}`)
                         // }
@@ -79,7 +79,7 @@ export default function CurrentChat( props: any ) {
 
                     } else {
 
-                        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
+                        const response = await fetch(`${API_URL}/contactsGroup?group_id=${props.contact.id}`); // Replace with your API endpoint
                         // console.log("response = " + JSON.stringify(response))
                         const result = await response.json();
                         // console.log("result = " + JSON.stringify(result) + "  \n\nmessage: " + JSON.stringify(result[0]?.message) + "\n\n")

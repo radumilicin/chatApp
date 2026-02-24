@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import { SERVER, PORT_SERVER } from '../config';
+import { API_URL } from '../config';
 
 export default function NotificationSettings( props: any ) {
 
@@ -19,7 +19,7 @@ export default function NotificationSettings( props: any ) {
         console.log("new_setting: " + JSON.stringify(props.notificationsEnabled))
         console.log("user: " + JSON.stringify(props.user))
 
-        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeNotificationsEnabled`, {
+        const resp = await fetch(`${API_URL}/changeNotificationsEnabled`, {
             method: 'POST',
             credentials: "include",
             headers: {
@@ -59,7 +59,7 @@ export default function NotificationSettings( props: any ) {
             "user": props.user
         }
 
-        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeIncomingMessageSoundsSetting`, {
+        const resp = await fetch(`${API_URL}/changeIncomingMessageSoundsSetting`, {
             method: 'POST',
             credentials: "include",
             headers: {
@@ -90,7 +90,7 @@ export default function NotificationSettings( props: any ) {
             "user": props.user
         }
 
-        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeOutgoingMessageSoundsSetting`, {
+        const resp = await fetch(`${API_URL}/changeOutgoingMessageSoundsSetting`, {
             method: 'POST',
             credentials: "include",
             headers: {

@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react'
-import { SERVER, PORT_SERVER } from '../config'
+import { API_URL } from '../config'
 
 export default function StatusPrivacy(props: any) {
 
@@ -33,7 +33,7 @@ export default function StatusPrivacy(props: any) {
             'new_setting': props.visibilityStatus
         }
 
-        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeStatusVisibility`, {
+        const resp = await fetch(`${API_URL}/changeStatusVisibility`, {
             method: 'PUT',
             credentials: "include",
             headers: {
