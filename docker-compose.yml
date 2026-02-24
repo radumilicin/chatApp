@@ -38,7 +38,7 @@ services:
       SERVER: ${SERVER}
       PORT_CLIENT: ${PORT_CLIENT}
       PORT_SERVER: ${PORT_SERVER}
-      CORS_ORIGIN: http://localhost:3000
+      CORS_ORIGIN: https://walkie-talkie-chat.com
     ports:
       - "127.0.0.1:3002:3002"
       - "127.0.0.1:8080:8080"
