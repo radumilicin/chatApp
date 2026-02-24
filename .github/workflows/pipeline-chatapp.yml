@@ -47,8 +47,7 @@ jobs:
             cd frontend/walkie-talkie
             npm install
             npm run build
-            # Kill any existing Next.js process, then start in background
+            # Kill any existing Next.js process, then start in new session
             pkill -f "next start" || true
-            nohup npm start > /tmp/frontend.log 2>&1 &
-            disown
-            sleep 2
+            setsid npm start > /tmp/frontend.log 2>&1 < /dev/null &
+            sleep 5
