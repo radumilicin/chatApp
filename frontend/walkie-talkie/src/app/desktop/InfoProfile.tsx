@@ -2,6 +2,7 @@ import react, { useState, useEffect, useRef } from 'react'
 import { GrUserAdmin } from "react-icons/gr";
 import { CiCircleRemove } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
+import { SERVER, PORT_SERVER } from '../config'
 
 export default function ProfileInfo(props) {
 
@@ -127,7 +128,7 @@ export default function ProfileInfo(props) {
             }
 
             try {
-                await fetch('http://${SERVER}:${PORT_SERVER}/changeGroupName', requestParams)
+                await fetch(`http://${SERVER}:${PORT_SERVER}/changeGroupName`, requestParams)
                 await props.fetchContacts()
                 props.setDecryptedContacts((currArr) =>
                     currArr.map(c => c.id === contact.id ? { ...c, group_name: newName } : c)
@@ -611,7 +612,7 @@ function Members(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/exitGroup', requestOptions)
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/exitGroup`, requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(val)) + " has been kicked out from the group " + props.contact.group_name)
                 await props.fetchContacts()
@@ -839,7 +840,7 @@ function OptionsGroup(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/exitGroup', requestOptions)
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/exitGroup`, requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has exited the group " + props.contact.group_name)
 
@@ -913,7 +914,7 @@ function OptionsChat(props) {
                 body: JSON.stringify(msg)
             }
 
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/deleteChat', requestOptions)
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/deleteChat`, requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.curr_user)) + " has deleted the chat with " + other_user + " with id = " + JSON.stringify(props.contact.id))
 
@@ -956,7 +957,7 @@ function OptionsChat(props) {
 
             console.log(`Trying to block contact attempt ${cnt.current} with curr_user: ` + JSON.stringify(props.contact.sender_id) + " contact_id: " + JSON.stringify(props.contact.contact_id) + " status: " + status)
 
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/blockContact', requestOptions)
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/blockContact`, requestOptions)
             if (response.status === 200) {
                 console.log(JSON.stringify(props.getUser(props.contact.sender_id)) + " has blocked the chat with " + props.contact.contact_id + " with id = " + JSON.stringify(props.contact.id))
                 await props.fetchContacts()

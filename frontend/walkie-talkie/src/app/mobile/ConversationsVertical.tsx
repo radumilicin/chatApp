@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { GrFormNextLink } from "react-icons/gr";
 import { Theme } from './AppearanceSettingsVertical';
+import { SERVER, PORT_SERVER } from '../config';
 
 export default function ConversationsVertical( props : any) {
 
@@ -1196,7 +1197,7 @@ export function Groups(props) {
         console.log("Before request to server")
 
         try {
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/createGroup', requestOptions)
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/createGroup`, requestOptions)
 
             if(response.status === 200) {
                 const result = await response.json()

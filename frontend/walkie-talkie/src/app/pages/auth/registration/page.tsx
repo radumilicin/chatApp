@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import {useAuth} from '../../../AuthProvider'
 import { X3DHClient } from '../../../x3dh-client';
+import { SERVER, PORT_SERVER } from '../../../config'
 
 declare global {
     interface Window {
@@ -101,7 +102,7 @@ export default function Register(props) {
         console.log("Google sign-up response received");
 
         try {
-            const res = await fetch("http://${SERVER}:${PORT_SERVER}/auth/google", {
+            const res = await fetch(`http://${SERVER}:${PORT_SERVER}/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ credential: response.credential }),
@@ -134,7 +135,7 @@ export default function Register(props) {
                 const newOneTimePreKeys = await X3DHClient.generateOneTimePreKeys(100, 1);
 
                 // Register keys on the server
-                await fetch("http://${SERVER}:${PORT_SERVER}/register-keys", {
+                await fetch(`http://${SERVER}:${PORT_SERVER}/register-keys`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -266,7 +267,7 @@ export default function Register(props) {
             'body': JSON.stringify(msg)
         }
         
-        const response = await fetch("http://${SERVER}:${PORT_SERVER}/register", requestParams);
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/register`, requestParams);
         
         if(response.status === 201){
             console.log("Got registered suckas")
@@ -338,7 +339,7 @@ export default function Register(props) {
         }
 
         try {
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/verify-email-code', {
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/verify-email-code`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: registeredEmail, code: verificationCode }),
@@ -374,7 +375,7 @@ export default function Register(props) {
         setCodeError('')
 
         try {
-            const response = await fetch('http://${SERVER}:${PORT_SERVER}/resend-verification-code', {
+            const response = await fetch(`http://${SERVER}:${PORT_SERVER}/resend-verification-code`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: registeredEmail }),

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { X3DHClient, KeyPair } from './x3dh-client';
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
+import { SERVER, PORT_SERVER } from './config'
 
 interface UserKeys {
   identityKey: KeyPair;

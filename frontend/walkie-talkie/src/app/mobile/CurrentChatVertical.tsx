@@ -4,6 +4,7 @@ import fs from "fs";
 import { DoubleRatchet } from '../DoubleRatchet';
 import { ConversationManager } from '../ConversationManager';
 import { X3DHClient } from '../x3dh-client';
+import { SERVER, PORT_SERVER } from '../config';
 
 export default function CurrentChatVertical( props: any ) {
 

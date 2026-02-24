@@ -1,4 +1,5 @@
 import {useEffect, useRef} from 'react'
+import { SERVER, PORT_SERVER } from '../config';
 
 export default function ProfilePicPrivacyVertical(props: any) {
 
@@ -25,7 +26,7 @@ export default function ProfilePicPrivacyVertical(props: any) {
             'new_visibility': props.visibilityProfilePic
         }
 
-        const resp = await fetch("http://${SERVER}:${PORT_SERVER}/changeProfilePicVisibility", {
+        const resp = await fetch(`http://${SERVER}:${PORT_SERVER}/changeProfilePicVisibility`, {
             method: 'PUT',
             credentials: "include",
             headers: {

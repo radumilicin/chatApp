@@ -1,3 +1,5 @@
+import { SERVER, PORT_SERVER } from '../config'
+
 export default function Fonts(props: any) {
 
 
@@ -9,7 +11,7 @@ export default function Fonts(props: any) {
             'new_setting': props.fontChosenPending
         }
 
-        const response = await fetch('http://${SERVER}:${PORT_SERVER}/changeFont', {
+        const response = await fetch(`http://${SERVER}:${PORT_SERVER}/changeFont`, {
             method: 'POST',
             credentials: "include",
             headers: {

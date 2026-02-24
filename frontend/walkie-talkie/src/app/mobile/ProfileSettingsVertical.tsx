@@ -1,4 +1,5 @@
 import react, {useState, useEffect, useRef} from 'react'
+import { SERVER, PORT_SERVER } from '../config';
 
 export default function ProfileSettings(props) {
 
