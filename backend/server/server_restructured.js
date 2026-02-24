@@ -30,8 +30,8 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 const wss = new WebSocketServer({ port: 8080 });
 const app = express();
 
-const CLIENT = process.env.NEXT_PUBLIC_CLIENT
-const SERVER = process.env.NEXT_PUBLIC_SERVER
+const CLIENT = process.env.CLIENT
+const SERVER = process.env.SERVER
 const PORT_CLIENT = process.env.PORT_CLIENT
 const PORT_SERVER = process.env.PORT_SERVER
 
