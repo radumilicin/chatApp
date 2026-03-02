@@ -35,12 +35,11 @@ const SERVER = process.env.SERVER
 const PORT_CLIENT = process.env.PORT_CLIENT
 const PORT_SERVER = process.env.PORT_SERVER
 
-app.use(cors({ origin: process.env.APP_URL || `http://${CLIENT}:${PORT_CLIENT}`, credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_APP_URL || `http://${CLIENT}:${PORT_CLIENT}`, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
-const PORT = 3002;
 const JWT_TOKEN = process.env.JWT_TOKEN;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_AUTH_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -86,13 +85,19 @@ app.get("/verify", (req, res) => {
 app.post('/register', async (req, res) => {
   const { username, email, password, identityKeyPublic, signedPreKeyPublic, signedPreKeySignature, oneTimePreKeysPublic } = req.body;
 
+  console.log("Before basic checks: username, email, password")
+
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Missing username, email, or password' });
   }
+  
+  console.log("Before basic checks: crypto checks")
 
   if (!identityKeyPublic || !signedPreKeyPublic || !signedPreKeySignature || !oneTimePreKeysPublic) {
     return res.status(400).json({ error: 'Missing required key fields' });
   }
+  
+  console.log("After crypto checks")
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -129,7 +134,7 @@ app.post('/register', async (req, res) => {
     );
 
     await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'WalkieTalkieTeam <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM_EMAIL || 'WalkieTalkieTeam <onboarding@walkie-talkie-chat.com>',
       to: email,
       subject: 'Your Verification Code',
       html: `
@@ -938,6 +943,8 @@ async function handleDirectMessage(ws, parsedMessage) {
     sender_id, recipient_id, contact_id, ephemeralPublicKey, identityKey,
     oneTimePreKeyId, ciphertext, ciphertext_sender, header, timestamp,
   } = parsedMessage;
+  
+  console.log("in handle direct message before checks")
 
   if (!sender_id || !recipient_id || !timestamp || !ciphertext || !ciphertext_sender) {
     ws.send(JSON.stringify({ error: 'Invalid message format' }));
@@ -958,6 +965,8 @@ async function handleDirectMessage(ws, parsedMessage) {
     is_first_message: isFirstMessage,
     ...(isFirstMessage && { ephemeralPublicKey, identityKey, oneTimePreKeyId }),
   };
+  
+  console.log("in handle direct message before sending to recipients ws")
 
   // Forward to recipient if online
   sendToRecipient(clients, recipient_id, messageToStore);

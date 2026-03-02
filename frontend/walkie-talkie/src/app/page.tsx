@@ -44,7 +44,7 @@ import { X3DHClient } from "./x3dh-client";
 import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
-import { API_URL } from './config'
+import { API_URL, WS_URL } from './config'
 const CLIENT = process.env.NEXT_PUBLIC_CLIENT
 
 export default function Home() {
@@ -1062,7 +1062,7 @@ export default function Home() {
   }, [userObj])
 
   const { isConnected, sendMessage } = useWebSocket(
-    user !== "" && user !== null ? `ws://localhost:8080?userId=${user}` : null, 
+    user !== "" && user !== null ? `${WS_URL}?userId=${user}` : null,
     user,
     contacts,
     updateContacts, 
