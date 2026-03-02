@@ -87,6 +87,8 @@ export async function storeDirectMessage(pool, { messageToStore, senderId, recip
   const contact = await pool.query("SELECT * FROM contacts WHERE id=$1", [contactId]);
   const originalSender = contact.rows[0].sender_id;
 
+  console.log("Before storing message")
+
   if (originalSender === senderId) {
     await pool.query(
       `UPDATE contacts
@@ -102,6 +104,8 @@ export async function storeDirectMessage(pool, { messageToStore, senderId, recip
       [JSON.stringify(messageToStore), senderId, recipientId, timestamp]
     );
   }
+
+  console.log("Managed to save message in the DB")
 }
 
 /**
