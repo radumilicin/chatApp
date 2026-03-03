@@ -401,16 +401,16 @@ export default function Register(props) {
 
     if (showVerification) {
         return (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
+            <div className="absolute inset-0 flex items-center justify-center px-8 py-[10vh] md:px-[20wh] md:py-[10vh] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
                 if (e.key === 'Enter') await verifyCode()
             }}>
-                <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
-                    <div className="flex flex-col mb-8 text-center">
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Verify Email</h1>
-                        <p className="text-gray-400 mt-2 text-sm">We sent a 6-digit code to <span className="text-white">{registeredEmail}</span></p>
+                <div className="relative w-full max-w-lg md:py-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
+                    <div className="flex flex-col mb-4 md:mb-8 text-center">
+                        <h1 className="mt-2 text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Verify Email</h1>
+                        <p className="text-gray-400 md:mt-2 text-sm">We sent a 6-digit code to <span className="text-white">{registeredEmail}</span></p>
                     </div>
-                    <div className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-2 items-center">
+                    <div className="flex flex-col gap-3 md:gap-6">
+                        <div className="flex flex-col gap-2 items-center mx-4">
                             <label className="text-sm font-medium text-gray-300 pl-1 self-start">Verification Code</label>
                             <div className="flex gap-3">
                                 {otpDigits.map((digit, i) => (
@@ -433,7 +433,7 @@ export default function Register(props) {
                         <button
                             onClick={verifyCode}
                             disabled={verifying}
-                            className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                            className="p-4 mx-4 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                         >
                             {verifying ? 'Verifying...' : 'Verify'}
                         </button>
@@ -450,17 +450,17 @@ export default function Register(props) {
     }
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
+        <div className="absolute inset-0 flex items-center justify-center px-8 py-[10vh] md:px-[20wh] md:py-[10vh] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
             if(e.key === 'Enter') {
                 await register()
             }}}>
-            <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
-                <div className="flex flex-col mb-8 text-center">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Create Account</h1>
-                    <p className="text-gray-400 mt-2 text-sm">Register to SocialiseIt</p>
+            <div className="relative w-full max-w-lg md:py-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
+                <div className="flex flex-col mb-4 md:mb-8 text-center">
+                    <h1 className="mt-2 text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Create Account</h1>
+                    <p className="text-gray-400 md:mt-2 text-sm">Register to SocialiseIt</p>
                 </div>
-                <div className="flex flex-col gap-5">
-                    <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3 md:gap-6">
+                    <div className="flex flex-col gap-2 mx-6">
                         <label className="text-sm font-medium text-gray-300 pl-1">Username</label>
                         <input
                             type="text"
@@ -475,7 +475,7 @@ export default function Register(props) {
                         />
                         {usernameExists && <p className="text-red-400 text-xs pl-1 -mt-1">Username already exists</p>}
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 mx-6">
                         <label className="text-sm font-medium text-gray-300 pl-1">Email</label>
                         <input
                             type="email"
@@ -490,7 +490,7 @@ export default function Register(props) {
                         />
                         {emailExists && <p className="text-red-400 text-xs pl-1 -mt-1">Email already exists</p>}
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 mx-6">
                         <label className="text-sm font-medium text-gray-300 pl-1">Password</label>
                         <input
                             type="password"
@@ -506,7 +506,7 @@ export default function Register(props) {
                         onClick={async () => {
                             await register()
                         }}
-                        className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
+                        className="p-3 mx-20 md:mx-32 mt-4 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
                     >
                         Create Account
                     </button>
@@ -519,7 +519,7 @@ export default function Register(props) {
 
                     <div ref={googleButtonRef} className="flex justify-center w-full"></div>
                 </div>
-                <div className="mt-6 text-center">
+                <div className="mt-6 mb-2 text-center">
                     <p className="text-gray-400 text-sm">
                         Already have an account?{' '}
                         <span
