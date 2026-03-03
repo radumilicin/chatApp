@@ -165,6 +165,7 @@ export default function CurrentChat( props: any ) {
     */
     const handleSendMessage = async (msg) => {
         if (msg.trim() === '') return;
+        if (!props.isConnected) return;
         if (props.contact.blocked_by_sender || props.contact.blocked_by_receiver) return;
 
         const other_user = props.contact.sender_id === props.curr_user 
