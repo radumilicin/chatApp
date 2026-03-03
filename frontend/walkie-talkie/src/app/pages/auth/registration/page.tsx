@@ -20,7 +20,6 @@ export default function Register(props) {
     const [password, setPassword] = useState('')
     const [usernameExists, setUsernameExists] = useState(false)
     const [emailExists, setEmailExists] = useState(false)
-    const [showVerification, setShowVerification] = useState(false)
     const [verificationCode, setVerificationCode] = useState('')
     const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', ''])
     const [codeError, setCodeError] = useState('')
@@ -320,7 +319,7 @@ export default function Register(props) {
 
             // Show verification step instead of navigating
             setRegisteredEmail(email)
-            setShowVerification(true)
+            props.setShowVerification(true)
             return "success"
         } else {
             console.log("registration failed")
@@ -350,7 +349,7 @@ export default function Register(props) {
             if (response.status === 410) {
                 // Code expired, user deleted — go back to registration form
                 setCodeError('Code expired. Your registration has been removed. Please register again.')
-                setShowVerification(false)
+                props.setShowVerification(false)
                 setVerificationCode('')
                 setOtpDigits(['', '', '', '', '', ''])
                 setUsername('')
@@ -399,7 +398,7 @@ export default function Register(props) {
 
 
 
-    if (showVerification) {
+    if (props.showVerification) {
         return (
             <div className="absolute inset-0 flex items-center justify-center px-8 py-[10vh] md:px-[20wh] md:py-[10vh] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
                 if (e.key === 'Enter') await verifyCode()
@@ -411,7 +410,7 @@ export default function Register(props) {
                     </div>
                     <div className="flex flex-col gap-3 md:gap-6">
                         <div className="flex flex-col gap-2 items-center mx-4">
-                            <label className="text-sm font-medium text-gray-300 pl-1 self-start">Verification Code</label>
+                            <label className="text-sm font-medium text-gray-300 pl-1">Verification Code</label>
                             <div className="flex gap-1.5 sm:gap-3">
                                 {otpDigits.map((digit, i) => (
                                     <input
