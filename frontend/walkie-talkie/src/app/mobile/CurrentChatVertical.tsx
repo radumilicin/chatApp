@@ -165,8 +165,6 @@ export default function CurrentChatVertical( props: any ) {
     */
     const handleSendMessage = async (msg) => {
         if (msg.trim() === '') return;
-        if (!props.isConnected) return;
-
         const other_user = props.contact.sender_id === props.curr_user
             ? props.contact.contact_id 
             : props.contact.sender_id;

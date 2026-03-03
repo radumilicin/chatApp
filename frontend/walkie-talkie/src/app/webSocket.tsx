@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { X3DHClient } from './x3dh-client';
 import { ConversationManager } from './ConversationManager';
 import { DoubleRatchet } from './DoubleRatchet';
+import { API_URL } from './config';
 
 export default function useWebSocket (url, user, contacts, updateContacts, setDecryptedContacts, identityKey, signedPreKey, setMessages, incomingSoundsEnabled, 
                                         outgoingMessagesSoundsEnabled, decryptAllMessages, fetchContacts, loadConversationRatchetStateDB) {
@@ -301,7 +302,15 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
           }); 
         }
       } else {
-        console.error('WebSocket is not open');
+        console.error('WebSocket is not open, falling back to HTTP');
+        if (!message.hasOwnProperty("group_id")) {
+          await fetch(`${API_URL}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(message),
+          });
+        }
       }
     };
 

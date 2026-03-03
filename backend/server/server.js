@@ -932,7 +932,57 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-// update 2 tables. for user 
+// HTTP fallback for sending messages when WebSocket is not available
+app.post('/sendMessage', async (req, res) => {
+  try {
+    const { sender_id, recipient_id, contact_id, ephemeralPublicKey, identityKey,
+            oneTimePreKeyId, ciphertext, ciphertext_sender, header, timestamp } = req.body;
+
+    if (!sender_id || !recipient_id || !timestamp || !ciphertext || !ciphertext_sender) {
+      return res.status(400).json({ error: 'Invalid message format' });
+    }
+
+    const contact = await pool.query("SELECT * FROM contacts WHERE id=$1", [contact_id]);
+    if (!contact.rows[0]) return res.status(404).json({ error: 'Contact not found' });
+    const original_sender = contact.rows[0].sender_id;
+
+    const isFirstMessage = !!ephemeralPublicKey;
+
+    const messageToStore = isFirstMessage
+      ? { sender_id, recipient_id, contact_id, ciphertext, ciphertext_sender,
+          header: JSON.stringify(header), message: "", ephemeralPublicKey,
+          identityKey, oneTimePreKeyId, timestamp, is_first_message: true }
+      : { sender_id, recipient_id, contact_id, message: "", ciphertext,
+          ciphertext_sender, header, timestamp, is_first_message: false };
+
+    if (original_sender === sender_id) {
+      await pool.query(
+        `UPDATE contacts SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_sender = $4
+         WHERE sender_id = $2 AND contact_id = $3`,
+        [JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+      );
+    } else {
+      await pool.query(
+        `UPDATE contacts SET message = COALESCE(message, '[]'::jsonb) || $1::jsonb, last_message_sent_by_recipient = $4
+         WHERE sender_id = $3 AND contact_id = $2`,
+        [JSON.stringify(messageToStore), sender_id, recipient_id, timestamp]
+      );
+    }
+
+    // Try to deliver to recipient in real-time if they're online
+    const recipientWs = clients.get(recipient_id);
+    if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+      recipientWs.send(JSON.stringify(messageToStore));
+    }
+
+    res.status(200).json({ message: 'Message saved' });
+  } catch (err) {
+    console.error('Error in /sendMessage:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// update 2 tables. for user
 app.post('/putProfilePic', async (req, res) => {
   
   // STEPS:
