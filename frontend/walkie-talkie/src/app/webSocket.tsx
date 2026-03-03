@@ -310,6 +310,47 @@ export default function useWebSocket (url, user, contacts, updateContacts, setDe
             credentials: 'include',
             body: JSON.stringify(message),
           });
+
+          const contact_id = message.sender_id === user ? message.recipient_id : message.sender_id;
+          const msg = {
+            "sender_id": message.sender_id,
+            "recipient_id": message.recipient_id,
+            "message": message.message,
+            "timestamp": message.timestamp
+          };
+
+          setDecryptedContacts((currArr) => {
+            if (!currArr || currArr.length === 0) {
+              const contact = contacts.find((elem) => (elem.sender_id === user && elem.contact_id === contact_id) ||
+                                                      (elem.sender_id === contact_id && elem.contact_id === user));
+              if (contact) return [{ ...contact, message: [msg] }];
+              return currArr;
+            }
+
+            const contactExists = currArr.some((elem) => (elem.sender_id === user && elem.contact_id === contact_id) ||
+                                                          (elem.sender_id === contact_id && elem.contact_id === user));
+            if (!contactExists) {
+              const contact = contacts.find((elem) => (elem.sender_id === user && elem.contact_id === contact_id) ||
+                                                      (elem.sender_id === contact_id && elem.contact_id === user));
+              if (contact) return [...currArr, { ...contact, message: [msg] }];
+            }
+
+            return currArr.map((elem) => {
+              if ((elem.sender_id === user && elem.contact_id === contact_id) ||
+                  (elem.sender_id === contact_id && elem.contact_id === user)) {
+                const msgs = [...(elem.message || []), msg];
+                localStorage.setItem(`conversation_${user}_${contact_id}`, JSON.stringify(msgs));
+                return { ...elem, message: msgs };
+              }
+              return elem;
+            });
+          });
+
+          if (audioRef.current !== null && outgoingMessagesSoundsEnabled) {
+            audioRef.current.play().catch(err => {
+              console.error("Error playing notification wawaweewa:", err);
+            });
+          }
         }
       }
     };
