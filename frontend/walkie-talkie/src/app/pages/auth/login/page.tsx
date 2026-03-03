@@ -270,20 +270,21 @@ export default function Login(props: any) {
     }
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
+        <div className="absolute inset-0 flex items-center justify-center px-8 py-[10vh] md:px-[20wh] md:py-[10vh] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" onKeyDown={async (e) => {
             if(e.key === 'Enter') {
                 const resp = await login();
                 if(resp !== null) {
                     router.push("/");
                 }
             }}}>
-            <div className="relative w-full max-w-md mx-4 p-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
-                <div className="flex flex-col mb-8 text-center">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Welcome Back</h1>
-                    <p className="text-gray-400 mt-2 text-sm">Login to SocialiseIt</p>
+            <div className="relative w-full max-w-lg md:py-8 rounded-2xl bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-lg shadow-2xl border border-gray-700/50">
+                <div className="flex flex-col mb-4 md:mb-8 text-center">
+                    <h1 className="mt-2 text-4xl font-bold bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] bg-clip-text text-transparent">Welcome Back</h1>
+                    <p className="text-gray-400 md:mt-2 text-sm">Login to SocialiseIt</p>
                 </div>
-                <div className="flex flex-col gap-6">
-                    <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3 md:gap-6">
+            
+                    <div className="flex flex-col gap-2 mx-6">
                         <label className="text-sm font-medium text-gray-300 pl-1">Username</label>
                         <input
                             type="text"
@@ -298,7 +299,7 @@ export default function Login(props: any) {
                             className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
                         />
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 mx-6">
                         <label className="text-sm font-medium text-gray-300 pl-1">Password</label>
                         <input
                             type="password"
@@ -309,7 +310,7 @@ export default function Login(props: any) {
                             className="px-4 py-3 bg-gray-700/50 rounded-lg border border-gray-600 text-white placeholder-gray-400 outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
                         />
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <label className="flex items-center gap-2 mx-6 cursor-pointer select-none">
                         <input
                             type="checkbox"
                             checked={rememberMe}
@@ -326,7 +327,7 @@ export default function Login(props: any) {
                                 router.push("/");
                             }
                         }}
-                        className="w-full py-3 mt-2 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
+                        className="p-3 mx-20 xsw:mx-32 bg-gradient-to-r from-[#3B7E9B] to-[#5BA3C5] hover:from-[#5BA3C5] hover:to-[#3B7E9B] text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#3B7E9B]/50 hover:scale-[1.02] active:scale-[0.98]"
                     >
                         Sign In
                     </button>
@@ -339,7 +340,7 @@ export default function Login(props: any) {
 
                     <div ref={googleButtonRef} className="flex justify-center w-full"></div>
                 </div>
-                <div className="mt-6 text-center">
+                <div className="mt-6 mb-2 text-center">
                     <p className="text-gray-400 text-sm">
                         Don't have an account?{' '}
                         <span
