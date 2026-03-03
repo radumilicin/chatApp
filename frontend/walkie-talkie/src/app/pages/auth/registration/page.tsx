@@ -412,7 +412,7 @@ export default function Register(props) {
                     <div className="flex flex-col gap-3 md:gap-6">
                         <div className="flex flex-col gap-2 items-center mx-4">
                             <label className="text-sm font-medium text-gray-300 pl-1 self-start">Verification Code</label>
-                            <div className="flex gap-3">
+                            <div className="flex gap-1.5 sm:gap-3">
                                 {otpDigits.map((digit, i) => (
                                     <input
                                         key={i}
@@ -424,7 +424,7 @@ export default function Register(props) {
                                         onChange={(e) => handleOtpChange(i, e.target.value)}
                                         onKeyDown={(e) => handleOtpKeyDown(i, e)}
                                         autoFocus={i === 0}
-                                        className="w-12 h-14 bg-gray-700/50 rounded-lg border border-gray-600 text-white text-center text-2xl font-bold outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
+                                        className="w-9 h-11 sm:w-12 sm:h-14 bg-gray-700/50 rounded-lg border border-gray-600 text-white text-center text-xl sm:text-2xl font-bold outline-none focus:border-[#3B7E9B] focus:ring-2 focus:ring-[#3B7E9B]/20 transition-all"
                                     />
                                 ))}
                             </div>

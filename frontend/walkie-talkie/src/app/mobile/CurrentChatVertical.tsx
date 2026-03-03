@@ -709,7 +709,7 @@ export default function CurrentChatVertical( props: any ) {
                         </div>
                     </div>
                     <div className={`relative left-0 flex basis-[80%] h-full`}>
-                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-xl
+                        <input type="text" value={text} onChange={(e) => {setText(e.target.value)}} className={`absolute left-0 w-full h-full outline-none bg-transparent indent-4 overflow-auto text-lg
                                                                                                             ${props.themeChosen === "Dark" ? "text-white" : "text-black"}
                                                                                                                 ${props.fontChosen === 'Sans' ? 'font-sans' : props.fontChosen === 'Serif' ? 'font-serif' : 'font-mono'}`}
                             onKeyDown={(e) => {
