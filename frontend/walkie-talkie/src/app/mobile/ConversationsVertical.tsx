@@ -71,6 +71,7 @@ export default function ConversationsVertical( props : any) {
             props.updateContacts([]);
             props.updateImages([]);
             props.setUser("");
+            props.setCurrContact(null);
             props.setDecryptedContacts([]);
             setFilteredDecryptedContacts([]);
             props.hasDecryptedInitial.current = false;

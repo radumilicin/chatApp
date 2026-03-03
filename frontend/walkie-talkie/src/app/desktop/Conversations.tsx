@@ -70,6 +70,7 @@ export default function Conversations( props : any) {
                 props.updateImages([]);
                 props.setUser("");
                 props.setDecryptedContacts([]);
+                props.setCurrContact(null);
                 setFilteredDecryptedContacts([]);
                 props.hasDecryptedInitial.current = false;
             } else {

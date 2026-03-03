@@ -338,6 +338,7 @@ export default function CurrentChat( props: any ) {
         if(contact.is_group === true){
             return contact.group_name 
         } else {
+            if(props.users.length === 0) return ''
             return props.users.find((user) => (contact.contact_id === user.id && contact.sender_id === props.curr_user) || 
                                               (contact.sender_id === user.id && contact.contact_id === props.curr_user)).username
         }

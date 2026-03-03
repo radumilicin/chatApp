@@ -60,6 +60,7 @@ export default function Home() {
   const [pressedAppearance, setPressAppearance] = useState(false)
   const [pressedAccount, setPressAccount] = useState(false)
   const [pressedNotifications, setPressNotifications] = useState(false)
+  const [showVerification, setShowVerification] = useState(false)
   
   const [profileInfo, setProfileInfo] = useState(false)
   const [addingToGroup, setAddToGroup] = useState(false)
@@ -280,10 +281,20 @@ export default function Home() {
 
     if (res.ok) {
       console.log("✅ Token is valid:", data);
-      setUser(data.user.user.id)
+      const userId = data.user.user.id;
+
+      // Confirm the user still exists in the DB (JWT can be valid for deleted users)
+      const usersRes = await fetch(`${API_URL}/users`);
+      const allUsers = await usersRes.json();
+      if (!Array.isArray(allUsers) || !allUsers.some((u: any) => u.id === userId)) {
+        console.log("❌ User no longer exists in DB, clearing session");
+        return false;
+      }
+
+      setUser(userId)
       if(!loggedIn) setLoggedIn()
       
-      const deviceKey = await getOrCreateDeviceKey(data.user.user.id)
+      const deviceKey = await getOrCreateDeviceKey(userId)
 
       if(!deviceKey) {
         console.error("Could not create keys properly")
@@ -292,7 +303,7 @@ export default function Home() {
 
       console.log("Before loadKeysAfterLogin SSO")
       // const deviceKeyString = await cryptoKeyToBase64(deviceKey);
-      const loaded = await loadKeysAfterLogin(data.user.user.id, deviceKey)
+      const loaded = await loadKeysAfterLogin(userId, deviceKey)
 
       if(loaded === true) {
         console.log("Keys loaded after login")
@@ -401,12 +412,23 @@ export default function Home() {
   // gets the users
   useEffect(() => {
 
-    /* First check with SSO if we have a token by SENDING A REQUEST */ 
-    const sso_result = trySSO();
-    // if(sso_result === true) {
-
-    // }
-
+    /* First check with SSO if we have a token by SENDING A REQUEST */
+    const init = async () => {
+      const ssoSuccess = await trySSO();
+      if (!ssoSuccess) {
+        const lastUserId = localStorage.getItem('last_remembered_user_id');
+        if (lastUserId) {
+          localStorage.removeItem(`remembered_credentials_${lastUserId}`);
+        }
+        localStorage.removeItem('last_remembered_user_id');
+        updateUsers([]);
+        updateContacts([]);
+        updateImages([]);
+        setUser("");
+        setCurrContact(null);
+      }
+    };
+    init();
 
     // Function to fetch data
 
@@ -1236,8 +1258,9 @@ export default function Home() {
         }
         {(registered === true && loggedIn === false) ? <Login users={users} setU={setUser} setRegisteredAsync={setRegisteredAsync} cryptoKeyToBase64={cryptoKeyToBase64} loadKeysAfterLogin={loadKeysAfterLogin} getOrCreateDeviceKey={getOrCreateDeviceKey} signedPreKey={signedPreKey}
                                                        setIdentityKey={setIdentityKey} setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} encryptKeys={encryptKeys}></Login> : (registered === false && loggedIn === false) ?
-                                                       <Register users={users} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} cryptoKeyToBase64={cryptoKeyToBase64} setUser={setUser} setIdentityKey={setIdentityKey}
-                                                       setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} isKeysLoaded={isKeysLoaded} deriveKeyFromPassword={deriveKeyFromPassword} decryptKeys={decryptKeys} encryptKeys={encryptKeys} loadKeysAfterLogin={loadKeysAfterLogin}></Register> : <></>}
+                                                       <Register users={users} showVerification={showVerification} setShowVerification={setShowVerification} setRegisteredAsync={setRegisteredAsync} generateKeysForSignup={generateKeysForSignup} getOrCreateDeviceKey={getOrCreateDeviceKey} 
+                                                       cryptoKeyToBase64={cryptoKeyToBase64} setUser={setUser} setIdentityKey={setIdentityKey} setSignedPreKey={setSignedPreKey} setOneTimePreKeys={setOneTimePreKeys} 
+                                                       isKeysLoaded={isKeysLoaded} deriveKeyFromPassword={deriveKeyFromPassword} decryptKeys={decryptKeys} encryptKeys={encryptKeys} loadKeysAfterLogin={loadKeysAfterLogin}></Register> : <></>}
       </div>
       {profileInfo === true && curr_contact !== null && curr_contact !== undefined && curr_contact.is_group === true && addingToGroup === true && display === "Desktop" && <AddPersonToGroup contact={curr_contact} curr_user={user} contacts={contacts} users={users} decryptedContacts={decryptedContacts} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroup>}
       {profileInfo === true && curr_contact !== null && curr_contact !== undefined && curr_contact.is_group === true && addingToGroup === true && display === "Mobile" && <AddPersonToGroupVertical contact={curr_contact} curr_user={user} contacts={contacts} users={users} fetchContacts={fetchData2} setAddToGroup={setAddToGroup} images={images} themeChosen={themeChosen}></AddPersonToGroupVertical>}
