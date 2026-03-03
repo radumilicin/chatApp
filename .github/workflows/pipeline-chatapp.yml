@@ -18,7 +18,8 @@ jobs:
           script: |
             cd /root/chatApp || (git clone https://github.com/${{ github.repository }}.git /root/chatApp && cd /root/chatApp)
             cd /root/chatApp
-            git pull origin perfecting-frontend
+            git fetch origin perfecting-frontend
+            git reset --hard origin/perfecting-frontend
 
             # Install Docker + Compose plugin if not present
             if ! command -v docker &> /dev/null; then
